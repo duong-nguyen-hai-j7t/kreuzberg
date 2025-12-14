@@ -23,6 +23,24 @@ if [ -z "$TARGET" ]; then
 	exit 1
 fi
 
+# Pre-build validation: Check for OpenSSL on Windows
+echo "=== Pre-build validation ==="
+case "$TARGET" in
+x86_64-pc-windows-msvc | aarch64-pc-windows-msvc)
+	if [ -z "${OPENSSL_DIR:-}" ]; then
+		error_exit "OpenSSL is required for Windows NAPI builds. Set OPENSSL_DIR environment variable before running this script." 1
+	fi
+	echo "Verified OPENSSL_DIR is set: $OPENSSL_DIR"
+	if [ ! -d "$OPENSSL_DIR" ]; then
+		error_exit "OPENSSL_DIR path does not exist: $OPENSSL_DIR" 1
+	fi
+	if [ ! -f "$OPENSSL_DIR/lib/libssl.lib" ] && [ ! -f "$OPENSSL_DIR/lib/ssl.lib" ]; then
+		error_exit "OpenSSL library files not found in: $OPENSSL_DIR/lib" 1
+	fi
+	echo "✓ OpenSSL validation passed"
+	;;
+esac
+
 cd "$REPO_ROOT/crates/kreuzberg-node"
 
 echo "=== Building NAPI bindings for $TARGET ==="

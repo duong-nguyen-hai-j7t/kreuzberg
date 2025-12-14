@@ -15,6 +15,20 @@ if ($IsWindowsOS) {
     $ffiPath = "$workspace/target/x86_64-pc-windows-gnu/release"
     $devPcDir = "$workspace/crates/kreuzberg-ffi"
 
+    # Validate FFI library exists before proceeding
+    Write-Host "=== Pre-build validation ==="
+    if (-not (Test-Path $ffiPath)) {
+        Write-Error "FFI library path does not exist: $ffiPath" -ErrorAction Stop
+    }
+
+    $ffiLibraries = @(Get-ChildItem -Force "$ffiPath" -Filter "*kreuzberg_ffi*" -ErrorAction SilentlyContinue)
+    if ($ffiLibraries.Count -eq 0) {
+        Write-Error "No kreuzberg_ffi libraries found in: $ffiPath`nRun FFI build step (build-ffi.ps1) before building Go bindings." -ErrorAction Stop
+    }
+
+    Write-Host "Verified FFI libraries: $($ffiLibraries.Count) file(s) found"
+    $ffiLibraries | ForEach-Object { Write-Host "  - $($_.Name)" }
+
     # MSYS2 UCRT64 toolchain is already available in PATH (verified by CI workflow)
     $env:CC = "gcc"
     $env:CXX = "g++"

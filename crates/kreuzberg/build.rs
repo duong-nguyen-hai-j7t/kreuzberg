@@ -145,9 +145,10 @@ fn download_or_use_prebuilt(target: &str, out_dir: &Path) -> PathBuf {
         }
     }
 
-    // Check if library already exists (cache validation)
+    // Check if library already exists (cache validation) using flexible detection
     let (runtime_lib_name, runtime_subdir) = runtime_library_info(target);
-    let runtime_lib_path = pdfium_dir.join(runtime_subdir).join(&runtime_lib_name);
+    let lib_found = find_pdfium_library(&pdfium_dir, &runtime_lib_name, runtime_subdir).is_ok();
+
     let import_lib_exists = if target.contains("windows") {
         let lib_dir = pdfium_dir.join("lib");
         lib_dir.join("pdfium.lib").exists() || lib_dir.join("pdfium.dll.lib").exists()
@@ -155,12 +156,12 @@ fn download_or_use_prebuilt(target: &str, out_dir: &Path) -> PathBuf {
         true
     };
 
-    if !runtime_lib_path.exists() || !import_lib_exists {
+    if !lib_found || !import_lib_exists {
         tracing::debug!("Pdfium library not found, downloading for target: {}", target);
         tracing::debug!("Download URL: {}", download_url);
         download_and_extract_pdfium(&download_url, &pdfium_dir);
     } else {
-        tracing::debug!("Pdfium library already present at {}", runtime_lib_path.display());
+        tracing::debug!("Pdfium library already cached at {}", pdfium_dir.display());
     }
 
     // Windows-specific: ensure pdfium.lib exists
@@ -451,6 +452,70 @@ fn runtime_library_info(target: &str) -> (String, &'static str) {
     }
 }
 
+/// Find PDFium library in archive with flexible directory detection
+///
+/// Attempts to locate the library at multiple possible locations:
+/// - {subdir}/{lib_name} (standard location)
+/// - {lib_name} (root of archive)
+/// - bin/{lib_name} (alternative location)
+/// - lib/{lib_name} (explicit lib directory)
+///
+/// This handles variations in archive structure across different platform builds,
+/// particularly macOS ARM64 where the archive structure may differ.
+///
+/// Returns the full path to the library if found, or an error with available files.
+fn find_pdfium_library(pdfium_dir: &Path, lib_name: &str, expected_subdir: &str) -> Result<PathBuf, String> {
+    // Candidates in priority order
+    let candidates = [
+        pdfium_dir.join(expected_subdir).join(lib_name), // Standard: lib/libpdfium.dylib
+        pdfium_dir.join(lib_name),                       // Root: libpdfium.dylib
+        pdfium_dir.join("bin").join(lib_name),           // Alternative: bin/libpdfium.dylib
+        pdfium_dir.join("lib").join(lib_name),           // Explicit lib: lib/libpdfium.dylib
+    ];
+
+    // Try each candidate
+    for candidate in &candidates {
+        if candidate.exists() {
+            tracing::debug!("Found PDFium library at: {}", candidate.display());
+            return Ok(candidate.clone());
+        }
+    }
+
+    // Library not found - provide detailed error with directory listing
+    let mut error_msg = format!(
+        "PDFium library not found at expected location: {}/{}\n\n",
+        pdfium_dir.display(),
+        expected_subdir
+    );
+    error_msg.push_str("Attempted locations:\n");
+    for candidate in &candidates {
+        error_msg.push_str(&format!("  - {}\n", candidate.display()));
+    }
+
+    // List actual contents of pdfium directory for debugging
+    error_msg.push_str("\nActual archive contents:\n");
+    if let Ok(entries) = fs::read_dir(pdfium_dir) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            let file_type = if path.is_dir() { "dir" } else { "file" };
+            error_msg.push_str(&format!("  {} ({})\n", path.display(), file_type));
+
+            // Show contents of subdirectories
+            if path.is_dir()
+                && let Ok(sub_entries) = fs::read_dir(&path)
+            {
+                for sub_entry in sub_entries.flatten() {
+                    let sub_path = sub_entry.path();
+                    let sub_type = if sub_path.is_dir() { "dir" } else { "file" };
+                    error_msg.push_str(&format!("    {} ({})\n", sub_path.display(), sub_type));
+                }
+            }
+        }
+    }
+
+    Err(error_msg)
+}
+
 /// Fix macOS install name (rpath) for dynamic library
 ///
 /// Uses install_name_tool to set the install name to @rpath/{lib_name}
@@ -522,10 +587,30 @@ fn codesign_if_needed(target: &str, binary: &Path) {
 ///
 /// Sets up linker to use PDFium as a dynamic library (.dylib/.so/.dll)
 /// with platform-specific rpath configuration for runtime library discovery.
+/// Supports flexible archive structures by adding multiple possible lib directories.
 fn link_dynamically(pdfium_dir: &Path, target: &str) {
-    let lib_dir = pdfium_dir.join("lib");
-    println!("cargo:rustc-link-search=native={}", lib_dir.display());
+    let (runtime_lib_name, runtime_subdir) = runtime_library_info(target);
+
+    // Find the actual library location (handles multiple possible archive structures)
+    let lib_path = match find_pdfium_library(pdfium_dir, &runtime_lib_name, runtime_subdir) {
+        Ok(path) => path.parent().unwrap_or(pdfium_dir).to_path_buf(),
+        Err(err) => panic!("{}", err),
+    };
+
+    println!("cargo:rustc-link-search=native={}", lib_path.display());
     println!("cargo:rustc-link-lib=dylib=pdfium");
+
+    // Also add standard lib directory for compatibility
+    let std_lib_dir = pdfium_dir.join("lib");
+    if std_lib_dir.exists() && std_lib_dir != lib_path {
+        println!("cargo:rustc-link-search=native={}", std_lib_dir.display());
+    }
+
+    // Add bin directory for platforms where it might be needed
+    let bin_dir = pdfium_dir.join("bin");
+    if bin_dir.exists() && bin_dir != lib_path {
+        println!("cargo:rustc-link-search=native={}", bin_dir.display());
+    }
 
     // Set rpath for dynamic linking
     if target.contains("darwin") {
@@ -541,10 +626,30 @@ fn link_dynamically(pdfium_dir: &Path, target: &str) {
 ///
 /// Embeds PDFium into the binary as a static library. Adds system
 /// dependencies required for static linking on Linux.
+/// Supports flexible archive structures by finding library in multiple locations.
 fn link_statically(pdfium_dir: &Path, target: &str) {
-    let lib_dir = pdfium_dir.join("lib");
-    println!("cargo:rustc-link-search=native={}", lib_dir.display());
+    let (runtime_lib_name, runtime_subdir) = runtime_library_info(target);
+
+    // Find the actual library location (handles multiple possible archive structures)
+    let lib_path = match find_pdfium_library(pdfium_dir, &runtime_lib_name, runtime_subdir) {
+        Ok(path) => path.parent().unwrap_or(pdfium_dir).to_path_buf(),
+        Err(err) => panic!("{}", err),
+    };
+
+    println!("cargo:rustc-link-search=native={}", lib_path.display());
     println!("cargo:rustc-link-lib=static=pdfium");
+
+    // Also add standard lib directory for compatibility
+    let std_lib_dir = pdfium_dir.join("lib");
+    if std_lib_dir.exists() && std_lib_dir != lib_path {
+        println!("cargo:rustc-link-search=native={}", std_lib_dir.display());
+    }
+
+    // Add bin directory for platforms where it might be needed
+    let bin_dir = pdfium_dir.join("bin");
+    if bin_dir.exists() && bin_dir != lib_path {
+        println!("cargo:rustc-link-search=native={}", bin_dir.display());
+    }
 
     // Static linking requires additional system dependencies
     if target.contains("linux") {
@@ -558,29 +663,29 @@ fn link_statically(pdfium_dir: &Path, target: &str) {
 ///
 /// Links dynamically but copies library to OUT_DIR for embedding in binary.
 /// Each binary extracts and uses its own copy of the PDFium library.
+/// Supports flexible archive structures by finding library in multiple locations.
 fn link_bundled(pdfium_dir: &Path, target: &str, out_dir: &Path) {
     // Link dynamically for build
     link_dynamically(pdfium_dir, target);
 
-    // Copy library to OUT_DIR for bundling
+    // Copy library to OUT_DIR for bundling using flexible detection
     let (runtime_lib_name, runtime_subdir) = runtime_library_info(target);
-    let src_lib = pdfium_dir.join(runtime_subdir).join(&runtime_lib_name);
+    let src_lib = match find_pdfium_library(pdfium_dir, &runtime_lib_name, runtime_subdir) {
+        Ok(path) => path,
+        Err(err) => panic!("{}", err),
+    };
     let bundled_lib = out_dir.join(&runtime_lib_name);
 
-    if src_lib.exists() {
-        fs::copy(&src_lib, &bundled_lib)
-            .unwrap_or_else(|err| panic!("Failed to copy library to OUT_DIR for bundling: {}", err));
+    fs::copy(&src_lib, &bundled_lib)
+        .unwrap_or_else(|err| panic!("Failed to copy library to OUT_DIR for bundling: {}", err));
 
-        // Emit environment variable with bundled library path
-        let bundled_path = bundled_lib
-            .to_str()
-            .unwrap_or_else(|| panic!("Non-UTF8 path for bundled library: {}", bundled_lib.display()));
-        println!("cargo:rustc-env=KREUZBERG_PDFIUM_BUNDLED_PATH={}", bundled_path);
+    // Emit environment variable with bundled library path
+    let bundled_path = bundled_lib
+        .to_str()
+        .unwrap_or_else(|| panic!("Non-UTF8 path for bundled library: {}", bundled_lib.display()));
+    println!("cargo:rustc-env=KREUZBERG_PDFIUM_BUNDLED_PATH={}", bundled_path);
 
-        tracing::debug!("Bundled PDFium library at: {}", bundled_path);
-    } else {
-        panic!("Cannot bundle PDFium: library not found at {}", src_lib.display());
-    }
+    tracing::debug!("Bundled PDFium library at: {}", bundled_path);
 }
 
 /// Link system-installed PDFium (pdf-system feature)
@@ -677,14 +782,16 @@ fn link_system_frameworks(target: &str) {
 /// - Ruby gem directory
 ///
 /// On macOS, also fixes install_name and applies code signing.
+/// Supports flexible archive structures by finding library in multiple locations.
 fn copy_lib_to_package(pdfium_dir: &Path, target: &str) {
     let (runtime_lib_name, runtime_subdir) = runtime_library_info(target);
-    let src_lib = pdfium_dir.join(runtime_subdir).join(&runtime_lib_name);
-
-    if !src_lib.exists() {
-        tracing::debug!("Source library not found: {}", src_lib.display());
-        return;
-    }
+    let src_lib = match find_pdfium_library(pdfium_dir, &runtime_lib_name, runtime_subdir) {
+        Ok(path) => path,
+        Err(err) => {
+            tracing::debug!("Failed to locate PDFium library: {}", err);
+            return;
+        }
+    };
 
     if target.contains("darwin") {
         fix_macos_install_name(&src_lib, &runtime_lib_name);
