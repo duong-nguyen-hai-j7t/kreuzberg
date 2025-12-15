@@ -27,4 +27,18 @@ Windows*)
 esac
 
 cd "${REPO_ROOT}/e2e/csharp"
-dotnet test Kreuzberg.E2E.csproj -c Release --logger "console;verbosity=detailed" --blame --blame-hang-timeout 20m
+results_dir="${REPO_ROOT}/target/test-results/csharp-e2e"
+mkdir -p "$results_dir"
+
+dotnet test Kreuzberg.E2E.csproj \
+	-c Release \
+	--logger "console;verbosity=diagnostic" \
+	--logger "trx;LogFileName=csharp-e2e.trx" \
+	--results-directory "$results_dir" \
+	--diag "$results_dir/dotnet-test-diag.log" \
+	--blame \
+	--blame-crash \
+	--blame-hang \
+	--blame-hang-timeout 20m \
+	--blame-hang-dump-type mini \
+	--blame-crash-dump-type mini
