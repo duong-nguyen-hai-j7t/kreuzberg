@@ -165,6 +165,9 @@ fn download_or_use_prebuilt(target: &str, out_dir: &Path) -> PathBuf {
         if prebuilt_path.exists() {
             prepare_prebuilt_pdfium(&prebuilt_path, &pdfium_dir)
                 .unwrap_or_else(|err| panic!("Failed to copy Pdfium from {}: {}", prebuilt_path.display(), err));
+            if target.contains("windows") {
+                ensure_windows_import_library(&pdfium_dir);
+            }
             return pdfium_dir;
         } else {
             panic!(
@@ -195,17 +198,32 @@ fn download_or_use_prebuilt(target: &str, out_dir: &Path) -> PathBuf {
 
     // Windows-specific: ensure pdfium.lib exists
     if target.contains("windows") {
-        let lib_dir = pdfium_dir.join("lib");
-        let dll_lib = lib_dir.join("pdfium.dll.lib");
-        let expected_lib = lib_dir.join("pdfium.lib");
-
-        if dll_lib.exists() && !expected_lib.exists() {
-            tracing::debug!("Renaming cached {} to {}", dll_lib.display(), expected_lib.display());
-            fs::rename(&dll_lib, &expected_lib).expect("Failed to rename pdfium.dll.lib to pdfium.lib");
-        }
+        ensure_windows_import_library(&pdfium_dir);
     }
 
     pdfium_dir
+}
+
+fn ensure_windows_import_library(pdfium_dir: &Path) {
+    let lib_dir = pdfium_dir.join("lib");
+    let dll_lib = lib_dir.join("pdfium.dll.lib");
+    let expected_lib = lib_dir.join("pdfium.lib");
+
+    if dll_lib.exists() && !expected_lib.exists() {
+        tracing::debug!(
+            "Ensuring Windows import library at {} (source: {})",
+            expected_lib.display(),
+            dll_lib.display()
+        );
+        fs::copy(&dll_lib, &expected_lib).unwrap_or_else(|err| {
+            panic!(
+                "Failed to copy Windows import library from {} to {}: {}",
+                dll_lib.display(),
+                expected_lib.display(),
+                err
+            )
+        });
+    }
 }
 
 // ============================================================================

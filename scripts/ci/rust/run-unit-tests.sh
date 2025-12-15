@@ -51,15 +51,27 @@ done
 
 echo "=== Starting cargo test ==="
 
-# Run tests with detailed output and capture logs
+# Run tests with detailed output and capture logs.
+#
+# NOTE: We intentionally avoid `--all-features` for the `kreuzberg` crate because
+# `pdf-static`, `pdf-bundled`, and `pdf-system` are mutually exclusive (enforced
+# in `crates/kreuzberg/build.rs`). CI covers `pdf-system` in a dedicated job.
 TEST_LOG="/tmp/cargo-test-$$.log"
-if ! cargo test \
-	--workspace \
-	--exclude kreuzberg-e2e-generator \
-	--exclude kreuzberg-py \
-	--exclude kreuzberg-node \
-	--all-features \
-	--verbose 2>&1 | tee "$TEST_LOG"; then
+
+if ! {
+	echo "=== cargo test -p kreuzberg --features full ==="
+	cargo test -p kreuzberg --features full --verbose
+
+	echo "=== cargo test --workspace (all features, excluding kreuzberg) ==="
+	cargo test \
+		--workspace \
+		--exclude kreuzberg \
+		--exclude kreuzberg-e2e-generator \
+		--exclude kreuzberg-py \
+		--exclude kreuzberg-node \
+		--all-features \
+		--verbose
+} 2>&1 | tee "$TEST_LOG"; then
 	echo "=== Test execution failed ==="
 	echo "Last 50 lines of test output:"
 	tail -n 50 "$TEST_LOG"

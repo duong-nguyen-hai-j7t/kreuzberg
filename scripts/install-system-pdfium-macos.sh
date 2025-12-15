@@ -73,7 +73,7 @@ download_pdfium() {
 	local arch="$2"
 	local tmpdir
 	tmpdir="$(mktemp -d)"
-	trap 'rm -rf "$tmpdir"' EXIT
+	trap '[[ -n "${tmpdir-}" ]] && rm -rf "${tmpdir-}"' EXIT
 
 	local url="https://github.com/bblanchon/pdfium-binaries/releases/download/chromium/${version}/pdfium-mac-${arch}.tgz"
 	local archive="$tmpdir/pdfium-mac-${arch}.tgz"

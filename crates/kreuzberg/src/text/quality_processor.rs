@@ -19,7 +19,7 @@ use async_trait::async_trait;
 ///
 /// ```rust,no_run
 /// use kreuzberg::plugins::{Plugin, PostProcessor};
-/// use kreuzberg::text::quality::processor::QualityProcessor;
+/// use kreuzberg::text::QualityProcessor;
 ///
 /// let processor = QualityProcessor;
 /// assert_eq!(processor.name(), "quality-processing");
