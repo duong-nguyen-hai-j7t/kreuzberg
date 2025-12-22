@@ -5,6 +5,18 @@ All notable changes to Kreuzberg will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0-rc.17] - 2025-12-22
+
+### Fixed
+
+- **Python wheel dylib linking on macOS**: Fixed ImportError caused by hardcoded dylib paths in Python wheels
+  - Root cause: PyO3 linker was preferring `libkreuzberg_ffi.dylib` over static library, embedding absolute CI build paths into the wheel
+  - Error: `ImportError: Library not loaded: /Users/.../target/.../libkreuzberg_ffi.dylib` when installing from wheel
+  - Solution 1: Added crate-type comment in `kreuzberg-ffi/Cargo.toml` documenting staticlib requirement for Python
+  - Solution 2: Modified `kreuzberg-py/build.rs` to explicitly link static library by full path on Unix platforms
+  - Solution 3: Removed `deps/` directory from library search paths to avoid dylibs with hardcoded install_name
+  - Impact: Python wheels now install correctly on all platforms with no runtime linker errors
+
 ## [4.0.0-rc.16] - 2025-12-21
 
 ### Added

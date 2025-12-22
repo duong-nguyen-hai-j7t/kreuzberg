@@ -14,6 +14,9 @@ keywords = ["ffi", "bindings", "document", "extraction", "api"]
 categories = ["development-tools::ffi", "text-processing"]
 
 [lib]
+# cdylib: Required by Java (FFM API) and Go (cgo dynamic linking)
+# staticlib: Required by Python (PyO3 static linking) to avoid dylib install_name issues on macOS
+# rlib: Standard Rust library format for workspace dependencies
 crate-type = ["cdylib", "staticlib", "rlib"]
 
 [features]
