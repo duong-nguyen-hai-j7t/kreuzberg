@@ -184,33 +184,6 @@ pub async fn run_pipeline(mut result: ExtractionResult, config: &ExtractionConfi
         }
     }
 
-    #[cfg(feature = "quality")]
-    if config.enable_quality_processing {
-        // Convert metadata to string hashmap with single allocation instead of cloning
-        let metadata_strings: std::collections::HashMap<String, String> = result
-            .metadata
-            .additional
-            .iter()
-            .map(|(k, v)| (k.clone(), v.to_string()))
-            .collect();
-
-        let quality_score = crate::text::quality::calculate_quality_score(&result.content, Some(&metadata_strings));
-        result.metadata.additional.insert(
-            "quality_score".to_string(),
-            serde_json::Value::Number(
-                serde_json::Number::from_f64(quality_score).unwrap_or(serde_json::Number::from(0)),
-            ),
-        );
-    }
-
-    #[cfg(not(feature = "quality"))]
-    if config.enable_quality_processing {
-        result.metadata.additional.insert(
-            "quality_processing_error".to_string(),
-            serde_json::Value::String("Quality processing feature not enabled".to_string()),
-        );
-    }
-
     #[cfg(feature = "chunking")]
     if let Some(ref chunking_config) = config.chunking {
         let chunk_config = crate::chunking::ChunkingConfig {
@@ -352,34 +325,6 @@ pub async fn run_pipeline(mut result: ExtractionResult, config: &ExtractionConfi
 /// - Async validators
 #[cfg(not(feature = "tokio-runtime"))]
 pub fn run_pipeline_sync(mut result: ExtractionResult, config: &ExtractionConfig) -> Result<ExtractionResult> {
-    // Quality processing
-    #[cfg(feature = "quality")]
-    if config.enable_quality_processing {
-        // Convert metadata to string hashmap with single allocation instead of cloning
-        let metadata_strings: std::collections::HashMap<String, String> = result
-            .metadata
-            .additional
-            .iter()
-            .map(|(k, v)| (k.clone(), v.to_string()))
-            .collect();
-
-        let quality_score = crate::text::quality::calculate_quality_score(&result.content, Some(&metadata_strings));
-        result.metadata.additional.insert(
-            "quality_score".to_string(),
-            serde_json::Value::Number(
-                serde_json::Number::from_f64(quality_score).unwrap_or(serde_json::Number::from(0)),
-            ),
-        );
-    }
-
-    #[cfg(not(feature = "quality"))]
-    if config.enable_quality_processing {
-        result.metadata.additional.insert(
-            "quality_processing_error".to_string(),
-            serde_json::Value::String("Quality processing feature not enabled".to_string()),
-        );
-    }
-
     // Chunking
     #[cfg(feature = "chunking")]
     if let Some(ref chunking_config) = config.chunking {
