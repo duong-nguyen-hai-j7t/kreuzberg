@@ -109,14 +109,25 @@ func run(tag, dest string, skipBuildFallback, verbose bool) error {
 	return nil
 }
 
-func detectPlatform() (platform, arch string, err error) {
-	platform = runtime.GOOS
-	arch = runtime.GOARCH
+func detectPlatform() (string, string, error) {
+	platform := runtime.GOOS
+	arch := runtime.GOARCH
+
+	// Map Go platform names to release artifact names
+	platformMap := map[string]string{
+		"darwin": "macos",
+		"linux":  "linux",
+		"windows": "windows",
+	}
 
 	// Map Go arch names to release artifact names
 	archMap := map[string]string{
 		"amd64": "x86_64",
 		"arm64": "arm64",
+	}
+
+	if mappedPlatform, ok := platformMap[platform]; ok {
+		platform = mappedPlatform
 	}
 
 	if mappedArch, ok := archMap[arch]; ok {
@@ -125,7 +136,7 @@ func detectPlatform() (platform, arch string, err error) {
 
 	// Validate
 	switch platform {
-	case "linux", "darwin", "windows":
+	case "macos", "linux", "windows":
 		// OK
 	default:
 		return "", "", fmt.Errorf("unsupported platform: %s", platform)
@@ -138,7 +149,7 @@ func detectPlatform() (platform, arch string, err error) {
 		return "", "", fmt.Errorf("unsupported architecture: %s", arch)
 	}
 
-	return
+	return platform, arch, nil
 }
 
 type GithubRelease struct {
@@ -162,7 +173,10 @@ func getLatestReleaseTag(verbose bool) (string, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		body, _ := io.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return "", fmt.Errorf("API returned %d: failed to read body: %w", resp.StatusCode, err)
+		}
 		return "", fmt.Errorf("API returned %d: %s", resp.StatusCode, string(body))
 	}
 
@@ -192,7 +206,10 @@ func downloadAndInstall(tag, artifactName, dest string, verbose bool) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		body, _ := io.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("API returned %d: failed to read body: %w", resp.StatusCode, err)
+		}
 		return fmt.Errorf("API returned %d: %s", resp.StatusCode, string(body))
 	}
 
@@ -225,7 +242,10 @@ func downloadAndInstall(tag, artifactName, dest string, verbose bool) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		body, _ := io.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("download returned %d: failed to read body: %w", resp.StatusCode, err)
+		}
 		return fmt.Errorf("download returned %d: %s", resp.StatusCode, string(body))
 	}
 
@@ -239,7 +259,7 @@ func downloadAndInstall(tag, artifactName, dest string, verbose bool) error {
 
 func extractTarGz(src io.Reader, dest string, verbose bool) error {
 	// Create destination if needed
-	if err := os.MkdirAll(dest, 0755); err != nil {
+	if err := os.MkdirAll(dest, 0o750); err != nil {
 		return fmt.Errorf("failed to create destination: %w", err)
 	}
 
@@ -247,9 +267,14 @@ func extractTarGz(src io.Reader, dest string, verbose bool) error {
 	if err != nil {
 		return fmt.Errorf("failed to create gzip reader: %w", err)
 	}
-	defer gz.Close()
+	defer func() {
+		if err := gz.Close(); err != nil {
+			fmt.Fprintf(os.Stderr, "Warning: failed to close gzip reader: %v\n", err)
+		}
+	}()
 
 	tr := tar.NewReader(gz)
+	const maxSize = 1 << 30 // 1GB max file size
 
 	for {
 		header, err := tr.Next()
@@ -260,30 +285,49 @@ func extractTarGz(src io.Reader, dest string, verbose bool) error {
 			return fmt.Errorf("tar error: %w", err)
 		}
 
-		targetPath := filepath.Join(dest, header.Name)
+		// Validate path doesn't escape destination
+		// Use filepath.FromSlash to normalize header.Name, which may use forward slashes
+		normalizedName := filepath.FromSlash(header.Name)
+		targetPath := filepath.Join(dest, normalizedName)
+		if !isPathSafe(dest, targetPath) {
+			return fmt.Errorf("invalid tar path: %s", header.Name)
+		}
+		targetPath = filepath.Clean(targetPath)
+
 		targetDir := filepath.Dir(targetPath)
 
-		if err := os.MkdirAll(targetDir, 0755); err != nil {
+		if err := os.MkdirAll(targetDir, 0o750); err != nil {
 			return fmt.Errorf("failed to create directory %s: %w", targetDir, err)
 		}
 
-		if header.Typeflag == tar.TypeDir {
-			if err := os.MkdirAll(targetPath, 0755); err != nil {
+		switch header.Typeflag {
+		case tar.TypeDir:
+			if err := os.MkdirAll(targetPath, 0o750); err != nil {
 				return err
 			}
-		} else if header.Typeflag == tar.TypeReg {
+		case tar.TypeReg:
+			if header.Size > maxSize {
+				return fmt.Errorf("file too large: %s (%d bytes)", header.Name, header.Size)
+			}
+
 			f, err := os.Create(targetPath)
 			if err != nil {
 				return fmt.Errorf("failed to create file %s: %w", targetPath, err)
 			}
 
-			if _, err := io.Copy(f, tr); err != nil {
+			if _, err := io.CopyN(f, tr, header.Size); err != nil && err != io.EOF {
+				//nolint:errcheck,gosec
 				f.Close()
 				return fmt.Errorf("failed to write file %s: %w", targetPath, err)
 			}
-			f.Close()
 
-			if err := os.Chmod(targetPath, os.FileMode(header.Mode)); err != nil {
+			if err := f.Close(); err != nil {
+				return fmt.Errorf("failed to close file %s: %w", targetPath, err)
+			}
+
+			// Convert file mode (int64 from tar header to uint32) safely
+			//nolint:gosec
+			if err := os.Chmod(targetPath, os.FileMode(header.Mode)&0o777); err != nil {
 				return err
 			}
 
@@ -294,6 +338,21 @@ func extractTarGz(src io.Reader, dest string, verbose bool) error {
 	}
 
 	return nil
+}
+
+func isPathSafe(basePath, targetPath string) bool {
+	base, err := filepath.Abs(basePath)
+	if err != nil {
+		return false
+	}
+
+	target, err := filepath.Abs(targetPath)
+	if err != nil {
+		return false
+	}
+
+	// Ensure target is under base directory
+	return len(target) >= len(base) && target[:len(base)] == base && (len(target) == len(base) || target[len(base)] == filepath.Separator)
 }
 
 func getDefaultDestination(verbose bool) (string, error) {
@@ -334,9 +393,10 @@ func printEnvSetup(dest string) error {
 	fmt.Println()
 	fmt.Printf("export PKG_CONFIG_PATH=\"%s:$PKG_CONFIG_PATH\"\n", pkgConfigPath)
 
-	if runtime.GOOS == "linux" {
+	switch runtime.GOOS {
+	case "linux":
 		fmt.Printf("export LD_LIBRARY_PATH=\"%s:$LD_LIBRARY_PATH\"\n", libPath)
-	} else if runtime.GOOS == "darwin" {
+	case "darwin":
 		fmt.Printf("export DYLD_FALLBACK_LIBRARY_PATH=\"%s:$DYLD_FALLBACK_LIBRARY_PATH\"\n", libPath)
 	}
 
@@ -347,7 +407,7 @@ func printEnvSetup(dest string) error {
 
 func httpGet(url string) (*http.Response, error) {
 	client := &http.Client{
-		Timeout: 30 * time.Second,
+		Timeout: 5 * time.Minute,
 	}
 
 	req, err := http.NewRequest("GET", url, nil)
