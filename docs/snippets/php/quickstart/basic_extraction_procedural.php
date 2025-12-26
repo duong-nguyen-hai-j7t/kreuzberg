@@ -25,10 +25,10 @@ echo $result->content . "\n\n";
 // Display basic metadata
 echo "Document Information:\n";
 echo str_repeat('=', 50) . "\n";
-printf("Title:  %s\n", $result->metadata->title ?? 'Unknown');
-printf("Author: %s\n", $result->metadata->author ?? 'Unknown');
-printf("Pages:  %d\n", $result->metadata->pageCount ?? 0);
-printf("Format: %s\n", $result->mimeType);
+printf("Title:   %s\n", $result->metadata->title ?? 'Unknown');
+printf("Authors: %s\n", isset($result->metadata->authors) ? implode(', ', $result->metadata->authors) : 'Unknown');
+printf("Pages:   %d\n", $result->metadata->pageCount ?? 0);
+printf("Format:  %s\n", $result->mimeType);
 
 // Display character and word count
 $char_count = mb_strlen($result->content);

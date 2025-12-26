@@ -117,9 +117,9 @@ $config = new ExtractionConfig(
         confidenceThreshold: 0.8
     ),
     keyword: new KeywordConfig(
-        enabled: true,
-        algorithm: 'rake',
-        maxKeywords: 10
+        maxKeywords: 10,
+        minScore: 0.0,
+        language: 'en'
     )
 );
 

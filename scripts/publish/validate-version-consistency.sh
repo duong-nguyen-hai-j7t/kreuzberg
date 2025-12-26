@@ -121,10 +121,18 @@ echo "packages/go/v4/doc.go: $go_version"
 	errors=$((errors + 1))
 }
 
+# PHP composer.json
+php_version="$(jq -r '.version' packages/php/composer.json)"
+echo "packages/php/composer.json: $php_version"
+[ "$php_version" = "$expected" ] || {
+	echo "❌ PHP composer.json mismatch"
+	errors=$((errors + 1))
+}
+
 echo "----------------------------------------"
 if [ "$errors" -gt 0 ]; then
 	echo "❌ $errors version mismatches found"
 	exit 1
 fi
 
-echo "✅ All 9 version sources consistent: $expected"
+echo "✅ All 10 version sources consistent: $expected"

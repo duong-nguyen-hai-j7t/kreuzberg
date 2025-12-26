@@ -72,53 +72,41 @@ readonly class Metadata
         ];
 
         // Extract and validate known fields
-        $language = $data['language'] ?? null;
         /** @var string|null $language */
-        assert($language === null || is_string($language));
+        $language = $data['language'] ?? null;
 
-        $date = $data['date'] ?? null;
         /** @var string|null $date */
-        assert($date === null || is_string($date));
+        $date = $data['date'] ?? null;
 
-        $subject = $data['subject'] ?? null;
         /** @var string|null $subject */
-        assert($subject === null || is_string($subject));
+        $subject = $data['subject'] ?? null;
 
-        $formatType = $data['format_type'] ?? null;
         /** @var string|null $formatType */
-        assert($formatType === null || is_string($formatType));
+        $formatType = $data['format_type'] ?? null;
 
-        $title = $data['title'] ?? null;
         /** @var string|null $title */
-        assert($title === null || is_string($title));
+        $title = $data['title'] ?? null;
 
-        $authors = $data['authors'] ?? null;
         /** @var array<string>|null $authors */
-        assert($authors === null || is_array($authors));
+        $authors = $data['authors'] ?? null;
 
-        $keywords = $data['keywords'] ?? null;
         /** @var array<string>|null $keywords */
-        assert($keywords === null || is_array($keywords));
+        $keywords = $data['keywords'] ?? null;
 
-        $createdAt = $data['created_at'] ?? null;
         /** @var string|null $createdAt */
-        assert($createdAt === null || is_string($createdAt));
+        $createdAt = $data['created_at'] ?? null;
 
-        $modifiedAt = $data['modified_at'] ?? null;
         /** @var string|null $modifiedAt */
-        assert($modifiedAt === null || is_string($modifiedAt));
+        $modifiedAt = $data['modified_at'] ?? null;
 
-        $createdBy = $data['created_by'] ?? null;
         /** @var string|null $createdBy */
-        assert($createdBy === null || is_string($createdBy));
+        $createdBy = $data['created_by'] ?? null;
 
-        $producer = $data['producer'] ?? null;
         /** @var string|null $producer */
-        assert($producer === null || is_string($producer));
+        $producer = $data['producer'] ?? null;
 
-        $pageCount = $data['page_count'] ?? null;
         /** @var int|null $pageCount */
-        assert($pageCount === null || is_int($pageCount));
+        $pageCount = $data['page_count'] ?? null;
 
         // Collect custom fields (anything not in known fields)
         $custom = [];

@@ -241,10 +241,10 @@ impl ExtractedImage {
             format: img.format,
             image_index: img.image_index,
             page_number: img.page_number,
-            width: img.width,
-            height: img.height,
+            width: img.width.map(|w| w as i32),
+            height: img.height.map(|h| h as i32),
             colorspace: img.colorspace,
-            bits_per_component: img.bits_per_component,
+            bits_per_component: img.bits_per_component.map(|b| b as i32),
             description: img.description,
             is_mask: img.is_mask,
         })
@@ -279,7 +279,7 @@ pub struct TextChunk {
 impl TextChunk {}
 
 impl TextChunk {
-    pub fn from_rust(chunk: kreuzberg::TextChunk) -> PhpResult<Self> {
+    pub fn from_rust(chunk: kreuzberg::Chunk) -> PhpResult<Self> {
         Ok(Self {
             content: chunk.content,
             embedding: chunk.embedding,
@@ -287,7 +287,7 @@ impl TextChunk {
             byte_end: chunk.metadata.byte_end,
             chunk_index: chunk.metadata.chunk_index,
             total_chunks: chunk.metadata.total_chunks,
-            token_count: chunk.metadata.token_count,
+            token_count: chunk.metadata.token_count.unwrap_or(0),
             first_page: chunk.metadata.first_page,
             last_page: chunk.metadata.last_page,
         })
@@ -315,17 +315,23 @@ pub struct PageResult {
 impl PageResult {}
 
 impl PageResult {
-    pub fn from_rust(page: kreuzberg::PageResult) -> PhpResult<Self> {
+    pub fn from_rust(page: kreuzberg::PageContent) -> PhpResult<Self> {
         let tables = page
             .tables
             .into_iter()
-            .map(|t| ExtractedTable::from_rust((*t).clone()))
+            .map(|arc_t| {
+                let table: kreuzberg::Table = (*arc_t).clone();
+                ExtractedTable::from_rust(table)
+            })
             .collect::<PhpResult<Vec<_>>>()?;
 
         let images = page
             .images
             .into_iter()
-            .map(ExtractedImage::from_rust)
+            .map(|arc_img| {
+                let img: kreuzberg::ExtractedImage = (*arc_img).clone();
+                ExtractedImage::from_rust(img)
+            })
             .collect::<PhpResult<Vec<_>>>()?;
 
         Ok(Self {

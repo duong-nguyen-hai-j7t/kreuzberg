@@ -34,21 +34,17 @@ readonly class PageContent
      */
     public static function fromArray(array $data): self
     {
-        $pageNumber = $data['page_number'] ?? 0;
         /** @var int $pageNumber */
-        assert(is_int($pageNumber));
+        $pageNumber = $data['page_number'] ?? 0;
 
-        $content = $data['content'] ?? '';
         /** @var string $content */
-        assert(is_string($content));
+        $content = $data['content'] ?? '';
 
-        $tablesData = $data['tables'] ?? [];
         /** @var array<array<string, mixed>> $tablesData */
-        assert(is_array($tablesData));
+        $tablesData = $data['tables'] ?? [];
 
-        $imagesData = $data['images'] ?? [];
         /** @var array<array<string, mixed>> $imagesData */
-        assert(is_array($imagesData));
+        $imagesData = $data['images'] ?? [];
 
         return new self(
             pageNumber: $pageNumber,

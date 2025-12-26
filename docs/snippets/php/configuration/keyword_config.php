@@ -16,12 +16,12 @@ use Kreuzberg\Kreuzberg;
 use Kreuzberg\Config\ExtractionConfig;
 use Kreuzberg\Config\KeywordConfig;
 
-// Basic keyword extraction using RAKE algorithm
+// Basic keyword extraction
 $config = new ExtractionConfig(
     keyword: new KeywordConfig(
-        enabled: true,
-        algorithm: 'rake',
-        maxKeywords: 10
+        maxKeywords: 10,
+        minScore: 0.0,
+        language: 'en'
     )
 );
 
@@ -38,9 +38,9 @@ echo "\n";
 // Extract more keywords for detailed analysis
 $detailedConfig = new ExtractionConfig(
     keyword: new KeywordConfig(
-        enabled: true,
-        algorithm: 'rake',
-        maxKeywords: 25
+        maxKeywords: 25,
+        minScore: 0.0,
+        language: 'en'
     )
 );
 

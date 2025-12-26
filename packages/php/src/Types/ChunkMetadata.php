@@ -33,33 +33,26 @@ readonly class ChunkMetadata
      */
     public static function fromArray(array $data): self
     {
-        $byteStart = $data['byte_start'] ?? 0;
         /** @var int $byteStart */
-        assert(is_int($byteStart));
+        $byteStart = $data['byte_start'] ?? 0;
 
-        $byteEnd = $data['byte_end'] ?? 0;
         /** @var int $byteEnd */
-        assert(is_int($byteEnd));
+        $byteEnd = $data['byte_end'] ?? 0;
 
-        $tokenCount = $data['token_count'] ?? null;
         /** @var int|null $tokenCount */
-        assert($tokenCount === null || is_int($tokenCount));
+        $tokenCount = $data['token_count'] ?? null;
 
-        $chunkIndex = $data['chunk_index'] ?? 0;
         /** @var int $chunkIndex */
-        assert(is_int($chunkIndex));
+        $chunkIndex = $data['chunk_index'] ?? 0;
 
-        $totalChunks = $data['total_chunks'] ?? 0;
         /** @var int $totalChunks */
-        assert(is_int($totalChunks));
+        $totalChunks = $data['total_chunks'] ?? 0;
 
-        $firstPage = $data['first_page'] ?? null;
         /** @var int|null $firstPage */
-        assert($firstPage === null || is_int($firstPage));
+        $firstPage = $data['first_page'] ?? null;
 
-        $lastPage = $data['last_page'] ?? null;
         /** @var int|null $lastPage */
-        assert($lastPage === null || is_int($lastPage));
+        $lastPage = $data['last_page'] ?? null;
 
         return new self(
             byteStart: $byteStart,

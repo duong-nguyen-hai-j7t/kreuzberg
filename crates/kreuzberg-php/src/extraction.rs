@@ -45,9 +45,9 @@ use crate::types::ExtractionResult;
 pub fn kreuzberg_extract_file(
     path: String,
     mime_type: Option<String>,
-    config: Option<ExtractionConfig>,
+    config: Option<&ExtractionConfig>,
 ) -> PhpResult<ExtractionResult> {
-    let rust_config = config.unwrap_or_default().to_rust();
+    let rust_config = config.map(|c| c.to_rust()).unwrap_or_default();
 
     let result = kreuzberg::extract_file_sync(&path, mime_type.as_deref(), &rust_config).map_err(to_php_exception)?;
 
@@ -89,9 +89,9 @@ pub fn kreuzberg_extract_file(
 pub fn kreuzberg_extract_bytes(
     data: Vec<u8>,
     mime_type: String,
-    config: Option<ExtractionConfig>,
+    config: Option<&ExtractionConfig>,
 ) -> PhpResult<ExtractionResult> {
-    let rust_config = config.unwrap_or_default().to_rust();
+    let rust_config = config.map(|c| c.to_rust()).unwrap_or_default();
 
     let result = kreuzberg::extract_bytes_sync(&data, &mime_type, &rust_config).map_err(to_php_exception)?;
 
@@ -136,9 +136,9 @@ pub fn kreuzberg_extract_bytes(
 #[php_function]
 pub fn kreuzberg_batch_extract_files(
     paths: Vec<String>,
-    config: Option<ExtractionConfig>,
+    config: Option<&ExtractionConfig>,
 ) -> PhpResult<Vec<ExtractionResult>> {
-    let rust_config = config.unwrap_or_default().to_rust();
+    let rust_config = config.map(|c| c.to_rust()).unwrap_or_default();
 
     let results = kreuzberg::batch_extract_file_sync(paths, &rust_config).map_err(to_php_exception)?;
 
@@ -181,7 +181,7 @@ pub fn kreuzberg_batch_extract_files(
 pub fn kreuzberg_batch_extract_bytes(
     data_list: Vec<Vec<u8>>,
     mime_types: Vec<String>,
-    config: Option<ExtractionConfig>,
+    config: Option<&ExtractionConfig>,
 ) -> PhpResult<Vec<ExtractionResult>> {
     if data_list.len() != mime_types.len() {
         return Err(format!(
@@ -192,7 +192,7 @@ pub fn kreuzberg_batch_extract_bytes(
         .into());
     }
 
-    let rust_config = config.unwrap_or_default().to_rust();
+    let rust_config = config.map(|c| c.to_rust()).unwrap_or_default();
 
     let contents: Vec<(&[u8], &str)> = data_list
         .iter()

@@ -27,9 +27,9 @@ echo $result->content . "\n\n";
 echo "Document Metadata:\n";
 echo str_repeat('=', 60) . "\n";
 echo "Title: " . ($result->metadata->title ?? 'N/A') . "\n";
-echo "Author: " . ($result->metadata->author ?? 'N/A') . "\n";
-echo "Created: " . ($result->metadata->createdAt?->format('Y-m-d H:i:s') ?? 'N/A') . "\n";
-echo "Modified: " . ($result->metadata->modifiedAt?->format('Y-m-d H:i:s') ?? 'N/A') . "\n";
+echo "Authors: " . (isset($result->metadata->authors) ? implode(', ', $result->metadata->authors) : 'N/A') . "\n";
+echo "Created: " . ($result->metadata->createdAt ?? 'N/A') . "\n";
+echo "Modified: " . ($result->metadata->modifiedAt ?? 'N/A') . "\n";
 echo "Subject: " . ($result->metadata->subject ?? 'N/A') . "\n";
 echo "Keywords: " . implode(', ', $result->metadata->keywords ?? []) . "\n\n";
 
@@ -91,20 +91,20 @@ if (!empty($docxFiles)) {
         echo "\n$filename:\n";
         echo "  Characters: " . strlen($result->content) . "\n";
         echo "  Tables: " . count($result->tables) . "\n";
-        echo "  Author: " . ($result->metadata->author ?? 'Unknown') . "\n";
+        echo "  Authors: " . (isset($result->metadata->authors) ? implode(', ', $result->metadata->authors) : 'Unknown') . "\n";
     }
 }
 
-// Extract comments and revisions (if available in metadata)
+// Extract document creator information (if available in metadata)
 $result = extract_file('reviewed_document.docx');
 
-if (!empty($result->metadata->creator)) {
-    echo "\nDocument Contributors:\n";
-    echo "Creator: " . $result->metadata->creator . "\n";
+if (!empty($result->metadata->createdBy)) {
+    echo "\nDocument Information:\n";
+    echo "Created by: " . $result->metadata->createdBy . "\n";
 }
 
-if (!empty($result->metadata->lastModifiedBy)) {
-    echo "Last modified by: " . $result->metadata->lastModifiedBy . "\n";
+if (!empty($result->metadata->producer)) {
+    echo "Producer: " . $result->metadata->producer . "\n";
 }
 
 // Extract and analyze document statistics

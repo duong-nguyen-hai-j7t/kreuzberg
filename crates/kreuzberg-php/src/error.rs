@@ -2,7 +2,6 @@
 //!
 //! Converts `KreuzbergError` from the Rust core into appropriate PHP exceptions.
 
-use ext_php_rs::exception::PhpException;
 use ext_php_rs::prelude::*;
 
 /// ValidationException - Raised when validation fails

@@ -192,6 +192,7 @@ nav:
       - Python: reference/api-python.md
       - TypeScript: reference/api-typescript.md
       - WebAssembly: reference/api-wasm.md
+      - PHP: reference/api-php.md
       - C#: reference/api-csharp.md
       - Go: reference/api-go.md
       - Java: reference/api-java.md

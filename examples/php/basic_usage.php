@@ -80,19 +80,21 @@ echo "=== Example 3: Extraction with Configuration ===\n\n";
 try {
     // Create extraction configuration
     $config = new ExtractionConfig(
-        enableQualityProcessing: true,
-        useCache: true,
+        extractTables: true,
+        extractImages: true,
     );
 
     // OOP API: Pass config to constructor
     $kreuzberg = new Kreuzberg($config);
     $result = $kreuzberg->extractFile(__DIR__ . '/../sample-documents/sample.pdf');
 
-    echo "Extracted with quality processing: " . strlen($result->content) . " characters\n";
+    echo "Extracted with tables and images: " . strlen($result->content) . " characters\n";
+    echo "Tables found: " . count($result->tables) . "\n";
 
     // OOP API: Override config for specific extraction
     $specificConfig = new ExtractionConfig(
-        enableQualityProcessing: false,
+        extractTables: false,
+        extractImages: false,
     );
     $result2 = $kreuzberg->extractFile(
         __DIR__ . '/../sample-documents/sample.pdf',

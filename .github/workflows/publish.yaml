@@ -75,6 +75,7 @@ jobs:
       release_csharp: ${{ steps.meta.outputs.release_csharp }}
       release_go: ${{ steps.meta.outputs.release_go }}
       release_wasm: ${{ steps.meta.outputs.release_wasm }}
+      release_php: ${{ steps.meta.outputs.release_php }}
     steps:
       - name: Checkout code (default)
         uses: actions/checkout@v4
@@ -213,6 +214,23 @@ jobs:
       - name: Check NuGet for existing version
         id: check
         run: scripts/publish/check_nuget.sh "${{ needs.prepare.outputs.version }}" >> "$GITHUB_OUTPUT"
+
+  check-packagist:
+    name: Check if PHP package exists on Packagist
+    needs: prepare
+    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_php == 'true' && needs.prepare.outputs.force_republish != 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      exists: ${{ steps.check.outputs.exists }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check Packagist for existing version
+        id: check
+        run: scripts/publish/check_packagist.sh "${{ needs.prepare.outputs.version }}" >> "$GITHUB_OUTPUT"
 
   check-cli:
     name: Check if CLI assets already published

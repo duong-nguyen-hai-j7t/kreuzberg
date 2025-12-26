@@ -543,10 +543,16 @@ tasks:
     dir: packages/php
     cmds:
       - composer exec -- phpunit ../../e2e/php/tests
+  e2e:php:lint:
+    desc: Lint PHP E2E tests
+    dir: packages/php
+    cmds:
+      - vendor/bin/phpstan analyse ../../e2e/php/tests
   e2e:php:verify:
     desc: Regenerate and validate PHP E2E suite (generate + lint + test)
     cmds:
       - task: e2e:php:generate
+      - task: e2e:php:lint
       - task: e2e:php:test
   wasm:build:
     desc: Build WASM bindings for all targets

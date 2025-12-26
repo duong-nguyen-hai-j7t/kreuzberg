@@ -98,7 +98,6 @@ final class ConfigTest extends TestCase
         $config = new OcrConfig(
             backend: 'tesseract',
             language: 'eng',
-            enabled: true,
         );
 
         $array = $config->toArray();
@@ -106,7 +105,6 @@ final class ConfigTest extends TestCase
         $this->assertIsArray($array);
         $this->assertSame('tesseract', $array['backend']);
         $this->assertSame('eng', $array['language']);
-        $this->assertTrue($array['enabled']);
     }
 
     #[Test]
@@ -114,16 +112,16 @@ final class ConfigTest extends TestCase
     {
         $config = new PdfConfig(
             extractImages: true,
-            extractText: true,
-            preserveLayout: false,
+            extractMetadata: true,
+            ocrFallback: false,
         );
 
         $array = $config->toArray();
 
         $this->assertIsArray($array);
         $this->assertTrue($array['extract_images']);
-        $this->assertTrue($array['extract_text']);
-        $this->assertFalse($array['preserve_layout']);
+        $this->assertTrue($array['extract_metadata']);
+        $this->assertFalse($array['ocr_fallback']);
     }
 
     #[Test]
@@ -132,7 +130,7 @@ final class ConfigTest extends TestCase
         $config = new ChunkingConfig(
             maxChunkSize: 1000,
             chunkOverlap: 200,
-            strategy: 'sentence',
+            respectSentences: true,
         );
 
         $array = $config->toArray();
@@ -140,7 +138,7 @@ final class ConfigTest extends TestCase
         $this->assertIsArray($array);
         $this->assertSame(1000, $array['max_chunk_size']);
         $this->assertSame(200, $array['chunk_overlap']);
-        $this->assertSame('sentence', $array['strategy']);
+        $this->assertTrue($array['respect_sentences']);
     }
 
     #[Test]
@@ -149,7 +147,7 @@ final class ConfigTest extends TestCase
         $config = new TesseractConfig(
             psm: 3,
             oem: 3,
-            language: 'eng+fra',
+            enableTableDetection: true,
         );
 
         $array = $config->toArray();
@@ -157,7 +155,7 @@ final class ConfigTest extends TestCase
         $this->assertIsArray($array);
         $this->assertSame(3, $array['psm']);
         $this->assertSame(3, $array['oem']);
-        $this->assertSame('eng+fra', $array['language']);
+        $this->assertTrue($array['enable_table_detection']);
     }
 
     #[Test]
@@ -205,17 +203,17 @@ final class ConfigTest extends TestCase
     public function it_creates_page_config(): void
     {
         $config = new PageConfig(
-            startPage: 1,
-            endPage: 10,
-            pageNumbers: [1, 3, 5, 7],
+            extractPages: true,
+            insertPageMarkers: true,
+            markerFormat: '--- Page {page_number} ---',
         );
 
         $array = $config->toArray();
 
         $this->assertIsArray($array);
-        $this->assertSame(1, $array['start_page']);
-        $this->assertSame(10, $array['end_page']);
-        $this->assertSame([1, 3, 5, 7], $array['page_numbers']);
+        $this->assertTrue($array['extract_pages']);
+        $this->assertTrue($array['insert_page_markers']);
+        $this->assertSame('--- Page {page_number} ---', $array['marker_format']);
     }
 
     #[Test]
@@ -223,31 +221,31 @@ final class ConfigTest extends TestCase
     {
         $config = new LanguageDetectionConfig(
             enabled: true,
-            minConfidence: 0.8,
+            confidenceThreshold: 0.8,
         );
 
         $array = $config->toArray();
 
         $this->assertIsArray($array);
         $this->assertTrue($array['enabled']);
-        $this->assertSame(0.8, $array['min_confidence']);
+        $this->assertSame(0.8, $array['confidence_threshold']);
     }
 
     #[Test]
     public function it_creates_keyword_config(): void
     {
         $config = new KeywordConfig(
-            enabled: true,
             maxKeywords: 10,
             minScore: 0.5,
+            language: 'en',
         );
 
         $array = $config->toArray();
 
         $this->assertIsArray($array);
-        $this->assertTrue($array['enabled']);
         $this->assertSame(10, $array['max_keywords']);
         $this->assertSame(0.5, $array['min_score']);
+        $this->assertSame('en', $array['language']);
     }
 
     #[Test]

@@ -310,9 +310,9 @@ echo "=== Example 8: Keyword Extraction Metadata ===\n\n";
 try {
     $config = new ExtractionConfig(
         keyword: new KeywordConfig(
-            enabled: true,
-            algorithm: 'rake',
             maxKeywords: 10,
+            minScore: 0.0,
+            language: 'en',
         ),
     );
 
@@ -347,7 +347,7 @@ try {
         imageExtraction: new ImageExtractionConfig(extractImages: true),
         page: new PageConfig(extractPages: true),
         languageDetection: new LanguageDetectionConfig(enabled: true),
-        keyword: new KeywordConfig(enabled: true, maxKeywords: 5),
+        keyword: new KeywordConfig(maxKeywords: 5, minScore: 0.0, language: 'en'),
     );
 
     $kreuzberg = new Kreuzberg($config);

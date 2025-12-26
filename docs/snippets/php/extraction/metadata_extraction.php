@@ -22,12 +22,12 @@ $metadata = $result->metadata;
 echo "Document Metadata:\n";
 echo str_repeat('=', 60) . "\n";
 echo "Title: " . ($metadata->title ?? 'N/A') . "\n";
-echo "Author: " . ($metadata->author ?? 'N/A') . "\n";
+echo "Authors: " . (isset($metadata->authors) ? implode(', ', $metadata->authors) : 'N/A') . "\n";
 echo "Subject: " . ($metadata->subject ?? 'N/A') . "\n";
-echo "Creator: " . ($metadata->creator ?? 'N/A') . "\n";
+echo "Created By: " . ($metadata->createdBy ?? 'N/A') . "\n";
 echo "Producer: " . ($metadata->producer ?? 'N/A') . "\n";
-echo "Created: " . ($metadata->createdAt?->format('Y-m-d H:i:s') ?? 'N/A') . "\n";
-echo "Modified: " . ($metadata->modifiedAt?->format('Y-m-d H:i:s') ?? 'N/A') . "\n";
+echo "Created: " . ($metadata->createdAt ?? 'N/A') . "\n";
+echo "Modified: " . ($metadata->modifiedAt ?? 'N/A') . "\n";
 echo "Page Count: " . ($metadata->pageCount ?? 'N/A') . "\n";
 echo "Keywords: " . implode(', ', $metadata->keywords ?? []) . "\n";
 echo "Language: " . ($metadata->language ?? 'N/A') . "\n\n";
@@ -41,8 +41,8 @@ foreach ($files as $file) {
     $metadataCollection[] = [
         'file' => basename($file),
         'title' => $result->metadata->title ?? 'Untitled',
-        'author' => $result->metadata->author ?? 'Unknown',
-        'created' => $result->metadata->createdAt?->format('Y-m-d') ?? 'Unknown',
+        'author' => isset($result->metadata->authors) ? implode(', ', $result->metadata->authors) : 'Unknown',
+        'created' => $result->metadata->createdAt ?? 'Unknown',
         'pages' => $result->metadata->pageCount ?? 0,
         'size' => filesize($file),
     ];
@@ -71,7 +71,12 @@ function searchByDateRange(array $collection, string $start, string $end): array
 {
     return array_filter($collection, function ($meta) use ($start, $end) {
         $created = $meta['created'];
-        return $created >= $start && $created <= $end;
+        if ($created === 'Unknown') {
+            return false;
+        }
+        // Extract just the date part (YYYY-MM-DD) from ISO 8601 format
+        $dateOnly = substr($created, 0, 10);
+        return $dateOnly >= $start && $dateOnly <= $end;
     });
 }
 

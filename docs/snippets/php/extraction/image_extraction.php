@@ -77,7 +77,7 @@ foreach ($result->images ?? [] as $image) {
 
     if ($image->ocrResult !== null) {
         echo "  OCR Text: " . substr($image->ocrResult->content, 0, 100) . "...\n";
-        echo "  Confidence: " . ($image->ocrResult->confidence ?? 'N/A') . "\n";
+        echo "  OCR Length: " . strlen($image->ocrResult->content) . " chars\n";
     } else {
         echo "  No OCR result\n";
     }

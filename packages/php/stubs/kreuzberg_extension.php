@@ -21,7 +21,7 @@ declare(strict_types=1);
  * @param string|null $mimeType Optional MIME type hint
  * @param array<string, mixed> $config Extraction configuration array
  * @return array<string, mixed> Extraction result array
- * @throws \Kreuzberg\Exceptions\KreuzbergException If extraction fails
+ * @throws \Exception If extraction fails
  */
 function kreuzberg_extract_file(string $filePath, ?string $mimeType, array $config): array
 {
@@ -34,7 +34,7 @@ function kreuzberg_extract_file(string $filePath, ?string $mimeType, array $conf
  * @param string $mimeType MIME type of the data
  * @param array<string, mixed> $config Extraction configuration array
  * @return array<string, mixed> Extraction result array
- * @throws \Kreuzberg\Exceptions\KreuzbergException If extraction fails
+ * @throws \Exception If extraction fails
  */
 function kreuzberg_extract_bytes(string $data, string $mimeType, array $config): array
 {
@@ -46,7 +46,7 @@ function kreuzberg_extract_bytes(string $data, string $mimeType, array $config):
  * @param array<string> $paths List of file paths
  * @param array<string, mixed> $config Extraction configuration array
  * @return array<array<string, mixed>> List of extraction result arrays
- * @throws \Kreuzberg\Exceptions\KreuzbergException If extraction fails
+ * @throws \Exception If extraction fails
  */
 function kreuzberg_batch_extract_files(array $paths, array $config): array
 {
@@ -59,7 +59,7 @@ function kreuzberg_batch_extract_files(array $paths, array $config): array
  * @param array<string> $mimeTypes List of MIME types
  * @param array<string, mixed> $config Extraction configuration array
  * @return array<array<string, mixed>> List of extraction result arrays
- * @throws \Kreuzberg\Exceptions\KreuzbergException If extraction fails
+ * @throws \Exception If extraction fails
  */
 function kreuzberg_batch_extract_bytes(array $dataList, array $mimeTypes, array $config): array
 {

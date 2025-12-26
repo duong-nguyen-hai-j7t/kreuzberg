@@ -226,9 +226,9 @@ try {
     // Configure keyword extraction
     $config = new ExtractionConfig(
         keyword: new KeywordConfig(
-            enabled: true,
-            algorithm: 'rake',  // RAKE (Rapid Automatic Keyword Extraction) algorithm
             maxKeywords: 10,    // Extract top 10 keywords
+            minScore: 0.0,      // Minimum score threshold
+            language: 'en'      // Language for keyword extraction
         ),
     );
 
@@ -312,9 +312,9 @@ try {
 
         // Keyword extraction
         keyword: new KeywordConfig(
-            enabled: true,
-            algorithm: 'rake',
             maxKeywords: 10,
+            minScore: 0.0,
+            language: 'en',
         ),
 
         // General extraction options

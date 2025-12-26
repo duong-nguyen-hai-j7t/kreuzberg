@@ -337,9 +337,9 @@ use function Kreuzberg\extract_file;
 
 $config = new ExtractionConfig(
     keyword: new KeywordConfig(
-        enabled: true,
-        algorithm: 'rake',
-        maxKeywords: 10
+        maxKeywords: 10,
+        minScore: 0.0,
+        language: 'en'
     )
 );
 

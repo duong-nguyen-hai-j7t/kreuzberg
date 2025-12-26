@@ -29,7 +29,7 @@ echo $result->content . "\n\n";
 echo "Metadata:\n";
 echo "=========\n";
 echo "Title: " . ($result->metadata->title ?? 'N/A') . "\n";
-echo "Author: " . ($result->metadata->author ?? 'N/A') . "\n";
+echo "Authors: " . (isset($result->metadata->authors) ? implode(', ', $result->metadata->authors) : 'N/A') . "\n";
 echo "Pages: " . ($result->metadata->pageCount ?? 'N/A') . "\n";
 echo "Format: " . $result->mimeType . "\n\n";
 

@@ -143,6 +143,7 @@ release_java=false
 release_csharp=false
 release_go=false
 release_wasm=false
+release_php=false
 
 # Helper function to set all targets
 set_all_targets() {
@@ -157,6 +158,7 @@ set_all_targets() {
 	release_csharp=true
 	release_go=true
 	release_wasm=true
+	release_php=true
 }
 
 # Parse requested targets
@@ -207,6 +209,9 @@ for raw_target in "${requested_targets[@]}"; do
 	wasm | webassembly)
 		release_wasm=true
 		;;
+	php)
+		release_php=true
+		;;
 	none)
 		release_python=false
 		release_node=false
@@ -219,9 +224,10 @@ for raw_target in "${requested_targets[@]}"; do
 		release_csharp=false
 		release_go=false
 		release_wasm=false
+		release_php=false
 		;;
 	*)
-		echo "Unknown release target '$trimmed'. Allowed: all, python, node, ruby, cli, crates, docker, homebrew, java, csharp, go, wasm." >&2
+		echo "Unknown release target '$trimmed'. Allowed: all, python, node, ruby, cli, crates, docker, homebrew, java, csharp, go, wasm, php." >&2
 		exit 1
 		;;
 	esac
@@ -250,9 +256,10 @@ if [[ "$release_java" == "true" ]]; then enabled_targets+=("java"); fi
 if [[ "$release_csharp" == "true" ]]; then enabled_targets+=("csharp"); fi
 if [[ "$release_go" == "true" ]]; then enabled_targets+=("go"); fi
 if [[ "$release_wasm" == "true" ]]; then enabled_targets+=("wasm"); fi
+if [[ "$release_php" == "true" ]]; then enabled_targets+=("php"); fi
 
 # Summarize targets
-if [[ ${#enabled_targets[@]} -eq 11 ]]; then
+if [[ ${#enabled_targets[@]} -eq 12 ]]; then
 	release_targets_summary="all"
 elif [[ ${#enabled_targets[@]} -eq 0 ]]; then
 	release_targets_summary="none"
@@ -306,6 +313,7 @@ cat <<JSON
   "release_java": $release_java,
   "release_csharp": $release_csharp,
   "release_go": $release_go,
-  "release_wasm": $release_wasm
+  "release_wasm": $release_wasm,
+  "release_php": $release_php
 }
 JSON

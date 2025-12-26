@@ -10,9 +10,9 @@ namespace Kreuzberg\Config;
 readonly class KeywordConfig
 {
     public function __construct(
-        public bool $enabled = false,
-        public string $algorithm = 'rake',
-        public ?int $maxKeywords = null,
+        public int $maxKeywords = 10,
+        public float $minScore = 0.0,
+        public ?string $language = 'en',
     ) {
     }
 
@@ -22,9 +22,9 @@ readonly class KeywordConfig
     public function toArray(): array
     {
         return array_filter([
-            'enabled' => $this->enabled,
-            'algorithm' => $this->algorithm,
             'max_keywords' => $this->maxKeywords,
+            'min_score' => $this->minScore,
+            'language' => $this->language,
         ], static fn ($value): bool => $value !== null);
     }
 }

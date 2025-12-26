@@ -184,13 +184,13 @@ $results = batch_extract_files($files);
 - **Batch Processing**: Parallel processing for high throughput
 - **Text Chunking**: Intelligent segmentation for RAG applications
 - **Embeddings**: Vector embeddings for semantic search
-- **Type Safety**: Full PHP 8.2+ type hints and readonly classes
+- **Type Safety**: Full PHP 8.1+ type hints and readonly classes
 - **Error Handling**: Comprehensive error handling patterns
 - **Performance**: Optimization techniques and benchmarking
 
 ## Requirements
 
-- PHP 8.2 or higher
+- PHP 8.1.0 or higher
 - Kreuzberg PHP extension (kreuzberg.so/.dll)
 - Composer package: kreuzberg/kreuzberg
 - Optional: Tesseract OCR (for OCR functionality)

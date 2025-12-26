@@ -142,8 +142,8 @@ function convertToMarkdown(string $inputFile): string
     $markdown = "# " . ($result->metadata->title ?? basename($inputFile)) . "\n\n";
 
     // Add metadata
-    if ($result->metadata->author) {
-        $markdown .= "_Author: {$result->metadata->author}_\n\n";
+    if (isset($result->metadata->authors)) {
+        $markdown .= "_Authors: " . implode(', ', $result->metadata->authors) . "_\n\n";
     }
 
     // Add content
@@ -238,7 +238,7 @@ class UniversalExtractor
             'type' => 'Word Document',
             'content' => $result->content,
             'tables' => count($result->tables),
-            'author' => $result->metadata->author,
+            'authors' => $result->metadata->authors,
         ];
     }
 

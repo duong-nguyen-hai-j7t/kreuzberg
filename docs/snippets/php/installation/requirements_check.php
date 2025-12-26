@@ -16,10 +16,10 @@ $requirements_met = true;
 
 // Check PHP version
 echo "PHP Version: " . PHP_VERSION;
-if (version_compare(PHP_VERSION, '8.2.0', '>=')) {
-    echo " ✓ (>= 8.2.0 required)\n";
+if (version_compare(PHP_VERSION, '8.1.0', '>=')) {
+    echo " ✓ (>= 8.1.0 required)\n";
 } else {
-    echo " ✗ (>= 8.2.0 required)\n";
+    echo " ✗ (>= 8.1.0 required)\n";
     $requirements_met = false;
 }
 

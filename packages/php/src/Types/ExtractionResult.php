@@ -44,31 +44,25 @@ readonly class ExtractionResult
      */
     public static function fromArray(array $data): self
     {
-        $content = $data['content'] ?? '';
         /** @var string $content */
-        assert(is_string($content));
+        $content = $data['content'] ?? '';
 
-        $mimeType = $data['mime_type'] ?? 'application/octet-stream';
         /** @var string $mimeType */
-        assert(is_string($mimeType));
+        $mimeType = $data['mime_type'] ?? 'application/octet-stream';
 
-        $metadataData = $data['metadata'] ?? [];
         /** @var array<string, mixed> $metadataData */
-        assert(is_array($metadataData));
+        $metadataData = $data['metadata'] ?? [];
 
-        $tablesData = $data['tables'] ?? [];
         /** @var array<array<string, mixed>> $tablesData */
-        assert(is_array($tablesData));
+        $tablesData = $data['tables'] ?? [];
 
-        $detectedLanguages = $data['detected_languages'] ?? null;
         /** @var array<string>|null $detectedLanguages */
-        assert($detectedLanguages === null || is_array($detectedLanguages));
+        $detectedLanguages = $data['detected_languages'] ?? null;
 
         $chunks = null;
         if (isset($data['chunks'])) {
-            $chunksData = $data['chunks'];
             /** @var array<array<string, mixed>> $chunksData */
-            assert(is_array($chunksData));
+            $chunksData = $data['chunks'];
             $chunks = array_map(
                 /** @param array<string, mixed> $chunk */
                 static fn (array $chunk): Chunk => Chunk::fromArray($chunk),
@@ -78,9 +72,8 @@ readonly class ExtractionResult
 
         $images = null;
         if (isset($data['images'])) {
-            $imagesData = $data['images'];
             /** @var array<array<string, mixed>> $imagesData */
-            assert(is_array($imagesData));
+            $imagesData = $data['images'];
             $images = array_map(
                 /** @param array<string, mixed> $image */
                 static fn (array $image): ExtractedImage => ExtractedImage::fromArray($image),
@@ -90,9 +83,8 @@ readonly class ExtractionResult
 
         $pages = null;
         if (isset($data['pages'])) {
-            $pagesData = $data['pages'];
             /** @var array<array<string, mixed>> $pagesData */
-            assert(is_array($pagesData));
+            $pagesData = $data['pages'];
             $pages = array_map(
                 /** @param array<string, mixed> $page */
                 static fn (array $page): PageContent => PageContent::fromArray($page),

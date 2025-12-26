@@ -41,9 +41,8 @@ function extract_file(
     $config ??= new ExtractionConfig();
 
     // Call the native extension function
-    $resultArray = \kreuzberg_extract_file($filePath, $mimeType, $config->toArray());
     /** @var array<string, mixed> $resultArray */
-    assert(is_array($resultArray));
+    $resultArray = \kreuzberg_extract_file($filePath, $mimeType, $config->toArray());
 
     return ExtractionResult::fromArray($resultArray);
 }
@@ -74,9 +73,8 @@ function extract_bytes(
     $config ??= new ExtractionConfig();
 
     // Call the native extension function
-    $resultArray = \kreuzberg_extract_bytes($data, $mimeType, $config->toArray());
     /** @var array<string, mixed> $resultArray */
-    assert(is_array($resultArray));
+    $resultArray = \kreuzberg_extract_bytes($data, $mimeType, $config->toArray());
 
     return ExtractionResult::fromArray($resultArray);
 }
@@ -108,9 +106,8 @@ function batch_extract_files(
     $config ??= new ExtractionConfig();
 
     // Call the native extension function
-    $resultArrays = \kreuzberg_batch_extract_files($paths, $config->toArray());
     /** @var array<array<string, mixed>> $resultArrays */
-    assert(is_array($resultArrays));
+    $resultArrays = \kreuzberg_batch_extract_files($paths, $config->toArray());
 
     return array_map(
         /** @param array<string, mixed> $resultArray */
@@ -149,9 +146,8 @@ function batch_extract_bytes(
     $config ??= new ExtractionConfig();
 
     // Call the native extension function
-    $resultArrays = \kreuzberg_batch_extract_bytes($dataList, $mimeTypes, $config->toArray());
     /** @var array<array<string, mixed>> $resultArrays */
-    assert(is_array($resultArrays));
+    $resultArrays = \kreuzberg_batch_extract_bytes($dataList, $mimeTypes, $config->toArray());
 
     return array_map(
         /** @param array<string, mixed> $resultArray */
@@ -177,9 +173,8 @@ function batch_extract_bytes(
  */
 function detect_mime_type(string $data): string
 {
-    $result = \kreuzberg_detect_mime_type($data);
     /** @var string $result */
-    assert(is_string($result));
+    $result = \kreuzberg_detect_mime_type($data);
 
     return $result;
 }
@@ -200,9 +195,8 @@ function detect_mime_type(string $data): string
  */
 function detect_mime_type_from_path(string $path): string
 {
-    $result = \kreuzberg_detect_mime_type_from_path($path);
     /** @var string $result */
-    assert(is_string($result));
+    $result = \kreuzberg_detect_mime_type_from_path($path);
 
     return $result;
 }

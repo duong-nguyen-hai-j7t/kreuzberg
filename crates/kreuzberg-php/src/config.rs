@@ -242,10 +242,159 @@ impl ChunkingConfig {
     }
 }
 
+/// Embedding model type.
+///
+/// Specifies which model to use for embedding generation.
+///
+/// # Available Presets
+///
+/// - "fast": AllMiniLML6V2Q (384 dimensions) - Quick prototyping, low-latency
+/// - "balanced": BGEBaseENV15 (768 dimensions) - General-purpose RAG (default)
+/// - "quality": BGELargeENV15 (1024 dimensions) - High-quality embeddings
+/// - "multilingual": MultilingualE5Base (768 dimensions) - Multi-language support
+///
+/// # Example
+///
+/// ```php
+/// // Use a preset
+/// $model = EmbeddingModelType::preset("balanced");
+///
+/// // Use a specific FastEmbed model
+/// $model = EmbeddingModelType::fastembed("BGEBaseENV15", 768);
+///
+/// // Use a custom ONNX model
+/// $model = EmbeddingModelType::custom("my-model", 512);
+/// ```
+#[php_class]
+#[derive(Clone)]
+pub struct EmbeddingModelType {
+    model_type: String,
+    name: String,
+    dimensions: Option<usize>,
+}
+
+#[php_impl]
+impl EmbeddingModelType {
+    /// Create a model type from a preset name.
+    ///
+    /// # Parameters
+    ///
+    /// - `name` (string): Preset name ("fast", "balanced", "quality", "multilingual")
+    ///
+    /// # Example
+    ///
+    /// ```php
+    /// $model = EmbeddingModelType::preset("balanced");
+    /// ```
+    #[php_static_method]
+    pub fn preset(name: String) -> Self {
+        Self {
+            model_type: "preset".to_string(),
+            name,
+            dimensions: None,
+        }
+    }
+
+    /// Create a model type from a FastEmbed model name.
+    ///
+    /// # Parameters
+    ///
+    /// - `model` (string): FastEmbed model name
+    /// - `dimensions` (int): Embedding dimensions
+    ///
+    /// # Example
+    ///
+    /// ```php
+    /// $model = EmbeddingModelType::fastembed("BGEBaseENV15", 768);
+    /// ```
+    #[php_static_method]
+    pub fn fastembed(model: String, dimensions: i64) -> Self {
+        Self {
+            model_type: "fastembed".to_string(),
+            name: model,
+            dimensions: Some(dimensions as usize),
+        }
+    }
+
+    /// Create a custom ONNX model type.
+    ///
+    /// # Parameters
+    ///
+    /// - `model_id` (string): Model identifier
+    /// - `dimensions` (int): Embedding dimensions
+    ///
+    /// # Example
+    ///
+    /// ```php
+    /// $model = EmbeddingModelType::custom("my-custom-model", 512);
+    /// ```
+    #[php_static_method]
+    pub fn custom(model_id: String, dimensions: i64) -> Self {
+        Self {
+            model_type: "custom".to_string(),
+            name: model_id,
+            dimensions: Some(dimensions as usize),
+        }
+    }
+}
+
+impl EmbeddingModelType {
+    pub fn to_rust(&self) -> kreuzberg::EmbeddingModelType {
+        match self.model_type.as_str() {
+            "preset" => kreuzberg::EmbeddingModelType::Preset {
+                name: self.name.clone(),
+            },
+            "fastembed" => kreuzberg::EmbeddingModelType::FastEmbed {
+                model: self.name.clone(),
+                dimensions: self.dimensions.unwrap_or(768),
+            },
+            "custom" => kreuzberg::EmbeddingModelType::Custom {
+                model_id: self.name.clone(),
+                dimensions: self.dimensions.unwrap_or(768),
+            },
+            _ => kreuzberg::EmbeddingModelType::Preset {
+                name: "balanced".to_string(),
+            },
+        }
+    }
+
+    pub fn from_rust(model: kreuzberg::EmbeddingModelType) -> Self {
+        match model {
+            kreuzberg::EmbeddingModelType::Preset { name } => Self {
+                model_type: "preset".to_string(),
+                name,
+                dimensions: None,
+            },
+            kreuzberg::EmbeddingModelType::FastEmbed { model, dimensions } => Self {
+                model_type: "fastembed".to_string(),
+                name: model,
+                dimensions: Some(dimensions),
+            },
+            kreuzberg::EmbeddingModelType::Custom { model_id, dimensions } => Self {
+                model_type: "custom".to_string(),
+                name: model_id,
+                dimensions: Some(dimensions),
+            },
+        }
+    }
+}
+
 /// Embedding configuration.
+///
+/// Controls embedding generation for text chunks.
+///
+/// # Example
+///
+/// ```php
+/// $config = new EmbeddingConfig();
+/// $config->model = EmbeddingModelType::preset("balanced");
+/// $config->normalize = true;
+/// $config->batch_size = 32;
+/// ```
 #[php_class]
 #[derive(Clone)]
 pub struct EmbeddingConfig {
+    pub model: Option<EmbeddingModelType>,
     pub normalize: bool,
     pub batch_size: usize,
     pub show_download_progress: bool,
@@ -255,6 +404,7 @@ pub struct EmbeddingConfig {
 impl EmbeddingConfig {
     pub fn __construct() -> Self {
         Self {
+            model: Some(EmbeddingModelType::preset("balanced".to_string())),
             normalize: true,
             batch_size: 32,
             show_download_progress: false,
@@ -265,9 +415,13 @@ impl EmbeddingConfig {
 impl EmbeddingConfig {
     pub fn to_rust(&self) -> kreuzberg::EmbeddingConfig {
         kreuzberg::EmbeddingConfig {
-            model: kreuzberg::EmbeddingModelType::Preset {
-                name: "balanced".to_string(),
-            },
+            model: self
+                .model
+                .as_ref()
+                .map(|m| m.to_rust())
+                .unwrap_or(kreuzberg::EmbeddingModelType::Preset {
+                    name: "balanced".to_string(),
+                }),
             normalize: self.normalize,
             batch_size: self.batch_size,
             show_download_progress: self.show_download_progress,
@@ -277,6 +431,7 @@ impl EmbeddingConfig {
 
     pub fn from_rust(config: kreuzberg::EmbeddingConfig) -> Self {
         Self {
+            model: Some(EmbeddingModelType::from_rust(config.model)),
             normalize: config.normalize,
             batch_size: config.batch_size,
             show_download_progress: config.show_download_progress,
