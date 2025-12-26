@@ -40,10 +40,8 @@ if (!extension_loaded('kreuzberg')) {
     fwrite(
         STDERR,
         "Error: Kreuzberg PHP extension is not loaded.\n" .
-        "Please build and install the extension first:\n" .
-        "  cd packages/php\n" .
-        "  composer install\n" .
-        "  composer build\n"
+        "Please build and install the extension first, then run with:\n" .
+        "  php -dextension=packages/php/ext/libkreuzberg.dylib vendor/bin/phpunit\n"
     );
     exit(1);
 }

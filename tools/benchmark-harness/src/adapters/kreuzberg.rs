@@ -66,6 +66,15 @@ fn find_ruby() -> Result<(PathBuf, Vec<String>)> {
     }
 }
 
+/// Helper to find PHP interpreter
+fn find_php() -> Result<(PathBuf, Vec<String>)> {
+    if which::which("php").is_ok() {
+        Ok((PathBuf::from("php"), vec![]))
+    } else {
+        Err(crate::Error::Config("PHP not found".to_string()))
+    }
+}
+
 /// Helper to find Ruby gem installation directory
 ///
 /// Attempts to locate the kreuzberg gem's lib directory by:
@@ -479,6 +488,35 @@ pub fn create_csharp_batch_adapter() -> Result<SubprocessAdapter> {
     env.push(("KREUZBERG_FFI_DIR".to_string(), lib_dir.to_string_lossy().to_string()));
     Ok(SubprocessAdapter::with_batch_support(
         "kreuzberg-csharp-batch",
+        command,
+        args,
+        env,
+    ))
+}
+
+/// Create PHP sync adapter (extract_file)
+pub fn create_php_sync_adapter() -> Result<SubprocessAdapter> {
+    let script_path = get_script_path("kreuzberg_extract.php")?;
+    let (command, mut args) = find_php()?;
+
+    args.push(script_path.to_string_lossy().to_string());
+    args.push("sync".to_string());
+
+    let env = build_library_env()?;
+    Ok(SubprocessAdapter::new("kreuzberg-php-sync", command, args, env))
+}
+
+/// Create PHP batch adapter (batch_extract_files)
+pub fn create_php_batch_adapter() -> Result<SubprocessAdapter> {
+    let script_path = get_script_path("kreuzberg_extract.php")?;
+    let (command, mut args) = find_php()?;
+
+    args.push(script_path.to_string_lossy().to_string());
+    args.push("batch".to_string());
+
+    let env = build_library_env()?;
+    Ok(SubprocessAdapter::with_batch_support(
+        "kreuzberg-php-batch",
         command,
         args,
         env,

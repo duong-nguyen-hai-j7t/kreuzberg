@@ -11,9 +11,13 @@ incremental = true
 
 [target.x86_64-apple-darwin]
 # macOS x86_64 specific settings
+# Allow undefined symbols for PHP extension - resolved at runtime when loaded into PHP
+rustflags = ["-C", "link-arg=-undefined", "-C", "link-arg=dynamic_lookup"]
 
 [target.aarch64-apple-darwin]
 # macOS ARM64 specific settings
+# Allow undefined symbols for PHP extension - resolved at runtime when loaded into PHP
+rustflags = ["-C", "link-arg=-undefined", "-C", "link-arg=dynamic_lookup"]
 
 [target.aarch64-unknown-linux-gnu]
 # Cross-compilation for Linux ARM64
