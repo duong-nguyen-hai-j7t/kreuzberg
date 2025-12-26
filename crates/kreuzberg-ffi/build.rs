@@ -154,6 +154,17 @@ fn copy_pdfium_from_dir(src_dir: &Path, dest_dir: &Path) -> Result<(), String> {
 
         if file_name_str.starts_with("libpdfium") || file_name_str.starts_with("pdfium") {
             let dest_file = dest_dir.join(file_name);
+
+            // On Windows, skip copy if destination already exists and is accessible
+            // This avoids "Access denied" errors when the DLL is in use
+            if dest_file.exists() {
+                eprintln!(
+                    "PDFium library already exists at {}, skipping copy",
+                    dest_file.display()
+                );
+                return Ok(());
+            }
+
             match fs::copy(&path, &dest_file) {
                 Ok(bytes_copied) => {
                     eprintln!(

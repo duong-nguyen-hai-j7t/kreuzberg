@@ -1746,6 +1746,7 @@ class ExtractionConfigBuilder {
 	 * Set OCR configuration.
 	 */
 	withOcr(ocr: OcrConfig): ExtractionConfigBuilder {
+		// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for Record type
 		this.config["ocr"] = ocr;
 		return this;
 	}
@@ -1754,6 +1755,7 @@ class ExtractionConfigBuilder {
 	 * Set chunking configuration.
 	 */
 	withChunking(chunking: ChunkingConfig): ExtractionConfigBuilder {
+		// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for Record type
 		this.config["chunking"] = chunking;
 		return this;
 	}
@@ -1762,6 +1764,7 @@ class ExtractionConfigBuilder {
 	 * Set image extraction configuration.
 	 */
 	withImageExtraction(images: ImageExtractionConfig): ExtractionConfigBuilder {
+		// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for Record type
 		this.config["imageExtraction"] = images;
 		return this;
 	}
@@ -1770,6 +1773,7 @@ class ExtractionConfigBuilder {
 	 * Set PDF configuration.
 	 */
 	withPdf(pdf: PdfConfig): ExtractionConfigBuilder {
+		// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for Record type
 		this.config["pdf"] = pdf;
 		return this;
 	}
@@ -1778,6 +1782,7 @@ class ExtractionConfigBuilder {
 	 * Set keyword extraction configuration.
 	 */
 	withKeywords(keywords: KeywordConfig): ExtractionConfigBuilder {
+		// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for Record type
 		this.config["keywords"] = keywords;
 		return this;
 	}
@@ -1786,6 +1791,7 @@ class ExtractionConfigBuilder {
 	 * Set language detection configuration.
 	 */
 	withLanguageDetection(languageDetection: LanguageDetectionConfig): ExtractionConfigBuilder {
+		// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for Record type
 		this.config["languageDetection"] = languageDetection;
 		return this;
 	}
@@ -1794,6 +1800,7 @@ class ExtractionConfigBuilder {
 	 * Set whether to enable metadata extraction.
 	 */
 	withMetadataExtraction(enabled: boolean): ExtractionConfigBuilder {
+		// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for Record type
 		this.config["metadataExtraction"] = enabled;
 		return this;
 	}
@@ -1802,6 +1809,7 @@ class ExtractionConfigBuilder {
 	 * Set whether to enable quality mode.
 	 */
 	withQualityMode(enabled: boolean): ExtractionConfigBuilder {
+		// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for Record type
 		this.config["qualityMode"] = enabled;
 		return this;
 	}

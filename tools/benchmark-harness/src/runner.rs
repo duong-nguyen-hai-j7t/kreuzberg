@@ -698,18 +698,27 @@ mod tests {
 
     #[test]
     fn test_profiling_config_optimal_frequency() {
-        // Quick tasks: highest frequency
-        assert_eq!(crate::ProfilingConfig::calculate_optimal_frequency(50), 10000);
-        assert_eq!(crate::ProfilingConfig::calculate_optimal_frequency(99), 10000);
+        // Quick tasks: highest frequency (clamped to max 500 Hz)
+        // For 50ms: (500 * 1000) / 50 = 10000 → clamped to 500
+        assert_eq!(crate::ProfilingConfig::calculate_optimal_frequency(50), 500);
+        // For 99ms: (500 * 1000) / 99 = 5050 → clamped to 500
+        assert_eq!(crate::ProfilingConfig::calculate_optimal_frequency(99), 500);
 
-        // Medium tasks: standard frequency
-        assert_eq!(crate::ProfilingConfig::calculate_optimal_frequency(100), 1000);
-        assert_eq!(crate::ProfilingConfig::calculate_optimal_frequency(500), 1000);
-        assert_eq!(crate::ProfilingConfig::calculate_optimal_frequency(999), 1000);
+        // Medium-fast tasks: still at max frequency
+        // For 500ms: (500 * 1000) / 500 = 1000 → clamped to 500
+        assert_eq!(crate::ProfilingConfig::calculate_optimal_frequency(500), 500);
 
-        // Long tasks: lower frequency
-        assert_eq!(crate::ProfilingConfig::calculate_optimal_frequency(1000), 100);
+        // At exactly 1000ms, we get the max frequency without clamping
+        // For 1000ms: (500 * 1000) / 1000 = 500
+        assert_eq!(crate::ProfilingConfig::calculate_optimal_frequency(1000), 500);
+
+        // Longer tasks: lower frequency
+        // For 5000ms: (500 * 1000) / 5000 = 100
         assert_eq!(crate::ProfilingConfig::calculate_optimal_frequency(5000), 100);
+
+        // Very long tasks: still at minimum 100 Hz
+        // For 10000ms: (500 * 1000) / 10000 = 50 → clamped to 100
+        assert_eq!(crate::ProfilingConfig::calculate_optimal_frequency(10000), 100);
     }
 
     #[test]

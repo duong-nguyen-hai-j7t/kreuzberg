@@ -27,11 +27,12 @@ cd "$REPO_ROOT/packages/java"
 # -Dsurefire.printSummary=true: print test summary
 # -Dsurefire.useFile=false: output to console instead of file
 # Additional Maven opts for JVM diagnostics
+# Note: -XX:+PrintGCDetails was removed in Java 9+, replaced with -Xlog:gc*
 export MAVEN_OPTS="${MAVEN_OPTS:-} \
   -XX:+UnlockDiagnosticVMOptions \
   -XX:+LogVMOutput \
   -XX:LogFile=test-jvm.log \
-  -XX:+PrintGCDetails \
+  -Xlog:gc*:file=test-jvm-gc.log:time,level,tags \
   -XX:+PrintCommandLineFlags \
   -Xlog:os=info:file=test-jvm-os.log"
 
