@@ -562,6 +562,18 @@ tasks:
     cmds:
       - task: e2e:wasm-deno:verify
       - task: e2e:wasm-workers:verify
+  e2e:all:test:
+    desc: Run E2E tests for all language bindings
+    cmds:
+      - task: e2e:rust:test
+      - task: e2e:python:test
+      - task: e2e:ts:test
+      - task: e2e:ruby:test
+      - task: e2e:java:test
+      - task: e2e:go:test
+      - task: e2e:csharp:test
+      - task: e2e:wasm-deno:test
+      - task: e2e:wasm-workers:test
   e2e:all:verify:
     desc: Regenerate and validate E2E suites for all languages
     cmds:

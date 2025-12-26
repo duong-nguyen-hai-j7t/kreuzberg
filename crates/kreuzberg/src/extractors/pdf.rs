@@ -392,8 +392,8 @@ impl DocumentExtractor for PdfExtractor {
             {
                 // For WASM targets, PDFium must be properly initialized in the environment.
                 // The error message will direct users to the documentation for setup requirements.
-                crate::pdf::bindings::bind_pdfium(PdfError::MetadataExtractionFailed, "initialize Pdfium").map_err(
-                    |pdf_err| {
+                let pdfium = crate::pdf::bindings::bind_pdfium(PdfError::MetadataExtractionFailed, "initialize Pdfium")
+                    .map_err(|pdf_err| {
                         // Provide context-specific error for WASM PDF failures
                         if pdf_err.to_string().contains("WASM") || pdf_err.to_string().contains("Module") {
                             crate::error::KreuzbergError::Parsing {
@@ -406,9 +406,7 @@ impl DocumentExtractor for PdfExtractor {
                         } else {
                             pdf_err.into()
                         }
-                    },
-                )?;
-                let pdfium = Pdfium;
+                    })?;
 
                 let document = pdfium.load_pdf_from_byte_slice(content, None).map_err(|e| {
                     let err_msg = crate::pdf::error::format_pdfium_error(e);
@@ -431,9 +429,8 @@ impl DocumentExtractor for PdfExtractor {
                     tokio::task::spawn_blocking(move || {
                         let _guard = span.entered();
 
-                        crate::pdf::bindings::bind_pdfium(PdfError::MetadataExtractionFailed, "initialize Pdfium")?;
-
-                        let pdfium = Pdfium;
+                        let pdfium =
+                            crate::pdf::bindings::bind_pdfium(PdfError::MetadataExtractionFailed, "initialize Pdfium")?;
 
                         let document = pdfium.load_pdf_from_byte_slice(&content_owned, None).map_err(|e| {
                             let err_msg = crate::pdf::error::format_pdfium_error(e);
@@ -463,9 +460,8 @@ impl DocumentExtractor for PdfExtractor {
                     .await
                     .map_err(|e| crate::error::KreuzbergError::Other(format!("PDF extraction task failed: {}", e)))??
                 } else {
-                    crate::pdf::bindings::bind_pdfium(PdfError::MetadataExtractionFailed, "initialize Pdfium")?;
-
-                    let pdfium = Pdfium;
+                    let pdfium =
+                        crate::pdf::bindings::bind_pdfium(PdfError::MetadataExtractionFailed, "initialize Pdfium")?;
 
                     let document = pdfium.load_pdf_from_byte_slice(content, None).map_err(|e| {
                         let err_msg = crate::pdf::error::format_pdfium_error(e);
@@ -482,9 +478,8 @@ impl DocumentExtractor for PdfExtractor {
             }
             #[cfg(all(not(target_arch = "wasm32"), not(feature = "tokio-runtime")))]
             {
-                crate::pdf::bindings::bind_pdfium(PdfError::MetadataExtractionFailed, "initialize Pdfium")?;
-
-                let pdfium = Pdfium;
+                let pdfium =
+                    crate::pdf::bindings::bind_pdfium(PdfError::MetadataExtractionFailed, "initialize Pdfium")?;
 
                 let document = pdfium.load_pdf_from_byte_slice(content, None).map_err(|e| {
                     let err_msg = crate::pdf::error::format_pdfium_error(e);
