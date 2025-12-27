@@ -888,6 +888,7 @@ Natural language processing enables computers to understand human language.
         clear_processor_cache().unwrap();
         pp_registry.write().unwrap().shutdown_all().unwrap();
         val_registry.write().unwrap().shutdown_all().unwrap();
+        clear_processor_cache().unwrap();
 
         {
             let mut registry = pp_registry.write().unwrap();
@@ -898,6 +899,9 @@ Natural language processing enables computers to understand human language.
             let mut registry = val_registry.write().unwrap();
             registry.register(Arc::new(TestValidator)).unwrap();
         }
+
+        // Clear the cache after registering new processors so it rebuilds with the test processors
+        clear_processor_cache().unwrap();
 
         let mut result = ExtractionResult {
             content: "test".to_string(),
@@ -914,7 +918,16 @@ Natural language processing enables computers to understand human language.
             serde_json::json!(POSTPROCESSOR_VALIDATION_MARKER),
         );
 
-        let config = ExtractionConfig::default();
+        let config = ExtractionConfig {
+            postprocessor: Some(crate::core::config::PostProcessorConfig {
+                enabled: true,
+                enabled_set: None,
+                disabled_set: None,
+                enabled_processors: None,
+                disabled_processors: None,
+            }),
+            ..Default::default()
+        };
         drop(_guard);
 
         let processed = run_pipeline(result, &config).await;
@@ -1165,6 +1178,7 @@ Natural language processing enables computers to understand human language.
 
         pp_registry.write().unwrap().shutdown_all().unwrap();
         val_registry.write().unwrap().shutdown_all().unwrap();
+        clear_processor_cache().unwrap();
 
         {
             let mut registry = pp_registry.write().unwrap();
@@ -1176,6 +1190,9 @@ Natural language processing enables computers to understand human language.
             let mut registry = val_registry.write().unwrap();
             registry.register(Arc::new(OrderValidator)).unwrap();
         }
+
+        // Clear the cache after registering new processors so it rebuilds with the test processors
+        clear_processor_cache().unwrap();
 
         let result = ExtractionResult {
             content: "test".to_string(),
@@ -1195,6 +1212,7 @@ Natural language processing enables computers to understand human language.
 
         pp_registry.write().unwrap().shutdown_all().unwrap();
         val_registry.write().unwrap().shutdown_all().unwrap();
+        clear_processor_cache().unwrap();
 
         assert!(processed.is_ok(), "All processors should run before validator");
     }
