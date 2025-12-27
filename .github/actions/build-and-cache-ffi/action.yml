@@ -195,6 +195,9 @@ runs:
           kreuzberg-rb)
             BUILD_TASK="rust:ffi:build:ci"
             ;;
+          kreuzberg-php)
+            BUILD_TASK="rust:ffi:build:ci"
+            ;;
           *)
             echo "❌ Unknown FFI crate: $FFI_CRATE"
             exit 1
