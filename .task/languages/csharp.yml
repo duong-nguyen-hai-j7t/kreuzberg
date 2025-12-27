@@ -24,7 +24,8 @@ tasks:
     desc: Build C# binding and benchmarks (depends on Rust FFI)
     dir: packages/csharp
     cmds:
-      - dotnet restore
+      - dotnet restore Kreuzberg/Kreuzberg.csproj
+      - dotnet restore Benchmark/Benchmark.csproj
       - dotnet build Kreuzberg/Kreuzberg.csproj -c Release
       - dotnet build Benchmark/Benchmark.csproj -c Release
 
@@ -32,21 +33,21 @@ tasks:
     desc: Build C# binding in debug mode
     dir: packages/csharp
     cmds:
-      - dotnet restore
+      - dotnet restore Kreuzberg/Kreuzberg.csproj
       - dotnet build Kreuzberg/Kreuzberg.csproj -c Debug
 
   build:release:
     desc: Build C# binding in release mode (optimized)
     dir: packages/csharp
     cmds:
-      - dotnet restore
+      - dotnet restore Kreuzberg/Kreuzberg.csproj
       - dotnet build Kreuzberg/Kreuzberg.csproj -c Release
 
   build:ci:
     desc: Build C# binding in CI mode
     dir: packages/csharp
     cmds:
-      - dotnet restore
+      - dotnet restore Kreuzberg/Kreuzberg.csproj
       - dotnet build Kreuzberg/Kreuzberg.csproj -c Release
 
   package:
