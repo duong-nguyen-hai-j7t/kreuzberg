@@ -342,8 +342,11 @@ final class TableExtractionTest extends TestCase
             $markdown = $result->tables[0]->markdown;
 
             // Markdown tables should have pipe separators
-            $this->assertStringContainsString('|', $markdown,
-                'Markdown table should contain pipe separators');
+            $this->assertStringContainsString(
+                '|',
+                $markdown,
+                'Markdown table should contain pipe separators',
+            );
         }
     }
 }

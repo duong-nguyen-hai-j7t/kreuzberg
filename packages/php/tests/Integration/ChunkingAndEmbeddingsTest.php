@@ -406,8 +406,10 @@ final class ChunkingAndEmbeddingsTest extends TestCase
 
         if (!empty($result->chunks)) {
             foreach ($result->chunks as $chunk) {
-                $this->assertTrue(mb_check_encoding($chunk->content, 'UTF-8'),
-                    'Chunk content should be valid UTF-8');
+                $this->assertTrue(
+                    mb_check_encoding($chunk->content, 'UTF-8'),
+                    'Chunk content should be valid UTF-8',
+                );
             }
         }
     }

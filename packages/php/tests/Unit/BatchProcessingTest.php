@@ -306,8 +306,10 @@ final class BatchProcessingTest extends TestCase
         $results = $kreuzberg->batchExtractFiles($files, $overrideConfig);
 
         foreach ($results as $result) {
-            $this->assertEmpty($result->tables,
-                'Override config should be applied to all batch items');
+            $this->assertEmpty(
+                $result->tables,
+                'Override config should be applied to all batch items',
+            );
         }
     }
 }

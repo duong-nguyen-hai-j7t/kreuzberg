@@ -333,7 +333,9 @@ final class OcrExtractionTest extends TestCase
         $kreuzberg = new Kreuzberg($config);
         $result = $kreuzberg->extractFile($imagePath);
 
-        $this->assertTrue(mb_check_encoding($result->content, 'UTF-8'),
-            'OCR output should be valid UTF-8');
+        $this->assertTrue(
+            mb_check_encoding($result->content, 'UTF-8'),
+            'OCR output should be valid UTF-8',
+        );
     }
 }
