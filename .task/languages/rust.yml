@@ -196,6 +196,8 @@ tasks:
 
   e2e:test:
     desc: Run Rust E2E tests
+    env:
+      RUST_TEST_THREADS: "1"
     cmds:
       - cargo test -p e2e-rust --release
 
