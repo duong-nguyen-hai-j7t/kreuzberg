@@ -301,6 +301,9 @@ jobs:
         shell: bash
         run: mkdir -p packages/csharp/target/crash-dumps
 
+      - name: Install Task
+        uses: ./.github/actions/install-task
+
       - name: Run C# tests
         env:
           KREUZBERG_FFI_DIR: ${{ github.workspace }}/target/release
