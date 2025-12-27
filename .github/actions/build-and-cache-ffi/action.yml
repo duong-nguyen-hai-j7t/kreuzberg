@@ -6,7 +6,7 @@ inputs:
     description: 'Platform identifier (e.g., linux-x64, macos-arm64, windows-x64)'
     required: true
   ffi-crate:
-    description: 'FFI crate to build (kreuzberg-ffi, kreuzberg-py, kreuzberg-rb)'
+    description: 'FFI crate to build (kreuzberg-ffi, kreuzberg-py, kreuzberg-rb, kreuzberg-php)'
     required: true
   cache-version:
     description: 'Manual version for cache invalidation'
@@ -58,7 +58,7 @@ runs:
         fi
 
         # Validate ffi-crate
-        valid_crates=("kreuzberg-ffi" "kreuzberg-py" "kreuzberg-rb")
+        valid_crates=("kreuzberg-ffi" "kreuzberg-py" "kreuzberg-rb" "kreuzberg-php")
         if [[ ! " ${valid_crates[@]} " =~ " ${FFI_CRATE} " ]]; then
           echo "❌ Error: ffi-crate must be one of: ${valid_crates[*]}"
           exit 1
