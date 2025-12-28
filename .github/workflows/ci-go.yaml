@@ -438,6 +438,9 @@ jobs:
           echo "PATH (first 1000 chars):"
           echo "${PATH:0:1000}..."
 
+      - name: Install Task
+        uses: ./.github/actions/install-task
+
       - name: Run Go tests
         run: task go:test:ci
         env:
@@ -450,9 +453,6 @@ jobs:
           CGO_LDFLAGS: ${{ env.CGO_LDFLAGS }}
           PKG_CONFIG_PATH: ${{ env.PKG_CONFIG_PATH }}
           GO_TEST_FLAGS: ${{ runner.os == 'Windows' && '-ldflags=-linkmode=external -extldflags=-Wl,--verbose' || '' }}
-
-      - name: Install Task
-        uses: ./.github/actions/install-task
 
       - name: Generate Go E2E tests
         run: task go:e2e:generate
