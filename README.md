@@ -70,15 +70,26 @@ A polyglot document intelligence framework with a Rust core. Extract text, metad
 
 Each language binding provides comprehensive documentation with examples and best practices. Choose your platform to get started:
 
-- **[@kreuzberg/node](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg-node)** (Recommended for Node.js/Bun) – Native NAPI-RS bindings, fastest performance, direct system calls
-- **[@kreuzberg/wasm](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/typescript)** (Browser/Workers/Deno) – Pure WebAssembly, no native dependencies, cross-platform consistency
-- **[Python](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/python)** – Installation, basic usage, async/sync APIs
-- **[Ruby](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/ruby)** – Installation, basic usage, configuration
-- **[Go](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/go)** – Installation, native library setup, sync/async extraction + batch APIs
-- **[Java](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/java)** – Installation, FFM API usage, Maven/Gradle setup
-- **[C#](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/csharp)** – Installation, P/Invoke usage, NuGet package
-- **[Rust](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg)** – Crate usage, features, async/sync APIs
-- **[CLI](https://kreuzberg.dev/cli/usage/)** – Command-line usage, batch processing, options
+**Scripting Languages:**
+- **[Python](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/python)** – PyPI package, async/sync APIs, OCR backends (Tesseract, EasyOCR, PaddleOCR)
+- **[Ruby](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/ruby)** – RubyGems package, idiomatic Ruby API, native bindings
+- **[PHP](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/php)** – Composer package, modern PHP 8.2+ support, type-safe API
+- **[Elixir](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/elixir)** – Hex package, OTP integration, concurrent processing
+
+**JavaScript/TypeScript:**
+- **[@kreuzberg/node](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg-node)** – Native NAPI-RS bindings for Node.js/Bun, fastest performance
+- **[@kreuzberg/wasm](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/typescript)** – WebAssembly for browsers/Deno/Cloudflare Workers
+
+**Compiled Languages:**
+- **[Go](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/go)** – Go module with FFI bindings, context-aware async
+- **[Java](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/java)** – Maven Central, Foreign Function & Memory API
+- **[C#](https://github.com/kreuzberg-dev/kreuzberg/tree/main/packages/csharp)** – NuGet package, .NET 6.0+, full async/await support
+
+**Native:**
+- **[Rust](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg)** – Core library, flexible feature flags, zero-copy APIs
+
+**Command-Line:**
+- **[CLI](https://kreuzberg.dev/cli/usage/)** – Cross-platform binary, batch processing, MCP server mode
 
 ### Embeddings Support (Optional)
 
