@@ -117,11 +117,11 @@ echo "Pages: $pageCount\n";
 echo "Average chars/page: " . number_format($avgCharsPerPage) . "\n";
 
 if ($avgCharsPerPage < 100) {
-    echo "⚠ Warning: Low character count may indicate poor scan quality\n";
+    echo "Warning: Low character count may indicate poor scan quality\n";
     echo "Consider using image preprocessing or higher DPI settings.\n";
 } elseif ($avgCharsPerPage > 2000) {
-    echo "✓ Good: Adequate text extracted\n";
+    echo "Pass: Good - Adequate text extracted\n";
 } else {
-    echo "✓ Moderate: Text extracted successfully\n";
+    echo "Pass: Moderate - Text extracted successfully\n";
 }
 ```

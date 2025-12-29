@@ -200,16 +200,41 @@ dotnet add package {{ package_name }}
 {% endif %}
 
 ### System Requirements
-
-Kreuzberg requires:
-
-- **Python 3.10+** (Python binding)
-- **Node.js 16+** (TypeScript/Node.js binding)
-- **Go 1.19+** (Go binding)
-- **Java 11+** (Java binding)
-- **Ruby 2.7+** (Ruby binding)
-- **PHP 8.0+** (PHP binding)
-- **C# .NET 6.0+** (C# binding)
-- **.NET 6.0+** (C# binding)
-
-Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.21 or lower for embeddings support.
+{% if language == "python" %}
+- **Python 3.10+** required
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.21 or lower for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "typescript" %}
+- **Node.js 16+** or **Bun 1.0+** required
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.21 or lower for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "go" %}
+- **Go 1.19+** required
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.21 or lower for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "java" %}
+- **Java 11+** required
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.21 or lower for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "ruby" %}
+- **Ruby 2.7+** required
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.21 or lower for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "php" %}
+- **PHP 8.0+** required
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.21 or lower for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "csharp" %}
+- **.NET 6.0+** required
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.21 or lower for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "elixir" %}
+- **Elixir 1.12+** and **Erlang/OTP 24+** required
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.21 or lower for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "wasm" %}
+- Modern browser with WebAssembly support, or Deno 1.0+, or Cloudflare Workers
+- Optional: [Tesseract WASM](https://github.com/naptha/tesseract.js) for OCR functionality
+{% else %}
+- See [Installation Guide](https://kreuzberg.dev/getting-started/installation/) for requirements
+{% endif %}

@@ -1,1059 +1,465 @@
-# Kreuzberg
+# WebAssembly
 
-[![Rust](https://img.shields.io/crates/v/kreuzberg?label=Rust)](https://crates.io/crates/kreuzberg)
-[![Python](https://img.shields.io/pypi/v/kreuzberg?label=Python)](https://pypi.org/project/kreuzberg/)
-[![TypeScript](https://img.shields.io/npm/v/@kreuzberg/node?label=TypeScript)](https://www.npmjs.com/package/@kreuzberg/node)
-[![WASM](https://img.shields.io/npm/v/@kreuzberg/wasm?label=WASM)](https://www.npmjs.com/package/@kreuzberg/wasm)
-[![Ruby](https://img.shields.io/gem/v/kreuzberg?label=Ruby)](https://rubygems.org/gems/kreuzberg)
-[![Java](https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java)](https://central.sonatype.com/artifact/dev.kreuzberg/kreuzberg)
-[![Go](https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go)](https://pkg.go.dev/github.com/kreuzberg-dev/kreuzberg)
-[![C#](https://img.shields.io/nuget/v/Goldziher.Kreuzberg?label=C%23)](https://www.nuget.org/packages/Goldziher.Kreuzberg/)
+<div align="center" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 20px 0;">
+  <!-- Language Bindings -->
+  <a href="https://crates.io/crates/kreuzberg">
+    <img src="https://img.shields.io/crates/v/kreuzberg?label=Rust&color=007ec6" alt="Rust">
+  </a>
+  <a href="https://hex.pm/packages/kreuzberg">
+    <img src="https://img.shields.io/hexpm/v/kreuzberg?label=Elixir&color=007ec6" alt="Elixir">
+  </a>
+  <a href="https://pypi.org/project/kreuzberg/">
+    <img src="https://img.shields.io/pypi/v/kreuzberg?label=Python&color=007ec6" alt="Python">
+  </a>
+  <a href="https://www.npmjs.com/package/@kreuzberg/node">
+    <img src="https://img.shields.io/npm/v/@kreuzberg/node?label=Node.js&color=007ec6" alt="Node.js">
+  </a>
+  <a href="https://www.npmjs.com/package/@kreuzberg/wasm">
+    <img src="https://img.shields.io/npm/v/@kreuzberg/wasm?label=WASM&color=007ec6" alt="WASM">
+  </a>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Documentation](https://img.shields.io/badge/docs-kreuzberg.dev-blue)](https://kreuzberg.dev/)
-[![Discord](https://img.shields.io/badge/Discord-Join%20our%20community-7289da)](https://discord.gg/pXxagNK2zN)
+<a href="https://central.sonatype.com/artifact/dev.kreuzberg/kreuzberg">
+    <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
+  </a>
+  <a href="https://github.com/kreuzberg-dev/kreuzberg/releases">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.0.0-*" alt="Go">
+  </a>
+  <a href="https://www.nuget.org/packages/Kreuzberg/">
+    <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
+  </a>
+  <a href="https://packagist.org/packages/kreuzberg/kreuzberg">
+    <img src="https://img.shields.io/packagist/v/kreuzberg/kreuzberg?label=PHP&color=007ec6" alt="PHP">
+  </a>
+  <a href="https://rubygems.org/gems/kreuzberg">
+    <img src="https://img.shields.io/gem/v/kreuzberg?label=Ruby&color=007ec6" alt="Ruby">
+  </a>
 
-High-performance document intelligence for browsers, Deno, and Cloudflare Workers, powered by WebAssembly.
+<!-- Project Info -->
 
-Extract text, tables, images, and metadata from 50+ file formats including PDF, DOCX, PPTX, XLSX, images, and more.
+<a href="https://github.com/kreuzberg-dev/kreuzberg/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License">
+  </a>
+  <a href="https://docs.kreuzberg.dev">
+    <img src="https://img.shields.io/badge/docs-kreuzberg.dev-blue" alt="Documentation">
+  </a>
+</div>
 
-> **Note for Node.js/Bun Users:** If you're building for Node.js or Bun, use [@kreuzberg/node](https://www.npmjs.com/package/@kreuzberg/node) instead for ~2-3x better performance with native NAPI-RS bindings.
->
-> **This WASM package is designed for:**
-> - Browser applications (including web workers)
-> - Cloudflare Workers and edge runtimes
-> - Deno applications
-> - Environments without native build toolchain
+<img width="1128" height="191" alt="Banner2" src="https://github.com/user-attachments/assets/419fc06c-8313-4324-b159-4b4d3cfce5c0" />
 
-> **🚀 Version 4.0.0 Release Candidate**
-> This is a pre-release version. We invite you to test the library and [report any issues](https://github.com/kreuzberg-dev/kreuzberg/issues) you encounter.
+<div align="center" style="margin-top: 20px;">
+  <a href="https://discord.gg/pXxagNK2zN">
+      <img height="22" src="https://img.shields.io/badge/Discord-Join%20our%20community-7289da?logo=discord&logoColor=white" alt="Discord">
+  </a>
+</div>
 
-## Features
+Extract text, tables, images, and metadata from 56 file formats including PDF, Office documents, and images. WebAssembly bindings for browsers, Deno, and Cloudflare Workers with portable deployment and multi-threading support.
 
-- **50+ File Formats**: PDF, DOCX, PPTX, XLSX, images, HTML, Markdown, XML, JSON, and more
-- **OCR Support**: Built-in tesseract-wasm with 40+ languages for scanned documents
-- **Table Extraction**: Advanced table detection and structured data extraction
-- **Cross-Runtime**: Browser, Deno, Cloudflare Workers, and other edge runtimes
-- **Type-Safe**: Full TypeScript definitions from shared @kreuzberg/core package
-- **API Parity**: All extraction functions from the Node.js binding
-- **Plugin System**: Custom post-processors, validators, and OCR backends
-- **Optimized Bundle**: <5MB uncompressed, <2MB compressed
-- **Zero Configuration**: Works out of the box with sensible defaults
-- **Portable**: Runs anywhere WASM is supported without native dependencies
-
-## Requirements
-
-- **Browser**: Modern browsers with WebAssembly support (Chrome 91+, Firefox 90+, Safari 16.4+)
-- **Node.js**: 18 or higher
-- **Deno**: 1.0 or higher
-- **Cloudflare Workers**: Compatible with Workers runtime
-
-### Optional Dependencies
-
-- **tesseract-wasm**: Automatically loaded for OCR functionality (40+ language support)
+> **Version 4.0.0 Release Candidate**
+> Kreuzberg v4.0.0 is in **Release Candidate** stage. Bugs and breaking changes are expected.
+> This is a pre-release version. Please test the library and [report any issues](https://github.com/kreuzberg-dev/kreuzberg/issues) you encounter.
 
 ## Installation
 
-### Choosing the Right Package
+### Package Installation
 
-| Use Case | Recommendation | Reason |
-|----------|---|---|
-| **Node.js/Bun runtime** | [@kreuzberg/node](https://www.npmjs.com/package/@kreuzberg/node) | 2-3x faster native bindings |
-| **Browser/Web Worker** | @kreuzberg/wasm (this package) | Required for browser environments |
-| **Cloudflare Workers** | @kreuzberg/wasm (this package) | Only WASM option for Workers |
-| **Deno** | @kreuzberg/wasm (this package) | Full WASM support via npm packages |
-| **Edge runtime** | @kreuzberg/wasm (this package) | Portable across all edge platforms |
+Install via one of the supported package managers:
 
-### Install via npm/pnpm/yarn
+**npm:**
 
 ```bash
 npm install @kreuzberg/wasm
 ```
 
-Or with pnpm:
+**pnpm:**
 
 ```bash
 pnpm add @kreuzberg/wasm
 ```
 
-Or with yarn:
+**yarn:**
 
 ```bash
 yarn add @kreuzberg/wasm
 ```
 
-### Deno
+### System Requirements
 
-```typescript
-import { extractBytes } from "npm:@kreuzberg/wasm@^4.0.0";
-```
-
-## PDF Support and PDFium Initialization
-
-**IMPORTANT**: PDF extraction requires a one-time initialization step to load the PDFium WASM module.
-
-### Why PDFium Initialization is Needed
-
-Kreuzberg uses the high-performance PDFium library (from Google Chrome) for PDF processing. In WASM environments, PDFium runs as a separate WASM module that must be loaded and bound to the main kreuzberg module before PDF extraction can work.
-
-### How to Initialize PDFium
-
-```javascript
-import init, { initialize_pdfium_render, extractBytes } from '@kreuzberg/wasm';
-import pdfiumModule from '@kreuzberg/wasm/pdfium.js';
-
-// Step 1: Initialize kreuzberg WASM
-await init();
-
-// Step 2: Load PDFium WASM module
-const pdfium = await pdfiumModule();
-
-// Step 3: Bind kreuzberg to PDFium (required before any PDF operations)
-const success = initialize_pdfium_render(pdfium, wasm, false);
-if (!success) {
-    throw new Error('Failed to initialize PDFium');
-}
-
-// Step 4: Now PDF extraction works
-const pdfBytes = new Uint8Array(await pdfFile.arrayBuffer());
-const result = await extractBytes(pdfBytes);
-console.log(result.text);
-```
-
-### Error: "PdfiumWASMModuleNotConfigured"
-
-If you see this error, it means `initialize_pdfium_render()` was not called before attempting PDF extraction. Make sure to follow the initialization sequence above.
-
-### PDFium Files Location
-
-The PDFium WASM files (`pdfium.js`, `pdfium.wasm`) should be included in the `@kreuzberg/wasm` package. If they're missing:
-
-1. Check your `node_modules/@kreuzberg/wasm/` directory
-2. Ensure both `pdfium.js` and `pdfium.wasm` are present
-3. If missing, reinstall the package
-
-For self-hosted builds, copy the files from:
-```bash
-target/wasm32-unknown-unknown/release/build/kreuzberg-*/out/pdfium/release/node/
-```
+- Modern browser with WebAssembly support, or Deno 1.0+, or Cloudflare Workers
+- Optional: [Tesseract WASM](https://github.com/naptha/tesseract.js) for OCR functionality
 
 ## Quick Start
 
-### Browser (ESM)
+### Basic Extraction
 
-```typescript
-import { extractFile } from '@kreuzberg/wasm';
+Extract text, metadata, and structure from any supported document format:
 
-async function handleFileUpload() {
-  const fileInput = document.querySelector<HTMLInputElement>('#file-upload');
-  const file = fileInput.files[0];
+```ts
+import { extractBytes, initWasm } from "@kreuzberg/wasm";
 
-  const result = await extractFile(file, {
-    extract_tables: true,
-    extract_images: true
-  });
+async function main() {
+  await initWasm();
 
-  console.log('Extracted text:', result.content);
-  console.log('Tables found:', result.tables.length);
-}
-```
+  const buffer = await fetch("document.pdf").then((r) => r.arrayBuffer());
+  const bytes = new Uint8Array(buffer);
 
-### Node.js (ESM)
+  const result = await extractBytes(bytes, "application/pdf");
 
-```typescript
-import { extractBytes } from '@kreuzberg/wasm';
-import { readFile } from 'fs/promises';
-
-const pdfBytes = await readFile('./document.pdf');
-const result = await extractBytes(
-  new Uint8Array(pdfBytes),
-  'application/pdf',
-  { extract_tables: true }
-);
-
-console.log(result.content);
-console.log('Found', result.tables.length, 'tables');
-```
-
-### Deno
-
-```typescript
-import { extractBytes } from "npm:@kreuzberg/wasm@^4.0.0";
-
-const pdfBytes = await Deno.readFile("./document.pdf");
-const result = await extractBytes(pdfBytes, "application/pdf");
-
-console.log(result.content);
-```
-
-### Cloudflare Workers
-
-```typescript
-import { extractBytes } from '@kreuzberg/wasm';
-
-export default {
-  async fetch(request: Request): Promise<Response> {
-    if (request.method === 'POST') {
-      const formData = await request.formData();
-      const file = formData.get('file') as File;
-
-      const arrayBuffer = await file.arrayBuffer();
-      const bytes = new Uint8Array(arrayBuffer);
-
-      const result = await extractBytes(bytes, file.type);
-
-      return Response.json({
-        text: result.content,
-        metadata: result.metadata,
-        tables: result.tables
-      });
-    }
-
-    return new Response('Upload a file', { status: 400 });
-  }
-};
-```
-
-## Performance Comparison
-
-Kreuzberg WASM provides excellent portability but trades some performance for this flexibility. Here's how it compares to native bindings:
-
-| Metric | Native (@kreuzberg/node) | WASM (@kreuzberg/wasm) | Notes |
-|--------|---|---|---|
-| **PDF extraction** | 100ms (baseline) | 120-170ms (60-80%) | WASM slower due to JS/WASM boundary calls |
-| **OCR processing** | ~500ms | ~600-700ms (60-80%) | Performance gap increases with image size |
-| **Table extraction** | 50ms | 70-90ms (60-80%) | Consistent overhead from WASM compilation |
-| **Bundle size** | N/A (native) | <2MB gzip | WASM compresses extremely well |
-| **Runtime flexibility** | Node.js/Bun only | Browsers/Edge/Deno | Different use cases, not directly comparable |
-
-### When to Use WASM vs Native
-
-**Use WASM (@kreuzberg/wasm) when:**
-- Building browser applications (no choice, WASM required)
-- Targeting Cloudflare Workers or edge runtimes
-- Supporting Deno applications
-- You don't have a native build toolchain available
-- Portability across runtimes is critical
-
-**Use Native (@kreuzberg/node) when:**
-- Building Node.js or Bun applications (2-3x faster)
-- Performance is your primary concern
-- You're processing large volumes of documents
-- You have native build tools available
-
-### Performance Tips for WASM
-
-1. **Enable multi-threading** with `initThreadPool()` for better CPU utilization
-2. **Batch operations** with `batchExtractBytes()` to amortize WASM boundary overhead
-3. **Cache WASM module** by loading it once per application
-4. **Preload OCR models** by calling extraction with OCR enabled early
-
-## Examples
-
-Kreuzberg WASM includes complete working examples for different environments:
-
-- **[Deno](../../examples/wasm-deno)** - Server-side document extraction with Deno runtime. Demonstrates basic extraction, batch processing, and OCR capabilities.
-- **[Cloudflare Workers](../../examples/wasm-cloudflare-workers)** - Serverless API for document processing on the edge. Includes file upload endpoint, error handling, and production-ready configuration.
-- **[Browser](../../examples/wasm-browser)** - Interactive web application with drag-and-drop file upload, progress tracking, and multi-threaded extraction using Vite.
-
-See the [examples documentation](../../examples/wasm/README.md) for a comprehensive overview and comparison of all examples.
-
-## Multi-Threading with wasm-bindgen-rayon
-
-Kreuzberg WASM leverages [wasm-bindgen-rayon](https://docs.rs/wasm-bindgen-rayon/latest/wasm_bindgen_rayon/) to enable multi-threaded document processing in browsers and server environments with SharedArrayBuffer support.
-
-### Initializing the Thread Pool
-
-To unlock multi-threaded performance, initialize the thread pool with the available CPU cores:
-
-```typescript
-import { initThreadPool } from '@kreuzberg/wasm';
-
-// Initialize thread pool for multi-threaded extraction
-await initThreadPool(navigator.hardwareConcurrency);
-
-// Now extractions will use multiple threads for better performance
-const result = await extractBytes(pdfBytes, 'application/pdf');
-```
-
-### Required HTTP Headers for SharedArrayBuffer
-
-Multi-threading requires specific HTTP headers to enable SharedArrayBuffer in browsers:
-
-**Important:** These headers are required for the thread pool to function. Without them, the library will fall back to single-threaded processing.
-
-Set these headers in your server configuration:
-
-```
-Cross-Origin-Opener-Policy: same-origin
-Cross-Origin-Embedder-Policy: require-corp
-```
-
-#### Server Configuration Examples
-
-**Express.js:**
-```javascript
-app.use((req, res, next) => {
-  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
-  next();
-});
-```
-
-**Nginx:**
-```nginx
-add_header 'Cross-Origin-Opener-Policy' 'same-origin';
-add_header 'Cross-Origin-Embedder-Policy' 'require-corp';
-```
-
-**Apache:**
-```apache
-Header set Cross-Origin-Opener-Policy "same-origin"
-Header set Cross-Origin-Embedder-Policy "require-corp"
-```
-
-**Cloudflare Workers:**
-```javascript
-export default {
-  async fetch(request: Request): Promise<Response> {
-    const response = new Response(body);
-    response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
-    response.headers.set('Cross-Origin-Embedder-Policy', 'require-corp');
-    return response;
-  }
-};
-```
-
-### Browser Compatibility
-
-Multi-threading with SharedArrayBuffer is available in:
-
-- **Chrome/Edge**: 74+
-- **Firefox**: 79+
-- **Safari**: 15.2+
-- **Opera**: 60+
-
-In unsupported browsers or when headers are not set, the library automatically degrades to single-threaded mode.
-
-### Graceful Degradation
-
-The library handles thread pool initialization gracefully. If initialization fails or is unavailable:
-
-```typescript
-import { initThreadPool } from '@kreuzberg/wasm';
-
-try {
-  await initThreadPool(navigator.hardwareConcurrency);
-  console.log('Multi-threading enabled');
-} catch (error) {
-  // Fall back to single-threaded processing
-  console.warn('Multi-threading unavailable:', error);
-  console.log('Using single-threaded extraction');
+  console.log("Extracted content:");
+  console.log(result.content);
+  console.log("MIME type:", result.mimeType);
+  console.log("Metadata:", result.metadata);
 }
 
-// Extraction will work in both cases
-const result = await extractBytes(pdfBytes, 'application/pdf');
+main().catch(console.error);
 ```
 
-### Complete Example with Thread Pool
+### Common Use Cases
 
-```typescript
-import { initWasm, initThreadPool, extractBytes } from '@kreuzberg/wasm';
+#### Extract with Custom Configuration
 
-async function initializeKreuzbergWithThreading() {
+Most use cases benefit from configuration to control extraction behavior:
+
+**With OCR (for scanned documents):**
+
+```ts
+import { enableOcr, extractBytes, initWasm } from "@kreuzberg/wasm";
+
+async function extractWithOcr() {
+  await initWasm();
+
   try {
-    // Initialize WASM module
-    await initWasm();
-
-    // Initialize multi-threading
-    const cpuCount = navigator.hardwareConcurrency || 1;
-    try {
-      await initThreadPool(cpuCount);
-      console.log(`Thread pool initialized with ${cpuCount} workers`);
-    } catch (error) {
-      console.warn('Could not initialize thread pool, using single-threaded mode');
-    }
-
+    await enableOcr();
+    console.log("OCR enabled successfully");
   } catch (error) {
-    console.error('Failed to initialize Kreuzberg:', error);
+    console.error("Failed to enable OCR:", error);
+    return;
   }
-}
 
-async function extractDocument(file: File) {
-  const bytes = new Uint8Array(await file.arrayBuffer());
+  const bytes = new Uint8Array(await fetch("scanned-page.png").then((r) => r.arrayBuffer()));
 
-  // Extraction will use multiple threads if available
-  const result = await extractBytes(bytes, file.type, {
-    extract_tables: true,
-    extract_images: true
+  const result = await extractBytes(bytes, "image/png", {
+    ocr: {
+      backend: "tesseract-wasm",
+      language: "eng",
+    },
   });
 
-  return result;
+  console.log("Extracted text:");
+  console.log(result.content);
 }
 
-// Initialize once at app startup
-await initializeKreuzbergWithThreading();
-
-// Later, handle file uploads
-fileInput.addEventListener('change', async (e) => {
-  const file = e.target.files?.[0];
-  if (file) {
-    const result = await extractDocument(file);
-    console.log('Extracted text:', result.content);
-  }
-});
+extractWithOcr().catch(console.error);
 ```
 
-### Performance Considerations
+#### Table Extraction
 
-- **Thread Pool Size**: Generally, using `navigator.hardwareConcurrency` is optimal. For servers, use the number of available CPU cores.
-- **Memory Usage**: Each thread has its own memory context. Large documents may require significant heap space.
-- **Network Requests**: Training data and models are cached locally, so subsequent extractions are faster.
+See [Table Extraction Guide](https://kreuzberg.dev/features/table-extraction/) for detailed examples.
+
+#### Processing Multiple Files
+
+```ts
+import { extractBytes, initWasm } from "@kreuzberg/wasm";
+
+interface DocumentJob {
+  name: string;
+  bytes: Uint8Array;
+  mimeType: string;
+}
+
+async function processBatch(documents: DocumentJob[], concurrency: number = 3) {
+  await initWasm();
+
+  const results: Record<string, string> = {};
+  const queue = [...documents];
+
+  const workers = Array(concurrency)
+    .fill(null)
+    .map(async () => {
+      while (queue.length > 0) {
+        const doc = queue.shift();
+        if (!doc) break;
+
+        try {
+          const result = await extractBytes(doc.bytes, doc.mimeType);
+          results[doc.name] = result.content;
+        } catch (error) {
+          console.error(`Failed to process ${doc.name}:`, error);
+        }
+      }
+    });
+
+  await Promise.all(workers);
+  return results;
+}
+```
+
+#### Async Processing
+
+For non-blocking document processing:
+
+```ts
+import { extractBytes, initWasm, getWasmCapabilities } from "@kreuzberg/wasm";
+
+async function extractDocuments(files: Uint8Array[], mimeTypes: string[]) {
+  const caps = getWasmCapabilities();
+  if (!caps.hasWasm) {
+    throw new Error("WebAssembly not supported");
+  }
+
+  await initWasm();
+
+  const results = await Promise.all(
+    files.map((bytes, index) => extractBytes(bytes, mimeTypes[index]))
+  );
+
+  return results.map((r) => ({
+    content: r.content,
+    pageCount: r.metadata?.pageCount,
+  }));
+}
+
+const fileBytes = [new Uint8Array([1, 2, 3])];
+const mimes = ["application/pdf"];
+
+extractDocuments(fileBytes, mimes)
+  .then((results) => console.log(results))
+  .catch(console.error);
+```
+
+### Next Steps
+
+- **[Installation Guide](https://kreuzberg.dev/getting-started/installation/)** - Platform-specific setup
+- **[API Documentation](https://kreuzberg.dev/api/)** - Complete API reference
+- **[Examples & Guides](https://kreuzberg.dev/guides/)** - Full code examples and usage guides
+- **[Configuration Guide](https://kreuzberg.dev/configuration/)** - Advanced configuration options
+- **[Troubleshooting](https://kreuzberg.dev/troubleshooting/)** - Common issues and solutions
+
+## Features
+
+### Supported File Formats (56+)
+
+56 file formats across 8 major categories with intelligent format detection and comprehensive metadata extraction.
+
+#### Office Documents
+
+| Category | Formats | Capabilities |
+|----------|---------|--------------|
+| **Word Processing** | `.docx`, `.odt` | Full text, tables, images, metadata, styles |
+| **Spreadsheets** | `.xlsx`, `.xlsm`, `.xlsb`, `.xls`, `.xla`, `.xlam`, `.xltm`, `.ods` | Sheet data, formulas, cell metadata, charts |
+| **Presentations** | `.pptx`, `.ppt`, `.ppsx` | Slides, speaker notes, images, metadata |
+| **PDF** | `.pdf` | Text, tables, images, metadata, OCR support |
+| **eBooks** | `.epub`, `.fb2` | Chapters, metadata, embedded resources |
+
+#### Images (OCR-Enabled)
+
+| Category | Formats | Features |
+|----------|---------|----------|
+| **Raster** | `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.bmp`, `.tiff`, `.tif` | OCR, table detection, EXIF metadata, dimensions, color space |
+| **Advanced** | `.jp2`, `.jpx`, `.jpm`, `.mj2`, `.pnm`, `.pbm`, `.pgm`, `.ppm` | OCR, table detection, format-specific metadata |
+| **Vector** | `.svg` | DOM parsing, embedded text, graphics metadata |
+
+#### Web & Data
+
+| Category | Formats | Features |
+|----------|---------|----------|
+| **Markup** | `.html`, `.htm`, `.xhtml`, `.xml`, `.svg` | DOM parsing, metadata (Open Graph, Twitter Card), link extraction |
+| **Structured Data** | `.json`, `.yaml`, `.yml`, `.toml`, `.csv`, `.tsv` | Schema detection, nested structures, validation |
+| **Text & Markdown** | `.txt`, `.md`, `.markdown`, `.rst`, `.org`, `.rtf` | CommonMark, GFM, reStructuredText, Org Mode |
+
+#### Email & Archives
+
+| Category | Formats | Features |
+|----------|---------|----------|
+| **Email** | `.eml`, `.msg` | Headers, body (HTML/plain), attachments, threading |
+| **Archives** | `.zip`, `.tar`, `.tgz`, `.gz`, `.7z` | File listing, nested archives, metadata |
+
+#### Academic & Scientific
+
+| Category | Formats | Features |
+|----------|---------|----------|
+| **Citations** | `.bib`, `.biblatex`, `.ris`, `.enw`, `.csl` | Bibliography parsing, citation extraction |
+| **Scientific** | `.tex`, `.latex`, `.typst`, `.jats`, `.ipynb`, `.docbook` | LaTeX, Jupyter notebooks, PubMed JATS |
+| **Documentation** | `.opml`, `.pod`, `.mdoc`, `.troff` | Technical documentation formats |
+
+**[Complete Format Reference](https://kreuzberg.dev/reference/formats/)**
+
+### Key Capabilities
+
+- **Text Extraction** - Extract all text content with position and formatting information
+
+- **Metadata Extraction** - Retrieve document properties, creation date, author, etc.
+
+- **Table Extraction** - Parse tables with structure and cell content preservation
+
+- **Image Extraction** - Extract embedded images and render page previews
+
+- **OCR Support** - Integrate multiple OCR backends for scanned documents
+
+- **Async/Await** - Non-blocking document processing with concurrent operations
+
+- **Plugin System** - Extensible post-processing for custom text transformation
+
+- **Batch Processing** - Efficiently process multiple documents in parallel
+
+- **Memory Efficient** - Stream large files without loading entirely into memory
+
+- **Language Detection** - Detect and support multiple languages in documents
+
+- **Configuration** - Fine-grained control over extraction behavior
+
+### Performance Characteristics
+
+| Format | Speed | Memory | Notes |
+|--------|-------|--------|-------|
+| **PDF (text)** | 10-100 MB/s | ~50MB per doc | Fastest extraction |
+| **Office docs** | 20-200 MB/s | ~100MB per doc | DOCX, XLSX, PPTX |
+| **Images (OCR)** | 1-5 MB/s | Variable | Depends on OCR backend |
+| **Archives** | 5-50 MB/s | ~200MB per doc | ZIP, TAR, etc. |
+| **Web formats** | 50-200 MB/s | Streaming | HTML, XML, JSON |
 
 ## OCR Support
 
-The WASM binding integrates [tesseract-wasm](https://github.com/robertknight/tesseract-wasm) for OCR support with 40+ languages.
+Kreuzberg supports multiple OCR backends for extracting text from scanned documents and images:
 
-### Basic OCR
+- **Tesseract-Wasm**
 
-```typescript
-import { extractBytes } from '@kreuzberg/wasm';
+### OCR Configuration Example
 
-const imageBytes = await fetch('./scan.jpg').then(r => r.arrayBuffer());
+```ts
+import { enableOcr, extractBytes, initWasm } from "@kreuzberg/wasm";
 
-const result = await extractBytes(
-  new Uint8Array(imageBytes),
-  'image/jpeg',
-  {
-    enable_ocr: true,
-    ocr_config: {
-      languages: ['eng'],  // English
-      backend: 'tesseract-wasm'
-    }
+async function extractWithOcr() {
+  await initWasm();
+
+  try {
+    await enableOcr();
+    console.log("OCR enabled successfully");
+  } catch (error) {
+    console.error("Failed to enable OCR:", error);
+    return;
   }
-);
 
-console.log('OCR text:', result.content);
+  const bytes = new Uint8Array(await fetch("scanned-page.png").then((r) => r.arrayBuffer()));
+
+  const result = await extractBytes(bytes, "image/png", {
+    ocr: {
+      backend: "tesseract-wasm",
+      language: "eng",
+    },
+  });
+
+  console.log("Extracted text:");
+  console.log(result.content);
+}
+
+extractWithOcr().catch(console.error);
 ```
 
-### Multi-Language OCR
+## Async Support
 
-```typescript
-const result = await extractBytes(imageBytes, 'image/png', {
-  enable_ocr: true,
-  ocr_config: {
-    languages: ['eng', 'deu', 'fra'],  // English, German, French
-    backend: 'tesseract-wasm'
+This binding provides full async/await support for non-blocking document processing:
+
+```ts
+import { extractBytes, initWasm, getWasmCapabilities } from "@kreuzberg/wasm";
+
+async function extractDocuments(files: Uint8Array[], mimeTypes: string[]) {
+  const caps = getWasmCapabilities();
+  if (!caps.hasWasm) {
+    throw new Error("WebAssembly not supported");
   }
-});
+
+  await initWasm();
+
+  const results = await Promise.all(
+    files.map((bytes, index) => extractBytes(bytes, mimeTypes[index]))
+  );
+
+  return results.map((r) => ({
+    content: r.content,
+    pageCount: r.metadata?.pageCount,
+  }));
+}
+
+const fileBytes = [new Uint8Array([1, 2, 3])];
+const mimes = ["application/pdf"];
+
+extractDocuments(fileBytes, mimes)
+  .then((results) => console.log(results))
+  .catch(console.error);
 ```
 
-### Supported Languages
+## Plugin System
 
-`eng`, `deu`, `fra`, `spa`, `ita`, `por`, `nld`, `pol`, `rus`, `jpn`, `chi_sim`, `chi_tra`, `kor`, `ara`, `hin`, `tha`, `vie`, and 25+ more.
+Kreuzberg supports extensible post-processing plugins for custom text transformation and filtering.
 
-Training data is automatically loaded from jsDelivr CDN:
-```
-https://cdn.jsdelivr.net/npm/tesseract-wasm@0.11.0/dist/{lang}.traineddata
+For detailed plugin documentation, visit [Plugin System Guide](https://kreuzberg.dev/plugins/).
+
+## Batch Processing
+
+Process multiple documents efficiently:
+
+```ts
+import { extractBytes, initWasm } from "@kreuzberg/wasm";
+
+interface DocumentJob {
+  name: string;
+  bytes: Uint8Array;
+  mimeType: string;
+}
+
+async function processBatch(documents: DocumentJob[], concurrency: number = 3) {
+  await initWasm();
+
+  const results: Record<string, string> = {};
+  const queue = [...documents];
+
+  const workers = Array(concurrency)
+    .fill(null)
+    .map(async () => {
+      while (queue.length > 0) {
+        const doc = queue.shift();
+        if (!doc) break;
+
+        try {
+          const result = await extractBytes(doc.bytes, doc.mimeType);
+          results[doc.name] = result.content;
+        } catch (error) {
+          console.error(`Failed to process ${doc.name}:`, error);
+        }
+      }
+    });
+
+  await Promise.all(workers);
+  return results;
+}
 ```
 
 ## Configuration
 
-### Extract Tables
+For advanced configuration options including language detection, table extraction, OCR settings, and more:
 
-```typescript
-import { extractBytes } from '@kreuzberg/wasm';
-
-const result = await extractBytes(pdfBytes, 'application/pdf', {
-  extract_tables: true
-});
-
-if (result.tables) {
-  for (const table of result.tables) {
-    console.log('Table as Markdown:');
-    console.log(table.markdown);
-
-    console.log('Table cells:');
-    console.log(JSON.stringify(table.cells, null, 2));
-  }
-}
-```
-
-### Extract Images
-
-```typescript
-import { extractBytes } from '@kreuzberg/wasm';
-
-const result = await extractBytes(pdfBytes, 'application/pdf', {
-  extract_images: true,
-  image_config: {
-    target_dpi: 300,
-    max_image_dimension: 4096
-  }
-});
-
-if (result.images) {
-  for (const image of result.images) {
-    console.log(`Image ${image.index}: ${image.format}`);
-    // image.data is a Uint8Array
-  }
-}
-```
-
-### Text Chunking
-
-```typescript
-import { extractBytes } from '@kreuzberg/wasm';
-
-const result = await extractBytes(pdfBytes, 'application/pdf', {
-  enable_chunking: true,
-  chunking_config: {
-    max_chars: 1000,
-    max_overlap: 200
-  }
-});
-
-if (result.chunks) {
-  for (const chunk of result.chunks) {
-    console.log(`Chunk ${chunk.index}: ${chunk.text.substring(0, 100)}...`);
-  }
-}
-```
-
-### Language Detection
-
-```typescript
-import { extractBytes } from '@kreuzberg/wasm';
-
-const result = await extractBytes(pdfBytes, 'application/pdf', {
-  enable_language_detection: true
-});
-
-if (result.language) {
-  console.log(`Detected language: ${result.language.code}`);
-  console.log(`Confidence: ${result.language.confidence}`);
-}
-```
-
-### Complete Configuration Example
-
-```typescript
-import {
-  extractBytes,
-  type ExtractionConfig
-} from '@kreuzberg/wasm';
-
-const config: ExtractionConfig = {
-  extract_tables: true,
-  extract_images: true,
-  extract_metadata: true,
-
-  enable_ocr: true,
-  ocr_config: {
-    languages: ['eng'],
-    backend: 'tesseract-wasm',
-    dpi: 300,
-    preprocessing: {
-      deskew: true,
-      denoise: true,
-      binarize: true
-    }
-  },
-
-  enable_chunking: true,
-  chunking_config: {
-    max_chars: 1000,
-    max_overlap: 200
-  },
-
-  enable_language_detection: true,
-
-  enable_quality: true,
-
-  extract_keywords: true,
-  keywords_config: {
-    max_keywords: 10,
-    method: 'yake'
-  }
-};
-
-const result = await extractBytes(data, mimeType, config);
-```
-
-## Advanced Usage
-
-### Batch Processing
-
-```typescript
-import { batchExtractFiles, batchExtractBytes } from '@kreuzberg/wasm';
-
-// Browser: Process multiple files
-const fileInput = document.querySelector<HTMLInputElement>('#files');
-const files = Array.from(fileInput.files);
-
-const results = await batchExtractFiles(files, {
-  extract_tables: true
-});
-
-for (const result of results) {
-  console.log(`${result.mime_type}: ${result.content.length} characters`);
-}
-
-// Or from Uint8Arrays
-const dataList = [pdfBytes1, pdfBytes2, pdfBytes3];
-const mimeTypes = ['application/pdf', 'application/pdf', 'application/pdf'];
-
-const results = await batchExtractBytes(dataList, mimeTypes);
-```
-
-### Synchronous Extraction
-
-```typescript
-import { extractBytesSync, batchExtractBytesSync } from '@kreuzberg/wasm';
-
-// Synchronous single extraction
-const result = extractBytesSync(data, 'application/pdf', config);
-
-// Synchronous batch extraction
-const results = batchExtractBytesSync(dataList, mimeTypes, config);
-```
-
-### Plugin System
-
-#### Custom Post-Processors
-
-```typescript
-import { registerPostProcessor } from '@kreuzberg/wasm';
-
-registerPostProcessor({
-  name: 'uppercase',
-  async process(result) {
-    return {
-      ...result,
-      content: result.content.toUpperCase()
-    };
-  }
-});
-
-// Now all extractions will use this processor
-const result = await extractBytes(data, mimeType);
-console.log(result.content); // UPPERCASE TEXT
-```
-
-#### Custom Validators
-
-```typescript
-import { registerValidator } from '@kreuzberg/wasm';
-
-registerValidator({
-  name: 'min-length',
-  async validate(result) {
-    if (result.content.length < 100) {
-      throw new Error('Document too short');
-    }
-  }
-});
-```
-
-#### Custom OCR Backends
-
-```typescript
-import { registerOcrBackend } from '@kreuzberg/wasm';
-
-registerOcrBackend({
-  name: 'custom-ocr',
-  supportedLanguages() {
-    return ['eng', 'fra'];
-  },
-  async initialize() {
-    // Initialize your OCR backend
-  },
-  async processImage(imageBytes, language) {
-    // Process image and return result
-    return {
-      content: 'extracted text',
-      mime_type: 'text/plain',
-      metadata: {},
-      tables: []
-    };
-  },
-  async shutdown() {
-    // Cleanup
-  }
-});
-```
-
-### MIME Type Detection
-
-```typescript
-import {
-  detectMimeFromBytes,
-  getMimeFromExtension,
-  getExtensionsForMime,
-  normalizeMimeType
-} from '@kreuzberg/wasm';
-
-// Auto-detect MIME type from file bytes
-const mimeType = detectMimeFromBytes(fileBytes);
-
-// Get MIME type from file extension
-const mime = getMimeFromExtension('pdf'); // 'application/pdf'
-
-// Get extensions for MIME type
-const extensions = getExtensionsForMime('application/pdf'); // ['pdf']
-
-// Normalize MIME type
-const normalized = normalizeMimeType('application/PDF'); // 'application/pdf'
-```
-
-### Configuration Loading
-
-```typescript
-import { loadConfigFromString } from '@kreuzberg/wasm';
-
-// Load from YAML
-const yamlConfig = `
-extract_tables: true
-enable_ocr: true
-ocr_config:
-  languages: [eng, deu]
-`;
-const config = loadConfigFromString(yamlConfig, 'yaml');
-
-// Load from JSON
-const jsonConfig = '{"extract_tables":true}';
-const config2 = loadConfigFromString(jsonConfig, 'json');
-
-// Load from TOML
-const tomlConfig = 'extract_tables = true';
-const config3 = loadConfigFromString(tomlConfig, 'toml');
-```
-
-## API Reference
-
-### Extraction Functions
-
-#### `extractFile(file: File, mimeType?: string, config?: ExtractionConfig): Promise<ExtractionResult>`
-Extract content from a browser `File` object.
-
-#### `extractBytes(data: Uint8Array, mimeType: string, config?: ExtractionConfig): Promise<ExtractionResult>`
-Asynchronously extract content from a `Uint8Array`.
-
-#### `extractBytesSync(data: Uint8Array, mimeType: string, config?: ExtractionConfig): ExtractionResult`
-Synchronously extract content from a `Uint8Array`.
-
-#### `batchExtractFiles(files: File[], config?: ExtractionConfig): Promise<ExtractionResult[]>`
-Extract multiple files in parallel.
-
-#### `batchExtractBytes(dataList: Uint8Array[], mimeTypes: string[], config?: ExtractionConfig): Promise<ExtractionResult[]>`
-Extract multiple byte arrays in parallel.
-
-#### `batchExtractBytesSync(dataList: Uint8Array[], mimeTypes: string[], config?: ExtractionConfig): ExtractionResult[]`
-Extract multiple byte arrays synchronously.
-
-### Plugin Management
-
-#### Post-Processors
-
-```typescript
-registerPostProcessor(processor: PostProcessorProtocol): void
-unregisterPostProcessor(name: string): void
-clearPostProcessors(): void
-listPostProcessors(): string[]
-```
-
-#### Validators
-
-```typescript
-registerValidator(validator: ValidatorProtocol): void
-unregisterValidator(name: string): void
-clearValidators(): void
-listValidators(): string[]
-```
-
-#### OCR Backends
-
-```typescript
-registerOcrBackend(backend: OcrBackendProtocol): void
-unregisterOcrBackend(name: string): void
-clearOcrBackends(): void
-listOcrBackends(): string[]
-```
-
-### Document Extractors
-
-```typescript
-listDocumentExtractors(): string[]
-unregisterDocumentExtractor(name: string): void
-clearDocumentExtractors(): void
-```
-
-### MIME Utilities
-
-```typescript
-detectMimeFromBytes(data: Uint8Array): string
-getMimeFromExtension(ext: string): string | null
-getExtensionsForMime(mime: string): string[]
-normalizeMimeType(mime: string): string
-```
-
-### Configuration
-
-```typescript
-loadConfigFromString(content: string, format: 'yaml' | 'toml' | 'json'): ExtractionConfig
-```
-
-### Embeddings
-
-```typescript
-listEmbeddingPresets(): string[]
-getEmbeddingPreset(name: string): EmbeddingPreset | null
-```
-
-## Types
-
-All types are shared via the `@kreuzberg/core` package:
-
-```typescript
-import type {
-  ExtractionResult,
-  ExtractionConfig,
-  OcrConfig,
-  ChunkingConfig,
-  ImageConfig,
-  KeywordsConfig,
-  Table,
-  ExtractedImage,
-  Chunk,
-  Metadata,
-  PostProcessorProtocol,
-  ValidatorProtocol,
-  OcrBackendProtocol
-} from '@kreuzberg/core';
-```
-
-### ExtractionResult
-
-Main result object containing:
-- `content: string` - Extracted text content
-- `mime_type: string` - MIME type of the document
-- `metadata?: Metadata` - Document metadata
-- `tables?: Table[]` - Extracted tables
-- `images?: ExtractedImage[]` - Extracted images
-- `chunks?: Chunk[]` - Text chunks (if chunking enabled)
-- `language?: LanguageInfo` - Detected language (if enabled)
-- `keywords?: Keyword[]` - Extracted keywords (if enabled)
-
-### ExtractionConfig
-
-Configuration object for extraction:
-- `extract_tables?: boolean` - Extract tables as structured data
-- `extract_images?: boolean` - Extract embedded images
-- `extract_metadata?: boolean` - Extract document metadata
-- `enable_ocr?: boolean` - Enable OCR for images
-- `ocr_config?: OcrConfig` - OCR settings
-- `enable_chunking?: boolean` - Split text into semantic chunks
-- `chunking_config?: ChunkingConfig` - Text chunking settings
-- `enable_language_detection?: boolean` - Detect document language
-- `enable_quality?: boolean` - Encoding detection, normalization
-- `extract_keywords?: boolean` - Extract important keywords
-- `keywords_config?: KeywordsConfig` - Keyword extraction settings
-
-### Table
-
-Extracted table structure:
-- `markdown: string` - Table in Markdown format
-- `cells: TableCell[][]` - 2D array of table cells
-- `row_count: number` - Number of rows
-- `column_count: number` - Number of columns
-
-## Supported Formats
-
-| Category | Formats |
-|----------|---------|
-| **Documents** | PDF, DOCX, DOC, PPTX, PPT, XLSX, XLS, ODT, ODP, ODS, RTF |
-| **Images** | PNG, JPEG, JPG, WEBP, BMP, TIFF, GIF |
-| **Web** | HTML, XHTML, XML, EPUB |
-| **Text** | TXT, MD, RST, LaTeX, CSV, TSV, JSON, YAML, TOML, ORG, BIB, TYP, FB2 |
-| **Email** | EML, MSG |
-| **Archives** | ZIP, TAR, 7Z |
-| **Other** | And 30+ more formats |
-
-## Build from Source
-
-### Prerequisites
-
-- Rust 1.75+ with `wasm32-unknown-unknown` target
-- Node.js 18+ with pnpm
-- wasm-pack
-
-```bash
-# Install Rust target
-rustup target add wasm32-unknown-unknown
-
-# Install wasm-pack
-curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-
-# Build WASM package
-cd crates/kreuzberg-wasm
-pnpm install
-pnpm run build
-
-# Run tests
-pnpm test
-```
-
-### Build Targets
-
-```bash
-# For browsers (ESM modules)
-pnpm run build:wasm:web
-
-# For bundlers (webpack, rollup, vite)
-pnpm run build:wasm:bundler
-
-# For Node.js
-pnpm run build:wasm:nodejs
-
-# For Deno
-pnpm run build:wasm:deno
-
-# Build all targets
-pnpm run build:all
-```
-
-## Limitations
-
-### No File System Access
-
-The WASM binding cannot access the file system directly. Use file readers:
-
-```typescript
-// ❌ Won't work
-await extractFileSync('./document.pdf');  // Throws error
-
-// ✅ Use file readers instead
-const bytes = await Deno.readFile('./document.pdf');  // Deno
-const bytes = await fs.readFile('./document.pdf');    // Node.js
-const bytes = await file.arrayBuffer();                // Browser
-```
-
-### OCR Training Data
-
-Tesseract training data (`.traineddata` files) are loaded from jsDelivr CDN on first use. For offline usage or custom CDN, see the [OCR documentation](https://kreuzberg.dev).
-
-### Size Constraints
-
-Cloudflare Workers has a 10MB bundle size limit (compressed). The WASM binary is ~2MB compressed, leaving room for your application code.
-
-### HTML File Size Limits
-
-**WASM builds have a 2MB limit for HTML files** due to limited stack space. HTML files larger than 2MB will be rejected with a validation error to prevent stack overflow.
-
-```typescript
-// Files > 2MB will throw an error in WASM builds
-const largeHtml = new Uint8Array(3 * 1024 * 1024); // 3MB
-await extractBytes(largeHtml, 'text/html');
-// ❌ Throws: "HTML file size exceeds WASM limit of 2MB"
-```
-
-For large HTML files, use the native [@kreuzberg/node](https://www.npmjs.com/package/@kreuzberg/node) binding which has no size limits.
-
-### PDF Extraction in Non-Browser Environments
-
-PDF extraction requires PDFium, which is only available in browser environments. In Deno, Node.js, and Cloudflare Workers, PDF extraction will fail with an error.
-
-```typescript
-// ❌ Won't work in Deno/Node.js/Workers
-await extractBytes(pdfBytes, 'application/pdf');
-// Throws: "PDF extraction requires proper WASM module initialization"
-```
-
-**Solutions:**
-- **Browser**: PDF extraction works out of the box
-- **Deno/Node.js**: Use [@kreuzberg/node](https://www.npmjs.com/package/@kreuzberg/node) with native PDFium bindings
-- **Cloudflare Workers**: PDF extraction is not currently supported
-
-## Troubleshooting
-
-### "WASM module failed to initialize"
-
-Ensure your bundler is configured to handle WASM files:
-
-**Vite:**
-```typescript
-// vite.config.ts
-export default {
-  optimizeDeps: {
-    exclude: ['@kreuzberg/wasm']
-  }
-}
-```
-
-**Webpack:**
-```javascript
-// webpack.config.js
-module.exports = {
-  experiments: {
-    asyncWebAssembly: true
-  }
-}
-```
-
-### "Module not found: @kreuzberg/core"
-
-The @kreuzberg/core package is a peer dependency. Install it:
-
-```bash
-pnpm add @kreuzberg/core
-```
-
-### Memory Issues in Workers
-
-For large documents in Cloudflare Workers, process in smaller chunks:
-
-```typescript
-const result = await extractBytes(pdfBytes, 'application/pdf', {
-  chunking_config: { max_chars: 1000 }
-});
-```
-
-### OCR Not Working
-
-Check that tesseract-wasm is loading correctly. The training data is automatically fetched from CDN on first use.
-
-## Examples
-
-See the [`examples/`](./examples/) directory for complete working examples:
-
-- **Browser**: Vanilla JS file upload interface
-- **Deno**: Command-line document extraction
-- **Cloudflare Workers**: Document processing API
-- **Node.js**: Batch processing script
+**[Configuration Guide](https://kreuzberg.dev/configuration/)**
 
 ## Documentation
 
-For comprehensive documentation, visit [https://kreuzberg.dev](https://kreuzberg.dev)
+- **[Official Documentation](https://kreuzberg.dev/)**
+- **[API Reference](https://kreuzberg.dev/reference/api-wasm/)**
+- **[Examples & Guides](https://kreuzberg.dev/guides/)**
+
+## Troubleshooting
+
+For common issues and solutions, visit [Troubleshooting Guide](https://kreuzberg.dev/troubleshooting/).
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guide](https://github.com/kreuzberg-dev/kreuzberg/blob/main/docs/contributing.md) for details.
+Contributions are welcome! See [Contributing Guide](https://github.com/kreuzberg-dev/kreuzberg/blob/main/CONTRIBUTING.md).
 
 ## License
 
-MIT
+MIT License - see LICENSE file for details.
 
-## Links
+## Support
 
-- [Website](https://kreuzberg.dev)
-- [Documentation](https://kreuzberg.dev)
-- [GitHub](https://github.com/kreuzberg-dev/kreuzberg)
-- [Issue Tracker](https://github.com/kreuzberg-dev/kreuzberg/issues)
-- [Changelog](https://github.com/kreuzberg-dev/kreuzberg/blob/main/CHANGELOG.md)
-- [npm Package](https://www.npmjs.com/package/@kreuzberg/wasm)
-
-## Related Packages
-
-- [@kreuzberg/node](https://www.npmjs.com/package/@kreuzberg/node) - Native Node.js bindings (NAPI)
-- [@kreuzberg/core](https://www.npmjs.com/package/@kreuzberg/core) - Shared TypeScript types
-- [kreuzberg](https://crates.io/crates/kreuzberg) - Rust core library
+- **Discord Community**: [Join our Discord](https://discord.gg/pXxagNK2zN)
+- **GitHub Issues**: [Report bugs](https://github.com/kreuzberg-dev/kreuzberg/issues)
+- **Discussions**: [Ask questions](https://github.com/kreuzberg-dev/kreuzberg/discussions)

@@ -1,13 +1,17 @@
+version: "4.0.0"
+license: "MIT"
+
 languages:
   python:
     name: Python
+    template: language_package.md.jinja
     package_manager:
       - pip
     package_name: kreuzberg
     badge_url: https://img.shields.io/pypi/v/kreuzberg?label=Python
     docs_url: https://kreuzberg.dev/
     description: |
-      High-performance document intelligence engine for Python built on a Rust core. Extract text, metadata, and structured information from PDFs, Office documents, images, and 56 formats with extensible OCR backends and processing pipelines.
+      Extract text, tables, images, and metadata from 56 file formats including PDF, Office documents, and images. Native Python bindings with async/await support, multiple OCR backends (Tesseract, EasyOCR, PaddleOCR), and extensible plugin system.
     features:
       ocr: true
       async: true
@@ -22,15 +26,16 @@ languages:
       - ocr_backends
       - system_requirements
     snippets:
-      basic_extraction: getting-started/01_basic_extraction.py
-      async_extraction: getting-started/02_async_extraction.py
-      batch_processing: getting-started/03_batch_processing.py
-      ocr_configuration: ocr/01_tesseract.py
-      table_extraction: config/01_table_extraction.py
+      basic_extraction: getting-started/basic_usage.md
+      async_extraction: getting-started/extract_file.md
+      batch_processing: getting-started/extract_with_ocr.md
+      ocr_configuration: getting-started/hello_world.md
+      table_extraction: getting-started/read_content.md
 
   typescript:
     name: TypeScript (Node.js)
     template: language_package.md.jinja
+    output_path: crates/kreuzberg-node/README.md
     package_manager:
       - npm
       - pnpm
@@ -39,7 +44,7 @@ languages:
     badge_url: https://img.shields.io/npm/v/@kreuzberg/node?label=TypeScript
     docs_url: https://kreuzberg.dev/
     description: |
-      High-performance document intelligence engine for Node.js and TypeScript built on a Rust core. Extract text, tables, images, and metadata from 56 file formats including PDF, DOCX, PPTX, XLSX, images, and more. Native NAPI-RS bindings provide superior performance over WASM.
+      Extract text, tables, images, and metadata from 56 file formats including PDF, Office documents, and images. Native NAPI-RS bindings for Node.js with superior performance, async/await support, and TypeScript type definitions.
     features:
       ocr: true
       async: true
@@ -53,21 +58,22 @@ languages:
       - ocr_support
       - performance
     snippets:
-      basic_extraction: getting-started/01_basic_extraction.ts
-      async_extraction: getting-started/02_async_extraction.ts
-      batch_processing: getting-started/03_batch_processing.ts
-      ocr_configuration: ocr/01_tesseract.ts
-      table_extraction: config/01_table_extraction.ts
+      basic_extraction: getting-started/basic_usage.md
+      async_extraction: getting-started/extract_file_async.md
+      batch_processing: getting-started/batch_extract_files_sync.md
+      ocr_configuration: config/config_ocr.md
+      table_extraction: api/tables.md
 
   go:
     name: Go
+    template: language_package.md.jinja
     package_manager:
       - go get
     package_name: github.com/kreuzberg-dev/kreuzberg/packages/go/v4
     badge_url: https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go
     docs_url: https://kreuzberg.dev/
     description: |
-      High-performance document intelligence engine for Go built on the Rust core that powers every Kreuzberg binding. Extract text, tables, images, and metadata from 56 formats with native Go API and context-aware async support.
+      Extract text, tables, images, and metadata from 56 file formats including PDF, Office documents, and images. Go bindings with context-aware async support, idiomatic Go API, and CGO-based native performance.
     features:
       ocr: true
       async: true
@@ -79,10 +85,10 @@ languages:
       - system_requirements
       - ffi_build_instructions
     snippets:
-      basic_extraction: getting-started/01_basic_extraction.go
-      async_extraction: getting-started/02_async_extraction.go
-      batch_processing: getting-started/03_batch_processing.go
-      ocr_configuration: ocr/01_tesseract.go
+      basic_extraction: getting-started/basic_usage.md
+      async_extraction: getting-started/extract_file.md
+      batch_processing: getting-started/extract_with_ocr.md
+      ocr_configuration: getting-started/hello_world.md
 
   java:
     name: Java
@@ -94,7 +100,7 @@ languages:
     badge_url: https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java
     docs_url: https://kreuzberg.dev/
     description: |
-      High-performance document intelligence engine for Java applications built on a Rust core. Extract text, tables, images, and metadata from 56 file formats with type-safe Java API and native performance.
+      Extract text, tables, images, and metadata from 56 file formats including PDF, Office documents, and images. Java bindings with type-safe API, Foreign Function & Memory API integration, and native performance.
     features:
       ocr: true
       async: true
@@ -106,11 +112,11 @@ languages:
       - maven_gradle_setup
       - system_requirements
     snippets:
-      basic_extraction: getting-started/01_basic_extraction.java
-      async_extraction: getting-started/02_async_extraction.java
-      batch_processing: getting-started/03_batch_processing.java
-      ocr_configuration: ocr/01_tesseract.java
-      configuration: config/01_configuration.java
+      basic_extraction: getting-started/basic_usage.md
+      async_extraction: api/extract_file_async.md
+      batch_processing: api/batch_extract_files_sync.md
+      ocr_configuration: ocr/ocr_extraction.md
+      configuration: config/config_basic.md
 
   php:
     name: PHP
@@ -121,7 +127,7 @@ languages:
     badge_url: https://img.shields.io/badge/Packagist-kreuzberg-blue
     docs_url: https://kreuzberg.dev/
     description: |
-      High-performance document intelligence engine for PHP applications built on a Rust core. Extract text, tables, images, and metadata from 56 file formats with PHP bindings.
+      Extract text, tables, images, and metadata from 56 file formats including PDF, Office documents, and images. PHP bindings with modern PHP 8.2+ support and type-safe API.
     features:
       ocr: true
       async: false
@@ -133,12 +139,13 @@ languages:
       - composer_installation
       - system_requirements
     snippets:
-      basic_extraction: getting-started/01_basic_extraction.php
-      batch_processing: getting-started/02_batch_processing.php
-      ocr_configuration: ocr/01_tesseract.php
+      basic_extraction: quickstart/basic_extraction_oop.php
+      batch_processing: extraction/batch_processing.php
+      ocr_configuration: ocr/basic_ocr.php
 
   ruby:
     name: Ruby
+    template: language_package.md.jinja
     package_manager:
       - rubygems
       - bundler
@@ -146,7 +153,7 @@ languages:
     badge_url: https://img.shields.io/gem/v/kreuzberg?label=Ruby
     docs_url: https://kreuzberg.dev/
     description: |
-      High-performance document intelligence engine for Ruby built on a Rust core. Extract text, tables, images, and metadata from 56 file formats including PDF, DOCX, PPTX, XLSX, images, and more.
+      Extract text, tables, images, and metadata from 56 file formats including PDF, Office documents, and images. Ruby bindings with idiomatic Ruby API and native performance.
     features:
       ocr: true
       async: true
@@ -158,9 +165,10 @@ languages:
       - system_requirements
       - development_setup
     snippets:
-      basic_extraction: getting-started/01_basic_extraction.rb
-      batch_processing: getting-started/02_batch_processing.rb
-      ocr_configuration: ocr/01_tesseract.rb
+      basic_extraction: getting-started/basic_usage.md
+      async_extraction: getting-started/extract_file.md
+      batch_processing: getting-started/install_verify.md
+      ocr_configuration: getting-started/extract_with_ocr.md
 
   csharp:
     name: C#
@@ -171,7 +179,7 @@ languages:
     badge_url: https://img.shields.io/nuget/v/Goldziher.Kreuzberg?label=C%23
     docs_url: https://kreuzberg.dev/
     description: |
-      High-performance document intelligence engine for .NET and C# built on a Rust core. Extract text, tables, images, and metadata from 56 file formats with full type safety and async/await support.
+      Extract text, tables, images, and metadata from 56 file formats including PDF, Office documents, and images. .NET bindings with full type safety, async/await support, and .NET 6.0+ compatibility.
     features:
       ocr: true
       async: true
@@ -183,10 +191,10 @@ languages:
       - dotnet_installation
       - system_requirements
     snippets:
-      basic_extraction: getting-started/01_basic_extraction.cs
-      async_extraction: getting-started/02_async_extraction.cs
-      batch_processing: getting-started/03_batch_processing.cs
-      ocr_configuration: ocr/01_tesseract.cs
+      basic_extraction: getting-started/basic_usage.cs
+      async_extraction: advanced/async_extraction.cs
+      batch_processing: advanced/batch_processing.cs
+      ocr_configuration: ocr/tesseract_backend.cs
 
   elixir:
     name: Elixir
@@ -197,7 +205,7 @@ languages:
     badge_url: https://img.shields.io/badge/Hex-kreuzberg-purple
     docs_url: https://kreuzberg.dev/
     description: |
-      High-performance document intelligence engine for Elixir built on a Rust core. Extract text, tables, images, and metadata from 56 file formats with native BEAM concurrency and OTP integration.
+      Extract text, tables, images, and metadata from 56 file formats including PDF, Office documents, and images. Elixir bindings with native BEAM concurrency, OTP integration, and idiomatic Elixir API.
     features:
       ocr: true
       async: true
@@ -210,15 +218,16 @@ languages:
       - async_with_tasks
       - plugin_system
     snippets:
-      basic_extraction: getting-started/01_basic_extraction.exs
-      async_extraction: getting-started/02_async_extraction.exs
-      batch_processing: getting-started/03_batch_processing.exs
-      ocr_configuration: ocr/01_tesseract.exs
-      plugin_system: plugins/01_post_processors.exs
+      basic_extraction: getting-started/basic_usage.exs
+      async_extraction: getting-started/extract_file.exs
+      batch_processing: core/batch_extract_files_sync.exs
+      ocr_configuration: ocr/tesseract_basic.exs
+      plugin_system: plugins/word_count_processor.exs
 
   wasm:
     name: WebAssembly
     template: language_package.md.jinja
+    output_path: crates/kreuzberg-wasm/README.md
     package_manager:
       - npm
       - pnpm
@@ -227,7 +236,7 @@ languages:
     badge_url: https://img.shields.io/npm/v/@kreuzberg/wasm?label=WASM
     docs_url: https://kreuzberg.dev/
     description: |
-      High-performance document intelligence engine for browsers, Deno, and Cloudflare Workers built with WebAssembly. Extract text, tables, images, and metadata from 56 file formats with portable WASM bindings and multi-threading support.
+      Extract text, tables, images, and metadata from 56 file formats including PDF, Office documents, and images. WebAssembly bindings for browsers, Deno, and Cloudflare Workers with portable deployment and multi-threading support.
     features:
       ocr: true
       async: true
@@ -241,9 +250,10 @@ languages:
       - ocr_support
       - performance_comparison
     snippets:
-      browser_extraction: getting-started/01_browser_extraction.ts
-      node_extraction: getting-started/02_node_extraction.ts
-      async_extraction: getting-started/02_node_extraction.ts
-      cloudflare_workers: getting-started/03_cloudflare_workers.ts
-      batch_processing: getting-started/04_batch_processing.ts
-      ocr_configuration: ocr/01_tesseract.ts
+      basic_extraction: getting-started/basic-extract.ts
+      browser_extraction: getting-started/browser-file-input.ts
+      node_extraction: getting-started/basic-extract.ts
+      async_extraction: getting-started/async-extraction.ts
+      cloudflare_workers: getting-started/runtime-detection.ts
+      batch_processing: getting-started/batch-processing.ts
+      ocr_configuration: ocr/enable-ocr.ts

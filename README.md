@@ -90,8 +90,15 @@ Each language binding provides comprehensive documentation with examples and bes
 **Native:**
 - **[Rust](https://github.com/kreuzberg-dev/kreuzberg/tree/main/crates/kreuzberg)** – Core library, flexible feature flags, zero-copy APIs
 
+**Containers:**
+- **[Docker](https://kreuzberg.dev/guides/docker/)** – Official images with API, CLI, and MCP server modes (Core: ~1.0-1.3GB, Full: ~1.5-2.1GB with LibreOffice)
+
 **Command-Line:**
 - **[CLI](https://kreuzberg.dev/cli/usage/)** – Cross-platform binary, batch processing, MCP server mode
+
+**Docker:**
+- **[Docker](https://kreuzberg.dev/guides/docker/)** - Two images `core` and `full`. Available for both x86 and ARM
+
 
 ### Embeddings Support (Optional)
 
@@ -122,11 +129,11 @@ To use embeddings functionality:
 
 ### Images (OCR-Enabled)
 
-**Raster:** `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.bmp`, `.tiff`, `.tif`
-**Advanced:** `.jp2`, `.jpx`, `.jpm`, `.mj2`, `.pnm`, `.pbm`, `.pgm`, `.ppm`
-**Vector:** `.svg`
-
-All image formats support OCR with table detection and metadata extraction (EXIF, dimensions, color space).
+| Category | Formats | Features |
+|----------|---------|----------|
+| **Raster** | `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.bmp`, `.tiff`, `.tif` | OCR, table detection, EXIF metadata, dimensions, color space |
+| **Advanced** | `.jp2`, `.jpx`, `.jpm`, `.mj2`, `.pnm`, `.pbm`, `.pgm`, `.ppm` | OCR, table detection, format-specific metadata |
+| **Vector** | `.svg` | DOM parsing, embedded text, graphics metadata |
 
 ### Web & Data
 
@@ -155,175 +162,50 @@ All image formats support OCR with table detection and metadata extraction (EXIF
 
 ## Key Features
 
-### OCR with Table Extraction
+<details>
+<summary><strong>OCR with Table Extraction</strong></summary>
 
 Multiple OCR backends (Tesseract, EasyOCR, PaddleOCR) with intelligent table detection and reconstruction. Extract structured data from scanned documents and images with configurable accuracy thresholds.
 
 **[OCR Backend Documentation →](https://kreuzberg.dev/guides/ocr/)**
 
-### Batch Processing
+</details>
+
+<details>
+<summary><strong>Batch Processing</strong></summary>
 
 Process multiple documents concurrently with configurable parallelism. Optimize throughput for large-scale document processing workloads with automatic resource management.
 
 **[Batch Processing Guide →](https://kreuzberg.dev/features/#batch-processing)**
 
-### Password-Protected PDFs
+</details>
+
+<details>
+<summary><strong>Password-Protected PDFs</strong></summary>
 
 Handle encrypted PDFs with single or multiple password attempts. Supports both RC4 and AES encryption with automatic fallback strategies.
 
 **[PDF Configuration →](https://kreuzberg.dev/migration/v3-to-v4/#password-protected-pdfs)**
 
-### Language Detection
+</details>
+
+<details>
+<summary><strong>Language Detection</strong></summary>
 
 Automatic language detection in extracted text using fast-langdetect. Configure confidence thresholds and access per-language statistics.
 
 **[Language Detection Guide →](https://kreuzberg.dev/features/#language-detection)**
 
-### Metadata Extraction
+</details>
+
+<details>
+<summary><strong>Metadata Extraction</strong></summary>
 
 Extract comprehensive metadata from all supported formats: authors, titles, creation dates, page counts, EXIF data, and format-specific properties.
 
 **[Metadata Guide →](https://kreuzberg.dev/reference/types/#metadata)**
 
-## Deployment Options
-
-### REST API Server
-
-Production-ready API server with OpenAPI documentation, health checks, and telemetry support. Deploy standalone or in containers with automatic format detection and streaming support.
-
-**[API Server Documentation →](https://kreuzberg.dev/guides/api-server/)**
-
-### MCP Server (AI Integration)
-
-Model Context Protocol server for AI assistants. Enables AI agents to extract and process documents directly with full configuration support.
-
-**[MCP Server Documentation →](https://kreuzberg.dev/guides/api-server/#mcp-server_1)**
-
-### Docker
-
-Official Docker images available in multiple variants:
-
-- **Core** (~1.0-1.3GB): Full featured core, including API, CLI, MCP and Embedding with ONNX runtime
-- **Full** (~1.5-2.1GB): Adds LibreOffice for legacy Office formats (.doc, .ppt)
-
-All images support API server, CLI, and MCP server modes with automatic platform detection for linux/amd64 and linux/arm64.
-
-**[Docker Deployment Guide →](https://kreuzberg.dev/guides/docker/)**
-
-## Comparison with Alternatives
-
-| Feature | Kreuzberg | docling | unstructured | LlamaParse |
-|---------|-----------|---------|--------------|------------|
-| **Formats** | 56 | PDF, DOCX | 30+ | PDF only |
-| **Self-hosted** | ✅ Yes (MIT) | ✅ Yes | ✅ Yes | ❌ API only |
-| **Programming Languages** | Rust, Python, Ruby, TS, Java, Go, C# | Python | Python | API (any) |
-| **Table Extraction** | ✅ Good | ✅ Good | ✅ Basic | ✅ Excellent |
-| **OCR** | ✅ Multiple backends | ✅ Yes | ✅ Yes | ✅ Yes |
-| **Embeddings** | ✅ Built-in | ❌ No | ❌ No | ❌ No |
-| **Chunking** | ✅ Built-in | ❌ No | ✅ Yes | ❌ No |
-| **Cost** | Free (MIT) | Free (MIT) | Free (Apache 2.0) | $0.003/page |
-| **Air-gap deployments** | ✅ Yes | ✅ Yes | ✅ Yes | ❌ No |
-
-## Architecture
-
-Kreuzberg is built as an extensible document intelligence engine with a Rust core, plugin system, and polyglot bindings.
-
-<details>
-<summary><strong>System Architecture Diagram</strong></summary>
-
-```mermaid
-graph TB
-    subgraph RustCore["Rust Core Engine"]
-        direction TB
-        PDFium["PDFium\n(Native Bindings)"]
-        Parsers["Document Parsers\n(PDF, Office, Images, Web)"]
-        TesseractCore["Tesseract OCR\n(Native Binding)"]
-        Cache["Cache Layer"]
-        Runtime["Tokio Async Runtime"]
-
-        PDFium --> Parsers
-        TesseractCore --> Parsers
-        Cache --> Parsers
-        Runtime --> Parsers
-    end
-
-    subgraph PluginSystem["Extensibility Layer"]
-        direction TB
-        OcrBackend["OcrBackend Trait"]
-        Extractor["DocumentExtractor Trait"]
-        Validator["Validator Trait"]
-        PostProcessor["PostProcessor Trait"]
-        Registry["Plugin Registry"]
-
-        Registry --> OcrBackend
-        Registry --> Extractor
-        Registry --> Validator
-        Registry --> PostProcessor
-    end
-
-    subgraph BindingLayer["Language Bindings"]
-        direction TB
-        PyBind["Python (PyO3)"]
-        NodeBind["Node.js (NAPI-RS)"]
-        WasmBind["WASM"]
-        GoBind["Go (FFI)"]
-        JavaBind["Java (FFM)"]
-        CSharpBind["C# (P/Invoke)"]
-        PhpBind["PHP (FFI)"]
-        RubyBind["Ruby (Magnus)"]
-        ElixirBind["Elixir (Rustler)"]
-    end
-
-    subgraph Extensions["Language-Specific Extensions"]
-        direction TB
-        EasyOCR["EasyOCR\n(Python)"]
-        PaddleOCR["PaddleOCR\n(Python)"]
-        Guten["Guten OCR\n(Node.js)"]
-        TesseractWasm["Tesseract-WASM\n(WASM)"]
-    end
-
-    subgraph Output["Output & Features"]
-        direction TB
-        Text["Extracted Text"]
-        Metadata["Metadata"]
-        Tables["Tables"]
-        Images["Images"]
-        Chunks["Chunks"]
-        Embeddings["Embeddings (ONNX)"]
-    end
-
-    subgraph Deployment["Deployment Options"]
-        direction TB
-        CLI["CLI Tool"]
-        RestAPI["REST API Server"]
-        MCP["MCP Server"]
-        Docker["Docker Images"]
-    end
-
-    RustCore --> PluginSystem
-    PluginSystem --> BindingLayer
-    BindingLayer --> Extensions
-    PluginSystem --> Output
-    RustCore --> Output
-    RustCore --> Deployment
-
-    style RustCore fill:#CE422B
-    style PluginSystem fill:#F5A623
-    style BindingLayer fill:#4A90E2
-    style Extensions fill:#7ED321
-    style Output fill:#9013FE
-    style Deployment fill:#50E3C2
-```
-
 </details>
-
-### Design Principles
-
-- **Rust core with native PDFium** – PDFium integrated via native bindings, bundled by default
-- **Extensible architecture** – Plugin system for custom OCR backends, validators, post-processors, and extractors
-- **High performance** – Global Tokio runtime, SIMD optimizations, zero-copy operations, streaming parsers
-- **Memory efficient** – Streaming parsers for multi-GB files, lazy initialization
-- **Polyglot bindings** – Native bindings for 9 languages, language-specific extensions supported
 
 ## Documentation
 

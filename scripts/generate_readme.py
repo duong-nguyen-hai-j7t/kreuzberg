@@ -168,6 +168,7 @@ class ReadmeGenerator:
         language = match.group(1) or 'text'
         code = match.group(2).rstrip()
 
+        # Return the complete code block with fences
         return f"```{language}\n{code}\n```\n"
 
     def _wrap_code_block(self, content: str, snippet_path: Path, language: str) -> str:
@@ -182,6 +183,12 @@ class ReadmeGenerator:
         Returns:
             Code wrapped in markdown fences
         """
+        # Check if content already has fence markers to prevent double-wrapping
+        content_stripped = content.lstrip()
+        if content_stripped.startswith('```'):
+            # Content already has fences, return as-is
+            return content
+
         # Determine language from file extension if not provided
         ext_map = {
             '.py': 'python',
@@ -236,6 +243,8 @@ class ReadmeGenerator:
         # Prepare context for template
         context = {
             'language': lang_code,
+            'version': self.config.get('version', ''),
+            'license': self.config.get('license', 'MIT'),
             **lang_config,
         }
 
@@ -317,7 +326,11 @@ class ReadmeGenerator:
 
         for lang_code, lang_config in languages.items():
             try:
-                readme_path = self.packages_dir / lang_code / "README.md"
+                # Check if language config has custom output_path
+                if 'output_path' in lang_config:
+                    readme_path = self.project_root / lang_config['output_path']
+                else:
+                    readme_path = self.packages_dir / lang_code / "README.md"
 
                 if validate_only:
                     if not self.validate_readme(lang_code, lang_config, readme_path):

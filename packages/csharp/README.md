@@ -1,127 +1,92 @@
-# Kreuzberg
+# C\#
 
-[![Rust](https://img.shields.io/crates/v/kreuzberg?label=Rust&color=007ec6)](https://crates.io/crates/kreuzberg)
-[![Python](https://img.shields.io/pypi/v/kreuzberg?label=Python&color=007ec6)](https://pypi.org/project/kreuzberg/)
-[![TypeScript](https://img.shields.io/npm/v/@kreuzberg/node?label=TypeScript&color=007ec6)](https://www.npmjs.com/package/@kreuzberg/node)
-[![WASM](https://img.shields.io/npm/v/@kreuzberg/wasm?label=WASM&color=007ec6)](https://www.npmjs.com/package/@kreuzberg/wasm)
-[![Ruby](https://img.shields.io/gem/v/kreuzberg?label=Ruby&color=007ec6)](https://rubygems.org/gems/kreuzberg)
-[![Java](https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6)](https://central.sonatype.com/artifact/dev.kreuzberg/kreuzberg)
-[![Go](https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6)](https://pkg.go.dev/github.com/kreuzberg-dev/kreuzberg)
-[![C#](https://img.shields.io/nuget/v/Goldziher.Kreuzberg?label=C%23&color=007ec6)](https://www.nuget.org/packages/Goldziher.Kreuzberg/)
+<div align="center" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 20px 0;">
+  <!-- Language Bindings -->
+  <a href="https://crates.io/crates/kreuzberg">
+    <img src="https://img.shields.io/crates/v/kreuzberg?label=Rust&color=007ec6" alt="Rust">
+  </a>
+  <a href="https://hex.pm/packages/kreuzberg">
+    <img src="https://img.shields.io/hexpm/v/kreuzberg?label=Elixir&color=007ec6" alt="Elixir">
+  </a>
+  <a href="https://pypi.org/project/kreuzberg/">
+    <img src="https://img.shields.io/pypi/v/kreuzberg?label=Python&color=007ec6" alt="Python">
+  </a>
+  <a href="https://www.npmjs.com/package/@kreuzberg/node">
+    <img src="https://img.shields.io/npm/v/@kreuzberg/node?label=Node.js&color=007ec6" alt="Node.js">
+  </a>
+  <a href="https://www.npmjs.com/package/@kreuzberg/wasm">
+    <img src="https://img.shields.io/npm/v/@kreuzberg/wasm?label=WASM&color=007ec6" alt="WASM">
+  </a>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Documentation](https://img.shields.io/badge/docs-kreuzberg.dev-007ec6)](https://kreuzberg.dev/)
-[![Discord](https://img.shields.io/badge/Discord-Join%20our%20community-007ec6)](https://discord.gg/pXxagNK2zN)
+<a href="https://central.sonatype.com/artifact/dev.kreuzberg/kreuzberg">
+    <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
+  </a>
+  <a href="https://github.com/kreuzberg-dev/kreuzberg/releases">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.0.0-*" alt="Go">
+  </a>
+  <a href="https://www.nuget.org/packages/Kreuzberg/">
+    <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
+  </a>
+  <a href="https://packagist.org/packages/kreuzberg/kreuzberg">
+    <img src="https://img.shields.io/packagist/v/kreuzberg/kreuzberg?label=PHP&color=007ec6" alt="PHP">
+  </a>
+  <a href="https://rubygems.org/gems/kreuzberg">
+    <img src="https://img.shields.io/gem/v/kreuzberg?label=Ruby&color=007ec6" alt="Ruby">
+  </a>
 
-High-performance document intelligence for .NET. Extract text, metadata, and structured information from PDFs, Office documents, images, and 56 formats.
+<!-- Project Info -->
 
-**Powered by a Rust core** – Native performance for document extraction with safe P/Invoke bindings.
+<a href="https://github.com/kreuzberg-dev/kreuzberg/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License">
+  </a>
+  <a href="https://docs.kreuzberg.dev">
+    <img src="https://img.shields.io/badge/docs-kreuzberg.dev-blue" alt="Documentation">
+  </a>
+</div>
+
+<img width="1128" height="191" alt="Banner2" src="https://github.com/user-attachments/assets/419fc06c-8313-4324-b159-4b4d3cfce5c0" />
+
+<div align="center" style="margin-top: 20px;">
+  <a href="https://discord.gg/pXxagNK2zN">
+      <img height="22" src="https://img.shields.io/badge/Discord-Join%20our%20community-7289da?logo=discord&logoColor=white" alt="Discord">
+  </a>
+</div>
+
+Extract text, tables, images, and metadata from 56 file formats including PDF, Office documents, and images. .NET bindings with full type safety, async/await support, and .NET 6.0+ compatibility.
 
 > **Version 4.0.0 Release Candidate**
+> Kreuzberg v4.0.0 is in **Release Candidate** stage. Bugs and breaking changes are expected.
 > This is a pre-release version. Please test the library and [report any issues](https://github.com/kreuzberg-dev/kreuzberg/issues) you encounter.
-
-## Features
-
-- **56 file formats** – PDF, DOCX, PPTX, XLSX, images, HTML, Markdown, XML, JSON, and more
-- **OCR support** – Built-in Tesseract OCR for scanned documents and images
-- **High performance** – Rust-powered extraction
-- **Table extraction** – Extract structured tables from documents
-- **Language detection** – Automatic language detection for extracted text
-- **Text chunking** – Split long documents into manageable chunks
-- **Image extraction** – Extract images embedded in documents
-- **Metadata** – Comprehensive format-specific metadata extraction
-- **Thread-safe** – Concurrent extraction with safe P/Invoke patterns
-- **Fully async** – Task-based async API alongside sync methods
 
 ## Installation
 
-```bash
-dotnet add package Kreuzberg
-```
+### Package Installation
 
-Or add directly to your project file:
-
-```xml
-<ItemGroup>
-    <PackageReference Include="Kreuzberg" Version="4.0.0-rc.22" />
-</ItemGroup>
-```
-
-## Requirements
-
-- **.NET 6.0 or higher**
-- **Windows, macOS, or Linux** (x64, ARM64)
-
-## System Requirements
-
-### ONNX Runtime (for embeddings)
-
-If using embeddings functionality, ONNX Runtime must be installed:
+Install via NuGet:
 
 ```bash
-# macOS
-brew install onnxruntime
-
-# Ubuntu/Debian
-sudo apt install libonnxruntime libonnxruntime-dev
-
-# Windows (MSVC)
-scoop install onnxruntime
-# OR download from https://github.com/microsoft/onnxruntime/releases
+dotnet add package Goldziher.Kreuzberg
 ```
 
-Without ONNX Runtime, embeddings will raise `MissingDependencyError` with installation instructions.
+Or via NuGet Package Manager:
 
-### Tesseract OCR (Optional)
-
-**macOS:**
-```bash
-brew install tesseract
+```
+Install-Package Goldziher.Kreuzberg
 ```
 
-**Ubuntu/Debian:**
-```bash
-sudo apt-get install tesseract-ocr
-```
+### System Requirements
 
-**Windows:**
-Download from [Tesseract GitHub](https://github.com/tesseract-ocr/tesseract/wiki/Downloads)
-
-### LibreOffice (Optional, for legacy Office formats)
-
-**macOS:**
-```bash
-brew install libreoffice
-```
-
-**Ubuntu/Debian:**
-```bash
-sudo apt-get install libreoffice
-```
+- **.NET 6.0+** required
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.21 or lower for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 
 ## Quick Start
 
-### Simple File Extraction
+### Basic Extraction
 
-```csharp
-using Kreuzberg;
+Extract text, metadata, and structure from any supported document format:
 
-var result = KreuzbergClient.ExtractFileSync("document.pdf");
-Console.WriteLine(result.Content);
-```
-
-### Async Extraction (Recommended)
-
-```csharp
-using Kreuzberg;
-
-var result = await KreuzbergClient.ExtractFileAsync("document.pdf");
-Console.WriteLine(result.Content);
-```
-
-### With Configuration
-
-```csharp
+```cs
 using Kreuzberg;
 
 var config = new ExtractionConfig
@@ -131,28 +96,20 @@ var config = new ExtractionConfig
 };
 
 var result = KreuzbergClient.ExtractFileSync("document.pdf", config);
+
 Console.WriteLine(result.Content);
+Console.WriteLine($"MIME Type: {result.MimeType}");
 ```
 
-### Batch Processing
+### Common Use Cases
 
-```csharp
-using Kreuzberg;
+#### Extract with Custom Configuration
 
-var files = new[] { "doc1.pdf", "doc2.docx", "doc3.xlsx" };
-var results = KreuzbergClient.BatchExtractFilesSync(files);
+Most use cases benefit from configuration to control extraction behavior:
 
-foreach (var result in results)
-{
-    Console.WriteLine($"{result.MimeType}: {result.Content.Length} characters");
-}
-```
+**With OCR (for scanned documents):**
 
-## OCR Support
-
-### Tesseract (Default)
-
-```csharp
+```cs
 using Kreuzberg;
 
 var config = new ExtractionConfig
@@ -160,422 +117,365 @@ var config = new ExtractionConfig
     Ocr = new OcrConfig
     {
         Backend = "tesseract",
-        Language = "eng"
-    }
-};
-
-var result = KreuzbergClient.ExtractFileSync("scanned.pdf", config);
-```
-
-### Table Extraction
-
-```csharp
-using Kreuzberg;
-
-var config = new ExtractionConfig
-{
-    Ocr = new OcrConfig
-    {
-        Backend = "tesseract",
+        Language = "eng+deu+fra",
         TesseractConfig = new TesseractConfig
         {
-            EnableTableDetection = true,
-            Psm = 6
+            Psm = 3
         }
     }
 };
 
-var result = KreuzbergClient.ExtractFileSync("invoice.pdf", config);
+var result = KreuzbergClient.ExtractFileSync("document.pdf", config);
+Console.WriteLine(result.Content);
+```
 
-foreach (var table in result.Tables)
+#### Table Extraction
+
+See [Table Extraction Guide](https://kreuzberg.dev/features/table-extraction/) for detailed examples.
+
+#### Processing Multiple Files
+
+```cs
+using Kreuzberg;
+using System.Collections.Generic;
+
+class Program
 {
-    Console.WriteLine(table.Markdown);
+    static async Task Main()
+    {
+        var config = new ExtractionConfig
+        {
+            UseCache = true,
+            EnableQualityProcessing = true
+        };
+
+        var filePaths = new[]
+        {
+            "document1.pdf",
+            "document2.pdf",
+            "document3.pdf"
+        };
+
+        try
+        {
+            var batchResults = new List<ExtractionResult>();
+
+            foreach (var filePath in filePaths)
+            {
+                var result = await KreuzbergClient.ExtractFileAsync(filePath, config);
+                batchResults.Add(result);
+                Console.WriteLine($"Processed {filePath}: {result.Content.Length} chars");
+            }
+
+            var tasks = filePaths.Select(path =>
+                KreuzbergClient.ExtractFileAsync(path, config)
+            ).ToArray();
+
+            var results = await Task.WhenAll(tasks);
+
+            var totalChars = results.Sum(r => r.Content.Length);
+            Console.WriteLine($"Total extracted: {totalChars} characters");
+        }
+        catch (KreuzbergException ex)
+        {
+            Console.WriteLine($"Batch processing error: {ex.Message}");
+        }
+    }
+}
+```
+
+#### Async Processing
+
+For non-blocking document processing:
+
+```cs
+using Kreuzberg;
+
+class Program
+{
+    static async Task Main()
+    {
+        try
+        {
+            var result = await KreuzbergClient.ExtractFileAsync("document.pdf");
+
+            Console.WriteLine($"Content length: {result.Content.Length}");
+            Console.WriteLine($"MIME type: {result.MimeType}");
+
+            var tasks = new[]
+            {
+                KreuzbergClient.ExtractFileAsync("file1.pdf"),
+                KreuzbergClient.ExtractFileAsync("file2.pdf"),
+                KreuzbergClient.ExtractFileAsync("file3.pdf")
+            };
+
+            var results = await Task.WhenAll(tasks);
+
+            foreach (var r in results)
+            {
+                Console.WriteLine($"Extracted {r.Content.Length} characters");
+            }
+        }
+        catch (KreuzbergException ex)
+        {
+            Console.WriteLine($"Extraction failed: {ex.Message}");
+        }
+    }
+}
+```
+
+### Next Steps
+
+- **[Installation Guide](https://kreuzberg.dev/getting-started/installation/)** - Platform-specific setup
+- **[API Documentation](https://kreuzberg.dev/api/)** - Complete API reference
+- **[Examples & Guides](https://kreuzberg.dev/guides/)** - Full code examples and usage guides
+- **[Configuration Guide](https://kreuzberg.dev/configuration/)** - Advanced configuration options
+- **[Troubleshooting](https://kreuzberg.dev/troubleshooting/)** - Common issues and solutions
+
+## Features
+
+### Supported File Formats (56+)
+
+56 file formats across 8 major categories with intelligent format detection and comprehensive metadata extraction.
+
+#### Office Documents
+
+| Category | Formats | Capabilities |
+|----------|---------|--------------|
+| **Word Processing** | `.docx`, `.odt` | Full text, tables, images, metadata, styles |
+| **Spreadsheets** | `.xlsx`, `.xlsm`, `.xlsb`, `.xls`, `.xla`, `.xlam`, `.xltm`, `.ods` | Sheet data, formulas, cell metadata, charts |
+| **Presentations** | `.pptx`, `.ppt`, `.ppsx` | Slides, speaker notes, images, metadata |
+| **PDF** | `.pdf` | Text, tables, images, metadata, OCR support |
+| **eBooks** | `.epub`, `.fb2` | Chapters, metadata, embedded resources |
+
+#### Images (OCR-Enabled)
+
+| Category | Formats | Features |
+|----------|---------|----------|
+| **Raster** | `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.bmp`, `.tiff`, `.tif` | OCR, table detection, EXIF metadata, dimensions, color space |
+| **Advanced** | `.jp2`, `.jpx`, `.jpm`, `.mj2`, `.pnm`, `.pbm`, `.pgm`, `.ppm` | OCR, table detection, format-specific metadata |
+| **Vector** | `.svg` | DOM parsing, embedded text, graphics metadata |
+
+#### Web & Data
+
+| Category | Formats | Features |
+|----------|---------|----------|
+| **Markup** | `.html`, `.htm`, `.xhtml`, `.xml`, `.svg` | DOM parsing, metadata (Open Graph, Twitter Card), link extraction |
+| **Structured Data** | `.json`, `.yaml`, `.yml`, `.toml`, `.csv`, `.tsv` | Schema detection, nested structures, validation |
+| **Text & Markdown** | `.txt`, `.md`, `.markdown`, `.rst`, `.org`, `.rtf` | CommonMark, GFM, reStructuredText, Org Mode |
+
+#### Email & Archives
+
+| Category | Formats | Features |
+|----------|---------|----------|
+| **Email** | `.eml`, `.msg` | Headers, body (HTML/plain), attachments, threading |
+| **Archives** | `.zip`, `.tar`, `.tgz`, `.gz`, `.7z` | File listing, nested archives, metadata |
+
+#### Academic & Scientific
+
+| Category | Formats | Features |
+|----------|---------|----------|
+| **Citations** | `.bib`, `.biblatex`, `.ris`, `.enw`, `.csl` | Bibliography parsing, citation extraction |
+| **Scientific** | `.tex`, `.latex`, `.typst`, `.jats`, `.ipynb`, `.docbook` | LaTeX, Jupyter notebooks, PubMed JATS |
+| **Documentation** | `.opml`, `.pod`, `.mdoc`, `.troff` | Technical documentation formats |
+
+**[Complete Format Reference](https://kreuzberg.dev/reference/formats/)**
+
+### Key Capabilities
+
+- **Text Extraction** - Extract all text content with position and formatting information
+
+- **Metadata Extraction** - Retrieve document properties, creation date, author, etc.
+
+- **Table Extraction** - Parse tables with structure and cell content preservation
+
+- **Image Extraction** - Extract embedded images and render page previews
+
+- **OCR Support** - Integrate multiple OCR backends for scanned documents
+
+- **Async/Await** - Non-blocking document processing with concurrent operations
+
+- **Plugin System** - Extensible post-processing for custom text transformation
+
+- **Embeddings** - Generate vector embeddings using ONNX Runtime models
+
+- **Batch Processing** - Efficiently process multiple documents in parallel
+
+- **Memory Efficient** - Stream large files without loading entirely into memory
+
+- **Language Detection** - Detect and support multiple languages in documents
+
+- **Configuration** - Fine-grained control over extraction behavior
+
+### Performance Characteristics
+
+| Format | Speed | Memory | Notes |
+|--------|-------|--------|-------|
+| **PDF (text)** | 10-100 MB/s | ~50MB per doc | Fastest extraction |
+| **Office docs** | 20-200 MB/s | ~100MB per doc | DOCX, XLSX, PPTX |
+| **Images (OCR)** | 1-5 MB/s | Variable | Depends on OCR backend |
+| **Archives** | 5-50 MB/s | ~200MB per doc | ZIP, TAR, etc. |
+| **Web formats** | 50-200 MB/s | Streaming | HTML, XML, JSON |
+
+## OCR Support
+
+Kreuzberg supports multiple OCR backends for extracting text from scanned documents and images:
+
+- **Tesseract**
+
+### OCR Configuration Example
+
+```cs
+using Kreuzberg;
+
+var config = new ExtractionConfig
+{
+    Ocr = new OcrConfig
+    {
+        Backend = "tesseract",
+        Language = "eng+deu+fra",
+        TesseractConfig = new TesseractConfig
+        {
+            Psm = 3
+        }
+    }
+};
+
+var result = KreuzbergClient.ExtractFileSync("document.pdf", config);
+Console.WriteLine(result.Content);
+```
+
+## Async Support
+
+This binding provides full async/await support for non-blocking document processing:
+
+```cs
+using Kreuzberg;
+
+class Program
+{
+    static async Task Main()
+    {
+        try
+        {
+            var result = await KreuzbergClient.ExtractFileAsync("document.pdf");
+
+            Console.WriteLine($"Content length: {result.Content.Length}");
+            Console.WriteLine($"MIME type: {result.MimeType}");
+
+            var tasks = new[]
+            {
+                KreuzbergClient.ExtractFileAsync("file1.pdf"),
+                KreuzbergClient.ExtractFileAsync("file2.pdf"),
+                KreuzbergClient.ExtractFileAsync("file3.pdf")
+            };
+
+            var results = await Task.WhenAll(tasks);
+
+            foreach (var r in results)
+            {
+                Console.WriteLine($"Extracted {r.Content.Length} characters");
+            }
+        }
+        catch (KreuzbergException ex)
+        {
+            Console.WriteLine($"Extraction failed: {ex.Message}");
+        }
+    }
+}
+```
+
+## Plugin System
+
+Kreuzberg supports extensible post-processing plugins for custom text transformation and filtering.
+
+For detailed plugin documentation, visit [Plugin System Guide](https://kreuzberg.dev/plugins/).
+
+## Embeddings Support
+
+Generate vector embeddings for extracted text using the built-in ONNX Runtime support. Requires ONNX Runtime installation.
+
+**[Embeddings Guide](https://kreuzberg.dev/features/#embeddings)**
+
+## Batch Processing
+
+Process multiple documents efficiently:
+
+```cs
+using Kreuzberg;
+using System.Collections.Generic;
+
+class Program
+{
+    static async Task Main()
+    {
+        var config = new ExtractionConfig
+        {
+            UseCache = true,
+            EnableQualityProcessing = true
+        };
+
+        var filePaths = new[]
+        {
+            "document1.pdf",
+            "document2.pdf",
+            "document3.pdf"
+        };
+
+        try
+        {
+            var batchResults = new List<ExtractionResult>();
+
+            foreach (var filePath in filePaths)
+            {
+                var result = await KreuzbergClient.ExtractFileAsync(filePath, config);
+                batchResults.Add(result);
+                Console.WriteLine($"Processed {filePath}: {result.Content.Length} chars");
+            }
+
+            var tasks = filePaths.Select(path =>
+                KreuzbergClient.ExtractFileAsync(path, config)
+            ).ToArray();
+
+            var results = await Task.WhenAll(tasks);
+
+            var totalChars = results.Sum(r => r.Content.Length);
+            Console.WriteLine($"Total extracted: {totalChars} characters");
+        }
+        catch (KreuzbergException ex)
+        {
+            Console.WriteLine($"Batch processing error: {ex.Message}");
+        }
+    }
 }
 ```
 
 ## Configuration
 
-### Complete Configuration Example
+For advanced configuration options including language detection, table extraction, OCR settings, and more:
 
-```csharp
-using Kreuzberg;
+**[Configuration Guide](https://kreuzberg.dev/configuration/)**
 
-var config = new ExtractionConfig
-{
-    UseCache = true,
-    EnableQualityProcessing = true,
-    Ocr = new OcrConfig
-    {
-        Backend = "tesseract",
-        Language = "eng",
-        TesseractConfig = new TesseractConfig
-        {
-            Psm = 6,
-            EnableTableDetection = true,
-            MinConfidence = 50.0
-        }
-    },
-    ForceOcr = false,
-    Chunking = new ChunkingConfig
-    {
-        MaxChars = 1000,
-        MaxOverlap = 200
-    },
-    Images = new ImageExtractionConfig
-    {
-        ExtractImages = true,
-        TargetDpi = 300,
-        MaxImageDimension = 4096,
-        AutoAdjustDpi = true
-    },
-    PdfOptions = new PdfConfig
-    {
-        ExtractImages = true,
-        Passwords = new List<string> { "password1", "password2" },
-        ExtractMetadata = true
-    },
-    LanguageDetection = new LanguageDetectionConfig
-    {
-        Enabled = true,
-        MinConfidence = 0.8
-    }
-};
+## Documentation
 
-var result = KreuzbergClient.ExtractFileSync("document.pdf", config);
-```
-
-## Metadata Extraction
-
-```csharp
-using Kreuzberg;
-
-var result = KreuzbergClient.ExtractFileSync("document.pdf");
-
-// Language detection
-Console.WriteLine($"Language: {result.Metadata.Language}");
-
-// PDF metadata
-if (result.Metadata.Format?.Pdf != null)
-{
-    Console.WriteLine($"Title: {result.Metadata.Format.Pdf.Title}");
-    Console.WriteLine($"Author: {result.Metadata.Format.Pdf.Author}");
-    Console.WriteLine($"Pages: {result.Metadata.Format.Pdf.PageCount}");
-}
-```
-
-## Password-Protected PDFs
-
-```csharp
-using Kreuzberg;
-
-var config = new ExtractionConfig
-{
-    PdfOptions = new PdfConfig
-    {
-        Passwords = new List<string> { "password1", "password2" }
-    }
-};
-
-var result = KreuzbergClient.ExtractFileSync("protected.pdf", config);
-```
-
-## Language Detection
-
-```csharp
-using Kreuzberg;
-
-var config = new ExtractionConfig
-{
-    LanguageDetection = new LanguageDetectionConfig
-    {
-        Enabled = true,
-        DetectMultiple = true
-    }
-};
-
-var result = KreuzbergClient.ExtractFileSync("multilingual.pdf", config);
-
-if (result.DetectedLanguages != null)
-{
-    foreach (var lang in result.DetectedLanguages)
-    {
-        Console.WriteLine(lang);
-    }
-}
-```
-
-## Text Chunking
-
-```csharp
-using Kreuzberg;
-
-var config = new ExtractionConfig
-{
-    Chunking = new ChunkingConfig
-    {
-        MaxChars = 1000,
-        MaxOverlap = 200
-    }
-};
-
-var result = KreuzbergClient.ExtractFileSync("long_document.pdf", config);
-
-if (result.Chunks != null)
-{
-    foreach (var chunk in result.Chunks)
-    {
-        Console.WriteLine($"Chunk {chunk.Metadata.ChunkIndex}/{chunk.Metadata.TotalChunks}");
-        Console.WriteLine(chunk.Content);
-    }
-}
-```
-
-## Extract from Bytes
-
-```csharp
-using Kreuzberg;
-
-var data = File.ReadAllBytes("document.pdf");
-var result = KreuzbergClient.ExtractBytesSync(data, "application/pdf");
-Console.WriteLine(result.Content);
-```
-
-## MIME Type Detection
-
-```csharp
-using Kreuzberg;
-
-// Detect from file
-var mimeType = KreuzbergClient.DetectMimeTypeFromPath("document.pdf");
-Console.WriteLine(mimeType); // "application/pdf"
-
-// Detect from bytes
-var data = File.ReadAllBytes("document");
-var mime = KreuzbergClient.DetectMimeType(data);
-
-// Get extensions for MIME type
-var extensions = KreuzbergClient.GetExtensionsForMime("application/pdf");
-Console.WriteLine(string.Join(", ", extensions)); // ".pdf"
-```
-
-## Exception Handling
-
-```csharp
-using Kreuzberg;
-
-try
-{
-    var result = KreuzbergClient.ExtractFileSync("document.pdf");
-}
-catch (KreuzbergValidationException ex)
-{
-    Console.WriteLine($"Validation error: {ex.Message}");
-}
-catch (KreuzbergParsingException ex)
-{
-    Console.WriteLine($"Parsing error: {ex.Message}");
-}
-catch (KreuzbergOcrException ex)
-{
-    Console.WriteLine($"OCR error: {ex.Message}");
-}
-catch (KreuzbergMissingDependencyException ex)
-{
-    Console.WriteLine($"Missing dependency: {ex.Message}");
-}
-catch (KreuzbergException ex)
-{
-    Console.WriteLine($"Kreuzberg error: {ex.Message}");
-}
-```
-
-## API Overview
-
-### Extraction Methods
-- `ExtractFileSync()` - Extract from file synchronously
-- `ExtractFileAsync()` - Extract from file asynchronously
-- `ExtractBytesSync()` - Extract from bytes synchronously
-- `ExtractBytesAsync()` - Extract from bytes asynchronously
-- `BatchExtractFilesSync()` - Batch extract multiple files
-- `BatchExtractFilesAsync()` - Async batch extract
-- `BatchExtractBytesSync()` - Batch extract from bytes
-- `BatchExtractBytesAsync()` - Async batch extract from bytes
-
-### MIME Type Detection
-- `DetectMimeType()` - Detect MIME from bytes
-- `DetectMimeTypeFromPath()` - Detect MIME from file path
-- `GetExtensionsForMime()` - Get extensions for MIME type
-
-### Configuration
-- `DiscoverExtractionConfig()` - Auto-discover config file
-- `LoadExtractionConfigFromFile()` - Load config from file
-
-### Plugin System
-- `RegisterPostProcessor()` / `UnregisterPostProcessor()` - Custom post-processors
-- `RegisterValidator()` / `UnregisterValidator()` - Custom validators
-- `RegisterOcrBackend()` / `UnregisterOcrBackend()` - Custom OCR backends
-
-### Utility
-- `GetVersion()` - Get native library version
-- `ListEmbeddingPresets()` - List embedding presets
-- `GetEmbeddingPreset()` - Get specific embedding preset
-
-## Build & Test
-
-### Build
-
-```bash
-dotnet build
-```
-
-### Run Tests
-
-```bash
-dotnet test
-```
-
-### Build Documentation
-
-```bash
-dotnet build --configuration Release
-```
-
-## Thread Safety
-
-All KreuzbergClient static methods are thread-safe and can be called concurrently from multiple threads. The binding uses safe P/Invoke patterns with proper memory management.
-
-## Examples
-
-### Process Files in Directory
-
-```csharp
-using Kreuzberg;
-
-var files = Directory.GetFiles("documents", "*.pdf");
-
-foreach (var file in files)
-{
-    try
-    {
-        var result = KreuzbergClient.ExtractFileSync(file);
-        if (result.Success)
-        {
-            File.WriteAllText($"{file}.txt", result.Content);
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error processing {file}: {ex.Message}");
-    }
-}
-```
-
-### Concurrent Processing with Task Parallel Library
-
-```csharp
-using Kreuzberg;
-using System.Threading.Tasks;
-
-var files = new[] { "doc1.pdf", "doc2.pdf", "doc3.pdf" };
-
-var results = await Task.WhenAll(files.Select(file =>
-    KreuzbergClient.ExtractFileAsync(file)
-));
-
-foreach (var result in results)
-{
-    Console.WriteLine($"Processed: {result.Content.Length} characters");
-}
-```
-
-### Custom Post-Processor
-
-```csharp
-using Kreuzberg;
-
-public class UppercaseProcessor : IPostProcessor
-{
-    public string Name => "uppercase";
-    public int Priority => 10;
-
-    public ExtractionResult Process(ExtractionResult result)
-    {
-        result.Content = result.Content.ToUpper();
-        return result;
-    }
-}
-
-KreuzbergClient.RegisterPostProcessor(new UppercaseProcessor());
-var result = KreuzbergClient.ExtractFileSync("document.pdf");
-KreuzbergClient.UnregisterPostProcessor("uppercase");
-```
-
-## Contributing
-
-We welcome contributions! Please:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-For more details, see the main [CONTRIBUTING.md](../../CONTRIBUTING.md).
+- **[Official Documentation](https://kreuzberg.dev/)**
+- **[API Reference](https://kreuzberg.dev/reference/api-csharp/)**
+- **[Examples & Guides](https://kreuzberg.dev/guides/)**
 
 ## Troubleshooting
 
-### DLL Not Found
+For common issues and solutions, visit [Troubleshooting Guide](https://kreuzberg.dev/troubleshooting/).
 
-Ensure the native library is properly installed in your runtime directory:
+## Contributing
 
-```bash
-# Check library paths
-echo $LD_LIBRARY_PATH     # Linux
-echo $DYLD_LIBRARY_PATH   # macOS
-```
-
-### OCR Not Working
-
-Verify Tesseract is installed and in PATH:
-
-```bash
-tesseract --version
-```
-
-### P/Invoke Errors
-
-Check that:
-1. Native library is installed
-2. Architecture matches (x64, ARM64)
-3. Dependencies are available if needed
-
-## PDFium Integration
-
-PDF extraction is powered by PDFium, which is automatically bundled with this package. No system installation required.
-
-### Platform Support
-
-| Platform | Status | Notes |
-|----------|--------|-------|
-| Linux x86_64 | ✅ | Bundled |
-| macOS ARM64 | ✅ | Bundled |
-| macOS x86_64 | ✅ | Bundled |
-| Windows x86_64 | ✅ | Bundled |
-
-### Binary Size Impact
-
-PDFium adds approximately 8-15 MB to the package size depending on platform. This ensures consistent PDF extraction across all environments without external dependencies.
-
-## Complete Documentation
-
-[https://kreuzberg.dev](https://kreuzberg.dev)
-
-- [Installation Guide](https://kreuzberg.dev/getting-started/installation/)
-- [User Guide](https://kreuzberg.dev/guides/extraction/)
-- [API Reference](https://kreuzberg.dev/reference/api-csharp/)
-- [Format Support](https://kreuzberg.dev/reference/formats/)
-- [OCR Backends](https://kreuzberg.dev/guides/ocr/)
+Contributions are welcome! See [Contributing Guide](https://github.com/kreuzberg-dev/kreuzberg/blob/main/CONTRIBUTING.md).
 
 ## License
 
-MIT License - see [LICENSE](../../LICENSE) for details.
+MIT License - see LICENSE file for details.
+
+## Support
+
+- **Discord Community**: [Join our Discord](https://discord.gg/pXxagNK2zN)
+- **GitHub Issues**: [Report bugs](https://github.com/kreuzberg-dev/kreuzberg/issues)
+- **Discussions**: [Ask questions](https://github.com/kreuzberg-dev/kreuzberg/discussions)

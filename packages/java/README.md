@@ -1,146 +1,424 @@
-# Kreuzberg
+# Java
 
-[![Rust](https://img.shields.io/crates/v/kreuzberg?label=Rust&color=007ec6)](https://crates.io/crates/kreuzberg)
-[![Python](https://img.shields.io/pypi/v/kreuzberg?label=Python&color=007ec6)](https://pypi.org/project/kreuzberg/)
-[![TypeScript](https://img.shields.io/npm/v/@kreuzberg/node?label=TypeScript&color=007ec6)](https://www.npmjs.com/package/@kreuzberg/node)
-[![WASM](https://img.shields.io/npm/v/@kreuzberg/wasm?label=WASM&color=007ec6)](https://www.npmjs.com/package/@kreuzberg/wasm)
-[![Ruby](https://img.shields.io/gem/v/kreuzberg?label=Ruby&color=007ec6)](https://rubygems.org/gems/kreuzberg)
-[![Java](https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6)](https://central.sonatype.com/artifact/dev.kreuzberg/kreuzberg)
-[![Go](https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6)](https://pkg.go.dev/github.com/kreuzberg-dev/kreuzberg)
-[![C#](https://img.shields.io/nuget/v/Goldziher.Kreuzberg?label=C%23&color=007ec6)](https://www.nuget.org/packages/Goldziher.Kreuzberg/)
+<div align="center" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 20px 0;">
+  <!-- Language Bindings -->
+  <a href="https://crates.io/crates/kreuzberg">
+    <img src="https://img.shields.io/crates/v/kreuzberg?label=Rust&color=007ec6" alt="Rust">
+  </a>
+  <a href="https://hex.pm/packages/kreuzberg">
+    <img src="https://img.shields.io/hexpm/v/kreuzberg?label=Elixir&color=007ec6" alt="Elixir">
+  </a>
+  <a href="https://pypi.org/project/kreuzberg/">
+    <img src="https://img.shields.io/pypi/v/kreuzberg?label=Python&color=007ec6" alt="Python">
+  </a>
+  <a href="https://www.npmjs.com/package/@kreuzberg/node">
+    <img src="https://img.shields.io/npm/v/@kreuzberg/node?label=Node.js&color=007ec6" alt="Node.js">
+  </a>
+  <a href="https://www.npmjs.com/package/@kreuzberg/wasm">
+    <img src="https://img.shields.io/npm/v/@kreuzberg/wasm?label=WASM&color=007ec6" alt="WASM">
+  </a>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Documentation](https://img.shields.io/badge/docs-kreuzberg.dev-007ec6)](https://kreuzberg.dev/)
-[![Discord](https://img.shields.io/badge/Discord-Join%20our%20community-007ec6)](https://discord.gg/pXxagNK2zN)
+<a href="https://central.sonatype.com/artifact/dev.kreuzberg/kreuzberg">
+    <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
+  </a>
+  <a href="https://github.com/kreuzberg-dev/kreuzberg/releases">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.0.0-*" alt="Go">
+  </a>
+  <a href="https://www.nuget.org/packages/Kreuzberg/">
+    <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
+  </a>
+  <a href="https://packagist.org/packages/kreuzberg/kreuzberg">
+    <img src="https://img.shields.io/packagist/v/kreuzberg/kreuzberg?label=PHP&color=007ec6" alt="PHP">
+  </a>
+  <a href="https://rubygems.org/gems/kreuzberg">
+    <img src="https://img.shields.io/gem/v/kreuzberg?label=Ruby&color=007ec6" alt="Ruby">
+  </a>
 
-High-performance document intelligence library for Java with native Rust bindings via FFM API.
+<!-- Project Info -->
 
-## Features
+<a href="https://github.com/kreuzberg-dev/kreuzberg/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License">
+  </a>
+  <a href="https://docs.kreuzberg.dev">
+    <img src="https://img.shields.io/badge/docs-kreuzberg.dev-blue" alt="Documentation">
+  </a>
+</div>
 
-- **PDF Extraction**: Extract text, tables, metadata, and images from PDF documents
-- **Office Documents**: Support for DOCX, XLSX, PPTX, and other Office formats
-- **OCR**: Built-in OCR support with multiple backends (Tesseract, PaddleOCR, EasyOCR)
-- **Table Extraction**: Advanced table detection and extraction
-- **Image Processing**: Extract and process embedded images
-- **Metadata**: Comprehensive metadata extraction
-- **Fast**: Native Rust implementation for maximum performance
-- **Modern Java**: Uses Java 25+ Foreign Function & Memory API (no JNI)
+<img width="1128" height="191" alt="Banner2" src="https://github.com/user-attachments/assets/419fc06c-8313-4324-b159-4b4d3cfce5c0" />
 
-## Requirements
+<div align="center" style="margin-top: 20px;">
+  <a href="https://discord.gg/pXxagNK2zN">
+      <img height="22" src="https://img.shields.io/badge/Discord-Join%20our%20community-7289da?logo=discord&logoColor=white" alt="Discord">
+  </a>
+</div>
 
-- Java 25 or higher
-- Native libraries are bundled with the package (Linux/macOS/Windows)
+Extract text, tables, images, and metadata from 56 file formats including PDF, Office documents, and images. Java bindings with type-safe API, Foreign Function & Memory API integration, and native performance.
 
-If you need to override native discovery (e.g., custom builds), set `KREUZBERG_FFI_DIR` to a directory containing the
-native libraries (`libkreuzberg_ffi` and `libpdfium` for your platform).
-
-## System Requirements
-
-### ONNX Runtime (for embeddings)
-
-If using embeddings functionality, ONNX Runtime must be installed:
-
-```bash
-# macOS
-brew install onnxruntime
-
-# Ubuntu/Debian
-sudo apt install libonnxruntime libonnxruntime-dev
-
-# Windows (MSVC)
-scoop install onnxruntime
-# OR download from https://github.com/microsoft/onnxruntime/releases
-```
-
-Without ONNX Runtime, embeddings will raise `MissingDependencyError` with installation instructions.
+> **Version 4.0.0 Release Candidate**
+> Kreuzberg v4.0.0 is in **Release Candidate** stage. Bugs and breaking changes are expected.
+> This is a pre-release version. Please test the library and [report any issues](https://github.com/kreuzberg-dev/kreuzberg/issues) you encounter.
 
 ## Installation
 
-### Maven
+### Package Installation
+
+Install via one of the supported package managers:
+
+**Maven:**
 
 ```xml
 <dependency>
     <groupId>dev.kreuzberg</groupId>
     <artifactId>kreuzberg</artifactId>
-    <version>4.0.0-rc.22</version>
+    <version>4.0.0</version>
 </dependency>
 ```
 
-### Gradle
+**Gradle:**
 
 ```gradle
-implementation 'dev.kreuzberg:kreuzberg:4.0.0-rc.22'
+implementation 'dev.kreuzberg:kreuzberg:4.0.0'
 ```
 
-## Usage
+### System Requirements
+
+- **Java 11+** required
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.21 or lower for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+
+## Quick Start
+
+### Basic Extraction
+
+Extract text, metadata, and structure from any supported document format:
 
 ```java
 import dev.kreuzberg.Kreuzberg;
-import dev.kreuzberg.KreuzbergException;
+import dev.kreuzberg.ExtractionResult;
 import java.io.IOException;
+import java.util.Map;
 
-public class Example {
-    public static void main(String[] args) {
-        try {
-            var result = Kreuzberg.extractFile("document.pdf");
-            System.out.println(result.content());
-            System.out.println(result.mimeType());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (KreuzbergException e) {
-            e.printStackTrace();
+public class BasicUsage {
+    public static void main(String[] args) throws IOException {
+        ExtractionResult result = Kreuzberg.extractFile("document.pdf");
+
+        System.out.println("Content:");
+        System.out.println(result.getContent());
+
+        System.out.println("\nMetadata:");
+        Map<String, Object> metadata = result.getMetadata();
+        if (metadata != null) {
+            System.out.println("Title: " + metadata.get("title"));
+            System.out.println("Author: " + metadata.get("author"));
         }
+
+        System.out.println("\nTables found: " + result.getTables().size());
+        System.out.println("Images found: " + result.getImages().size());
     }
 }
 ```
 
-### With Custom Configuration
+### Common Use Cases
+
+#### Extract with Custom Configuration
+
+Most use cases benefit from configuration to control extraction behavior:
+
+**With OCR (for scanned documents):**
 
 ```java
 import dev.kreuzberg.Kreuzberg;
+import dev.kreuzberg.ExtractionResult;
 import dev.kreuzberg.KreuzbergException;
 import dev.kreuzberg.config.ExtractionConfig;
 import dev.kreuzberg.config.OcrConfig;
 import java.io.IOException;
 
-ExtractionConfig config = ExtractionConfig.builder()
-    .ocr(OcrConfig.builder()
-        .backend("tesseract")
-        .language("eng")
-        .build())
-    .build();
+public class Main {
+    public static void main(String[] args) {
+        try {
+            ExtractionConfig config = ExtractionConfig.builder()
+                .ocr(OcrConfig.builder()
+                    .backend("tesseract")
+                    .language("eng")
+                    .build())
+                .build();
+
+            ExtractionResult result = Kreuzberg.extractFile("scanned.pdf", config);
+            System.out.println(result.getContent());
+        } catch (IOException | KreuzbergException e) {
+            System.err.println("Extraction failed: " + e.getMessage());
+        }
+    }
+}
+```
+
+#### Table Extraction
+
+See [Table Extraction Guide](https://kreuzberg.dev/features/table-extraction/) for detailed examples.
+
+#### Processing Multiple Files
+
+```java
+import dev.kreuzberg.Kreuzberg;
+import dev.kreuzberg.ExtractionResult;
+import dev.kreuzberg.KreuzbergException;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 try {
-    var result = Kreuzberg.extractFile(java.nio.file.Path.of("scanned.pdf"), config);
-    System.out.println(result.content());
-} catch (IOException e) {
-    e.printStackTrace();
-} catch (KreuzbergException e) {
+    List<String> files = Arrays.asList("doc1.pdf", "doc2.docx", "doc3.pptx");
+
+    List<ExtractionResult> results = Kreuzberg.batchExtractFiles(files, null);
+
+    for (int i = 0; i < results.size(); i++) {
+        ExtractionResult result = results.get(i);
+        System.out.println("File " + (i + 1) + ": " + result.getContent().length() + " characters");
+    }
+} catch (IOException | KreuzbergException e) {
     e.printStackTrace();
 }
 ```
 
-## PDFium Integration
+#### Async Processing
 
-PDF extraction is powered by PDFium, which is automatically bundled with this package. No system installation required.
+For non-blocking document processing:
 
-### Platform Support
+```java
+import dev.kreuzberg.Kreuzberg;
+import dev.kreuzberg.ExtractionResult;
+import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 
-| Platform | Status | Notes |
-|----------|--------|-------|
-| Linux x86_64 | ✅ | Bundled |
-| macOS ARM64 | ✅ | Bundled |
-| macOS x86_64 | ✅ | Bundled |
-| Windows x86_64 | ✅ | Bundled |
+public class Example {
+    public static void main(String[] args) {
+        CompletableFuture<ExtractionResult> future =
+            Kreuzberg.extractFileAsync(Path.of("document.pdf"), null);
 
-### Binary Size Impact
+        future.thenAccept(result -> {
+            System.out.println(result.getContent());
+            System.out.println("Tables: " + result.getTables().size());
+        }).join();
+    }
+}
+```
 
-PDFium adds approximately 8-15 MB to the package size depending on platform. This ensures consistent PDF extraction across all environments without external dependencies.
+### Next Steps
+
+- **[Installation Guide](https://kreuzberg.dev/getting-started/installation/)** - Platform-specific setup
+- **[API Documentation](https://kreuzberg.dev/api/)** - Complete API reference
+- **[Examples & Guides](https://kreuzberg.dev/guides/)** - Full code examples and usage guides
+- **[Configuration Guide](https://kreuzberg.dev/configuration/)** - Advanced configuration options
+- **[Troubleshooting](https://kreuzberg.dev/troubleshooting/)** - Common issues and solutions
+
+## Features
+
+### Supported File Formats (56+)
+
+56 file formats across 8 major categories with intelligent format detection and comprehensive metadata extraction.
+
+#### Office Documents
+
+| Category | Formats | Capabilities |
+|----------|---------|--------------|
+| **Word Processing** | `.docx`, `.odt` | Full text, tables, images, metadata, styles |
+| **Spreadsheets** | `.xlsx`, `.xlsm`, `.xlsb`, `.xls`, `.xla`, `.xlam`, `.xltm`, `.ods` | Sheet data, formulas, cell metadata, charts |
+| **Presentations** | `.pptx`, `.ppt`, `.ppsx` | Slides, speaker notes, images, metadata |
+| **PDF** | `.pdf` | Text, tables, images, metadata, OCR support |
+| **eBooks** | `.epub`, `.fb2` | Chapters, metadata, embedded resources |
+
+#### Images (OCR-Enabled)
+
+| Category | Formats | Features |
+|----------|---------|----------|
+| **Raster** | `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.bmp`, `.tiff`, `.tif` | OCR, table detection, EXIF metadata, dimensions, color space |
+| **Advanced** | `.jp2`, `.jpx`, `.jpm`, `.mj2`, `.pnm`, `.pbm`, `.pgm`, `.ppm` | OCR, table detection, format-specific metadata |
+| **Vector** | `.svg` | DOM parsing, embedded text, graphics metadata |
+
+#### Web & Data
+
+| Category | Formats | Features |
+|----------|---------|----------|
+| **Markup** | `.html`, `.htm`, `.xhtml`, `.xml`, `.svg` | DOM parsing, metadata (Open Graph, Twitter Card), link extraction |
+| **Structured Data** | `.json`, `.yaml`, `.yml`, `.toml`, `.csv`, `.tsv` | Schema detection, nested structures, validation |
+| **Text & Markdown** | `.txt`, `.md`, `.markdown`, `.rst`, `.org`, `.rtf` | CommonMark, GFM, reStructuredText, Org Mode |
+
+#### Email & Archives
+
+| Category | Formats | Features |
+|----------|---------|----------|
+| **Email** | `.eml`, `.msg` | Headers, body (HTML/plain), attachments, threading |
+| **Archives** | `.zip`, `.tar`, `.tgz`, `.gz`, `.7z` | File listing, nested archives, metadata |
+
+#### Academic & Scientific
+
+| Category | Formats | Features |
+|----------|---------|----------|
+| **Citations** | `.bib`, `.biblatex`, `.ris`, `.enw`, `.csl` | Bibliography parsing, citation extraction |
+| **Scientific** | `.tex`, `.latex`, `.typst`, `.jats`, `.ipynb`, `.docbook` | LaTeX, Jupyter notebooks, PubMed JATS |
+| **Documentation** | `.opml`, `.pod`, `.mdoc`, `.troff` | Technical documentation formats |
+
+**[Complete Format Reference](https://kreuzberg.dev/reference/formats/)**
+
+### Key Capabilities
+
+- **Text Extraction** - Extract all text content with position and formatting information
+
+- **Metadata Extraction** - Retrieve document properties, creation date, author, etc.
+
+- **Table Extraction** - Parse tables with structure and cell content preservation
+
+- **Image Extraction** - Extract embedded images and render page previews
+
+- **OCR Support** - Integrate multiple OCR backends for scanned documents
+
+- **Async/Await** - Non-blocking document processing with concurrent operations
+
+- **Plugin System** - Extensible post-processing for custom text transformation
+
+- **Embeddings** - Generate vector embeddings using ONNX Runtime models
+
+- **Batch Processing** - Efficiently process multiple documents in parallel
+
+- **Memory Efficient** - Stream large files without loading entirely into memory
+
+- **Language Detection** - Detect and support multiple languages in documents
+
+- **Configuration** - Fine-grained control over extraction behavior
+
+### Performance Characteristics
+
+| Format | Speed | Memory | Notes |
+|--------|-------|--------|-------|
+| **PDF (text)** | 10-100 MB/s | ~50MB per doc | Fastest extraction |
+| **Office docs** | 20-200 MB/s | ~100MB per doc | DOCX, XLSX, PPTX |
+| **Images (OCR)** | 1-5 MB/s | Variable | Depends on OCR backend |
+| **Archives** | 5-50 MB/s | ~200MB per doc | ZIP, TAR, etc. |
+| **Web formats** | 50-200 MB/s | Streaming | HTML, XML, JSON |
+
+## OCR Support
+
+Kreuzberg supports multiple OCR backends for extracting text from scanned documents and images:
+
+- **Tesseract**
+
+### OCR Configuration Example
+
+```java
+import dev.kreuzberg.Kreuzberg;
+import dev.kreuzberg.ExtractionResult;
+import dev.kreuzberg.KreuzbergException;
+import dev.kreuzberg.config.ExtractionConfig;
+import dev.kreuzberg.config.OcrConfig;
+import java.io.IOException;
+
+public class Main {
+    public static void main(String[] args) {
+        try {
+            ExtractionConfig config = ExtractionConfig.builder()
+                .ocr(OcrConfig.builder()
+                    .backend("tesseract")
+                    .language("eng")
+                    .build())
+                .build();
+
+            ExtractionResult result = Kreuzberg.extractFile("scanned.pdf", config);
+            System.out.println(result.getContent());
+        } catch (IOException | KreuzbergException e) {
+            System.err.println("Extraction failed: " + e.getMessage());
+        }
+    }
+}
+```
+
+## Async Support
+
+This binding provides full async/await support for non-blocking document processing:
+
+```java
+import dev.kreuzberg.Kreuzberg;
+import dev.kreuzberg.ExtractionResult;
+import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
+
+public class Example {
+    public static void main(String[] args) {
+        CompletableFuture<ExtractionResult> future =
+            Kreuzberg.extractFileAsync(Path.of("document.pdf"), null);
+
+        future.thenAccept(result -> {
+            System.out.println(result.getContent());
+            System.out.println("Tables: " + result.getTables().size());
+        }).join();
+    }
+}
+```
+
+## Plugin System
+
+Kreuzberg supports extensible post-processing plugins for custom text transformation and filtering.
+
+For detailed plugin documentation, visit [Plugin System Guide](https://kreuzberg.dev/plugins/).
+
+## Embeddings Support
+
+Generate vector embeddings for extracted text using the built-in ONNX Runtime support. Requires ONNX Runtime installation.
+
+**[Embeddings Guide](https://kreuzberg.dev/features/#embeddings)**
+
+## Batch Processing
+
+Process multiple documents efficiently:
+
+```java
+import dev.kreuzberg.Kreuzberg;
+import dev.kreuzberg.ExtractionResult;
+import dev.kreuzberg.KreuzbergException;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+try {
+    List<String> files = Arrays.asList("doc1.pdf", "doc2.docx", "doc3.pptx");
+
+    List<ExtractionResult> results = Kreuzberg.batchExtractFiles(files, null);
+
+    for (int i = 0; i < results.size(); i++) {
+        ExtractionResult result = results.get(i);
+        System.out.println("File " + (i + 1) + ": " + result.getContent().length() + " characters");
+    }
+} catch (IOException | KreuzbergException e) {
+    e.printStackTrace();
+}
+```
+
+## Configuration
+
+For advanced configuration options including language detection, table extraction, OCR settings, and more:
+
+**[Configuration Guide](https://kreuzberg.dev/configuration/)**
 
 ## Documentation
 
-For comprehensive documentation, visit [https://kreuzberg.dev](https://kreuzberg.dev)
+- **[Official Documentation](https://kreuzberg.dev/)**
+- **[API Reference](https://kreuzberg.dev/reference/api-java/)**
+- **[Examples & Guides](https://kreuzberg.dev/guides/)**
+
+## Troubleshooting
+
+For common issues and solutions, visit [Troubleshooting Guide](https://kreuzberg.dev/troubleshooting/).
+
+## Contributing
+
+Contributions are welcome! See [Contributing Guide](https://github.com/kreuzberg-dev/kreuzberg/blob/main/CONTRIBUTING.md).
 
 ## License
 
-MIT License - see [LICENSE](../../LICENSE) for details.
+MIT License - see LICENSE file for details.
+
+## Support
+
+- **Discord Community**: [Join our Discord](https://discord.gg/pXxagNK2zN)
+- **GitHub Issues**: [Report bugs](https://github.com/kreuzberg-dev/kreuzberg/issues)
+- **Discussions**: [Ask questions](https://github.com/kreuzberg-dev/kreuzberg/discussions)
