@@ -7,8 +7,8 @@ version="${tag#v}"
 module_tag="packages/go/v4/v${version}"
 
 if git rev-parse "$module_tag" >/dev/null 2>&1; then
-	echo "::notice::Go module tag $module_tag already exists; skipping."
-	exit 0
+  echo "::notice::Go module tag $module_tag already exists; skipping."
+  exit 0
 fi
 
 git tag "$module_tag" "$tag"

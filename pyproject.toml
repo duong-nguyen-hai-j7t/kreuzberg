@@ -1,183 +1,169 @@
 [build-system]
 build-backend = "maturin"
-requires = [ "maturin>=1,<2" ]
+requires = ["maturin>=1,<2"]
 
 [dependency-groups]
 dev = [
-  "covdefaults>=2.3.0",
-  "maturin>=1.10.2",
-  "mypy>=1.19.0",
-  "prek>=0.2.21",
-  "pyproject-fmt>=2.11.1",
-  "pytest>=9.0.2",
-  "pytest-asyncio>=1.3.0",
-  "pytest-cov>=7.0.0",
-  "pytest-mock>=3.15.1",
-  "pytest-rerunfailures>=16.1",
-  "pytest-timeout>=2.4.0",
-  "ruff>=0.14.8",
-  "types-pillow>=10.2",
-  "types-psutil>=7.1.3.20251202",
-  "validate-pyproject>=0.24.1",
+    "covdefaults>=2.3.0",
+    "maturin>=1.10.2",
+    "mypy>=1.19.0",
+    "prek>=0.2.21",
+    "pyproject-fmt>=2.11.1",
+    "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
+    "pytest-cov>=7.0.0",
+    "pytest-mock>=3.15.1",
+    "pytest-rerunfailures>=16.1",
+    "pytest-timeout>=2.4.0",
+    "ruff>=0.14.8",
+    "types-pillow>=10.2",
+    "types-psutil>=7.1.3.20251202",
+    "validate-pyproject>=0.24.1",
 ]
 docs = [
-  "mkdocs>=1.6.1",
-  "mkdocs-git-revision-date-localized-plugin>=1.5.0",
-  "mkdocs-material>=9.7.0",
-  "mkdocs-minify-plugin>=0.8.0",
-  "mkdocstrings>=1.0.0",
-  "mkdocstrings-python>=2.0.1",
+    "mkdocs>=1.6.1",
+    "mkdocs-git-revision-date-localized-plugin>=1.5.0",
+    "mkdocs-material>=9.7.0",
+    "mkdocs-minify-plugin>=0.8.0",
+    "mkdocstrings>=1.0.0",
+    "mkdocstrings-python>=2.0.1",
 ]
 doc = [
-  "mike>=2.1.3",
-  "mkdocs>=1.6.1",
-  "mkdocs-gen-files>=0.6.0",
-  "mkdocs-git-revision-date-localized-plugin>=1.5.0",
-  "mkdocs-literate-nav>=0.6.2",
-  "mkdocs-material[imaging]>=9.7.0",
-  "mkdocs-minify-plugin>=0.8.0",
-  "mkdocstrings[python]>=1.0.0",
+    "mike>=2.1.3",
+    "mkdocs>=1.6.1",
+    "mkdocs-gen-files>=0.6.0",
+    "mkdocs-git-revision-date-localized-plugin>=1.5.0",
+    "mkdocs-literate-nav>=0.6.2",
+    "mkdocs-material[imaging]>=9.7.0",
+    "mkdocs-minify-plugin>=0.8.0",
+    "mkdocstrings[python]>=1.0.0",
 ]
 benchmark = [
-  "docling>=2.64.1",
-  "markitdown>=0.1.4",
-  "mineru>=2.6.7",
-  "pdfplumber>=0.11.4",
-  "pymupdf4llm>=0.0.17",
-  "unstructured>=0.18.21",
+    "docling>=2.64.1",
+    "markitdown>=0.1.4",
+    "mineru>=2.6.7",
+    "pdfplumber>=0.11.4",
+    "pymupdf4llm>=0.0.17",
+    "unstructured>=0.18.21",
 ]
 
 [tool.uv]
 cache-keys = [
-  { file = "pyproject.toml" },
-  { file = "Cargo.toml" },
-  { file = "Cargo.lock" },
-  { file = "crates/**/*.rs" },
-  { file = "crates/**/Cargo.toml" },
+    { file = "pyproject.toml" },
+    { file = "Cargo.toml" },
+    { file = "Cargo.lock" },
+    { file = "crates/**/*.rs" },
+    { file = "crates/**/Cargo.toml" },
 ]
 
 [tool.uv.workspace]
-members = [
-  "packages/python",
-  "examples/python",
-  "v3/kreuzberg",
-]
+members = ["packages/python", "examples/python", "v3/kreuzberg"]
 
 [tool.ruff]
 target-version = "py310"
 line-length = 120
-src = [ "packages/python/*" ]
-extend-exclude = [ "benchmarks", "crates", "scripts", "test_documents", "v3" ]
+src = ["packages/python/*"]
+extend-exclude = ["benchmarks", "crates", "scripts", "test_documents", "v3"]
 format.docstring-code-line-length = 120
 format.docstring-code-format = true
-lint.select = [ "ALL" ]
+lint.select = ["ALL"]
 lint.ignore = [
-  "ANN401",
-  "ASYNC109",
-  "ASYNC110",
-  "BLE001",
-  "COM812",
-  "D100",
-  "D104",
-  "D107",
-  "D205",
-  "E501",
-  "EM",
-  "FBT",
-  "FIX",      # We allow todo and fixme comments
-  "ISC001",
-  "PD011",
-  "PGH003",
-  "PLR2004",
-  "PLW0603",
-  "S104",
-  "S110",
-  "S603",
-  "TD",       # We allow todo and fixme comments
-  "TRY",
+    "ANN401",
+    "ASYNC109",
+    "ASYNC110",
+    "BLE001",
+    "COM812",
+    "D100",
+    "D104",
+    "D107",
+    "D205",
+    "E501",
+    "EM",
+    "FBT",
+    "FIX",      # We allow todo and fixme comments
+    "ISC001",
+    "PD011",
+    "PGH003",
+    "PLR2004",
+    "PLW0603",
+    "S104",
+    "S110",
+    "S603",
+    "TD",       # We allow todo and fixme comments
+    "TRY",
 ]
-lint.per-file-ignores."**/*.pyi" = [
-  "PYI021",
-]
+lint.per-file-ignores."**/*.pyi" = ["PYI021"]
 lint.per-file-ignores."**/benchmarks/**/*.*" = [
-  "BLE001",
-  "C901",
-  "D101",
-  "D102",
-  "D103",
-  "D105",
-  "PERF203",
-  "PLC0415",
-  "PLR0912",
-  "PLR0913",
-  "PLR0915",
-  "S101",
-  "S110",
-  "SLF001",
+    "BLE001",
+    "C901",
+    "D101",
+    "D102",
+    "D103",
+    "D105",
+    "PERF203",
+    "PLC0415",
+    "PLR0912",
+    "PLR0913",
+    "PLR0915",
+    "S101",
+    "S110",
+    "SLF001",
 ]
 lint.per-file-ignores."**/tests/**/*.*" = [
-  "A005",
-  "ANN",
-  "ARG001",
-  "ARG002",
-  "BLE001",
-  "D",
-  "N806",
-  "N815",
-  "PD",
-  "PGH003",
-  "PLC",
-  "PLR0915",
-  "PLR2004",
-  "PT006",
-  "PT007",
-  "PT013",
-  "PT017",
-  "PT031",
-  "RUF012",
-  "S",
-  "SIM117",
-  "SLF001",
+    "A005",
+    "ANN",
+    "ARG001",
+    "ARG002",
+    "BLE001",
+    "D",
+    "N806",
+    "N815",
+    "PD",
+    "PGH003",
+    "PLC",
+    "PLR0915",
+    "PLR2004",
+    "PT006",
+    "PT007",
+    "PT013",
+    "PT017",
+    "PT031",
+    "RUF012",
+    "S",
+    "SIM117",
+    "SLF001",
 ]
 lint.per-file-ignores."examples/**/*.py" = [
-  "ANN202",
-  "ARG002",
-  "B007",
-  "BLE001",
-  "D102",
-  "D103",
-  "DTZ005",
-  "ERA001",
-  "INP001",
-  "PLC0415",
-  "PTH123",
-  "PTH207",
-  "S112",
+    "ANN202",
+    "ARG002",
+    "B007",
+    "BLE001",
+    "D102",
+    "D103",
+    "DTZ005",
+    "ERA001",
+    "INP001",
+    "PLC0415",
+    "PTH123",
+    "PTH207",
+    "S112",
 ]
-lint.per-file-ignores."packages/python/build.py" = [
-  "INP001",
-]
-lint.per-file-ignores."packages/python/tests/e2e/*_test.py" = [
-  "T201",
-]
+lint.per-file-ignores."packages/python/build.py" = ["INP001"]
+lint.per-file-ignores."packages/python/tests/e2e/*_test.py" = ["T201"]
 lint.per-file-ignores."scripts/**/*.py" = [
-  "C901",
-  "D101",
-  "D102",
-  "D103",
-  "PERF401",
-  "PLC0415",
-  "PLR0912",
-  "PLR0915",
-  "PLW2901",
-  "SIM105",
+    "C901",
+    "D101",
+    "D102",
+    "D103",
+    "PERF401",
+    "PLC0415",
+    "PLR0912",
+    "PLR0915",
+    "PLW2901",
+    "SIM105",
 ]
-lint.per-file-ignores."tools/benchmark-harness/scripts/*.py" = [
-  "BLE001",
-  "D103",
-  "T201",
-]
-lint.isort.known-first-party = [ "kreuzberg" ]
+lint.per-file-ignores."tools/benchmark-harness/scripts/*.py" = ["BLE001", "D103", "T201"]
+lint.isort.known-first-party = ["kreuzberg"]
 lint.mccabe.max-complexity = 15
 lint.pydocstyle.convention = "google"
 lint.pylint.max-args = 10
@@ -190,46 +176,46 @@ max_supported_python = "3.14"
 
 [tool.pytest.ini_options]
 timeout = 300
-testpaths = [ "packages/python/tests" ]
-norecursedirs = [ "dist", "build", "*.egg" ]
+testpaths = ["packages/python/tests"]
+norecursedirs = ["dist", "build", "*.egg"]
 markers = [
-  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-  "integration: marks tests as integration tests (requires running services)",
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests (requires running services)",
 ]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 filterwarnings = [
-  "ignore:Exception ignored in:pytest.PytestUnraisableExceptionWarning",
-  "ignore:pkg_resources is deprecated as an API:DeprecationWarning",
-  "ignore:ast.Num is deprecated and will be removed in Python 3.14:DeprecationWarning",
-  "ignore:datetime.datetime.utcfromtimestamp() is deprecated:DeprecationWarning",
-  "ignore:Deprecated call to `pkg_resources.declare_namespace('google')`:DeprecationWarning",
+    "ignore:Exception ignored in:pytest.PytestUnraisableExceptionWarning",
+    "ignore:pkg_resources is deprecated as an API:DeprecationWarning",
+    "ignore:ast.Num is deprecated and will be removed in Python 3.14:DeprecationWarning",
+    "ignore:datetime.datetime.utcfromtimestamp() is deprecated:DeprecationWarning",
+    "ignore:Deprecated call to `pkg_resources.declare_namespace('google')`:DeprecationWarning",
 ]
 
 [tool.coverage.run]
 branch = true
-omit = [ "packages/python/tests/*", "scripts/*", "benchmarks/*" ]
-plugins = [ "covdefaults" ]
-source = [ "packages/python/kreuzberg" ]
+omit = ["packages/python/tests/*", "scripts/*", "benchmarks/*"]
+plugins = ["covdefaults"]
+source = ["packages/python/kreuzberg"]
 
 [tool.coverage.report]
 fail_under = 90
 exclude_lines = [
-  'if TYPE_CHECKING:',
-  "except ImportError:",
-  "pragma: no cover",
-  "if sys.version_info",
-  "raise NotImplementedError",
-  "if __name__ == .__main__.:",
-  "def __repr__",
-  "class .*\\bProtocol\\):",
-  "@(abc\\.)?abstractmethod",
+    'if TYPE_CHECKING:',
+    "except ImportError:",
+    "pragma: no cover",
+    "if sys.version_info",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "def __repr__",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
 ]
-omit = [ "packages/python/kreuzberg/ocr/easyocr.py", "packages/python/kreuzberg/ocr/paddleocr.py" ]
+omit = ["packages/python/kreuzberg/ocr/easyocr.py", "packages/python/kreuzberg/ocr/paddleocr.py"]
 
 [tool.mypy]
-packages = [ "kreuzberg" ]
-exclude = [ "examples", "v3", "benchmarks", "crates", "e2e/smoke" ]
+packages = ["kreuzberg"]
+exclude = ["examples", "v3", "benchmarks", "crates", "e2e/smoke"]
 python_version = "3.10"
 disable_error_code = 'import-untyped'
 implicit_reexport = false
@@ -239,26 +225,26 @@ namespace_packages = true
 
 [[tool.mypy.overrides]]
 module = [
-  "keybert",
-  "easyocr",
-  "paddle",
-  "paddle.*",
-  "paddle.utils",
-  "paddle.utils.*",
-  "paddle.utils.gast",
-  "paddle.utils.gast.*",
-  "paddleocr",
-  "torch",
-  "kreuzberg._internal_bindings",
-  "docling.*",
-  "markitdown",
-  "unstructured.*",
-  "httpx",
+    "keybert",
+    "easyocr",
+    "paddle",
+    "paddle.*",
+    "paddle.utils",
+    "paddle.utils.*",
+    "paddle.utils.gast",
+    "paddle.utils.gast.*",
+    "paddleocr",
+    "torch",
+    "kreuzberg._internal_bindings",
+    "docling.*",
+    "markitdown",
+    "unstructured.*",
+    "httpx",
 ]
 ignore_missing_imports = true
 ignore_errors = true
 follow_imports = "skip"
 
 [[tool.mypy.overrides]]
-module = [ "numpy", "numpy.*" ]
+module = ["numpy", "numpy.*"]
 ignore_missing_imports = true

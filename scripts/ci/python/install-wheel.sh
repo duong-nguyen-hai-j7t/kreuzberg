@@ -16,9 +16,9 @@ echo "=== Installing wheel for current platform ==="
 wheel_path="$(find dist -maxdepth 1 -name "kreuzberg-*.whl" -print -quit 2>/dev/null || true)"
 
 if [ -z "$wheel_path" ]; then
-	echo "No wheel found in dist/. Contents:"
-	ls -l dist || true
-	exit 1
+  echo "No wheel found in dist/. Contents:"
+  ls -l dist || true
+  exit 1
 fi
 
 echo "Installing wheel: $wheel_path"

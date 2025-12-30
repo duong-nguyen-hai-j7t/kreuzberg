@@ -5,8 +5,8 @@ set -euo pipefail
 npm_dir="${1:-crates/kreuzberg-node/npm}"
 
 if [ ! -d "$npm_dir" ]; then
-	echo "Error: npm directory not found: $npm_dir" >&2
-	exit 1
+  echo "Error: npm directory not found: $npm_dir" >&2
+  exit 1
 fi
 
 echo "=========================================="
@@ -27,46 +27,46 @@ echo ""
 
 success_count=0
 for dir in */; do
-	echo "=========================================="
-	echo "Processing: $dir"
-	echo "=========================================="
+  echo "=========================================="
+  echo "Processing: $dir"
+  echo "=========================================="
 
-	if [ ! -f "${dir}package.json" ]; then
-		echo "⚠ Skipping $dir (no package.json)"
-		continue
-	fi
+  if [ ! -f "${dir}package.json" ]; then
+    echo "⚠ Skipping $dir (no package.json)"
+    continue
+  fi
 
-	echo "✓ Found package.json"
-	echo "Files in $dir:"
-	find "$dir" -type f -print0 | xargs -0 ls -lah | tail -20
+  echo "✓ Found package.json"
+  echo "Files in $dir:"
+  find "$dir" -type f -print0 | xargs -0 ls -lah | tail -20
 
-	shopt -s nullglob
-	node_bins=("${dir}"*.node)
+  shopt -s nullglob
+  node_bins=("${dir}"*.node)
 
-	if [ "${#node_bins[@]}" -eq 0 ]; then
-		echo ""
-		echo "::error::Platform package missing .node binary: ${dir}" >&2
-		echo "Error: missing .node binary in ${npm_dir}/${dir}" >&2
-		echo ""
-		echo "Expected a file matching: ${dir}*.node" >&2
-		echo "Available files in ${npm_dir}/${dir}:" >&2
-		ls -lah "${npm_dir}/${dir}" || true
-		echo ""
-		exit 1
-	fi
+  if [ "${#node_bins[@]}" -eq 0 ]; then
+    echo ""
+    echo "::error::Platform package missing .node binary: ${dir}" >&2
+    echo "Error: missing .node binary in ${npm_dir}/${dir}" >&2
+    echo ""
+    echo "Expected a file matching: ${dir}*.node" >&2
+    echo "Available files in ${npm_dir}/${dir}:" >&2
+    ls -lah "${npm_dir}/${dir}" || true
+    echo ""
+    exit 1
+  fi
 
-	echo "✓ Found .node binary: ${node_bins[0]}"
-	echo "  File size: $(stat -f%z "${dir}${node_bins[0]}" 2>/dev/null || stat -c%s "${dir}${node_bins[0]}")"
+  echo "✓ Found .node binary: ${node_bins[0]}"
+  echo "  File size: $(stat -f%z "${dir}${node_bins[0]}" 2>/dev/null || stat -c%s "${dir}${node_bins[0]}")"
 
-	echo "Running npm pack..."
-	if (cd "$dir" && npm pack && mv ./*.tgz ..); then
-		echo "✓ Successfully packed $dir"
-		success_count=$((success_count + 1))
-	else
-		echo "✗ Failed to pack $dir"
-		exit 1
-	fi
-	echo ""
+  echo "Running npm pack..."
+  if (cd "$dir" && npm pack && mv ./*.tgz ..); then
+    echo "✓ Successfully packed $dir"
+    success_count=$((success_count + 1))
+  else
+    echo "✗ Failed to pack $dir"
+    exit 1
+  fi
+  echo ""
 done
 
 echo "=========================================="

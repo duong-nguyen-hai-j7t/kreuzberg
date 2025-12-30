@@ -17,18 +17,18 @@ TOTAL_PASSED=0
 TOTAL_FAILED=0
 
 run_test() {
-	local test_name=$1
-	local test_script=$2
+  local test_name=$1
+  local test_script=$2
 
-	echo -e "${BLUE}>>> Running: $test_name${NC}"
-	if bash "$SCRIPT_DIR/$test_script"; then
-		echo -e "${GREEN}✓ $test_name PASSED${NC}"
-		((TOTAL_PASSED++))
-	else
-		echo -e "${RED}✗ $test_name FAILED${NC}"
-		((TOTAL_FAILED++))
-	fi
-	echo
+  echo -e "${BLUE}>>> Running: $test_name${NC}"
+  if bash "$SCRIPT_DIR/$test_script"; then
+    echo -e "${GREEN}✓ $test_name PASSED${NC}"
+    ((TOTAL_PASSED++))
+  else
+    echo -e "${RED}✗ $test_name FAILED${NC}"
+    ((TOTAL_FAILED++))
+  fi
+  echo
 }
 
 run_test "Installation Test" "install.sh"
@@ -44,9 +44,9 @@ echo -e "Total Failed: ${RED}$TOTAL_FAILED${NC}"
 echo
 
 if [ $TOTAL_FAILED -eq 0 ]; then
-	echo -e "${GREEN}===== ALL TESTS PASSED =====${NC}"
-	exit 0
+  echo -e "${GREEN}===== ALL TESTS PASSED =====${NC}"
+  exit 0
 else
-	echo -e "${RED}===== SOME TESTS FAILED =====${NC}"
-	exit 1
+  echo -e "${RED}===== SOME TESTS FAILED =====${NC}"
+  exit 1
 fi

@@ -12,9 +12,9 @@ Linux*) platform_id="linux" ;;
 Darwin*) platform_id="mac" ;;
 MINGW* | MSYS* | CYGWIN*) platform_id="win" ;;
 *)
-	echo "Unsupported platform: $platform" >&2
-	exit 1
-	;;
+  echo "Unsupported platform: $platform" >&2
+  exit 1
+  ;;
 esac
 
 arch="$(uname -m)"
@@ -22,9 +22,9 @@ case "$arch" in
 x86_64 | amd64) arch_id="x64" ;;
 arm64 | aarch64) arch_id="arm64" ;;
 *)
-	echo "Unsupported architecture: $arch" >&2
-	exit 1
-	;;
+  echo "Unsupported architecture: $arch" >&2
+  exit 1
+  ;;
 esac
 
 tmpdir="$(mktemp -d)"
@@ -35,8 +35,8 @@ tar -xzf "$tmpdir/pdfium.tgz" -C "$tmpdir/extracted"
 
 src_lib="$tmpdir/extracted/lib"
 if [[ ! -d "$src_lib" ]]; then
-	echo "Pdfium archive did not contain lib directory" >&2
-	exit 1
+  echo "Pdfium archive did not contain lib directory" >&2
+  exit 1
 fi
 
 mkdir -p "$dest_release" "$dest_debug"

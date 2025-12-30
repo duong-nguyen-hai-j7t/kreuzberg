@@ -16,23 +16,23 @@ echo "=========================================="
 setup_go_paths "$REPO_ROOT"
 
 if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
-	{
-		echo "PATH=${PATH}"
-		echo "CGO_ENABLED=${CGO_ENABLED:-}"
-		echo "CGO_CFLAGS=${CGO_CFLAGS:-}"
-		echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH:-}"
-	} >>"$GITHUB_ENV"
+  {
+    echo "PATH=${PATH}"
+    echo "CGO_ENABLED=${CGO_ENABLED:-}"
+    echo "CGO_CFLAGS=${CGO_CFLAGS:-}"
+    echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH:-}"
+  } >>"$GITHUB_ENV"
 else
-	{
-		echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}"
-		echo "DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH:-}"
-		echo "DYLD_FALLBACK_LIBRARY_PATH=${DYLD_FALLBACK_LIBRARY_PATH:-}"
-		echo "PATH=${PATH}"
-		echo "CGO_ENABLED=${CGO_ENABLED:-}"
-		echo "CGO_CFLAGS=${CGO_CFLAGS:-}"
-		echo "CGO_LDFLAGS=${CGO_LDFLAGS:-}"
-		echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH:-}"
-	} >>"$GITHUB_ENV"
+  {
+    echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}"
+    echo "DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH:-}"
+    echo "DYLD_FALLBACK_LIBRARY_PATH=${DYLD_FALLBACK_LIBRARY_PATH:-}"
+    echo "PATH=${PATH}"
+    echo "CGO_ENABLED=${CGO_ENABLED:-}"
+    echo "CGO_CFLAGS=${CGO_CFLAGS:-}"
+    echo "CGO_LDFLAGS=${CGO_LDFLAGS:-}"
+    echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH:-}"
+  } >>"$GITHUB_ENV"
 fi
 
 echo "✓ Library paths set successfully"

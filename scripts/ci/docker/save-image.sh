@@ -6,10 +6,10 @@ VARIANT="${1:-}"
 OUTPUT_DIR="${2:-/tmp}"
 
 if [ -z "$VARIANT" ]; then
-	echo "Usage: save-image.sh <variant> [output-dir]"
-	echo "  variant: core or full"
-	echo "  output-dir: directory to save tarball (default: /tmp)"
-	exit 1
+  echo "Usage: save-image.sh <variant> [output-dir]"
+  echo "  variant: core or full"
+  echo "  output-dir: directory to save tarball (default: /tmp)"
+  exit 1
 fi
 
 echo "=== Saving Docker image as tar archive ==="

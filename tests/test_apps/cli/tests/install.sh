@@ -9,8 +9,8 @@ echo "===== Kreuzberg CLI Installation Test ====="
 echo
 
 if ! command -v cargo &>/dev/null; then
-	echo -e "${RED}✗ cargo not found. Please install Rust toolchain.${NC}"
-	exit 1
+  echo -e "${RED}✗ cargo not found. Please install Rust toolchain.${NC}"
+  exit 1
 fi
 
 echo -e "${GREEN}✓ cargo found${NC}"
@@ -18,37 +18,37 @@ echo -e "${GREEN}✓ cargo found${NC}"
 echo
 echo "Installing kreuzberg-cli from crates.io..."
 if cargo install kreuzberg-cli --force; then
-	echo -e "${GREEN}✓ Installation successful${NC}"
+  echo -e "${GREEN}✓ Installation successful${NC}"
 else
-	echo -e "${RED}✗ Installation failed${NC}"
-	exit 1
+  echo -e "${RED}✗ Installation failed${NC}"
+  exit 1
 fi
 
 echo
 echo "Verifying kreuzberg binary..."
 if command -v kreuzberg &>/dev/null; then
-	echo -e "${GREEN}✓ kreuzberg binary found in PATH${NC}"
+  echo -e "${GREEN}✓ kreuzberg binary found in PATH${NC}"
 else
-	echo -e "${RED}✗ kreuzberg binary not found in PATH${NC}"
-	exit 1
+  echo -e "${RED}✗ kreuzberg binary not found in PATH${NC}"
+  exit 1
 fi
 
 echo
 echo "Checking version..."
 if kreuzberg --version; then
-	echo -e "${GREEN}✓ Version check successful${NC}"
+  echo -e "${GREEN}✓ Version check successful${NC}"
 else
-	echo -e "${RED}✗ Version check failed${NC}"
-	exit 1
+  echo -e "${RED}✗ Version check failed${NC}"
+  exit 1
 fi
 
 echo
 echo "Checking help output..."
 if kreuzberg --help >/dev/null; then
-	echo -e "${GREEN}✓ Help output successful${NC}"
+  echo -e "${GREEN}✓ Help output successful${NC}"
 else
-	echo -e "${RED}✗ Help output failed${NC}"
-	exit 1
+  echo -e "${RED}✗ Help output failed${NC}"
+  exit 1
 fi
 
 echo

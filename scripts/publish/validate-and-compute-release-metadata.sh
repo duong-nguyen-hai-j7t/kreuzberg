@@ -9,89 +9,89 @@ ref_input=""
 targets_input=""
 
 if [[ "$event" == "workflow_dispatch" ]]; then
-	tag="${INPUT_TAG:-}"
-	dry_run_input="${INPUT_DRY_RUN:-false}"
-	ref_input="${INPUT_REF:-}"
-	targets_input="${INPUT_TARGETS:-}"
+  tag="${INPUT_TAG:-}"
+  dry_run_input="${INPUT_DRY_RUN:-false}"
+  ref_input="${INPUT_REF:-}"
+  targets_input="${INPUT_TARGETS:-}"
 elif [[ "$event" == "release" ]]; then
-	tag="${EVENT_RELEASE_TAG:-}"
-	dry_run_input="false"
-	ref_input="refs/tags/${tag}"
-	targets_input=""
+  tag="${EVENT_RELEASE_TAG:-}"
+  dry_run_input="false"
+  ref_input="refs/tags/${tag}"
+  targets_input=""
 elif [[ "$event" == "repository_dispatch" ]]; then
-	tag="${EVENT_DISPATCH_TAG:-}"
-	dry_run_input="${EVENT_DISPATCH_DRY_RUN:-false}"
-	ref_input="${EVENT_DISPATCH_REF:-}"
-	targets_input="${EVENT_DISPATCH_TARGETS:-}"
+  tag="${EVENT_DISPATCH_TAG:-}"
+  dry_run_input="${EVENT_DISPATCH_DRY_RUN:-false}"
+  ref_input="${EVENT_DISPATCH_REF:-}"
+  targets_input="${EVENT_DISPATCH_TARGETS:-}"
 else
-	tag="${GITHUB_REF_NAME:-}"
-	dry_run_input="false"
-	ref_input=""
-	targets_input=""
-	if [[ "$tag" == *-pre* || "$tag" == *-rc* ]]; then
-		dry_run_input="true"
-	fi
+  tag="${GITHUB_REF_NAME:-}"
+  dry_run_input="false"
+  ref_input=""
+  targets_input=""
+  if [[ "$tag" == *-pre* || "$tag" == *-rc* ]]; then
+    dry_run_input="true"
+  fi
 fi
 
 if [[ -z "$tag" ]]; then
-	echo "Release tag could not be determined" >&2
-	exit 1
+  echo "Release tag could not be determined" >&2
+  exit 1
 fi
 
 if [[ "$tag" != v* ]]; then
-	echo "Tag must start with 'v' (e.g., v4.0.0-rc.1)" >&2
-	exit 1
+  echo "Tag must start with 'v' (e.g., v4.0.0-rc.1)" >&2
+  exit 1
 fi
 
 version="${tag#v}"
 
 if [[ -n "$ref_input" ]]; then
-	if [[ "$ref_input" == "$tag" ]]; then
-		ref="refs/tags/${tag}"
-	elif [[ "$ref_input" =~ ^v[0-9] ]]; then
-		ref="refs/tags/${ref_input}"
-	else
-		ref="$ref_input"
-	fi
+  if [[ "$ref_input" == "$tag" ]]; then
+    ref="refs/tags/${tag}"
+  elif [[ "$ref_input" =~ ^v[0-9] ]]; then
+    ref="refs/tags/${ref_input}"
+  else
+    ref="$ref_input"
+  fi
 else
-	ref="refs/tags/${tag}"
+  ref="refs/tags/${tag}"
 fi
 
 if [[ "$ref" =~ ^[0-9a-f]{40}$ ]]; then
-	checkout_ref="refs/heads/main"
-	target_sha="$ref"
+  checkout_ref="refs/heads/main"
+  target_sha="$ref"
 elif [[ "$ref" =~ ^refs/ ]]; then
-	checkout_ref="$ref"
-	target_sha=""
+  checkout_ref="$ref"
+  target_sha=""
 else
-	checkout_ref="refs/heads/${ref}"
-	target_sha=""
+  checkout_ref="refs/heads/${ref}"
+  target_sha=""
 fi
 
 if [[ "$ref" =~ ^[0-9a-f]{40}$ ]]; then
-	matrix_ref="main"
+  matrix_ref="main"
 elif [[ "$ref" =~ ^refs/heads/(.+)$ ]]; then
-	matrix_ref="${BASH_REMATCH[1]}"
+  matrix_ref="${BASH_REMATCH[1]}"
 elif [[ "$ref" =~ ^refs/tags/(.+)$ ]]; then
-	matrix_ref="${BASH_REMATCH[1]}"
+  matrix_ref="${BASH_REMATCH[1]}"
 else
-	matrix_ref="$ref"
+  matrix_ref="$ref"
 fi
 
 if [[ "$ref" =~ ^refs/tags/ ]]; then
-	is_tag="true"
+  is_tag="true"
 else
-	is_tag="false"
+  is_tag="false"
 fi
 
 normalize_target_list() {
-	local raw="$1"
-	raw="${raw:-all}"
-	if [[ -z "$raw" ]]; then
-		echo "all"
-	else
-		echo "$raw"
-	fi
+  local raw="$1"
+  raw="${raw:-all}"
+  if [[ -z "$raw" ]]; then
+    echo "all"
+  else
+    echo "$raw"
+  fi
 }
 
 targets_value=$(normalize_target_list "$targets_input")
@@ -111,102 +111,102 @@ release_php=false
 release_elixir=false
 
 set_all_targets() {
-	release_python=true
-	release_node=true
-	release_ruby=true
-	release_cli=true
-	release_crates=true
-	release_docker=true
-	release_homebrew=true
-	release_java=true
-	release_csharp=true
-	release_go=true
-	release_wasm=true
-	release_php=true
-	release_elixir=true
+  release_python=true
+  release_node=true
+  release_ruby=true
+  release_cli=true
+  release_crates=true
+  release_docker=true
+  release_homebrew=true
+  release_java=true
+  release_csharp=true
+  release_go=true
+  release_wasm=true
+  release_php=true
+  release_elixir=true
 }
 
 mapfile -t requested_targets < <(echo "$targets_value" | tr ',' '\n')
 
 processed_any=false
 for raw_target in "${requested_targets[@]}"; do
-	trimmed=$(echo "$raw_target" | tr '[:upper:]' '[:lower:]' | xargs)
-	if [[ -z "$trimmed" ]]; then
-		continue
-	fi
-	processed_any=true
-	case "$trimmed" in
-	all | '*' | 'default')
-		set_all_targets
-		break
-		;;
-	python)
-		release_python=true
-		;;
-	node)
-		release_node=true
-		;;
-	ruby)
-		release_ruby=true
-		;;
-	cli)
-		release_cli=true
-		;;
-	crates)
-		release_crates=true
-		;;
-	docker)
-		release_docker=true
-		;;
-	homebrew)
-		release_homebrew=true
-		;;
-	java)
-		release_java=true
-		;;
-	csharp | dotnet | cs | nuget)
-		release_csharp=true
-		;;
-	go | golang)
-		release_go=true
-		;;
-	wasm | webassembly)
-		release_wasm=true
-		;;
-	php)
-		release_php=true
-		;;
-	elixir | hex)
-		release_elixir=true
-		;;
-	none)
-		release_python=false
-		release_node=false
-		release_ruby=false
-		release_cli=false
-		release_crates=false
-		release_docker=false
-		release_homebrew=false
-		release_java=false
-		release_csharp=false
-		release_go=false
-		release_wasm=false
-		release_php=false
-		release_elixir=false
-		;;
-	*)
-		echo "Unknown release target '$trimmed'. Allowed: all, python, node, ruby, cli, crates, docker, homebrew, java, csharp, go, wasm, php, elixir." >&2
-		exit 1
-		;;
-	esac
+  trimmed=$(echo "$raw_target" | tr '[:upper:]' '[:lower:]' | xargs)
+  if [[ -z "$trimmed" ]]; then
+    continue
+  fi
+  processed_any=true
+  case "$trimmed" in
+  all | '*' | 'default')
+    set_all_targets
+    break
+    ;;
+  python)
+    release_python=true
+    ;;
+  node)
+    release_node=true
+    ;;
+  ruby)
+    release_ruby=true
+    ;;
+  cli)
+    release_cli=true
+    ;;
+  crates)
+    release_crates=true
+    ;;
+  docker)
+    release_docker=true
+    ;;
+  homebrew)
+    release_homebrew=true
+    ;;
+  java)
+    release_java=true
+    ;;
+  csharp | dotnet | cs | nuget)
+    release_csharp=true
+    ;;
+  go | golang)
+    release_go=true
+    ;;
+  wasm | webassembly)
+    release_wasm=true
+    ;;
+  php)
+    release_php=true
+    ;;
+  elixir | hex)
+    release_elixir=true
+    ;;
+  none)
+    release_python=false
+    release_node=false
+    release_ruby=false
+    release_cli=false
+    release_crates=false
+    release_docker=false
+    release_homebrew=false
+    release_java=false
+    release_csharp=false
+    release_go=false
+    release_wasm=false
+    release_php=false
+    release_elixir=false
+    ;;
+  *)
+    echo "Unknown release target '$trimmed'. Allowed: all, python, node, ruby, cli, crates, docker, homebrew, java, csharp, go, wasm, php, elixir." >&2
+    exit 1
+    ;;
+  esac
 done
 
 if [[ "$release_homebrew" == "true" ]]; then
-	release_cli=true
+  release_cli=true
 fi
 
 if [[ "$processed_any" == "false" ]]; then
-	set_all_targets
+  set_all_targets
 fi
 
 enabled_targets=()
@@ -225,28 +225,28 @@ if [[ "$release_php" == "true" ]]; then enabled_targets+=("php"); fi
 if [[ "$release_elixir" == "true" ]]; then enabled_targets+=("elixir"); fi
 
 if [[ ${#enabled_targets[@]} -eq 13 ]]; then
-	release_targets_summary="all"
+  release_targets_summary="all"
 elif [[ ${#enabled_targets[@]} -eq 0 ]]; then
-	release_targets_summary="none"
+  release_targets_summary="none"
 else
-	release_targets_summary=$(
-		IFS=','
-		echo "${enabled_targets[*]}"
-	)
+  release_targets_summary=$(
+    IFS=','
+    echo "${enabled_targets[*]}"
+  )
 fi
 
 release_any="false"
 if [[ ${#enabled_targets[@]} -gt 0 ]]; then
-	release_any="true"
+  release_any="true"
 fi
 
 determine_npm_tag() {
-	local ver="$1"
-	if [[ "$ver" == *-rc* ]] || [[ "$ver" == *-alpha* ]] || [[ "$ver" == *-beta* ]] || [[ "$ver" == *-pre* ]]; then
-		echo "next"
-	else
-		echo "latest"
-	fi
+  local ver="$1"
+  if [[ "$ver" == *-rc* ]] || [[ "$ver" == *-alpha* ]] || [[ "$ver" == *-beta* ]] || [[ "$ver" == *-pre* ]]; then
+    echo "next"
+  else
+    echo "latest"
+  fi
 }
 
 npm_tag=$(determine_npm_tag "$version")

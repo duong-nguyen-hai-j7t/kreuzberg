@@ -2,17 +2,17 @@
 set -euo pipefail
 
 run_id="$(
-	gh run list \
-		--workflow=benchmarks.yaml \
-		--status=success \
-		--limit=1 \
-		--json databaseId \
-		--jq '.[0].databaseId'
+  gh run list \
+    --workflow=benchmarks.yaml \
+    --status=success \
+    --limit=1 \
+    --json databaseId \
+    --jq '.[0].databaseId'
 )"
 
 if [ -z "$run_id" ]; then
-	echo "No successful benchmark runs found" >&2
-	exit 1
+  echo "No successful benchmark runs found" >&2
+  exit 1
 fi
 
 echo "Found benchmark run: $run_id"

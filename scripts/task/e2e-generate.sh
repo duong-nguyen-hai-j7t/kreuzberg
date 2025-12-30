@@ -3,8 +3,8 @@ set -euo pipefail
 
 lang="${1:-}"
 if [ -z "$lang" ]; then
-	echo "Usage: $0 <lang>" >&2
-	exit 2
+  echo "Usage: $0 <lang>" >&2
+  exit 2
 fi
 
 fixtures_dir="${FIXTURES_DIR:-fixtures}"

@@ -13,8 +13,8 @@ validate_repo_root "$REPO_ROOT" || exit 1
 LIB_DIR="$REPO_ROOT/target/release"
 
 if [ ! -d "$LIB_DIR" ]; then
-	echo "::error::Native library directory not found at $LIB_DIR" >&2
-	exit 1
+  echo "::error::Native library directory not found at $LIB_DIR" >&2
+  exit 1
 fi
 
 setup_rust_ffi_paths "$REPO_ROOT"

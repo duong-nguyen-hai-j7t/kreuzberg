@@ -5,5 +5,5 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 cd "${REPO_ROOT}/packages/go/v4"
 if [ -n "$(gofmt -l .)" ]; then
-	exit 1
+  exit 1
 fi

@@ -11,8 +11,8 @@ validate_repo_root "$REPO_ROOT" || exit 1
 BINARY_PATH="${BINARY_PATH:-$REPO_ROOT/target/release/benchmark-harness}"
 
 if [ ! -f "$BINARY_PATH" ]; then
-	echo "::error::Binary not found at $BINARY_PATH" >&2
-	exit 1
+  echo "::error::Binary not found at $BINARY_PATH" >&2
+  exit 1
 fi
 
 chmod +x "$BINARY_PATH"

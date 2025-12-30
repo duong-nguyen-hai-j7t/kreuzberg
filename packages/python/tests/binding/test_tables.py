@@ -29,11 +29,12 @@ import pytest
 
 from kreuzberg import (
     ExtractionConfig,
+    ExtractionResult,
     extract_file_sync,
 )
 
 
-def get_tiny_pdf_result(test_documents: Path):
+def get_tiny_pdf_result(test_documents: Path) -> ExtractionResult | None:
     """Get cached extraction result for tiny PDF (primary test document).
 
     PDFium can only be initialized once per process. This function uses the global
@@ -103,6 +104,7 @@ class TestTableStructureExtraction:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         assert len(result.tables) > 0
 
@@ -135,6 +137,7 @@ class TestTableStructureExtraction:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         assert len(result.tables) > 0
 
@@ -158,6 +161,7 @@ class TestTableStructureExtraction:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         if len(result.tables) > 0:
             for table in result.tables:
@@ -182,6 +186,7 @@ class TestComplexTableHandling:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         tables = result.tables
 
@@ -209,6 +214,7 @@ class TestComplexTableHandling:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
 
         for table in result.tables:
@@ -235,6 +241,7 @@ class TestComplexTableHandling:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         assert len(result.tables) > 0
 
@@ -257,6 +264,7 @@ class TestComplexTableHandling:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
 
         for table in result.tables:
@@ -286,6 +294,7 @@ class TestTableInTableEdgeCases:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
 
         for table in result.tables:
@@ -323,6 +332,7 @@ class TestTableInTableEdgeCases:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
 
         table_count = len(result.tables)
@@ -347,6 +357,7 @@ class TestTableInTableEdgeCases:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
 
         page_numbers = [table.page_number for table in result.tables]
@@ -498,6 +509,7 @@ class TestLargeTablePerformance:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
 
         for table in result.tables:
@@ -521,6 +533,7 @@ class TestLargeTablePerformance:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
 
         for table in result.tables:
@@ -545,6 +558,7 @@ class TestMarkdownConversionAccuracy:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
 
         for table in result.tables:
@@ -568,6 +582,7 @@ class TestMarkdownConversionAccuracy:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
 
         for table in result.tables:
@@ -600,6 +615,7 @@ class TestMarkdownConversionAccuracy:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
 
         for table in result.tables:
@@ -635,6 +651,7 @@ class TestCellContentPreservation:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
 
         for table in result.tables:
@@ -655,6 +672,7 @@ class TestCellContentPreservation:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
 
         for table in result.tables:
@@ -676,6 +694,7 @@ class TestCellContentPreservation:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
 
         for table in result.tables:
@@ -696,6 +715,7 @@ class TestCellContentPreservation:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
 
         for table in result.tables:
@@ -720,6 +740,7 @@ class TestTableBoundaryDetection:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
 
         for table in result.tables:
@@ -759,6 +780,7 @@ class TestTableBoundaryDetection:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
 
         table_count = len(result.tables)
@@ -782,6 +804,7 @@ class TestTableBoundaryDetection:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
 
         for table in result.tables:
@@ -859,6 +882,7 @@ class TestTableExtractionEdgeCases:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
 
         for table in result.tables:

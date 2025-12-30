@@ -15,9 +15,9 @@ fastembed = { version = "FASTE_VER", default-features = false, features = ["hf-h
 EOF
 
 if command -v gsed >/dev/null 2>&1; then
-	gsed -i "s/FASTE_VER/${FASTEMBED_VERSION}/g" Cargo.toml
+  gsed -i "s/FASTE_VER/${FASTEMBED_VERSION}/g" Cargo.toml
 else
-	sed -i.bak "s/FASTE_VER/${FASTEMBED_VERSION}/g" Cargo.toml || sed -i "s/FASTE_VER/${FASTEMBED_VERSION}/g" Cargo.toml
+  sed -i.bak "s/FASTE_VER/${FASTEMBED_VERSION}/g" Cargo.toml || sed -i "s/FASTE_VER/${FASTEMBED_VERSION}/g" Cargo.toml
 fi
 
 mkdir -p src

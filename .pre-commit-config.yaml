@@ -69,12 +69,13 @@ repos:
         files: ^(Cargo\.toml|Cargo\.lock|crates/.*/Cargo\.toml|tools/.*/Cargo\.toml|e2e/rust/Cargo\.toml|packages/ruby/ext/kreuzberg_rb/native/Cargo\.toml|deny\.toml)$
 
   # Node.js/TypeScript: biome (formatting + linting)
-  - repo: https://github.com/biomejs/pre-commit
-    rev: v2.3.10
-    hooks:
-      - id: biome-check
-        files: ^(crates/kreuzberg-node|crates/kreuzberg-wasm)/
-        args: ["--apply", "--unsafe"]
+  # NOTE: Node bindings are currently out of scope for linting
+  # - repo: https://github.com/biomejs/pre-commit
+  #   rev: v2.3.10
+  #   hooks:
+  #     - id: biome-check
+  #       files: ^(crates/kreuzberg-node|crates/kreuzberg-wasm)/
+  #       additional_dependencies: ["@biomejs/biome@^2.3.10"]
 
   # Go: formatting and linting
   - repo: https://github.com/dnephin/pre-commit-golang
@@ -82,13 +83,6 @@ repos:
     hooks:
       - id: go-fmt
         files: ^packages/go/v4/.*\.go$
-
-  - repo: https://github.com/golangci/golangci-lint
-    rev: v2.7.2
-    hooks:
-      - id: golangci-lint
-        files: ^packages/go/v4/
-        args: ["--fix"]
 
   # Shell scripts: formatting and linting
   - repo: https://github.com/scop/pre-commit-shfmt
@@ -108,9 +102,19 @@ repos:
     hooks:
       - id: actionlint
 
-  # Local hooks for unsupported languages (Ruby, Java, C#, PHP)
+  # Local hooks for unsupported languages (Ruby, Java, C#, PHP) and custom configurations
   - repo: local
     hooks:
+      # Go - golangci-lint needs to run in the module directory
+      - id: golangci-lint
+        name: Check Go linting (golangci-lint)
+        entry: bash -c 'cd packages/go/v4 && golangci-lint run --fix'
+        language: system
+        files: ^packages/go/v4/.*\.go$
+        pass_filenames: false
+        require_serial: true
+        stages: [commit]
+
       # Ruby - prek doesn't support Ruby yet
       - id: ruby-format-check
         name: Check Ruby formatting (rubocop)

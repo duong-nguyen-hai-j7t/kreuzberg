@@ -19,50 +19,50 @@ skip_build="${KREUZBERG_SKIP_BUILD:-false}"
 verbose="false"
 
 while [[ $# -gt 0 ]]; do
-	case $1 in
-	-t | --tag)
-		tag="$2"
-		shift 2
-		;;
-	-d | --dest)
-		dest="$2"
-		shift 2
-		;;
-	--skip-build-fallback)
-		skip_build="true"
-		shift
-		;;
-	-v | --verbose)
-		verbose="true"
-		shift
-		;;
-	-h | --help)
-		head -28 "$0" | tail -n +2
-		exit 0
-		;;
-	*)
-		echo "Unknown option: $1" >&2
-		exit 1
-		;;
-	esac
+  case $1 in
+  -t | --tag)
+    tag="$2"
+    shift 2
+    ;;
+  -d | --dest)
+    dest="$2"
+    shift 2
+    ;;
+  --skip-build-fallback)
+    skip_build="true"
+    shift
+    ;;
+  -v | --verbose)
+    verbose="true"
+    shift
+    ;;
+  -h | --help)
+    head -28 "$0" | tail -n +2
+    exit 0
+    ;;
+  *)
+    echo "Unknown option: $1" >&2
+    exit 1
+    ;;
+  esac
 done
 
 go_args=("-v" "scripts/go/download-binaries.go")
 if [[ -n "$tag" ]]; then
-	go_args+=("-tag" "$tag")
+  go_args+=("-tag" "$tag")
 fi
 if [[ -n "$dest" ]]; then
-	go_args+=("-dest" "$dest")
+  go_args+=("-dest" "$dest")
 fi
 if [[ "$skip_build" == "true" ]]; then
-	go_args+=("-skip-build-fallback")
+  go_args+=("-skip-build-fallback")
 fi
 if [[ "$verbose" == "true" ]]; then
-	go_args+=("-verbose")
+  go_args+=("-verbose")
 fi
 
 if [[ "$verbose" == "true" ]]; then
-	echo -e "${BLUE}Running: go run ${go_args[*]}${NC}"
+  echo -e "${BLUE}Running: go run ${go_args[*]}${NC}"
 fi
 
 exec go run "${go_args[@]}"

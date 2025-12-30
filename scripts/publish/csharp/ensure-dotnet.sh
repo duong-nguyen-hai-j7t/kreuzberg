@@ -3,8 +3,8 @@
 set -euo pipefail
 
 if command -v dotnet >/dev/null 2>&1; then
-	dotnet --info
-	exit 0
+  dotnet --info
+  exit 0
 fi
 
 echo "dotnet not found on PATH; installing SDK from dotnet-install.sh (channel 10.0)"

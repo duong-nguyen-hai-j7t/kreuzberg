@@ -9,7 +9,7 @@ rustup --version
 cargo --version
 echo "Available targets:"
 if [ -n "$target" ]; then
-	rustup target list | grep -E "installed|${target}" | head -5
+  rustup target list | grep -E "installed|${target}" | head -5
 else
-	rustup target list | grep "installed" | head -5
+  rustup target list | grep "installed" | head -5
 fi

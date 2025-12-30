@@ -10,16 +10,16 @@ shopt -s nullglob
 
 ffi_libs=(target/release/libkreuzberg_ffi.*)
 if [ ${#ffi_libs[@]} -eq 0 ]; then
-	echo "ERROR: No FFI library found in target/release/" >&2
-	exit 1
+  echo "ERROR: No FFI library found in target/release/" >&2
+  exit 1
 fi
 cp "${ffi_libs[@]}" "${STAGING_DIR}/lib/"
 echo "✓ Staged FFI library: ${ffi_libs[*]}"
 
 pdfium_libs=(target/release/libpdfium.*)
 if [ ${#pdfium_libs[@]} -gt 0 ]; then
-	cp "${pdfium_libs[@]}" "${STAGING_DIR}/lib/"
-	echo "✓ Staged PDFium library: ${pdfium_libs[*]}"
+  cp "${pdfium_libs[@]}" "${STAGING_DIR}/lib/"
+  echo "✓ Staged PDFium library: ${pdfium_libs[*]}"
 fi
 
 shopt -u nullglob

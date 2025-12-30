@@ -3,8 +3,8 @@
 set -euo pipefail
 
 if [[ $# -lt 2 ]]; then
-	echo "Usage: $0 <platform> <output-dir>" >&2
-	exit 1
+  echo "Usage: $0 <platform> <output-dir>" >&2
+  exit 1
 fi
 
 PLATFORM="$1"
@@ -15,29 +15,29 @@ echo "::group::Building PIE package for ${PLATFORM}"
 
 case "$PLATFORM" in
 linux-x86_64)
-	OS="linux"
-	ARCH="x86_64"
-	EXT_SUFFIX="so"
-	;;
+  OS="linux"
+  ARCH="x86_64"
+  EXT_SUFFIX="so"
+  ;;
 linux-arm64)
-	OS="linux"
-	ARCH="arm64"
-	EXT_SUFFIX="so"
-	;;
+  OS="linux"
+  ARCH="arm64"
+  EXT_SUFFIX="so"
+  ;;
 macos-arm64)
-	OS="macos"
-	ARCH="arm64"
-	EXT_SUFFIX="dylib"
-	;;
+  OS="macos"
+  ARCH="arm64"
+  EXT_SUFFIX="dylib"
+  ;;
 windows-x86_64)
-	OS="windows"
-	ARCH="x86_64"
-	EXT_SUFFIX="dll"
-	;;
+  OS="windows"
+  ARCH="x86_64"
+  EXT_SUFFIX="dll"
+  ;;
 *)
-	echo "::error::Unknown platform: ${PLATFORM}" >&2
-	exit 1
-	;;
+  echo "::error::Unknown platform: ${PLATFORM}" >&2
+  exit 1
+  ;;
 esac
 
 echo "Platform: ${PLATFORM}"
@@ -53,8 +53,8 @@ TARGET_DIR="${WORKSPACE}/target/release"
 EXT_FILE="libkreuzberg.${EXT_SUFFIX}"
 
 if [[ ! -f "${TARGET_DIR}/${EXT_FILE}" ]]; then
-	echo "::error::Extension file not found: ${TARGET_DIR}/${EXT_FILE}" >&2
-	exit 1
+  echo "::error::Extension file not found: ${TARGET_DIR}/${EXT_FILE}" >&2
+  exit 1
 fi
 
 PKG_NAME="kreuzberg-${VERSION}-${PLATFORM}"

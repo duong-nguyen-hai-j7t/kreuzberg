@@ -6,13 +6,16 @@ This test verifies that:
 3. asyncio.gather() with multiple extract_file() calls shows speedup
 """
 
+from __future__ import annotations
+
 import asyncio
 from pathlib import Path
+from typing import cast
 
 import pytest
 
 try:
-    from kreuzberg import batch_extract_files, extract_file
+    from kreuzberg import ExtractionResult, batch_extract_files, extract_file
 except ImportError:
     pytest.skip(
         "kreuzberg not available, skipping async batch tests",
@@ -20,7 +23,7 @@ except ImportError:
     )
 
 
-def test_single_file_async_equals_sync():
+def test_single_file_async_equals_sync() -> None:
     """Verify that single-file async and sync work correctly.
 
     Note: PDFium can only be initialized once per process and async operations
@@ -41,7 +44,7 @@ def test_single_file_async_equals_sync():
     assert len(result_async.content) > 0, "Result should have content"
 
 
-def test_batch_api_concurrent_processing():
+def test_batch_api_concurrent_processing() -> None:
     """Verify that batch_extract_files processes files concurrently.
 
     Tests that batch_extract_files successfully extracts multiple files.
@@ -60,15 +63,13 @@ def test_batch_api_concurrent_processing():
     if len(fixtures) < 2:
         pytest.skip("Not enough test fixtures available")
 
-    paths = [str(f) for f in fixtures]
-
-    results = asyncio.run(batch_extract_files(paths))
+    results = asyncio.run(batch_extract_files(cast("list[str | Path]", fixtures)))
 
     assert len(results) == len(fixtures), "All files should be extracted"
     assert all(len(r.content) > 0 for r in results), "All results should have content"
 
 
-def test_async_gather_concurrent_extraction():
+def test_async_gather_concurrent_extraction() -> None:
     """Verify that asyncio.gather() with extract_file works correctly.
 
     Tests that batch extraction with asyncio.gather() produces correct results.
@@ -90,14 +91,13 @@ def test_async_gather_concurrent_extraction():
     if len(fixtures) < 2:
         pytest.skip("Not enough test fixtures")
 
-    paths = [str(f) for f in fixtures]
-    results = asyncio.run(batch_extract_files(paths))
+    results = asyncio.run(batch_extract_files(cast("list[str | Path]", fixtures)))
 
     assert len(results) == 2, "Should extract 2 results"
     assert all(len(r.content) > 0 for r in results), "All results should have content"
 
 
-def test_batch_versus_sequential_async():
+def test_batch_versus_sequential_async() -> None:
     """Compare batch API vs sequential async on same files.
 
     Both should extract correctly and produce identical content.
@@ -118,14 +118,12 @@ def test_batch_versus_sequential_async():
     if len(fixtures) < 2:
         pytest.skip("Not enough test fixtures")
 
-    paths = [str(f) for f in fixtures]
-
-    async def test_both():
-        return await batch_extract_files(paths)
+    async def test_both() -> list[ExtractionResult]:
+        return await batch_extract_files(cast("list[str | Path]", fixtures))
 
     results_batch = asyncio.run(test_both())
 
-    assert len(results_batch) == len(paths), "Batch should extract all files"
+    assert len(results_batch) == len(fixtures), "Batch should extract all files"
     assert all(len(r.content) > 0 for r in results_batch), "All results should have content"
 
 

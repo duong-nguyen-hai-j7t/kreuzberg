@@ -19,7 +19,7 @@ cp -R "$REPO_ROOT/crates/kreuzberg-tesseract" "$REPO_ROOT/packages/ruby/vendor/k
 cp -R "$REPO_ROOT/crates/kreuzberg-ffi" "$REPO_ROOT/packages/ruby/vendor/kreuzberg-ffi"
 
 if [ -d "$REPO_ROOT/vendor/rb-sys" ]; then
-	cp -R "$REPO_ROOT/vendor/rb-sys" "$REPO_ROOT/packages/ruby/vendor/rb-sys"
+  cp -R "$REPO_ROOT/vendor/rb-sys" "$REPO_ROOT/packages/ruby/vendor/rb-sys"
 fi
 
 rm -rf "$REPO_ROOT/packages/ruby/vendor/kreuzberg/.fastembed_cache"
@@ -37,52 +37,52 @@ find "$REPO_ROOT/packages/ruby/vendor/kreuzberg-tesseract" -name '*.tmp' -delete
 find "$REPO_ROOT/packages/ruby/vendor/kreuzberg-tesseract" -name '*~' -delete
 
 if [ -d "$REPO_ROOT/packages/ruby/vendor/rb-sys" ]; then
-	find "$REPO_ROOT/packages/ruby/vendor/rb-sys" -name '*.swp' -delete
-	find "$REPO_ROOT/packages/ruby/vendor/rb-sys" -name '*.bak' -delete
-	find "$REPO_ROOT/packages/ruby/vendor/rb-sys" -name '*.tmp' -delete
-	find "$REPO_ROOT/packages/ruby/vendor/rb-sys" -name '*~' -delete
+  find "$REPO_ROOT/packages/ruby/vendor/rb-sys" -name '*.swp' -delete
+  find "$REPO_ROOT/packages/ruby/vendor/rb-sys" -name '*.bak' -delete
+  find "$REPO_ROOT/packages/ruby/vendor/rb-sys" -name '*.tmp' -delete
+  find "$REPO_ROOT/packages/ruby/vendor/rb-sys" -name '*~' -delete
 fi
 
 core_version=$(awk -F '"' '/^\[workspace.package\]/,/^version =/ {if ($0 ~ /^version =/) {print $2; exit}}' "$REPO_ROOT/Cargo.toml")
 
 for crate_dir in kreuzberg kreuzberg-tesseract; do
-	sed -i.bak "s/^version\.workspace = true/version = \"${core_version}\"/" "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^edition\.workspace = true/edition = "2024"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^rust-version\.workspace = true/rust-version = "1.91"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^authors\.workspace = true/authors = ["Na'\''aman Hirschfeld <nhirschfeld@gmail.com>"]/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^license\.workspace = true/license = "MIT"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak "s/^version\.workspace = true/version = \"${core_version}\"/" "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^edition\.workspace = true/edition = "2024"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^rust-version\.workspace = true/rust-version = "1.91"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^authors\.workspace = true/authors = ["Na'\''aman Hirschfeld <nhirschfeld@gmail.com>"]/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^license\.workspace = true/license = "MIT"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
 done
 
 for crate_dir in kreuzberg kreuzberg-tesseract; do
-	sed -i.bak 's/^ahash = { workspace = true }/ahash = "0.8.12"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^async-trait = { workspace = true }/async-trait = "0.1.89"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^base64 = { workspace = true }/base64 = "0.22.1"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^hex = { workspace = true }/hex = "0.4.3"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^toml = { workspace = true }/toml = "0.9.10"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^libc = { workspace = true }/libc = "0.2.178"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^num_cpus = { workspace = true }/num_cpus = "1.17.0"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^serde = { workspace = true }/serde = { version = "1.0.228", features = ["derive"] }/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^serde_json = { workspace = true }/serde_json = "1.0.145"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^thiserror = { workspace = true }/thiserror = "2.0.17"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^tokio = { workspace = true }/tokio = { version = "1.48.0", features = ["rt", "rt-multi-thread", "macros", "sync", "process", "fs", "time", "io-util"] }/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^tracing = { workspace = true }/tracing = "0.1"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^anyhow = { workspace = true }/anyhow = "1.0"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^reqwest = { workspace = true, /reqwest = { version = "0.12.25", /' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^image = { workspace = true, /image = { version = "0.25.9", /' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^html-to-markdown-rs = { workspace = true/html-to-markdown-rs = { version = "2.14.11", default-features = false/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^once_cell = { workspace = true }/once_cell = "1.21.3"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^lzma-rust2 = { workspace = true, optional = true }/lzma-rust2 = { version = "0.15.4", optional = true }/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^parking_lot = { workspace = true }/parking_lot = "0.12.3"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^ahash = { workspace = true }/ahash = "0.8.12"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^async-trait = { workspace = true }/async-trait = "0.1.89"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^base64 = { workspace = true }/base64 = "0.22.1"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^hex = { workspace = true }/hex = "0.4.3"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^toml = { workspace = true }/toml = "0.9.10"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^libc = { workspace = true }/libc = "0.2.178"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^num_cpus = { workspace = true }/num_cpus = "1.17.0"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^serde = { workspace = true }/serde = { version = "1.0.228", features = ["derive"] }/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^serde_json = { workspace = true }/serde_json = "1.0.145"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^thiserror = { workspace = true }/thiserror = "2.0.17"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^tokio = { workspace = true }/tokio = { version = "1.48.0", features = ["rt", "rt-multi-thread", "macros", "sync", "process", "fs", "time", "io-util"] }/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^tracing = { workspace = true }/tracing = "0.1"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^anyhow = { workspace = true }/anyhow = "1.0"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^reqwest = { workspace = true, /reqwest = { version = "0.12.25", /' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^image = { workspace = true, /image = { version = "0.25.9", /' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^html-to-markdown-rs = { workspace = true/html-to-markdown-rs = { version = "2.14.11", default-features = false/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^once_cell = { workspace = true }/once_cell = "1.21.3"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^lzma-rust2 = { workspace = true, optional = true }/lzma-rust2 = { version = "0.15.4", optional = true }/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^parking_lot = { workspace = true }/parking_lot = "0.12.3"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
 
-	sed -i.bak 's/^tempfile = { workspace = true }/tempfile = "3.23.0"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
-	sed -i.bak 's/^criterion = { workspace = true }/criterion = { version = "0.8", features = ["html_reports"] }/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^tempfile = { workspace = true }/tempfile = "3.23.0"/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
+  sed -i.bak 's/^criterion = { workspace = true }/criterion = { version = "0.8", features = ["html_reports"] }/' "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml"
 
-	rm -f "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml.bak"
+  rm -f "$REPO_ROOT/packages/ruby/vendor/$crate_dir/Cargo.toml.bak"
 done
 
 sed -i.bak \
-	's/^kreuzberg-tesseract = { version = "[^"]*", optional = true }/kreuzberg-tesseract = { path = "..\/kreuzberg-tesseract", optional = true }/' \
-	"$REPO_ROOT/packages/ruby/vendor/kreuzberg/Cargo.toml"
+  's/^kreuzberg-tesseract = { version = "[^"]*", optional = true }/kreuzberg-tesseract = { path = "..\/kreuzberg-tesseract", optional = true }/' \
+  "$REPO_ROOT/packages/ruby/vendor/kreuzberg/Cargo.toml"
 rm -f "$REPO_ROOT/packages/ruby/vendor/kreuzberg/Cargo.toml.bak"
 
 cat >"$REPO_ROOT/packages/ruby/vendor/Cargo.toml" <<'EOF'

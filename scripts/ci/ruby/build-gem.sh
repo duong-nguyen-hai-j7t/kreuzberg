@@ -27,14 +27,14 @@ echo ""
 
 echo "=== System Information ==="
 if [ "$(uname)" = "Linux" ]; then
-	echo "OS: Linux"
+  echo "OS: Linux"
 elif [ "$(uname)" = "Darwin" ]; then
-	echo "OS: macOS"
-	echo "Arch: $(uname -m)"
+  echo "OS: macOS"
+  echo "Arch: $(uname -m)"
 elif [ "$(uname)" = "MINGW64_NT" ] || [ "$(uname)" = "MSYS_NT" ]; then
-	echo "OS: Windows (MINGW/MSYS)"
+  echo "OS: Windows (MINGW/MSYS)"
 else
-	echo "OS: $(uname -s)"
+  echo "OS: $(uname -s)"
 fi
 echo ""
 
@@ -52,8 +52,8 @@ echo ""
 
 echo "=== Rakefile Information ==="
 if [ -f Rakefile ]; then
-	echo "Rakefile exists"
-	grep -E "ExtensionTask|ext_dir" Rakefile || echo "No ExtensionTask found"
+  echo "Rakefile exists"
+  grep -E "ExtensionTask|ext_dir" Rakefile || echo "No ExtensionTask found"
 fi
 echo ""
 
@@ -62,46 +62,46 @@ echo "packages/ruby contents:"
 find . -maxdepth 1 -type f -o -maxdepth 1 -type d | head -20
 echo ""
 if [ -d "ext/kreuzberg_rb" ]; then
-	echo "ext/kreuzberg_rb contents:"
-	find ext/kreuzberg_rb -maxdepth 1 -type f -o -maxdepth 1 -type d | head -20
+  echo "ext/kreuzberg_rb contents:"
+  find ext/kreuzberg_rb -maxdepth 1 -type f -o -maxdepth 1 -type d | head -20
 else
-	echo "ERROR: ext/kreuzberg_rb directory not found"
+  echo "ERROR: ext/kreuzberg_rb directory not found"
 fi
 echo ""
 
 echo "=== Running rake compile (verbose) ==="
 bundle exec rake compile --verbose --trace 2>&1 || {
-	echo "ERROR: rake compile failed"
-	echo "=== Looking for error details ==="
-	if [ -f "mkmf.log" ]; then
-		echo "mkmf.log contents (last 100 lines):"
-		tail -100 mkmf.log
-	fi
-	exit 1
+  echo "ERROR: rake compile failed"
+  echo "=== Looking for error details ==="
+  if [ -f "mkmf.log" ]; then
+    echo "mkmf.log contents (last 100 lines):"
+    tail -100 mkmf.log
+  fi
+  exit 1
 }
 echo ""
 
 echo "=== Post-compile Directory State ==="
 echo "lib/ contents:"
 if [ -d "lib" ]; then
-	find lib -type f | head -20
+  find lib -type f | head -20
 else
-	echo "WARNING: lib directory not found"
+  echo "WARNING: lib directory not found"
 fi
 echo ""
 
 echo "=== Running rake build (verbose) ==="
 bundle exec rake build --verbose --trace 2>&1 || {
-	echo "ERROR: rake build failed"
-	exit 1
+  echo "ERROR: rake build failed"
+  exit 1
 }
 echo ""
 
 echo "=== Gem build artifacts ==="
 if [ -d "pkg" ]; then
-	ls -lh pkg/*.gem || echo "No gem files found in pkg/"
+  ls -lh pkg/*.gem || echo "No gem files found in pkg/"
 else
-	echo "ERROR: pkg directory not found"
+  echo "ERROR: pkg directory not found"
 fi
 echo ""
 

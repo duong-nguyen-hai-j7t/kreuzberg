@@ -4,23 +4,23 @@ set -euo pipefail
 tarball="${1:?package tarball (file or directory) required}"
 
 if [[ -n "${KREUZBERG_PDFIUM_PREBUILT:-}" ]]; then
-	case "${RUNNER_OS:-unknown}" in
-	Linux) export LD_LIBRARY_PATH="$KREUZBERG_PDFIUM_PREBUILT/lib:${LD_LIBRARY_PATH:-}" ;;
-	macOS) export DYLD_LIBRARY_PATH="$KREUZBERG_PDFIUM_PREBUILT/lib:${DYLD_LIBRARY_PATH:-}" ;;
-	Windows) export PATH="$KREUZBERG_PDFIUM_PREBUILT/bin;${PATH:-}" ;;
-	esac
+  case "${RUNNER_OS:-unknown}" in
+  Linux) export LD_LIBRARY_PATH="$KREUZBERG_PDFIUM_PREBUILT/lib:${LD_LIBRARY_PATH:-}" ;;
+  macOS) export DYLD_LIBRARY_PATH="$KREUZBERG_PDFIUM_PREBUILT/lib:${DYLD_LIBRARY_PATH:-}" ;;
+  Windows) export PATH="$KREUZBERG_PDFIUM_PREBUILT/bin;${PATH:-}" ;;
+  esac
 fi
 
 if [[ -d "$tarball" ]]; then
-	tarball="$(find "$tarball" -name "*.tgz" -type f | head -n 1)"
-	[ -n "$tarball" ] || {
-		echo "No .tgz file found in directory" >&2
-		exit 1
-	}
+  tarball="$(find "$tarball" -name "*.tgz" -type f | head -n 1)"
+  [ -n "$tarball" ] || {
+    echo "No .tgz file found in directory" >&2
+    exit 1
+  }
 fi
 
 if [[ "$tarball" != /* ]]; then
-	tarball="${GITHUB_WORKSPACE}/$tarball"
+  tarball="${GITHUB_WORKSPACE}/$tarball"
 fi
 
 echo "Using tarball: $tarball"

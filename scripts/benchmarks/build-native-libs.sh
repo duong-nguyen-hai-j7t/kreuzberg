@@ -19,11 +19,11 @@ echo
 
 cd "$REPO_ROOT"
 cargo build --workspace --release \
-	--features full,profiling,api,mcp,otel
+  --features full,profiling,api,mcp,otel
 cargo build --manifest-path tools/benchmark-harness/Cargo.toml --release --features profiling
 
 if [ -d "$REPO_ROOT/target/release" ]; then
-	find "$REPO_ROOT/target" -type f -name "*.a" -exec cp -v {} "$REPO_ROOT/target/release/" \; 2>/dev/null || true
+  find "$REPO_ROOT/target" -type f -name "*.a" -exec cp -v {} "$REPO_ROOT/target/release/" \; 2>/dev/null || true
 fi
 
 echo "Native libraries build complete"

@@ -18,16 +18,16 @@ shopt -s nullglob
 pkgs=("$npm_dir"/*.tgz)
 
 if [ ${#pkgs[@]} -eq 0 ]; then
-	log_error "No npm packages found in $npm_dir"
-	exit 1
+  log_error "No npm packages found in $npm_dir"
+  exit 1
 fi
 
 log_info "Found ${#pkgs[@]} package(s) to publish with tag '$npm_tag'"
 
 for pkg in "${pkgs[@]}"; do
-	if ! publish_npm_package "$pkg" "$npm_tag"; then
-		exit 1
-	fi
+  if ! publish_npm_package "$pkg" "$npm_tag"; then
+    exit 1
+  fi
 done
 
 log_success "Native binary packages published"

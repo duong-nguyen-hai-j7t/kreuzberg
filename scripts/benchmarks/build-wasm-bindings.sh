@@ -15,7 +15,7 @@ setup_rust_ffi_paths "$REPO_ROOT"
 cd "$REPO_ROOT"
 
 if ! command -v wasm-pack >/dev/null 2>&1; then
-	cargo install wasm-pack --locked
+  cargo install wasm-pack --locked
 fi
 
 rustup target add wasm32-unknown-unknown
@@ -27,5 +27,5 @@ pnpm install
 pnpm -C crates/kreuzberg-wasm run build
 
 if [ -n "$saved_rustflags" ]; then
-	export RUSTFLAGS="$saved_rustflags"
+  export RUSTFLAGS="$saved_rustflags"
 fi

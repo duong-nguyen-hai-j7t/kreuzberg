@@ -17,6 +17,7 @@ import pytest
 
 from kreuzberg import (
     ExtractionConfig,
+    ExtractionResult,
     ImageExtractionConfig,
     extract_file_sync,
 )
@@ -25,7 +26,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-def get_pdf_with_images_result(test_documents: Path):
+def get_pdf_with_images_result(test_documents: Path) -> ExtractionResult | None:
     """Get cached extraction result for PDF with images.
 
     PDFium can only be initialized once per process. Uses the same PDF (tiny.pdf)
@@ -72,6 +73,7 @@ class TestImageExtractionBasic:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert hasattr(result, "content")
         assert hasattr(result, "metadata")
         assert hasattr(result, "mime_type")
@@ -82,6 +84,7 @@ class TestImageExtractionBasic:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert isinstance(result.metadata, dict)
 
 
@@ -95,6 +98,7 @@ class TestImageFormatHandling:
             pytest.skip("Test PDF not found")
 
         # Verify metadata exists
+        assert result is not None
         assert result.metadata is not None
         assert isinstance(result.metadata, dict)
 
@@ -118,6 +122,7 @@ class TestImageMetadata:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.metadata is not None
         assert isinstance(result.metadata, dict)
 
@@ -127,6 +132,7 @@ class TestImageMetadata:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         metadata = result.metadata
         assert isinstance(metadata, dict)
         # Metadata can have various fields
@@ -137,6 +143,7 @@ class TestImageMetadata:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         mime_type = result.mime_type
         assert isinstance(mime_type, str)
         assert len(mime_type) > 0

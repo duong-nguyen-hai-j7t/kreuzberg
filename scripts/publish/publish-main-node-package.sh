@@ -15,7 +15,7 @@ npm_tag="${2:-${NPM_TAG:-latest}}"
 validate_directory "$pkg_dir" "Package directory"
 
 if ! publish_npm_from_directory "$pkg_dir" "$npm_tag"; then
-	exit 1
+  exit 1
 fi
 
 log_success "@kreuzberg/node published to npm with tag '$npm_tag'"

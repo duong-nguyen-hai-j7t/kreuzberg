@@ -17,6 +17,7 @@ import pytest
 
 from kreuzberg import (
     ExtractionConfig,
+    ExtractionResult,
     extract_file_sync,
 )
 
@@ -24,7 +25,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-def get_table_pdf_result(test_documents: Path):
+def get_table_pdf_result(test_documents: Path) -> ExtractionResult | None:
     """Get cached extraction result for PDF with tables.
 
     PDFium can only be initialized once per process.
@@ -59,6 +60,7 @@ class TestAdvancedTableStructure:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         for table in result.tables:
             cells = table.cells
@@ -73,6 +75,7 @@ class TestAdvancedTableStructure:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         for table in result.tables:
             for row in table.cells:
@@ -85,6 +88,7 @@ class TestAdvancedTableStructure:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         for table in result.tables:
             markdown = table.markdown
@@ -102,6 +106,7 @@ class TestAdvancedTableStructure:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         for table in result.tables:
             assert isinstance(table.page_number, int)
@@ -113,6 +118,7 @@ class TestAdvancedTableStructure:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         if len(result.tables) > 1:
             for i, table1 in enumerate(result.tables):
@@ -130,6 +136,7 @@ class TestTableMetadataExtraction:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         for table in result.tables:
             rows = len(table.cells)
@@ -146,6 +153,7 @@ class TestTableMetadataExtraction:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         for table in result.tables:
             assert hasattr(table, "cells"), "Table missing cells attribute"
@@ -158,6 +166,7 @@ class TestTableMetadataExtraction:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         for table in result.tables:
             assert len(table.cells) > 0, "Table should have at least one row"
@@ -169,6 +178,7 @@ class TestTableMetadataExtraction:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         for table in result.tables:
             markdown = table.markdown
@@ -226,6 +236,7 @@ class TestTableEdgeCases:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         # Tables should be valid regardless of size
         for table in result.tables:
@@ -237,6 +248,7 @@ class TestTableEdgeCases:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         for table in result.tables:
             if len(table.cells) > 0:
@@ -248,6 +260,7 @@ class TestTableEdgeCases:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         for table in result.tables:
             for row in table.cells:
@@ -262,6 +275,7 @@ class TestTableEdgeCases:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         for table in result.tables:
             for row in table.cells:
@@ -274,6 +288,7 @@ class TestTableEdgeCases:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         # Just verify structure is intact with any special chars
         for table in result.tables:
@@ -294,6 +309,8 @@ class TestTableConsistency:
         if result2 is None:
             pytest.skip("Test PDF not found")
 
+        assert result1 is not None
+        assert result2 is not None
         assert len(result1.tables) == len(result2.tables)
 
     def test_cell_count_consistency(self, test_documents: Path) -> None:
@@ -302,6 +319,7 @@ class TestTableConsistency:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         for table in result.tables:
             rows = len(table.cells)
@@ -317,6 +335,7 @@ class TestTableConsistency:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         for table in result.tables:
             markdown = table.markdown
@@ -349,6 +368,7 @@ class TestTableExtractionRobustness:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         for table in result.tables:
             rows = len(table.cells)
@@ -362,6 +382,7 @@ class TestTableExtractionRobustness:
         if result is None:
             pytest.skip("Test PDF not found")
 
+        assert result is not None
         assert result.tables is not None
         for table in result.tables:
             # Content should be preserved as strings

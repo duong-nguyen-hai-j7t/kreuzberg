@@ -3,11 +3,17 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
+if TYPE_CHECKING:
+    from collections.abc import Generator
 
-@pytest.fixture
+    from kreuzberg import ExtractionResult
+
+
+@pytest.fixture  # type: ignore[untyped-decorator]
 def docx_document() -> Path:
     """Path to DOCX test file used across binding-specific suites."""
     path = Path(__file__).parent.parent.parent.parent / "test_documents" / "documents" / "lorem_ipsum.docx"
@@ -16,7 +22,7 @@ def docx_document() -> Path:
     return path
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session")  # type: ignore[untyped-decorator]
 def test_documents() -> Path:
     """Path to test_documents directory containing PDF and other test files."""
     path = Path(__file__).parent.parent.parent.parent / "test_documents"
@@ -27,11 +33,11 @@ def test_documents() -> Path:
 
 # Session-level cache for all PDF extractions
 # PDFium can only be initialized once per process
-_pdf_extraction_cache = {}
-_pdfium_initialized = False
+_pdf_extraction_cache: dict[str, ExtractionResult | None] = {}
+_pdfium_initialized: bool = False
 
 
-def get_cached_pdf_extraction(pdf_path: str, config):
+def get_cached_pdf_extraction(pdf_path: str, config: Any) -> ExtractionResult | None:
     """Get or create a cached PDF extraction result.
 
     Since PDFium can only be initialized ONCE per process and subsequent
@@ -75,8 +81,8 @@ def get_cached_pdf_extraction(pdf_path: str, config):
     return _pdf_extraction_cache.get(pdf_path)
 
 
-@pytest.fixture(scope="session", autouse=True)
-def _pdfium_session_management():
+@pytest.fixture(scope="session", autouse=True)  # type: ignore[untyped-decorator]
+def _pdfium_session_management() -> Generator[None, None, None]:
     """Manage PDFium initialization state for the session.
 
     PDFium is a C++ library that can only be initialized once per process.

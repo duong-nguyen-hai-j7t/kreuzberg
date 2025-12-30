@@ -1,10 +1,7 @@
 
 
-
-
 [graph]
-targets = [
-]
+targets = []
 all-features = false
 no-default-features = false
 
@@ -13,6 +10,7 @@ feature-depth = 1
 
 [advisories]
 ignore = [
+    "RUSTSEC-2024-0436", # paste crate unmaintained - transitive dep from biblatex/tokenizers
 ]
 
 [licenses]
@@ -34,16 +32,14 @@ allow = [
     "OpenSSL",
 ]
 confidence-threshold = 0.8
-exceptions = [
-]
+exceptions = []
 
 #[[licenses.clarify]]
 #{ path = "LICENSE", hash = 0xbd0eed23 }
 
 [licenses.private]
 ignore = false
-registries = [
-]
+registries = []
 
 [bans]
 multiple-versions = "warn"
@@ -51,17 +47,13 @@ wildcards = "allow"
 highlight = "all"
 workspace-default-features = "allow"
 external-default-features = "allow"
-allow = [
-]
-deny = [
-]
+allow = []
+deny = []
 
 #[[bans.features]]
 
-skip = [
-]
-skip-tree = [
-]
+skip = []
+skip-tree = []
 
 [sources]
 unknown-registry = "warn"

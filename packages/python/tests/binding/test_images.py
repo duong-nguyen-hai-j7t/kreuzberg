@@ -24,6 +24,7 @@ import pytest
 
 from kreuzberg import (
     ExtractionConfig,
+    ExtractionResult,
     ImageExtractionConfig,
     extract_file_sync,
 )
@@ -32,7 +33,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-def get_pdf_image_result(test_documents: Path):
+def get_pdf_image_result(test_documents: Path) -> ExtractionResult | None:
     """Get cached extraction result for PDF with images.
 
     PDFium can only be initialized once per process. Uses the same PDF (tiny.pdf)

@@ -12,30 +12,30 @@ echo "Test 1: Validate bottle filename parsing"
 echo "=========================================="
 
 test_bottles=(
-	"kreuzberg--4.0.0.arm64_sequoia.bottle.tar.gz"
-	"kreuzberg--4.0.0-rc.1.arm64_sequoia.bottle.tar.gz"
-	"kreuzberg--4.0.0.ventura.bottle.tar.gz"
+  "kreuzberg--4.0.0.arm64_sequoia.bottle.tar.gz"
+  "kreuzberg--4.0.0-rc.1.arm64_sequoia.bottle.tar.gz"
+  "kreuzberg--4.0.0.ventura.bottle.tar.gz"
 )
 
 for bottle in "${test_bottles[@]}"; do
-	without_suffix="${bottle%.bottle.tar.gz}"
-	bottle_tag="${without_suffix##*.}"
-	echo "  $bottle -> $bottle_tag"
+  without_suffix="${bottle%.bottle.tar.gz}"
+  bottle_tag="${without_suffix##*.}"
+  echo "  $bottle -> $bottle_tag"
 
-	case "$bottle" in
-	*arm64_sequoia*)
-		[ "$bottle_tag" = "arm64_sequoia" ] || {
-			echo "FAIL: Expected arm64_sequoia, got $bottle_tag"
-			exit 1
-		}
-		;;
-	*ventura*)
-		[ "$bottle_tag" = "ventura" ] || {
-			echo "FAIL: Expected ventura, got $bottle_tag"
-			exit 1
-		}
-		;;
-	esac
+  case "$bottle" in
+  *arm64_sequoia*)
+    [ "$bottle_tag" = "arm64_sequoia" ] || {
+      echo "FAIL: Expected arm64_sequoia, got $bottle_tag"
+      exit 1
+    }
+    ;;
+  *ventura*)
+    [ "$bottle_tag" = "ventura" ] || {
+      echo "FAIL: Expected ventura, got $bottle_tag"
+      exit 1
+    }
+    ;;
+  esac
 done
 
 echo "  PASS: All bottle tags extracted correctly"
@@ -50,8 +50,8 @@ echo "test content" | gzip >"$test_bottle"
 sha256=$(shasum -a 256 "$test_bottle" | cut -d' ' -f1)
 echo "  SHA256: $sha256"
 [ ${#sha256} -eq 64 ] || {
-	echo "FAIL: SHA256 hash should be 64 chars"
-	exit 1
+  echo "FAIL: SHA256 hash should be 64 chars"
+  exit 1
 }
 
 echo "  PASS: SHA256 hash is valid"
@@ -86,19 +86,19 @@ EOF
 updated=$(sed 's|url "https://github.com/kreuzberg-dev/kreuzberg/archive/.*\.tar\.gz"|url "https://github.com/kreuzberg-dev/kreuzberg/archive/v4.0.0-rc.18.tar.gz"|' "$test_formula")
 
 if echo "$updated" | grep -q "v4.0.0-rc.18.tar.gz"; then
-	echo "  PASS: URL replacement works"
+  echo "  PASS: URL replacement works"
 else
-	echo "  FAIL: URL replacement failed"
-	exit 1
+  echo "  FAIL: URL replacement failed"
+  exit 1
 fi
 
 test_without_bottles=$(echo "$updated" | sed '/# bottle do/,/# end/d')
 
 if ! echo "$test_without_bottles" | grep -q "# bottle do"; then
-	echo "  PASS: Bottle block removal works"
+  echo "  PASS: Bottle block removal works"
 else
-	echo "  FAIL: Bottle block removal failed"
-	exit 1
+  echo "  FAIL: Bottle block removal failed"
+  exit 1
 fi
 
 echo ""
@@ -107,13 +107,13 @@ echo "Test 4: Validate GitHub artifact naming conventions"
 echo "===================================================="
 
 patterns=(
-	"homebrew-bottle-arm64_sequoia"
-	"homebrew-bottle-ventura"
-	"homebrew-bottle-*"
+  "homebrew-bottle-arm64_sequoia"
+  "homebrew-bottle-ventura"
+  "homebrew-bottle-*"
 )
 
 for pattern in "${patterns[@]}"; do
-	echo "  Pattern: $pattern"
+  echo "  Pattern: $pattern"
 done
 
 echo "  PASS: Artifact naming follows conventions"

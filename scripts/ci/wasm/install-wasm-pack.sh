@@ -2,15 +2,15 @@
 set -euo pipefail
 
 if command -v wasm-pack >/dev/null 2>&1; then
-	wasm-pack --version
-	exit 0
+  wasm-pack --version
+  exit 0
 fi
 
 case "$(uname -s)" in
 MINGW* | MSYS* | CYGWIN*)
-	cargo install wasm-pack --locked --force
-	;;
+  cargo install wasm-pack --locked --force
+  ;;
 *)
-	curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-	;;
+  curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+  ;;
 esac

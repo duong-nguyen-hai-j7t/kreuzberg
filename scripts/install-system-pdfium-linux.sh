@@ -19,21 +19,21 @@ echo ""
 
 echo "[1/5] Downloading PDFium ${PDFIUM_VERSION}..."
 if ! curl -f -L --progress-bar "${DOWNLOAD_URL}" -o "${TEMP_DIR}/pdfium.tgz"; then
-	echo "Error: Failed to download PDFium ${PDFIUM_VERSION}" >&2
-	exit 1
+  echo "Error: Failed to download PDFium ${PDFIUM_VERSION}" >&2
+  exit 1
 fi
 
 echo "[2/5] Extracting PDFium archive..."
 if ! tar -xzf "${TEMP_DIR}/pdfium.tgz" -C "${TEMP_DIR}"; then
-	echo "Error: Failed to extract PDFium archive" >&2
-	exit 1
+  echo "Error: Failed to extract PDFium archive" >&2
+  exit 1
 fi
 
 echo "[3/5] Installing shared library to ${PREFIX}/lib/..."
 sudo mkdir -p "${PREFIX}/lib"
 if [ ! -f "${TEMP_DIR}/lib/libpdfium.so" ]; then
-	echo "Error: libpdfium.so not found in archive" >&2
-	exit 1
+  echo "Error: libpdfium.so not found in archive" >&2
+  exit 1
 fi
 sudo cp "${TEMP_DIR}/lib/libpdfium.so" "${PREFIX}/lib/libpdfium.so"
 sudo chmod 0755 "${PREFIX}/lib/libpdfium.so"
@@ -44,8 +44,8 @@ sudo ldconfig
 echo "[4/5] Installing headers to ${PREFIX}/include/pdfium/..."
 sudo mkdir -p "${PREFIX}/include/pdfium"
 if [ ! -d "${TEMP_DIR}/include" ]; then
-	echo "Error: include directory not found in archive" >&2
-	exit 1
+  echo "Error: include directory not found in archive" >&2
+  exit 1
 fi
 sudo cp -r "${TEMP_DIR}/include/"* "${PREFIX}/include/pdfium/"
 
@@ -69,11 +69,11 @@ EOF
 echo ""
 echo "Verifying installation..."
 if ! pkg-config --modversion pdfium >/dev/null 2>&1; then
-	echo "Warning: pkg-config verification failed. You may need to add ${PKG_CONFIG_DIR} to PKG_CONFIG_PATH" >&2
-	echo "   export PKG_CONFIG_PATH=\"${PKG_CONFIG_PATH:-}:${PKG_CONFIG_DIR}\"" >&2
+  echo "Warning: pkg-config verification failed. You may need to add ${PKG_CONFIG_DIR} to PKG_CONFIG_PATH" >&2
+  echo "   export PKG_CONFIG_PATH=\"${PKG_CONFIG_PATH:-}:${PKG_CONFIG_DIR}\"" >&2
 else
-	INSTALLED_VERSION=$(pkg-config --modversion pdfium)
-	echo "Successfully installed PDFium ${INSTALLED_VERSION}"
+  INSTALLED_VERSION=$(pkg-config --modversion pdfium)
+  echo "Successfully installed PDFium ${INSTALLED_VERSION}"
 fi
 
 echo ""

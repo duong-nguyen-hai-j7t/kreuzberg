@@ -9,51 +9,51 @@ source "$REPO_ROOT/scripts/lib/retry.sh"
 echo "::group::Installing macOS dependencies"
 
 if [[ -d "/opt/homebrew/bin" ]]; then
-	export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:${PATH}"
+  export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:${PATH}"
 fi
 if [[ -d "/usr/local/bin" ]]; then
-	export PATH="/usr/local/bin:/usr/local/sbin:${PATH}"
+  export PATH="/usr/local/bin:/usr/local/sbin:${PATH}"
 fi
 
 if ! brew list tesseract &>/dev/null; then
-	echo "Installing Tesseract..."
-	retry_with_backoff brew install tesseract || {
-		echo "::error::Failed to install Tesseract after retries"
-		exit 1
-	}
+  echo "Installing Tesseract..."
+  retry_with_backoff brew install tesseract || {
+    echo "::error::Failed to install Tesseract after retries"
+    exit 1
+  }
 else
-	echo "✓ Tesseract already installed"
+  echo "✓ Tesseract already installed"
 fi
 
 if ! command -v tesseract >/dev/null 2>&1; then
-	echo "Tesseract not on PATH after install; attempting brew link..."
-	brew link --overwrite tesseract >/dev/null 2>&1 || true
+  echo "Tesseract not on PATH after install; attempting brew link..."
+  brew link --overwrite tesseract >/dev/null 2>&1 || true
 fi
 
 if ! brew list tesseract-lang &>/dev/null; then
-	echo "Installing Tesseract language packs..."
-	retry_with_backoff brew install tesseract-lang || {
-		echo "::warning::Failed to install tesseract-lang, some languages may be unavailable"
-	}
+  echo "Installing Tesseract language packs..."
+  retry_with_backoff brew install tesseract-lang || {
+    echo "::warning::Failed to install tesseract-lang, some languages may be unavailable"
+  }
 else
-	echo "✓ Tesseract language packs already installed"
+  echo "✓ Tesseract language packs already installed"
 fi
 
 if [ -d "/Applications/LibreOffice.app" ]; then
-	echo "✓ LibreOffice already present"
+  echo "✓ LibreOffice already present"
 else
-	echo "Installing LibreOffice (this may take 10+ minutes, timeout: 20min)..."
-	if retry_with_backoff_timeout 1200 brew install --cask libreoffice; then
-		echo "✓ LibreOffice installed successfully"
-	else
-		exit_code=$?
-		if [ $exit_code -eq 124 ]; then
-			echo "::error::LibreOffice installation timed out after 20 minutes"
-		else
-			echo "::error::LibreOffice installation failed with exit code $exit_code"
-		fi
-		exit 1
-	fi
+  echo "Installing LibreOffice (this may take 10+ minutes, timeout: 20min)..."
+  if retry_with_backoff_timeout 1200 brew install --cask libreoffice; then
+    echo "✓ LibreOffice installed successfully"
+  else
+    exit_code=$?
+    if [ $exit_code -eq 124 ]; then
+      echo "::error::LibreOffice installation timed out after 20 minutes"
+    else
+      echo "::error::LibreOffice installation failed with exit code $exit_code"
+    fi
+    exit 1
+  fi
 fi
 
 echo "::endgroup::"
@@ -62,12 +62,12 @@ echo "::group::Verifying macOS installations"
 
 echo "Tesseract:"
 if command -v tesseract >/dev/null 2>&1; then
-	tesseract --version | head -1
+  tesseract --version | head -1
 else
-	echo "::error::Tesseract not found on PATH after installation"
-	echo "PATH=$PATH"
-	brew --prefix tesseract 2>/dev/null || true
-	exit 1
+  echo "::error::Tesseract not found on PATH after installation"
+  echo "PATH=$PATH"
+  brew --prefix tesseract 2>/dev/null || true
+  exit 1
 fi
 
 echo ""

@@ -5,17 +5,17 @@ echo "=== Installing OpenSSL and pkg-config ==="
 echo "Platform: $(uname -m)"
 
 if brew list openssl@3 &>/dev/null; then
-	echo "openssl@3 already installed"
+  echo "openssl@3 already installed"
 else
-	echo "Installing openssl@3..."
-	brew install openssl@3
+  echo "Installing openssl@3..."
+  brew install openssl@3
 fi
 
 if brew list pkg-config &>/dev/null; then
-	echo "pkg-config already installed"
+  echo "pkg-config already installed"
 else
-	echo "Installing pkg-config..."
-	brew install pkg-config
+  echo "Installing pkg-config..."
+  brew install pkg-config
 fi
 
 echo ""

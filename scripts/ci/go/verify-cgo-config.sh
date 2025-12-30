@@ -23,37 +23,37 @@ echo "CGO_LDFLAGS=${CGO_LDFLAGS:-<not set>}"
 echo ""
 echo "=== Runtime Library Paths ==="
 if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
-	echo "PATH (first 500 chars):"
-	echo "$PATH" | head -c 500
-	echo "..."
+  echo "PATH (first 500 chars):"
+  echo "$PATH" | head -c 500
+  echo "..."
 else
-	echo "LD_LIBRARY_PATH: ${LD_LIBRARY_PATH:-<not set>}"
-	echo "DYLD_LIBRARY_PATH: ${DYLD_LIBRARY_PATH:-<not set>}"
-	echo "DYLD_FALLBACK_LIBRARY_PATH: ${DYLD_FALLBACK_LIBRARY_PATH:-<not set>}"
+  echo "LD_LIBRARY_PATH: ${LD_LIBRARY_PATH:-<not set>}"
+  echo "DYLD_LIBRARY_PATH: ${DYLD_LIBRARY_PATH:-<not set>}"
+  echo "DYLD_FALLBACK_LIBRARY_PATH: ${DYLD_FALLBACK_LIBRARY_PATH:-<not set>}"
 fi
 echo ""
 echo "=== pkg-config ==="
 echo "PKG_CONFIG_PATH: ${PKG_CONFIG_PATH:-<not set>}"
 if verify_pkg_config; then
-	echo "✓ pkg-config can find kreuzberg-ffi"
+  echo "✓ pkg-config can find kreuzberg-ffi"
 else
-	echo "⚠ pkg-config cannot find kreuzberg-ffi (build may not be complete yet)"
+  echo "⚠ pkg-config cannot find kreuzberg-ffi (build may not be complete yet)"
 fi
 echo ""
 echo "=== FFI Library Files ==="
 if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
-	if ls target/x86_64-pc-windows-gnu/release/libkreuzberg_ffi.* 2>/dev/null; then
-		ls -lh target/x86_64-pc-windows-gnu/release/libkreuzberg_ffi.*
-	elif ls target/release/libkreuzberg_ffi.* 2>/dev/null; then
-		ls -lh target/release/libkreuzberg_ffi.*
-	else
-		echo "✗ No FFI library found"
-	fi
+  if ls target/x86_64-pc-windows-gnu/release/libkreuzberg_ffi.* 2>/dev/null; then
+    ls -lh target/x86_64-pc-windows-gnu/release/libkreuzberg_ffi.*
+  elif ls target/release/libkreuzberg_ffi.* 2>/dev/null; then
+    ls -lh target/release/libkreuzberg_ffi.*
+  else
+    echo "✗ No FFI library found"
+  fi
 else
-	if ls target/release/libkreuzberg_ffi.* 2>/dev/null; then
-		ls -lh target/release/libkreuzberg_ffi.*
-	else
-		echo "✗ No FFI library found"
-	fi
+  if ls target/release/libkreuzberg_ffi.* 2>/dev/null; then
+    ls -lh target/release/libkreuzberg_ffi.*
+  else
+    echo "✗ No FFI library found"
+  fi
 fi
 echo "=========================================="

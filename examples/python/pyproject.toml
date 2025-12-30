@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "hatchling.build"
-requires = [ "hatchling" ]
+requires = ["hatchling"]
 
 [project]
 name = "kreuzberg-examples-python"
@@ -9,21 +9,17 @@ description = "Kreuzberg Python binding examples"
 requires-python = ">=3.10"
 
 classifiers = [
-  "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: 3.13",
-  "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
-dependencies = [
-  "kreuzberg",
-]
+dependencies = ["kreuzberg"]
 
 [tool.hatch.build.targets.wheel]
-only-include = [
-  "*.py",
-]
+only-include = ["*.py"]
 
 [tool.uv.sources]
 kreuzberg = { workspace = true }

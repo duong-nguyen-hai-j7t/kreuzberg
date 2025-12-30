@@ -13,10 +13,10 @@ echo "Use napi-cross: $use_napi_cross"
 
 args=(--platform --release --target "$target" --output-dir ./artifacts)
 if [ "$use_napi_cross" = "true" ]; then
-	args+=(--use-napi-cross)
+  args+=(--use-napi-cross)
 fi
 if [ "$use_cross" = "true" ]; then
-	args+=(--use-cross)
+  args+=(--use-cross)
 fi
 
 echo "Running: pnpm --filter @kreuzberg/node exec napi build ${args[*]}"

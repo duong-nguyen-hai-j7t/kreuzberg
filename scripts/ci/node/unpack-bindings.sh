@@ -17,8 +17,8 @@ cd "$REPO_ROOT/crates/kreuzberg-node"
 
 pkg=$(find . -maxdepth 1 -name "kreuzberg-node-*.tgz" -print | head -n 1)
 if [ -z "$pkg" ]; then
-	echo "No kreuzberg-node tarball found" >&2
-	exit 1
+  echo "No kreuzberg-node tarball found" >&2
+  exit 1
 fi
 
 echo "Found package: $pkg"
@@ -26,7 +26,7 @@ echo "Found package: $pkg"
 pkg_abs_path="$(cd "$(dirname "$pkg")" && pwd)/$(basename "$pkg")"
 
 if command -v cygpath >/dev/null 2>&1; then
-	pkg_abs_path="$(cygpath -w "$pkg_abs_path")"
+  pkg_abs_path="$(cygpath -w "$pkg_abs_path")"
 fi
 
 cd "$REPO_ROOT"

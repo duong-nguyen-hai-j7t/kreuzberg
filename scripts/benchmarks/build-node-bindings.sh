@@ -13,8 +13,8 @@ validate_repo_root "$REPO_ROOT" || exit 1
 TARGET="${TARGET:-}"
 
 if [ -z "$TARGET" ]; then
-	echo "::error::TARGET environment variable is required" >&2
-	exit 1
+  echo "::error::TARGET environment variable is required" >&2
+  exit 1
 fi
 
 setup_all_library_paths "$REPO_ROOT"

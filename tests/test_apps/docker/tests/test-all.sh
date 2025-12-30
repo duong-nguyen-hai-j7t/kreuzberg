@@ -20,123 +20,123 @@ echo -e "╚══════════════════════�
 echo ""
 
 run_test_suite() {
-	local suite_name=$1
-	local script_path=$2
+  local suite_name=$1
+  local script_path=$2
 
-	TEST_SUITES+=("$suite_name")
+  TEST_SUITES+=("$suite_name")
 
-	echo -e "${CYAN}Running: $suite_name${NC}"
-	echo "Script: $script_path"
-	echo ""
+  echo -e "${CYAN}Running: $suite_name${NC}"
+  echo "Script: $script_path"
+  echo ""
 
-	if bash "$script_path"; then
-		SUITE_RESULTS+=("PASS")
-		echo ""
-	else
-		SUITE_RESULTS+=("FAIL")
-		echo ""
-	fi
+  if bash "$script_path"; then
+    SUITE_RESULTS+=("PASS")
+    echo ""
+  else
+    SUITE_RESULTS+=("FAIL")
+    echo ""
+  fi
 }
 
 check_prerequisites() {
-	echo -e "${BLUE}Checking prerequisites...${NC}"
+  echo -e "${BLUE}Checking prerequisites...${NC}"
 
-	if ! command -v docker &>/dev/null; then
-		echo -e "${RED}Docker is not installed or not in PATH${NC}"
-		exit 1
-	fi
+  if ! command -v docker &>/dev/null; then
+    echo -e "${RED}Docker is not installed or not in PATH${NC}"
+    exit 1
+  fi
 
-	if ! command -v docker-compose &>/dev/null && ! docker compose version &>/dev/null; then
-		echo -e "${RED}Docker Compose is not installed or not in PATH${NC}"
-		exit 1
-	fi
+  if ! command -v docker-compose &>/dev/null && ! docker compose version &>/dev/null; then
+    echo -e "${RED}Docker Compose is not installed or not in PATH${NC}"
+    exit 1
+  fi
 
-	echo -e "${GREEN}Docker and Docker Compose are available${NC}"
-	echo ""
+  echo -e "${GREEN}Docker and Docker Compose are available${NC}"
+  echo ""
 }
 
 check_containers() {
-	echo -e "${BLUE}Checking containers...${NC}"
+  echo -e "${BLUE}Checking containers...${NC}"
 
-	if ! docker inspect kreuzberg-core-test >/dev/null 2>&1; then
-		echo -e "${RED}Core container not running. Please run: docker-compose up${NC}"
-		exit 1
-	fi
+  if ! docker inspect kreuzberg-core-test >/dev/null 2>&1; then
+    echo -e "${RED}Core container not running. Please run: docker-compose up${NC}"
+    exit 1
+  fi
 
-	if ! docker inspect kreuzberg-full-test >/dev/null 2>&1; then
-		echo -e "${RED}Full container not running. Please run: docker-compose up${NC}"
-		exit 1
-	fi
+  if ! docker inspect kreuzberg-full-test >/dev/null 2>&1; then
+    echo -e "${RED}Full container not running. Please run: docker-compose up${NC}"
+    exit 1
+  fi
 
-	echo -e "${GREEN}Both containers are running${NC}"
-	echo ""
+  echo -e "${GREEN}Both containers are running${NC}"
+  echo ""
 }
 
 run_all_tests() {
-	echo -e "${BLUE}Running test suites...${NC}"
-	echo ""
+  echo -e "${BLUE}Running test suites...${NC}"
+  echo ""
 
-	run_test_suite "Health Check Tests" "$SCRIPT_DIR/test-health.sh"
-	run_test_suite "CLI Command Tests" "$SCRIPT_DIR/test-cli.sh"
-	run_test_suite "API Endpoint Tests" "$SCRIPT_DIR/test-api.sh"
-	run_test_suite "MCP Protocol Tests" "$SCRIPT_DIR/test-mcp.sh"
-	run_test_suite "OCR Tests" "$SCRIPT_DIR/test-ocr.sh"
-	run_test_suite "Embeddings Tests" "$SCRIPT_DIR/test-embeddings.sh"
-	run_test_suite "Core Image Tests" "$SCRIPT_DIR/test-core.sh"
-	run_test_suite "Full Image Tests" "$SCRIPT_DIR/test-full.sh"
+  run_test_suite "Health Check Tests" "$SCRIPT_DIR/test-health.sh"
+  run_test_suite "CLI Command Tests" "$SCRIPT_DIR/test-cli.sh"
+  run_test_suite "API Endpoint Tests" "$SCRIPT_DIR/test-api.sh"
+  run_test_suite "MCP Protocol Tests" "$SCRIPT_DIR/test-mcp.sh"
+  run_test_suite "OCR Tests" "$SCRIPT_DIR/test-ocr.sh"
+  run_test_suite "Embeddings Tests" "$SCRIPT_DIR/test-embeddings.sh"
+  run_test_suite "Core Image Tests" "$SCRIPT_DIR/test-core.sh"
+  run_test_suite "Full Image Tests" "$SCRIPT_DIR/test-full.sh"
 }
 
 print_final_summary() {
-	echo ""
-	echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗"
-	echo "║                    Test Suite Summary                       ║"
-	echo -e "╚════════════════════════════════════════════════════════════╝${NC}"
-	echo ""
+  echo ""
+  echo -e "${CYAN}╔════════════════════════════════════════════════════════════╗"
+  echo "║                    Test Suite Summary                       ║"
+  echo -e "╚════════════════════════════════════════════════════════════╝${NC}"
+  echo ""
 
-	echo "Test Suites Results:"
-	echo ""
-	for i in "${!TEST_SUITES[@]}"; do
-		suite="${TEST_SUITES[$i]}"
-		result="${SUITE_RESULTS[$i]}"
+  echo "Test Suites Results:"
+  echo ""
+  for i in "${!TEST_SUITES[@]}"; do
+    suite="${TEST_SUITES[$i]}"
+    result="${SUITE_RESULTS[$i]}"
 
-		if [ "$result" = "PASS" ]; then
-			echo -e "  ${GREEN}✓${NC} $suite"
-		else
-			echo -e "  ${RED}✗${NC} $suite"
-		fi
-	done
+    if [ "$result" = "PASS" ]; then
+      echo -e "  ${GREEN}✓${NC} $suite"
+    else
+      echo -e "  ${RED}✗${NC} $suite"
+    fi
+  done
 
-	echo ""
-	echo "Summary:"
-	echo "  Test Suites Run: ${#TEST_SUITES[@]}"
+  echo ""
+  echo "Summary:"
+  echo "  Test Suites Run: ${#TEST_SUITES[@]}"
 
-	passed_count=0
-	for result in "${SUITE_RESULTS[@]}"; do
-		if [ "$result" = "PASS" ]; then
-			((passed_count++))
-		fi
-	done
+  passed_count=0
+  for result in "${SUITE_RESULTS[@]}"; do
+    if [ "$result" = "PASS" ]; then
+      ((passed_count++))
+    fi
+  done
 
-	failed_count=$((${#TEST_SUITES[@]} - passed_count))
+  failed_count=$((${#TEST_SUITES[@]} - passed_count))
 
-	echo -e "  Passed: ${GREEN}${passed_count}${NC}"
-	echo -e "  Failed: ${RED}${failed_count}${NC}"
-	echo ""
+  echo -e "  Passed: ${GREEN}${passed_count}${NC}"
+  echo -e "  Failed: ${RED}${failed_count}${NC}"
+  echo ""
 
-	if [ $failed_count -eq 0 ]; then
-		echo -e "${GREEN}All test suites passed!${NC}"
-		return 0
-	else
-		echo -e "${RED}Some test suites failed!${NC}"
-		return 1
-	fi
+  if [ $failed_count -eq 0 ]; then
+    echo -e "${GREEN}All test suites passed!${NC}"
+    return 0
+  else
+    echo -e "${RED}Some test suites failed!${NC}"
+    return 1
+  fi
 }
 
 main() {
-	check_prerequisites
-	check_containers
-	run_all_tests
-	print_final_summary
+  check_prerequisites
+  check_containers
+  run_all_tests
+  print_final_summary
 }
 
 main "$@"

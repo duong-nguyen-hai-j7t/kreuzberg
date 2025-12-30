@@ -8,9 +8,9 @@ source "${REPO_ROOT}/scripts/lib/library-paths.sh"
 TARGET="${1:-}"
 
 if [ -z "$TARGET" ]; then
-	echo "Usage: test-cli-unix.sh <target>"
-	echo "  target: Rust build target"
-	exit 1
+  echo "Usage: test-cli-unix.sh <target>"
+  echo "  target: Rust build target"
+  exit 1
 fi
 
 echo "=== Testing CLI binary for $TARGET ==="

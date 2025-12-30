@@ -14,8 +14,8 @@ echo "Copying FFI Header for Go Bindings"
 echo "=========================================="
 
 if [[ ! -f "$SOURCE_HEADER" ]]; then
-	echo "ERROR: Source header not found at $SOURCE_HEADER"
-	exit 1
+  echo "ERROR: Source header not found at $SOURCE_HEADER"
+  exit 1
 fi
 
 echo "Source: $SOURCE_HEADER"
@@ -28,12 +28,12 @@ cp "$SOURCE_HEADER" "$DEST_HEADER"
 echo "✓ FFI header copied successfully"
 echo "Verifying header..."
 if [[ -f "$DEST_HEADER" ]]; then
-	echo "✓ Header exists at destination"
-	LINES=$(wc -l <"$DEST_HEADER")
-	echo "  Header size: $LINES lines"
+  echo "✓ Header exists at destination"
+  LINES=$(wc -l <"$DEST_HEADER")
+  echo "  Header size: $LINES lines"
 else
-	echo "ERROR: Header not found at destination after copy"
-	exit 1
+  echo "ERROR: Header not found at destination after copy"
+  exit 1
 fi
 
 echo ""

@@ -46,49 +46,49 @@ python3 "$REPO_ROOT/scripts/ci/ruby/vendor-kreuzberg-core.py"
 echo ""
 echo "=== Post-vendor directory state ==="
 if [ -d "ext/kreuzberg_rb/vendor" ]; then
-	echo "Vendor directory contents:"
-	find ext/kreuzberg_rb/vendor -maxdepth 2 -type f | head -10
+  echo "Vendor directory contents:"
+  find ext/kreuzberg_rb/vendor -maxdepth 2 -type f | head -10
 else
-	echo "WARNING: No vendor directory found in ext/kreuzberg_rb"
+  echo "WARNING: No vendor directory found in ext/kreuzberg_rb"
 fi
 echo ""
 
 echo "=== Running rake compile with verbose output ==="
 bundle exec rake compile --verbose --trace 2>&1 || {
-	echo ""
-	echo "ERROR: rake compile failed"
-	echo "=== Attempting to capture compilation error details ==="
+  echo ""
+  echo "ERROR: rake compile failed"
+  echo "=== Attempting to capture compilation error details ==="
 
-	if [ -f "mkmf.log" ]; then
-		echo "=== mkmf.log (last 150 lines) ==="
-		tail -150 mkmf.log
-	fi
+  if [ -f "mkmf.log" ]; then
+    echo "=== mkmf.log (last 150 lines) ==="
+    tail -150 mkmf.log
+  fi
 
-	echo ""
-	echo "=== Looking for compiled artifacts ==="
-	find . -name "*.so" -o -name "*.dll" -o -name "*.dylib" 2>/dev/null | head -20
+  echo ""
+  echo "=== Looking for compiled artifacts ==="
+  find . -name "*.so" -o -name "*.dll" -o -name "*.dylib" 2>/dev/null | head -20
 
-	echo ""
-	echo "=== Checking gem installation ==="
-	gem list kreuzberg || echo "Gem not found"
+  echo ""
+  echo "=== Checking gem installation ==="
+  gem list kreuzberg || echo "Gem not found"
 
-	exit 1
+  exit 1
 }
 
 echo ""
 echo "=== Post-compilation directory state ==="
 echo "lib/ contents:"
 if [ -d "lib" ]; then
-	find lib -type f -name "*.so" -o -name "*.dll" -o -name "*.dylib" 2>/dev/null || echo "No compiled extension found"
+  find lib -type f -name "*.so" -o -name "*.dll" -o -name "*.dylib" 2>/dev/null || echo "No compiled extension found"
 else
-	echo "ERROR: lib directory not found"
+  echo "ERROR: lib directory not found"
 fi
 echo ""
 
 echo "=== Verifying extension can be loaded ==="
 ruby -e "require_relative 'lib/kreuzberg'; puts 'Extension loaded successfully'" 2>&1 || {
-	echo "WARNING: Could not load extension directly"
-	echo "This might be expected if gem installation is required"
+  echo "WARNING: Could not load extension directly"
+  echo "This might be expected if gem installation is required"
 }
 
 echo ""

@@ -12,9 +12,9 @@ url="https://api.nuget.org/v3/registration5-gz-semver2/${package,,}/index.json"
 response="$(curl -sSL --compressed "$url" 2>/dev/null || echo "")"
 
 if [ -n "$response" ] && echo "$response" | jq -e ".items[].items[]?.catalogEntry | select(.version == \"${version}\")" >/dev/null 2>&1; then
-	echo "exists=true"
-	echo "::notice::NuGet package ${package} ${version} already exists"
+  echo "exists=true"
+  echo "::notice::NuGet package ${package} ${version} already exists"
 else
-	echo "exists=false"
-	echo "::notice::NuGet package ${package} ${version} not found, will build and publish"
+  echo "exists=false"
+  echo "::notice::NuGet package ${package} ${version} not found, will build and publish"
 fi
