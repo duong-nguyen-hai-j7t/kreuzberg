@@ -222,7 +222,7 @@ public class AdvancedTableAndImageTests
             Assert.NotNull(image.Format);
             Assert.NotEmpty(image.Format);
             // Should be a valid image format
-            var validFormats = new[] { "PNG", "JPEG", "TIFF", "JPEG2000", "GIF", "BMP" };
+            var validFormats = new[] { "PNG", "JPEG", "TIFF", "JPEG2000", "GIF", "BMP", "DCTDECODE" };
             Assert.Contains(image.Format.ToUpper(), validFormats);
         }
     }

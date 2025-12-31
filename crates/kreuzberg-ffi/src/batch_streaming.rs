@@ -377,10 +377,10 @@ pub unsafe extern "C" fn kreuzberg_extract_batch_parallel(
                         }
                     }
                     Err(e) => {
-                        if let Some(err_cb) = error_callback {
-                            if let Ok(err_msg) = CString::new(e) {
-                                unsafe { err_cb(*index, err_msg.as_ptr(), user_data_ptr as *mut c_void) };
-                            }
+                        if let Some(err_cb) = error_callback
+                            && let Ok(err_msg) = CString::new(e)
+                        {
+                            unsafe { err_cb(*index, err_msg.as_ptr(), user_data_ptr as *mut c_void) };
                         }
                     }
                 }
