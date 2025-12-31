@@ -13,7 +13,7 @@
 	"assertions": {
 		"expected_mime": "image/png",
 		"metadata": {
-			"format": "PNG"
+			"format.format": "PNG"
 		}
 	},
 	"skip": {
