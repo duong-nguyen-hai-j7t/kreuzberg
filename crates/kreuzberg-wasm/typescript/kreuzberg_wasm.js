@@ -1,0 +1,1 @@
+pkg/kreuzberg_wasm.js

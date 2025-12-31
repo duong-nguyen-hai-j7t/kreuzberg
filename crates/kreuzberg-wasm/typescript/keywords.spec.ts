@@ -12,9 +12,13 @@
  * Framework: vitest
  */
 
-import { describe, expect, it } from "vitest";
-import { extractBytesSync } from "../../dist/index.js";
-import type { ExtractionConfig } from "../../src/types.js";
+import { beforeAll, describe, expect, it } from "vitest";
+import { extractBytesSync, initWasm } from "./index.js";
+import type { ExtractionConfig } from "./types.js";
+
+beforeAll(async () => {
+	await initWasm();
+});
 
 describe("Keyword Extraction (WASM Bindings)", () => {
 	describe("algorithm selection", () => {
