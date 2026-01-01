@@ -1411,16 +1411,31 @@ pub unsafe extern "C" fn kreuzberg_load_extraction_config_from_file(file_path: *
 /// - All results and strings within the batch result will be freed automatically
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn kreuzberg_free_batch_result(batch_result: *mut CBatchResult) {
-    if !batch_result.is_null() {
-        let batch = unsafe { Box::from_raw(batch_result) };
+    if batch_result.is_null() {
+        return;
+    }
 
-        // NOTE: Do not free individual results here - calling code is responsible for that.
+    let batch = unsafe { Box::from_raw(batch_result) };
 
-        if !batch.results.is_null() {
+    // Free individual results first, then the array
+    if !batch.results.is_null() {
+        if batch.count > 0 {
             unsafe {
-                let _results_array = Box::from_raw(std::ptr::slice_from_raw_parts_mut(batch.results, batch.count));
-            };
+                // Free each individual result
+                for i in 0..batch.count {
+                    let result_ptr = *batch.results.add(i);
+                    if !result_ptr.is_null() {
+                        kreuzberg_free_result(result_ptr);
+                    }
+                }
+            }
         }
+
+        // Free the results array itself (was created with into_boxed_slice())
+        unsafe {
+            let _results_vec = Vec::from_raw_parts(batch.results, batch.count, batch.count);
+            // Vec will be dropped here, freeing the array allocation
+        };
     }
 }
 
