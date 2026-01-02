@@ -2313,7 +2313,7 @@ jobs:
         if: ${{ needs.prepare.outputs.dry_run != 'true' }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: scripts/publish/wait-for-package.sh npm "@kreuzberg/node-linux-arm64-gnu" "${{ needs.prepare.outputs.version }}" 25
+        run: scripts/publish/wait-for-package.sh npm "@kreuzberg/node-linux-arm64-gnu" "${{ needs.prepare.outputs.version }}" 30
 
       - name: Prepare main Node package metadata
         if: ${{ needs.prepare.outputs.dry_run != 'true' }}
