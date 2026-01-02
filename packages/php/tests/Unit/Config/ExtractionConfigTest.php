@@ -67,7 +67,7 @@ final class ExtractionConfigTest extends TestCase
     {
         $ocrConfig = new OcrConfig(backend: 'tesseract');
         $pdfConfig = new PdfConfig(extractImages: true);
-        $chunkingConfig = new ChunkingConfig(maxChunkSize: 1024);
+        $chunkingConfig = new ChunkingConfig(maxChars: 1024);
 
         $config = new ExtractionConfig(
             ocr: $ocrConfig,
@@ -209,7 +209,7 @@ final class ExtractionConfigTest extends TestCase
         $original = new ExtractionConfig(
             ocr: new OcrConfig(backend: 'tesseract', language: 'eng'),
             pdf: new PdfConfig(extractImages: true),
-            chunking: new ChunkingConfig(maxChunkSize: 1024),
+            chunking: new ChunkingConfig(maxChars: 1024),
             extractImages: true,
             extractTables: false,
             preserveFormatting: true,

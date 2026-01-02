@@ -128,16 +128,16 @@ final class ConfigTest extends TestCase
     public function it_creates_chunking_config(): void
     {
         $config = new ChunkingConfig(
-            maxChunkSize: 1000,
-            chunkOverlap: 200,
+            maxChars: 1000,
+            maxOverlap: 200,
             respectSentences: true,
         );
 
         $array = $config->toArray();
 
         $this->assertIsArray($array);
-        $this->assertSame(1000, $array['max_chunk_size']);
-        $this->assertSame(200, $array['chunk_overlap']);
+        $this->assertSame(1000, $array['max_chars']);
+        $this->assertSame(200, $array['max_overlap']);
         $this->assertTrue($array['respect_sentences']);
     }
 
@@ -163,7 +163,7 @@ final class ConfigTest extends TestCase
     {
         $ocrConfig = new OcrConfig(backend: 'tesseract', language: 'eng');
         $pdfConfig = new PdfConfig(extractImages: true);
-        $chunkingConfig = new ChunkingConfig(maxChunkSize: 500);
+        $chunkingConfig = new ChunkingConfig(maxChars: 500);
 
         $config = new ExtractionConfig(
             ocr: $ocrConfig,

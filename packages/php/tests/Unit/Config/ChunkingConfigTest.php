@@ -16,11 +16,11 @@ use PHPUnit\Framework\TestCase;
  * Tests construction with default values and property access.
  * The ChunkingConfig is defined by the extension and only supports:
  * - Constructor with no parameters
- * - Properties: maxChars (default 1000), maxOverlap (default 200), preset (nullable)
+ * - Properties: maxChars (default 512), maxOverlap (default 50)
  *
  * Test Coverage:
  * - Construction with default values
- * - Property access (maxChars, maxOverlap, preset)
+ * - Property access (maxChars, maxOverlap, respectSentences, respectParagraphs)
  */
 #[CoversClass(ChunkingConfig::class)]
 #[Group('unit')]
@@ -32,9 +32,10 @@ final class ChunkingConfigTest extends TestCase
     {
         $config = new ChunkingConfig();
 
-        $this->assertSame(1000, $config->maxChars);
-        $this->assertSame(200, $config->maxOverlap);
-        $this->assertNull($config->preset);
+        $this->assertSame(512, $config->maxChars);
+        $this->assertSame(50, $config->maxOverlap);
+        $this->assertTrue($config->respectSentences);
+        $this->assertTrue($config->respectParagraphs);
     }
 
     #[Test]
@@ -43,7 +44,7 @@ final class ChunkingConfigTest extends TestCase
         $config = new ChunkingConfig();
 
         $this->assertIsInt($config->maxChars);
-        $this->assertSame(1000, $config->maxChars);
+        $this->assertSame(512, $config->maxChars);
     }
 
     #[Test]
@@ -52,14 +53,24 @@ final class ChunkingConfigTest extends TestCase
         $config = new ChunkingConfig();
 
         $this->assertIsInt($config->maxOverlap);
-        $this->assertSame(200, $config->maxOverlap);
+        $this->assertSame(50, $config->maxOverlap);
     }
 
     #[Test]
-    public function it_can_access_preset_property(): void
+    public function it_can_access_respect_sentences_property(): void
     {
         $config = new ChunkingConfig();
 
-        $this->assertNull($config->preset);
+        $this->assertIsBool($config->respectSentences);
+        $this->assertTrue($config->respectSentences);
+    }
+
+    #[Test]
+    public function it_can_access_respect_paragraphs_property(): void
+    {
+        $config = new ChunkingConfig();
+
+        $this->assertIsBool($config->respectParagraphs);
+        $this->assertTrue($config->respectParagraphs);
     }
 }
