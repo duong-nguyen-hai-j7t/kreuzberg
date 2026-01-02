@@ -1646,6 +1646,13 @@ jobs:
       - name: Install Task
         uses: ./.github/actions/install-task
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml
+          coverage: none
+
       - name: Build PHP extension (kreuzberg-php)
         shell: bash
         run: task php:build
