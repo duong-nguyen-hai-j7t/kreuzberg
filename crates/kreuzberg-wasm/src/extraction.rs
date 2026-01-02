@@ -201,11 +201,7 @@ pub fn batch_extract_bytes_sync_wasm(
 
     let extraction_config = parse_config(config)?;
     let owned_data: Vec<Vec<u8>> = data_list.into_iter().map(|d| d.to_vec()).collect();
-    let contents: Vec<(&[u8], &str)> = owned_data
-        .iter()
-        .zip(mime_types.iter())
-        .map(|(data, mime)| (data.as_slice(), mime.as_str()))
-        .collect();
+    let contents: Vec<(Vec<u8>, String)> = owned_data.into_iter().zip(mime_types).collect();
 
     let results = batch_extract_bytes_sync(contents, &extraction_config).map_err(convert_error)?;
 

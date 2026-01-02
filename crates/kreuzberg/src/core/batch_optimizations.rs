@@ -261,7 +261,12 @@ impl BatchProcessor {
     ) -> Result<Vec<ExtractionResult>> {
         use crate::core::extractor::batch_extract_bytes;
 
-        batch_extract_bytes(contents, extraction_config).await
+        let owned_contents: Vec<(Vec<u8>, String)> = contents
+            .into_iter()
+            .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
+            .collect();
+
+        batch_extract_bytes(owned_contents, extraction_config).await
     }
 
     /// Get the number of pooled string buffers currently available.

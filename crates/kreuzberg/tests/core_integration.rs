@@ -185,7 +185,12 @@ async fn test_batch_extract_bytes_concurrency() {
         (b"content 5".as_slice(), "text/plain"),
     ];
 
-    let results = batch_extract_bytes(contents, &config).await;
+    let owned_contents: Vec<(Vec<u8>, String)> = contents
+        .into_iter()
+        .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
+        .collect();
+
+    let results = batch_extract_bytes(owned_contents, &config).await;
     assert!(results.is_ok());
 
     let results = results.unwrap();
@@ -236,7 +241,11 @@ fn test_sync_wrappers() {
     assert!(results[0].chunks.is_none(), "Chunks should be None");
 
     let contents = vec![(b"test".as_slice(), "text/plain")];
-    let results = batch_extract_bytes_sync(contents, &config);
+    let owned_contents: Vec<(Vec<u8>, String)> = contents
+        .into_iter()
+        .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
+        .collect();
+    let results = batch_extract_bytes_sync(owned_contents, &config);
     assert!(results.is_ok(), "Batch bytes sync should succeed");
     let results = results.unwrap();
     assert_eq!(results.len(), 1);

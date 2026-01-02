@@ -211,9 +211,14 @@ pub fn batch_extract_bytes_sync(
         .map(|(data, mime)| (data.as_slice(), mime.as_str()))
         .collect();
 
+    let owned_contents: Vec<(Vec<u8>, String)> = contents
+        .into_iter()
+        .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
+        .collect();
+
     // Release GIL during sync batch extraction - OSError/RuntimeError must bubble up ~keep
     let results =
-        Python::detach(py, || kreuzberg::batch_extract_bytes_sync(contents, &rust_config)).map_err(to_py_err)?;
+        Python::detach(py, || kreuzberg::batch_extract_bytes_sync(owned_contents, &rust_config)).map_err(to_py_err)?;
 
     let converted: PyResult<Vec<_>> = results
         .into_iter()
@@ -410,7 +415,12 @@ pub fn batch_extract_bytes<'py>(
             .map(|(data, mime)| (data.as_slice(), mime.as_str()))
             .collect();
 
-        let results = kreuzberg::batch_extract_bytes(contents, &rust_config)
+        let owned_contents: Vec<(Vec<u8>, String)> = contents
+            .into_iter()
+            .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
+            .collect();
+
+        let results = kreuzberg::batch_extract_bytes(owned_contents, &rust_config)
             .await
             .map_err(to_py_err)?;
 

@@ -307,9 +307,13 @@ async fn test_batch_bytes_parallel_processing() {
         .collect();
 
     let contents_ref: Vec<(&[u8], &str)> = contents.iter().map(|(bytes, mime)| (bytes.as_slice(), *mime)).collect();
+    let owned_contents: Vec<(Vec<u8>, String)> = contents_ref
+        .into_iter()
+        .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
+        .collect();
 
     let start = Instant::now();
-    let results = batch_extract_bytes(contents_ref, &config).await;
+    let results = batch_extract_bytes(owned_contents, &config).await;
     let duration = start.elapsed();
 
     assert!(results.is_ok());
@@ -337,7 +341,12 @@ async fn test_batch_bytes_mixed_valid_invalid() {
         (b"valid content 3".as_slice(), "text/plain"),
     ];
 
-    let results = batch_extract_bytes(contents, &config).await;
+    let owned_contents: Vec<(Vec<u8>, String)> = contents
+        .into_iter()
+        .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
+        .collect();
+
+    let results = batch_extract_bytes(owned_contents, &config).await;
 
     assert!(results.is_ok());
     let results = results.unwrap();
@@ -374,9 +383,13 @@ async fn test_batch_utilizes_multiple_cores() {
     }
 
     let contents_ref: Vec<(&[u8], &str)> = contents.iter().map(|(bytes, mime)| (bytes.as_slice(), *mime)).collect();
+    let owned_contents: Vec<(Vec<u8>, String)> = contents_ref
+        .into_iter()
+        .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
+        .collect();
 
     let start = Instant::now();
-    let results = batch_extract_bytes(contents_ref, &config).await;
+    let results = batch_extract_bytes(owned_contents, &config).await;
     let duration = start.elapsed();
 
     assert!(results.is_ok());
@@ -413,9 +426,13 @@ async fn test_batch_memory_pressure_handling() {
     }
 
     let contents_ref: Vec<(&[u8], &str)> = contents.iter().map(|(bytes, mime)| (bytes.as_slice(), *mime)).collect();
+    let owned_contents: Vec<(Vec<u8>, String)> = contents_ref
+        .into_iter()
+        .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
+        .collect();
 
     let start = Instant::now();
-    let results = batch_extract_bytes(contents_ref, &config).await;
+    let results = batch_extract_bytes(owned_contents, &config).await;
     let duration = start.elapsed();
 
     assert!(results.is_ok());
@@ -445,8 +462,13 @@ async fn test_batch_scales_with_cpu_count() {
 
     let contents_ref: Vec<(&[u8], &str)> = contents.iter().map(|(bytes, mime)| (bytes.as_slice(), *mime)).collect();
 
+    let owned_contents_1: Vec<(Vec<u8>, String)> = contents_ref
+        .iter()
+        .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
+        .collect();
+
     let start = Instant::now();
-    let _ = batch_extract_bytes(contents_ref.clone(), &config_1).await.unwrap();
+    let _ = batch_extract_bytes(owned_contents_1, &config_1).await.unwrap();
     let duration_1 = start.elapsed();
 
     let config_full = ExtractionConfig {
@@ -454,8 +476,13 @@ async fn test_batch_scales_with_cpu_count() {
         ..Default::default()
     };
 
+    let owned_contents_full: Vec<(Vec<u8>, String)> = contents_ref
+        .into_iter()
+        .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
+        .collect();
+
     let start = Instant::now();
-    let _ = batch_extract_bytes(contents_ref, &config_full).await.unwrap();
+    let _ = batch_extract_bytes(owned_contents_full, &config_full).await.unwrap();
     let duration_full = start.elapsed();
 
     println!(
@@ -539,8 +566,12 @@ async fn test_batch_accuracy_under_load() {
     }
 
     let contents_ref: Vec<(&[u8], &str)> = contents.iter().map(|(bytes, mime)| (bytes.as_slice(), *mime)).collect();
+    let owned_contents: Vec<(Vec<u8>, String)> = contents_ref
+        .into_iter()
+        .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
+        .collect();
 
-    let results = batch_extract_bytes(contents_ref, &config).await.unwrap();
+    let results = batch_extract_bytes(owned_contents, &config).await.unwrap();
 
     assert_eq!(results.len(), 100);
 

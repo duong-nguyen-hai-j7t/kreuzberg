@@ -2231,7 +2231,12 @@ pub fn batch_extract_bytes_sync(
         .map(|(data, mime)| (data.as_ref(), mime.as_str()))
         .collect();
 
-    kreuzberg::batch_extract_bytes_sync(contents, &rust_config)
+    let owned_contents: Vec<(Vec<u8>, String)> = contents
+        .into_iter()
+        .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
+        .collect();
+
+    kreuzberg::batch_extract_bytes_sync(owned_contents, &rust_config)
         .map_err(convert_error)
         .and_then(|results| results.into_iter().map(JsExtractionResult::try_from).collect())
 }
@@ -2300,7 +2305,11 @@ pub async fn batch_extract_bytes(
                 .iter()
                 .map(|(data, mime)| (data.as_slice(), mime.as_str()))
                 .collect();
-            kreuzberg::batch_extract_bytes_sync(contents_refs, &rust_config)
+            let owned_contents: Vec<(Vec<u8>, String)> = contents_refs
+                .into_iter()
+                .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
+                .collect();
+            kreuzberg::batch_extract_bytes_sync(owned_contents, &rust_config)
         })
         .await
         .map_err(|e| Error::from_reason(format!("Worker thread error: {}", e)))?

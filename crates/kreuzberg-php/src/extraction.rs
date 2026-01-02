@@ -244,7 +244,12 @@ pub fn kreuzberg_batch_extract_bytes(
         .map(|(data, mime)| (data.as_slice(), mime.as_str()))
         .collect();
 
-    let results = kreuzberg::batch_extract_bytes_sync(contents, &rust_config).map_err(to_php_exception)?;
+    let owned_contents: Vec<(Vec<u8>, String)> = contents
+        .into_iter()
+        .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
+        .collect();
+
+    let results = kreuzberg::batch_extract_bytes_sync(owned_contents, &rust_config).map_err(to_php_exception)?;
 
     results.into_iter().map(ExtractionResult::from_rust).collect()
 }

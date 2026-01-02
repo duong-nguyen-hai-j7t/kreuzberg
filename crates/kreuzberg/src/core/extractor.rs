@@ -451,7 +451,7 @@ pub async fn batch_extract_file(
     )
 ))]
 pub async fn batch_extract_bytes(
-    contents: Vec<(&[u8], &str)>,
+    contents: Vec<(Vec<u8>, String)>,
     config: &ExtractionConfig,
 ) -> Result<Vec<ExtractionResult>> {
     use std::sync::Arc;
@@ -470,14 +470,9 @@ pub async fn batch_extract_bytes(
         .unwrap_or_else(|| (num_cpus::get() as f64 * 1.5).ceil() as usize);
     let semaphore = Arc::new(Semaphore::new(max_concurrent));
 
-    let owned_contents: Vec<(Vec<u8>, String)> = contents
-        .into_iter()
-        .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
-        .collect();
-
     let mut tasks = JoinSet::new();
 
-    for (index, (bytes, mime_type)) in owned_contents.into_iter().enumerate() {
+    for (index, (bytes, mime_type)) in contents.into_iter().enumerate() {
         let config_clone = Arc::clone(&config);
         let semaphore_clone = Arc::clone(&semaphore);
 
@@ -596,7 +591,7 @@ pub fn batch_extract_file_sync(
 /// that iterates through items and calls `extract_bytes_sync()`.
 #[cfg(feature = "tokio-runtime")]
 pub fn batch_extract_bytes_sync(
-    contents: Vec<(&[u8], &str)>,
+    contents: Vec<(Vec<u8>, String)>,
     config: &ExtractionConfig,
 ) -> Result<Vec<ExtractionResult>> {
     GLOBAL_RUNTIME.block_on(batch_extract_bytes(contents, config))
@@ -608,12 +603,12 @@ pub fn batch_extract_bytes_sync(
 /// and calls `extract_bytes_sync()` for each.
 #[cfg(not(feature = "tokio-runtime"))]
 pub fn batch_extract_bytes_sync(
-    contents: Vec<(&[u8], &str)>,
+    contents: Vec<(Vec<u8>, String)>,
     config: &ExtractionConfig,
 ) -> Result<Vec<ExtractionResult>> {
     let mut results = Vec::with_capacity(contents.len());
     for (content, mime_type) in contents {
-        let result = extract_bytes_sync(content, mime_type, config);
+        let result = extract_bytes_sync(&content, &mime_type, config);
         results.push(result.unwrap_or_else(|e| {
             use crate::types::{ErrorMetadata, Metadata};
             ExtractionResult {
@@ -859,7 +854,11 @@ mod tests {
             (b"content 1".as_slice(), "text/plain"),
             (b"content 2".as_slice(), "text/plain"),
         ];
-        let results = batch_extract_bytes(contents, &config).await;
+        let owned_contents: Vec<(Vec<u8>, String)> = contents
+            .into_iter()
+            .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
+            .collect();
+        let results = batch_extract_bytes(owned_contents, &config).await;
 
         assert!(results.is_ok());
         let results = results.unwrap();
@@ -1017,7 +1016,11 @@ mod tests {
             (b"invalid".as_slice(), "invalid/mime"),
             (b"valid 2".as_slice(), "text/plain"),
         ];
-        let results = batch_extract_bytes(contents, &config).await;
+        let owned_contents: Vec<(Vec<u8>, String)> = contents
+            .into_iter()
+            .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
+            .collect();
+        let results = batch_extract_bytes(owned_contents, &config).await;
 
         assert!(results.is_ok());
         let results = results.unwrap();
@@ -1034,7 +1037,11 @@ mod tests {
             (b"test 1".as_slice(), "invalid/mime1"),
             (b"test 2".as_slice(), "invalid/mime2"),
         ];
-        let results = batch_extract_bytes(contents, &config).await;
+        let owned_contents: Vec<(Vec<u8>, String)> = contents
+            .into_iter()
+            .map(|(bytes, mime)| (bytes.to_vec(), mime.to_string()))
+            .collect();
+        let results = batch_extract_bytes(owned_contents, &config).await;
 
         assert!(results.is_ok());
         let results = results.unwrap();
@@ -1130,7 +1137,7 @@ mod tests {
     #[test]
     fn test_sync_wrapper_batch_bytes_empty() {
         let config = ExtractionConfig::default();
-        let contents: Vec<(&[u8], &str)> = vec![];
+        let contents: Vec<(Vec<u8>, String)> = vec![];
         let results = batch_extract_bytes_sync(contents, &config);
 
         assert!(results.is_ok());

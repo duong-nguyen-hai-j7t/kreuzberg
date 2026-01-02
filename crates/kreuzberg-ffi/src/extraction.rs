@@ -388,7 +388,7 @@ pub unsafe extern "C" fn kreuzberg_batch_extract_files_sync(
             }
         };
 
-        let mut paths = Vec::with_capacity(count);
+        let mut paths: Vec<std::path::PathBuf> = Vec::with_capacity(count);
         for i in 0..count {
             let path_ptr = unsafe { *file_paths.add(i) };
             if path_ptr.is_null() {
@@ -404,10 +404,11 @@ pub unsafe extern "C" fn kreuzberg_batch_extract_files_sync(
                 }
             };
 
-            paths.push(Path::new(path_str));
+            paths.push(std::path::PathBuf::from(path_str));
         }
 
-        match kreuzberg::batch_extract_file_sync(paths, &config) {
+        let path_refs: Vec<&std::path::Path> = paths.iter().map(|p| p.as_path()).collect();
+        match kreuzberg::batch_extract_file_sync(path_refs, &config) {
             Ok(results) => {
                 let mut c_results = Vec::with_capacity(results.len());
                 for result in results {
@@ -491,7 +492,7 @@ pub unsafe extern "C" fn kreuzberg_batch_extract_bytes_sync(
             }
         };
 
-        let mut contents = Vec::with_capacity(count);
+        let mut contents: Vec<(Vec<u8>, String)> = Vec::with_capacity(count);
         for i in 0..count {
             let item = unsafe { &*items.add(i) };
 
@@ -515,7 +516,7 @@ pub unsafe extern "C" fn kreuzberg_batch_extract_bytes_sync(
                 }
             };
 
-            contents.push((bytes, mime_str));
+            contents.push((bytes.to_vec(), mime_str.to_string()));
         }
 
         match kreuzberg::batch_extract_bytes_sync(contents, &config) {

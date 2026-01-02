@@ -95,12 +95,7 @@ pub async fn extract_handler(
 
     let files_data: Vec<(Vec<u8>, String)> = files.into_iter().map(|(data, mime, _name)| (data, mime)).collect();
 
-    let file_refs: Vec<(&[u8], &str)> = files_data
-        .iter()
-        .map(|(data, mime)| (data.as_slice(), mime.as_str()))
-        .collect();
-
-    let results = batch_extract_bytes(file_refs, &config).await?;
+    let results = batch_extract_bytes(files_data, &config).await?;
     Ok(Json(results))
 }
 
