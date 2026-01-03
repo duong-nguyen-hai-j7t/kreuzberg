@@ -136,3 +136,10 @@ libpdfium.a
 profiling-results/
 profiling-results-*/
 .remote-cache/
+
+# Generated PHP ini files (contain machine-specific paths)
+php-kreuzberg.ini
+packages/php/php-kreuzberg.ini
+
+# Temporary debug/test files
+packages/csharp/test_html_debug.cs
