@@ -229,7 +229,8 @@ impl KreuzbergMcp {
     /// This tool extracts text, metadata, and tables from documents in various formats
     /// including PDFs, Word documents, Excel spreadsheets, images (with OCR), and more.
     #[tool(
-        description = "Extract content from a file by path. Supports PDFs, Word, Excel, images (with OCR), HTML, and more."
+        description = "Extract content from a file by path. Supports PDFs, Word, Excel, images (with OCR), HTML, and more.",
+        annotations(title = "Extract File", read_only_hint = true, idempotent_hint = true)
     )]
     async fn extract_file(
         &self,
@@ -253,7 +254,8 @@ impl KreuzbergMcp {
     ///
     /// This tool extracts text, metadata, and tables from base64-encoded document data.
     #[tool(
-        description = "Extract content from base64-encoded file data. Returns extracted text, metadata, and tables."
+        description = "Extract content from base64-encoded file data. Returns extracted text, metadata, and tables.",
+        annotations(title = "Extract Bytes", read_only_hint = true, idempotent_hint = true)
     )]
     async fn extract_bytes(
         &self,
@@ -282,7 +284,10 @@ impl KreuzbergMcp {
     /// Extract content from multiple files in parallel.
     ///
     /// This tool efficiently processes multiple documents simultaneously, useful for batch operations.
-    #[tool(description = "Extract content from multiple files in parallel. Returns results for all files.")]
+    #[tool(
+        description = "Extract content from multiple files in parallel. Returns results for all files.",
+        annotations(title = "Batch Extract Files", read_only_hint = true, idempotent_hint = true)
+    )]
     async fn batch_extract_files(
         &self,
         Parameters(params): Parameters<BatchExtractFilesParams>,
@@ -310,7 +315,10 @@ impl KreuzbergMcp {
     /// Detect the MIME type of a file.
     ///
     /// This tool identifies the file format, useful for determining which extractor to use.
-    #[tool(description = "Detect the MIME type of a file. Returns the detected MIME type string.")]
+    #[tool(
+        description = "Detect the MIME type of a file. Returns the detected MIME type string.",
+        annotations(title = "Detect MIME Type", read_only_hint = true, idempotent_hint = true)
+    )]
     fn detect_mime_type(
         &self,
         Parameters(params): Parameters<DetectMimeTypeParams>,
@@ -323,7 +331,10 @@ impl KreuzbergMcp {
     /// Get cache statistics.
     ///
     /// This tool returns statistics about the cache including total files, size, and disk space.
-    #[tool(description = "Get cache statistics including total files, size, and available disk space.")]
+    #[tool(
+        description = "Get cache statistics including total files, size, and available disk space.",
+        annotations(title = "Cache Stats", read_only_hint = true, idempotent_hint = true)
+    )]
     fn cache_stats(&self, Parameters(_): Parameters<()>) -> Result<CallToolResult, McpError> {
         let cache_dir = std::env::current_dir()
             .unwrap_or_else(|_| std::path::PathBuf::from("."))
@@ -354,7 +365,10 @@ impl KreuzbergMcp {
     /// Clear the cache.
     ///
     /// This tool removes all cached files and returns the number of files removed and space freed.
-    #[tool(description = "Clear all cached files. Returns the number of files removed and space freed in MB.")]
+    #[tool(
+        description = "Clear all cached files. Returns the number of files removed and space freed in MB.",
+        annotations(title = "Clear Cache", destructive_hint = true)
+    )]
     fn cache_clear(&self, Parameters(_): Parameters<()>) -> Result<CallToolResult, McpError> {
         let cache_dir = std::env::current_dir()
             .unwrap_or_else(|_| std::path::PathBuf::from("."))
