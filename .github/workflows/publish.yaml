@@ -553,7 +553,7 @@ jobs:
   python-sdist:
     name: Build Python sdist
     needs: [prepare, check-pypi]
-    if: ${{ needs.prepare.outputs.release_python == 'true' && needs.check-pypi.outputs.exists != 'true' }}
+    if: ${{ needs.prepare.outputs.release_python == 'true' && (needs.prepare.outputs.force_republish == 'true' || needs.check-pypi.outputs.exists != 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 180
     permissions:
@@ -605,7 +605,7 @@ jobs:
   node-bindings:
     name: Build Node bindings (${{ matrix.settings.target }})
     needs: [prepare, check-npm]
-    if: ${{ needs.prepare.outputs.release_node == 'true' && needs.check-npm.outputs.exists != 'true' }}
+    if: ${{ needs.prepare.outputs.release_node == 'true' && (needs.prepare.outputs.force_republish == 'true' || needs.check-npm.outputs.exists != 'true') }}
     runs-on: ${{ matrix.settings.os }}
     timeout-minutes: 180
     permissions:
@@ -972,7 +972,7 @@ jobs:
   ruby-gem:
     name: Build Ruby gem (${{ matrix.label }})
     needs: [prepare, check-rubygems]
-    if: ${{ needs.prepare.outputs.release_ruby == 'true' && needs.check-rubygems.outputs.exists != 'true' }}
+    if: ${{ needs.prepare.outputs.release_ruby == 'true' && (needs.prepare.outputs.force_republish == 'true' || needs.check-rubygems.outputs.exists != 'true') }}
     permissions:
       contents: read
     strategy:
@@ -1370,7 +1370,7 @@ jobs:
   java-natives:
     name: Build Java native libs (${{ matrix.settings.label }})
     needs: [prepare, check-maven]
-    if: ${{ needs.prepare.outputs.release_java == 'true' && (needs.check-maven.outputs.exists != 'true' || needs.prepare.outputs.dry_run == 'true') }}
+    if: ${{ needs.prepare.outputs.release_java == 'true' && (needs.prepare.outputs.force_republish == 'true' || needs.check-maven.outputs.exists != 'true' || needs.prepare.outputs.dry_run == 'true') }}
     runs-on: ${{ matrix.settings.os }}
     timeout-minutes: 180
     permissions:
@@ -1468,7 +1468,7 @@ jobs:
   java-package:
     name: Build Java package
     needs: [prepare, check-maven, java-natives]
-    if: ${{ needs.prepare.outputs.release_java == 'true' && needs.check-maven.outputs.exists != 'true' }}
+    if: ${{ needs.prepare.outputs.release_java == 'true' && (needs.prepare.outputs.force_republish == 'true' || needs.check-maven.outputs.exists != 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -1679,7 +1679,7 @@ jobs:
   csharp-package:
     name: Build C# package
     needs: [prepare, check-nuget, csharp-native-assets]
-    if: ${{ needs.prepare.outputs.release_csharp == 'true' && needs.check-nuget.outputs.exists != 'true' }}
+    if: ${{ needs.prepare.outputs.release_csharp == 'true' && (needs.prepare.outputs.force_republish == 'true' || needs.check-nuget.outputs.exists != 'true') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -1766,7 +1766,7 @@ jobs:
   csharp-native-assets:
     name: Build C# native assets (${{ matrix.rid }})
     needs: [prepare, check-nuget]
-    if: ${{ needs.prepare.outputs.release_csharp == 'true' && needs.check-nuget.outputs.exists != 'true' }}
+    if: ${{ needs.prepare.outputs.release_csharp == 'true' && (needs.prepare.outputs.force_republish == 'true' || needs.check-nuget.outputs.exists != 'true') }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 180
     permissions:

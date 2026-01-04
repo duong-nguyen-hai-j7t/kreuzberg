@@ -5,6 +5,7 @@ This script reads the version from Cargo.toml [workspace.package] and updates:
 - All package.json files (TypeScript/Node.js packages)
 - Python pyproject.toml files
 - Ruby version.rb file
+- Elixir mix.exs file
 - Cargo.toml files with hardcoded versions (not using workspace)
 """
 
@@ -347,6 +348,32 @@ def update_composer_json(file_path: Path, version: str) -> Tuple[bool, str, str]
     return changed, old_version, version
 
 
+def update_mix_exs(file_path: Path, version: str) -> Tuple[bool, str, str]:
+    """
+    Update Elixir mix.exs file.
+
+    Returns: (changed, old_version, new_version)
+    """
+    content = file_path.read_text()
+    match = re.search(r'@version\s+"([^"]+)"', content)
+    old_version = match.group(1) if match else "NOT FOUND"
+
+    if old_version == version:
+        return False, old_version, version
+
+    new_content = re.sub(
+        r'(@version\s+)"[^"]+"',
+        rf'\1"{version}"',
+        content
+    )
+
+    if new_content != content:
+        file_path.write_text(new_content)
+        return True, old_version, version
+
+    return False, old_version, version
+
+
 def main():
     repo_root = get_repo_root()
 
@@ -391,6 +418,17 @@ def main():
     if ruby_version.exists():
         changed, old_ver, new_ver = update_ruby_version(ruby_version, version)
         rel_path = ruby_version.relative_to(repo_root)
+
+        if changed:
+            print(f"✓ {rel_path}: {old_ver} → {new_ver}")
+            updated_files.append(str(rel_path))
+        else:
+            unchanged_files.append(str(rel_path))
+
+    elixir_mix = repo_root / "packages/elixir/mix.exs"
+    if elixir_mix.exists():
+        changed, old_ver, new_ver = update_mix_exs(elixir_mix, version)
+        rel_path = elixir_mix.relative_to(repo_root)
 
         if changed:
             print(f"✓ {rel_path}: {old_ver} → {new_ver}")
