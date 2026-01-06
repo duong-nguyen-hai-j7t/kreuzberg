@@ -4,7 +4,7 @@
 
 use ext_php_rs::prelude::*;
 
-use crate::config::ExtractionConfig;
+use crate::config::parse_config_from_json;
 use crate::error::to_php_exception;
 use crate::types::ExtractionResult;
 
@@ -14,7 +14,7 @@ use crate::types::ExtractionResult;
 ///
 /// - `path` (string): Path to the file to extract
 /// - `mime_type` (string|null): Optional MIME type hint (auto-detected if null)
-/// - `config` (ExtractionConfig|null): Extraction configuration (uses defaults if null)
+/// - `config_json` (string|null): JSON-encoded extraction configuration (uses defaults if null)
 ///
 /// # Returns
 ///
@@ -35,19 +35,22 @@ use crate::types::ExtractionResult;
 /// echo $result->content;
 ///
 /// // With custom configuration
-/// $config = new ExtractionConfig();
-/// $config->use_cache = false;
-/// $config->ocr = new OcrConfig();
-/// $config->ocr->language = "deu";
-/// $result = kreuzberg_extract_file("german.pdf", null, $config);
+/// $config = new \Kreuzberg\Config\ExtractionConfig(
+///     useCache: false,
+///     ocr: new \Kreuzberg\Config\OcrConfig(language: "deu")
+/// );
+/// $result = kreuzberg_extract_file("german.pdf", null, $config->toJson());
 /// ```
 #[php_function]
 pub fn kreuzberg_extract_file(
     path: String,
     mime_type: Option<String>,
-    config: Option<&ExtractionConfig>,
+    config_json: Option<String>,
 ) -> PhpResult<ExtractionResult> {
-    let rust_config = config.map(|c| c.to_rust()).unwrap_or_default();
+    let rust_config = match config_json {
+        Some(json) => parse_config_from_json(&json).map_err(PhpException::from)?,
+        None => Default::default(),
+    };
 
     let result = kreuzberg::extract_file_sync(&path, mime_type.as_deref(), &rust_config).map_err(to_php_exception)?;
 
@@ -60,7 +63,7 @@ pub fn kreuzberg_extract_file(
 ///
 /// - `data` (string): Binary data to extract (bytes)
 /// - `mime_type` (string): MIME type of the data
-/// - `config` (ExtractionConfig|null): Extraction configuration (uses defaults if null)
+/// - `config_json` (string|null): JSON-encoded extraction configuration (uses defaults if null)
 ///
 /// # Returns
 ///
@@ -81,17 +84,19 @@ pub fn kreuzberg_extract_file(
 /// echo $result->content;
 ///
 /// // With custom configuration
-/// $config = new ExtractionConfig();
-/// $config->force_ocr = true;
-/// $result = kreuzberg_extract_bytes($data, "application/pdf", $config);
+/// $config = new \Kreuzberg\Config\ExtractionConfig(forceOcr: true);
+/// $result = kreuzberg_extract_bytes($data, "application/pdf", $config->toJson());
 /// ```
 #[php_function]
 pub fn kreuzberg_extract_bytes(
     data: Vec<u8>,
     mime_type: String,
-    config: Option<&ExtractionConfig>,
+    config_json: Option<String>,
 ) -> PhpResult<ExtractionResult> {
-    let rust_config = config.map(|c| c.to_rust()).unwrap_or_default();
+    let rust_config = match config_json {
+        Some(json) => parse_config_from_json(&json).map_err(PhpException::from)?,
+        None => Default::default(),
+    };
 
     if crate::plugins::has_custom_extractor(&mime_type) {
         match crate::plugins::call_custom_extractor(&mime_type, &data) {
@@ -173,16 +178,18 @@ pub fn kreuzberg_extract_bytes(
 /// }
 ///
 /// // With custom configuration
-/// $config = new ExtractionConfig();
-/// $config->use_cache = false;
-/// $results = kreuzberg_batch_extract_files($paths, $config);
+/// $config = new \Kreuzberg\Config\ExtractionConfig(useCache: false);
+/// $results = kreuzberg_batch_extract_files($paths, $config->toJson());
 /// ```
 #[php_function]
 pub fn kreuzberg_batch_extract_files(
     paths: Vec<String>,
-    config: Option<&ExtractionConfig>,
+    config_json: Option<String>,
 ) -> PhpResult<Vec<ExtractionResult>> {
-    let rust_config = config.map(|c| c.to_rust()).unwrap_or_default();
+    let rust_config = match config_json {
+        Some(json) => parse_config_from_json(&json).map_err(PhpException::from)?,
+        None => Default::default(),
+    };
 
     let results = kreuzberg::batch_extract_file_sync(paths, &rust_config).map_err(to_php_exception)?;
 
@@ -195,7 +202,7 @@ pub fn kreuzberg_batch_extract_files(
 ///
 /// - `data_list` (array): Array of binary data (bytes)
 /// - `mime_types` (array): Array of MIME types (one per data element)
-/// - `config` (ExtractionConfig|null): Extraction configuration (uses defaults if null)
+/// - `config_json` (string|null): JSON-encoded extraction configuration (uses defaults if null)
 ///
 /// # Returns
 ///
@@ -225,7 +232,7 @@ pub fn kreuzberg_batch_extract_files(
 pub fn kreuzberg_batch_extract_bytes(
     data_list: Vec<Vec<u8>>,
     mime_types: Vec<String>,
-    config: Option<&ExtractionConfig>,
+    config_json: Option<String>,
 ) -> PhpResult<Vec<ExtractionResult>> {
     if data_list.len() != mime_types.len() {
         return Err(format!(
@@ -236,7 +243,10 @@ pub fn kreuzberg_batch_extract_bytes(
         .into());
     }
 
-    let rust_config = config.map(|c| c.to_rust()).unwrap_or_default();
+    let rust_config = match config_json {
+        Some(json) => parse_config_from_json(&json).map_err(PhpException::from)?,
+        None => Default::default(),
+    };
 
     let contents: Vec<(&[u8], &str)> = data_list
         .iter()

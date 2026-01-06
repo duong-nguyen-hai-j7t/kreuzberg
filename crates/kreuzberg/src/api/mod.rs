@@ -6,6 +6,7 @@
 //! # Endpoints
 //!
 //! - `POST /extract` - Extract text from uploaded files (multipart form data)
+//! - `POST /embed` - Generate embeddings for text (JSON body with texts array)
 //! - `GET /health` - Health check endpoint
 //! - `GET /info` - Server information
 //! - `GET /cache/stats` - Get cache statistics
@@ -70,6 +71,11 @@
 //!
 //! # Clear cache
 //! curl -X DELETE http://localhost:8000/cache/clear
+//!
+//! # Generate embeddings
+//! curl -X POST http://localhost:8000/embed \
+//!      -H "Content-Type: application/json" \
+//!      -d '{"texts":["Hello world","Second text"]}'
 //! ```
 
 mod error;
@@ -82,6 +88,6 @@ pub use server::{
     create_router, create_router_with_limits, serve, serve_default, serve_with_config, serve_with_config_and_limits,
 };
 pub use types::{
-    ApiSizeLimits, ApiState, CacheClearResponse, CacheStatsResponse, ErrorResponse, ExtractResponse, HealthResponse,
-    InfoResponse,
+    ApiSizeLimits, ApiState, CacheClearResponse, CacheStatsResponse, EmbedRequest, EmbedResponse, ErrorResponse,
+    ExtractResponse, HealthResponse, InfoResponse,
 };

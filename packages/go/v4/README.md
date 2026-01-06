@@ -20,8 +20,38 @@ High-performance document intelligence for Go backed by the Rust core that power
 
 ## Install
 
+### Quick Start (Recommended)
+
+For most users, clone the repository and use the automated installer:
+
 ```bash
-go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@latest
+# Clone the repository
+git clone https://github.com/kreuzberg-dev/kreuzberg.git
+cd kreuzberg
+
+# Run the automated installer (downloads pre-built binaries or builds from source)
+./scripts/go/install-binaries.sh
+
+# The script prints environment variables to add to your shell profile
+```
+
+### Using Go Modules
+
+Due to the monorepo structure, `go get` requires a specific version tag:
+
+```bash
+# Get the latest release candidate
+go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@v4.0.0-rc.27
+
+# Or use a specific version
+go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@v4.0.0-rc.26
+```
+
+**Note:** The `@latest` suffix doesn't work due to Go's module discovery limitations with monorepo subdirectories. Always specify an explicit version tag.
+
+To find available versions:
+```bash
+git ls-remote --tags https://github.com/kreuzberg-dev/kreuzberg.git | grep "packages/go/v4" | tail -5
 ```
 
 The Go binding uses cgo to link against the `kreuzberg-ffi` library.

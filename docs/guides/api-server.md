@@ -107,6 +107,72 @@ curl -F "files=@scanned.pdf" \
 ]
 ```
 
+#### POST /embed
+
+Generate embeddings for text strings without document extraction.
+
+**Request Format:**
+
+- **Method:** POST
+- **Content-Type:** `application/json`
+- **Body:**
+    - `texts` (required): Array of strings to generate embeddings for
+    - `config` (optional): Embedding configuration overrides
+
+**Response:** JSON object containing embeddings, model info, dimensions, and count
+
+**Example:**
+
+```bash title="Terminal"
+# Generate embeddings for two text strings
+curl -X POST http://localhost:8000/embed \
+  -H "Content-Type: application/json" \
+  -d '{"texts":["Hello world","Second text"]}'
+
+# Generate embeddings with custom model configuration
+curl -X POST http://localhost:8000/embed \
+  -H "Content-Type: application/json" \
+  -d '{
+    "texts":["Test text"],
+    "config":{
+      "model":{"preset":{"name":"fast"}},
+      "batch_size":32
+    }
+  }'
+```
+
+**Response Schema:**
+
+```json title="Response"
+{
+  "embeddings": [
+    [0.123, -0.456, 0.789, ...],  // 384 or 768 or 1024 dimensions
+    [-0.234, 0.567, -0.891, ...]
+  ],
+  "model": "balanced",
+  "dimensions": 768,
+  "count": 2
+}
+```
+
+**Available Embedding Presets:**
+
+| Preset | Model | Dimensions | Use Case |
+|--------|-------|------------|----------|
+| `fast` | AllMiniLML6V2Q | 384 | Quick prototyping, development |
+| `balanced` | BGEBaseENV15 | 768 | General-purpose RAG, production (default) |
+| `quality` | BGELargeENV15 | 1024 | Complex documents, maximum accuracy |
+| `multilingual` | MultilingualE5Base | 768 | International documents, 100+ languages |
+
+**Use Cases:**
+
+- Generate embeddings for semantic search
+- Create vector representations for RAG (Retrieval-Augmented Generation) pipelines
+- Embed text chunks without extracting from documents
+- Batch embed multiple texts efficiently
+
+**Note:** This endpoint requires the `embeddings` feature to be enabled (available in Docker images and most pre-built binaries). ONNX Runtime must be installed on the system.
+
 #### GET /health
 
 Health check endpoint for monitoring and load balancers.

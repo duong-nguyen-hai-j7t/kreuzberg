@@ -19,7 +19,9 @@ use tower_http::{
 use crate::{ExtractionConfig, Result};
 
 use super::{
-    handlers::{cache_clear_handler, cache_stats_handler, extract_handler, health_handler, info_handler},
+    handlers::{
+        cache_clear_handler, cache_stats_handler, embed_handler, extract_handler, health_handler, info_handler,
+    },
     types::{ApiSizeLimits, ApiState},
 };
 
@@ -195,6 +197,7 @@ pub fn create_router_with_limits(config: ExtractionConfig, limits: ApiSizeLimits
 
     Router::new()
         .route("/extract", post(extract_handler))
+        .route("/embed", post(embed_handler))
         .route("/health", get(health_handler))
         .route("/info", get(info_handler))
         .route("/cache/stats", get(cache_stats_handler))

@@ -78,22 +78,8 @@ pub fn get_module(module: ModuleBuilder) -> ModuleBuilder {
         .class::<types::PageResult>()
         .class::<types::ExtractionResult>();
 
-    // Config module - configuration types (order matters for nested types)
-    module = module
-        .class::<config::TesseractConfig>()
-        .class::<config::OcrConfig>()
-        .class::<config::PdfConfig>()
-        .class::<config::HierarchyConfig>()
-        .class::<config::EmbeddingModelType>()
-        .class::<config::EmbeddingConfig>()
-        .class::<config::ChunkingConfig>()
-        .class::<config::ImageExtractionConfig>()
-        .class::<config::TokenReductionConfig>()
-        .class::<config::LanguageDetectionConfig>()
-        .class::<config::KeywordConfig>()
-        .class::<config::PostProcessorConfig>()
-        .class::<config::PageConfig>()
-        .class::<config::ExtractionConfig>();
+    // Note: Config classes are pure PHP (packages/php/src/Config/*.php)
+    // No Rust config classes are exposed - configs are passed as JSON
 
     // Embeddings module
     module = module.class::<embeddings::EmbeddingPreset>();

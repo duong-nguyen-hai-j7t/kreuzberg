@@ -9,7 +9,10 @@ use crate::{batch_extract_bytes, cache, extract_bytes};
 
 use super::{
     error::ApiError,
-    types::{ApiState, CacheClearResponse, CacheStatsResponse, ExtractResponse, HealthResponse, InfoResponse},
+    types::{
+        ApiState, CacheClearResponse, CacheStatsResponse, EmbedRequest, EmbedResponse, ExtractResponse, HealthResponse,
+        InfoResponse,
+    },
 };
 
 /// Extract endpoint handler.
@@ -34,6 +37,14 @@ use super::{
 ///
 /// The server's default config (loaded from kreuzberg.toml/yaml/json via discovery)
 /// is used as the base, and any per-request config overrides those defaults.
+#[cfg_attr(
+    feature = "otel",
+    tracing::instrument(
+        name = "api.extract",
+        skip(state, multipart),
+        fields(files_count = tracing::field::Empty)
+    )
+)]
 pub async fn extract_handler(
     State(state): State<ApiState>,
     mut multipart: Multipart,
@@ -84,6 +95,9 @@ pub async fn extract_handler(
         )));
     }
 
+    #[cfg(feature = "otel")]
+    tracing::Span::current().record("files_count", files.len());
+
     if files.len() == 1 {
         let (data, mime_type, _file_name) = files
             .into_iter()
@@ -102,6 +116,7 @@ pub async fn extract_handler(
 /// Health check endpoint handler.
 ///
 /// GET /health
+#[cfg_attr(feature = "otel", tracing::instrument(name = "api.health"))]
 pub async fn health_handler() -> Json<HealthResponse> {
     Json(HealthResponse {
         status: "healthy".to_string(),
@@ -112,6 +127,7 @@ pub async fn health_handler() -> Json<HealthResponse> {
 /// Server info endpoint handler.
 ///
 /// GET /info
+#[cfg_attr(feature = "otel", tracing::instrument(name = "api.info"))]
 pub async fn info_handler() -> Json<InfoResponse> {
     Json(InfoResponse {
         version: env!("CARGO_PKG_VERSION").to_string(),
@@ -129,6 +145,7 @@ pub async fn info_handler() -> Json<InfoResponse> {
 /// - Current directory cannot be determined
 /// - Cache directory path contains non-UTF8 characters
 /// - Cache metadata retrieval fails
+#[cfg_attr(feature = "otel", tracing::instrument(name = "api.cache_stats"))]
 pub async fn cache_stats_handler() -> Result<Json<CacheStatsResponse>, ApiError> {
     let cache_dir = std::env::current_dir()
         .map_err(|e| {
@@ -168,6 +185,7 @@ pub async fn cache_stats_handler() -> Result<Json<CacheStatsResponse>, ApiError>
 /// - Current directory cannot be determined
 /// - Cache directory path contains non-UTF8 characters
 /// - Cache clearing operation fails
+#[cfg_attr(feature = "otel", tracing::instrument(name = "api.cache_clear"))]
 pub async fn cache_clear_handler() -> Result<Json<CacheClearResponse>, ApiError> {
     let cache_dir = std::env::current_dir()
         .map_err(|e| {
@@ -192,4 +210,111 @@ pub async fn cache_clear_handler() -> Result<Json<CacheClearResponse>, ApiError>
         removed_files,
         freed_mb,
     }))
+}
+
+/// Embedding endpoint handler.
+///
+/// POST /embed
+///
+/// Accepts JSON body with:
+/// - `texts`: Array of strings to generate embeddings for
+/// - `config` (optional): Embedding configuration (model, batch size, cache_dir)
+///
+/// Returns embeddings for each input text.
+///
+/// # Errors
+///
+/// Returns `ApiError::Internal` if:
+/// - Embeddings feature is not enabled
+/// - ONNX Runtime is not available
+/// - Model initialization fails
+/// - Embedding generation fails
+#[cfg(feature = "embeddings")]
+#[cfg_attr(
+    feature = "otel",
+    tracing::instrument(
+        name = "api.embed",
+        skip(request),
+        fields(
+            texts_count = request.texts.len(),
+            model = tracing::field::Empty
+        )
+    )
+)]
+pub async fn embed_handler(Json(request): Json<EmbedRequest>) -> Result<Json<EmbedResponse>, ApiError> {
+    use crate::types::{Chunk, ChunkMetadata};
+
+    if request.texts.is_empty() {
+        return Err(ApiError::validation(crate::error::KreuzbergError::validation(
+            "No texts provided for embedding generation",
+        )));
+    }
+
+    // Use default config if none provided
+    let config = request.config.unwrap_or_default();
+
+    // Create chunks from input texts
+    let mut chunks: Vec<Chunk> = request
+        .texts
+        .iter()
+        .enumerate()
+        .map(|(idx, text)| Chunk {
+            content: text.clone(),
+            embedding: None,
+            metadata: ChunkMetadata {
+                byte_start: 0,
+                byte_end: text.len(),
+                token_count: None,
+                chunk_index: idx,
+                total_chunks: request.texts.len(),
+                first_page: None,
+                last_page: None,
+            },
+        })
+        .collect();
+
+    // Generate embeddings
+    crate::embeddings::generate_embeddings_for_chunks(&mut chunks, &config).map_err(ApiError::internal)?;
+
+    // Extract embeddings from chunks
+    let embeddings: Vec<Vec<f32>> = chunks
+        .into_iter()
+        .map(|chunk| {
+            chunk.embedding.ok_or_else(|| {
+                ApiError::internal(crate::error::KreuzbergError::Other(
+                    "Failed to generate embedding for text".to_string(),
+                ))
+            })
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+
+    let dimensions = embeddings.first().map(|e| e.len()).unwrap_or(0);
+
+    // Get model name from config
+    let model_name = match &config.model {
+        crate::core::config::EmbeddingModelType::Preset { name } => name.clone(),
+        #[cfg(feature = "embeddings")]
+        crate::core::config::EmbeddingModelType::FastEmbed { model, .. } => model.clone(),
+        crate::core::config::EmbeddingModelType::Custom { .. } => "custom".to_string(),
+    };
+
+    #[cfg(feature = "otel")]
+    tracing::Span::current().record("model", &model_name);
+
+    Ok(Json(EmbedResponse {
+        embeddings,
+        model: model_name,
+        dimensions,
+        count: request.texts.len(),
+    }))
+}
+
+/// Embedding endpoint handler (when embeddings feature is disabled).
+///
+/// Returns an error indicating embeddings feature is not enabled.
+#[cfg(not(feature = "embeddings"))]
+pub async fn embed_handler(Json(_request): Json<EmbedRequest>) -> Result<Json<EmbedResponse>, ApiError> {
+    Err(ApiError::internal(crate::error::KreuzbergError::MissingDependency(
+        "Embeddings feature is not enabled. Rebuild with --features embeddings".to_string(),
+    )))
 }

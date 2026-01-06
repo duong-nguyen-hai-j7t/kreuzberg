@@ -105,7 +105,101 @@ else
 fi
 
 echo ""
-log_info "Test 9: Core cache directory is writable"
+log_info "Test 9: Core /embed endpoint generates embeddings"
+response=$(curl -s -X POST "$CORE_API/embed" \
+  -H "Content-Type: application/json" \
+  -d '{"texts":["Hello world","Test embedding"]}' 2>/dev/null)
+if assert_contains "$response" "embeddings\|dimensions\|count" "Core /embed endpoint works"; then
+  # Verify we got 2 embeddings
+  count=$(echo "$response" | jq -r '.count' 2>/dev/null || echo "0")
+  if [ "$count" = "2" ]; then
+    log_success "Core /embed returned correct count"
+  else
+    log_warn "Core /embed count mismatch: expected 2, got $count"
+  fi
+else
+  log_warn "Core /embed response: $response"
+fi
+
+echo ""
+log_info "Test 10: Full /embed endpoint generates embeddings"
+response=$(curl -s -X POST "$FULL_API/embed" \
+  -H "Content-Type: application/json" \
+  -d '{"texts":["Hello world","Test embedding"]}' 2>/dev/null)
+if assert_contains "$response" "embeddings\|dimensions\|count" "Full /embed endpoint works"; then
+  # Verify we got 2 embeddings
+  count=$(echo "$response" | jq -r '.count' 2>/dev/null || echo "0")
+  if [ "$count" = "2" ]; then
+    log_success "Full /embed returned correct count"
+  else
+    log_warn "Full /embed count mismatch: expected 2, got $count"
+  fi
+else
+  log_warn "Full /embed response: $response"
+fi
+
+echo ""
+log_info "Test 11: Core /embed endpoint with custom config"
+response=$(curl -s -X POST "$CORE_API/embed" \
+  -H "Content-Type: application/json" \
+  -d '{"texts":["Test text"],"config":{"model":{"preset":{"name":"fast"}}}}' 2>/dev/null)
+if assert_contains "$response" "embeddings" "Core /embed with config works"; then
+  model=$(echo "$response" | jq -r '.model' 2>/dev/null || echo "")
+  if [ "$model" = "fast" ]; then
+    log_success "Core /embed used correct model preset"
+  else
+    log_warn "Core /embed model mismatch: expected fast, got $model"
+  fi
+else
+  log_warn "Core /embed with config response: $response"
+fi
+
+echo ""
+log_info "Test 12: Full /embed endpoint with custom config"
+response=$(curl -s -X POST "$FULL_API/embed" \
+  -H "Content-Type: application/json" \
+  -d '{"texts":["Test text"],"config":{"model":{"preset":{"name":"fast"}}}}' 2>/dev/null)
+if assert_contains "$response" "embeddings" "Full /embed with config works"; then
+  model=$(echo "$response" | jq -r '.model' 2>/dev/null || echo "")
+  if [ "$model" = "fast" ]; then
+    log_success "Full /embed used correct model preset"
+  else
+    log_warn "Full /embed model mismatch: expected fast, got $model"
+  fi
+else
+  log_warn "Full /embed with config response: $response"
+fi
+
+echo ""
+log_info "Test 13: Core /embed endpoint rejects empty texts"
+response=$(curl -s -X POST "$CORE_API/embed" \
+  -H "Content-Type: application/json" \
+  -d '{"texts":[]}' 2>/dev/null)
+http_code=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$CORE_API/embed" \
+  -H "Content-Type: application/json" \
+  -d '{"texts":[]}' 2>/dev/null)
+if [ "$http_code" = "400" ]; then
+  log_success "Core /embed correctly rejects empty texts with 400"
+else
+  log_warn "Core /embed should return 400 for empty texts, got $http_code"
+fi
+
+echo ""
+log_info "Test 14: Full /embed endpoint rejects empty texts"
+response=$(curl -s -X POST "$FULL_API/embed" \
+  -H "Content-Type: application/json" \
+  -d '{"texts":[]}' 2>/dev/null)
+http_code=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$FULL_API/embed" \
+  -H "Content-Type: application/json" \
+  -d '{"texts":[]}' 2>/dev/null)
+if [ "$http_code" = "400" ]; then
+  log_success "Full /embed correctly rejects empty texts with 400"
+else
+  log_warn "Full /embed should return 400 for empty texts, got $http_code"
+fi
+
+echo ""
+log_info "Test 15: Core cache directory is writable"
 if docker exec kreuzberg-core-test touch /app/.kreuzberg/test-write.txt 2>/dev/null; then
   if docker exec kreuzberg-core-test rm /app/.kreuzberg/test-write.txt 2>/dev/null; then
     log_success "Core cache directory is writable"
@@ -117,7 +211,7 @@ else
 fi
 
 echo ""
-log_info "Test 10: Full cache directory is writable"
+log_info "Test 16: Full cache directory is writable"
 if docker exec kreuzberg-full-test touch /app/.kreuzberg/test-write.txt 2>/dev/null; then
   if docker exec kreuzberg-full-test rm /app/.kreuzberg/test-write.txt 2>/dev/null; then
     log_success "Full cache directory is writable"

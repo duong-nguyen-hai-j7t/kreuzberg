@@ -181,3 +181,26 @@ pub struct CacheClearResponse {
     /// Space freed in MB
     pub freed_mb: f64,
 }
+
+/// Embedding request for generating embeddings from text.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EmbedRequest {
+    /// Text strings to generate embeddings for
+    pub texts: Vec<String>,
+    /// Optional embedding configuration (model, batch size, etc.)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub config: Option<crate::core::config::EmbeddingConfig>,
+}
+
+/// Embedding response containing generated embeddings.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EmbedResponse {
+    /// Generated embeddings (one per input text)
+    pub embeddings: Vec<Vec<f32>>,
+    /// Model used for embedding generation
+    pub model: String,
+    /// Dimensionality of the embeddings
+    pub dimensions: usize,
+    /// Number of embeddings generated
+    pub count: usize,
+}

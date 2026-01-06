@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+#### API Server
+- **Embedding Endpoint**: Added new `POST /embed` endpoint for generating embeddings from text without document extraction ([#266](https://github.com/Anthropic/kreuzberg/issues/266))
+  - Accepts JSON body with `texts` array and optional `config` (embedding model, batch size, cache directory)
+  - Returns embeddings with model info, dimensions, and embedding count
+  - Supports all embedding presets (fast, balanced, quality, multilingual)
+  - Includes comprehensive test coverage and Docker integration tests
+
+#### Observability
+- **OpenTelemetry**: Added tracing instrumentation to all API endpoints (`api.extract`, `api.embed`, `api.health`, `api.info`, `api.cache_stats`, `api.cache_clear`)
+  - Tracks request counts, model usage, and file counts
+  - Compatible with OpenTelemetry collectors and distributed tracing systems
+
+### Fixed
+
+#### Documentation
+- **Go Installation**: Updated README with correct `go get` instructions for monorepo structure ([#264](https://github.com/kreuzberg-dev/kreuzberg/issues/264))
+  - Clarified that `@latest` doesn't work due to Go module discovery limitations
+  - Added explicit version tag examples and version discovery command
+  - Recommended automated installer script as primary installation method
+
 ## [4.0.0-rc.27] - 2026-01-04
 
 ### Fixed

@@ -210,6 +210,10 @@ impl ExtractionResult {
 
         // Add pages metadata (nested structure)
         if let Some(pages) = &result.metadata.pages {
+            // Add pageCount at root level for convenience (PHP tests expect this)
+            metadata_obj.insert("pageCount".to_string(), json!(pages.total_count));
+
+            // Also add full pages structure for detailed access
             let pages_json = serde_json::to_value(pages).map_err(|e| format!("Failed to serialize pages: {}", e))?;
             metadata_obj.insert("pages".to_string(), pages_json);
         }
