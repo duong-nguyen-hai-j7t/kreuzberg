@@ -82,9 +82,12 @@ const routeTree = rootRoute.addChildren([
 /**
  * Router Instance
  * Creates the main router with the route tree
+ *
+ * Note: basepath must match the 'base' setting in vite.config.ts
  */
 export const router = createRouter({
   routeTree,
+  basepath: '/benchmarks/app',
   defaultPreload: 'intent',
 })
 

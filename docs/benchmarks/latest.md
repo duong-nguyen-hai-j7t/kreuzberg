@@ -15,31 +15,29 @@ The charts below are generated from the most recent benchmark workflow run.
 
 <div class="full-width" markdown="1">
 
-<!-- Embed the generated HTML (available only on deployed docs) -->
-<iframe src="charts/index.html"
+<!-- Embedded React Visualizer -->
+<iframe src="../app/index.html"
         width="100%"
         height="2000px"
         frameborder="0"
-        style="border: 1px solid #ccc; border-radius: 4px;"
-        title="Benchmark Charts">
+        sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+        style="border: 1px solid var(--md-default-fg-color--lightest); border-radius: 4px;"
+        title="Interactive Benchmark Visualizer">
+  <p>Your browser does not support iframes. Please visit the <a href="../app/index.html">interactive benchmark visualizer</a> directly.</p>
 </iframe>
 
 </div>
 
-## Download Benchmark Artifacts
+## Direct Data Access
 
-To download the complete benchmark results and raw data:
+For programmatic access or custom analysis:
 
-1. **Visit GitHub Actions**: Go to [Benchmark Workflow Runs](https://github.com/kreuzberg-dev/kreuzberg/actions/workflows/benchmarks.yaml)
-2. **Select Latest Run**: Click on the most recent successful run (green checkmark)
-3. **Download Artifacts**: Scroll to the "Artifacts" section at the bottom
-4. **Available Artifacts**:
-   - `benchmark-visualization-html` - Complete HTML visualization with all charts
-   - `benchmarks-kreuzberg-*` - Raw JSON results per framework
-   - Individual framework result files for detailed analysis
+- **Aggregated Data**: [/benchmarks/data/aggregated.json](../data/aggregated.json)
+- **Metadata**: [/benchmarks/data/metadata.json](../data/metadata.json)
+- **Workflow Runs**: [View on GitHub Actions](https://github.com/kreuzberg-dev/kreuzberg/actions/workflows/benchmarks.yaml)
 
-!!! tip "Raw Data Files"
-    Raw JSON data files are included in the benchmark-visualization-html artifact downloadable from GitHub Actions.
+!!! tip "API Access"
+    The aggregated benchmark data is available as JSON for programmatic access and custom analysis.
 
 ## Run Your Own
 

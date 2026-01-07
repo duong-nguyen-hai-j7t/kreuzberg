@@ -17,7 +17,7 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true,
   },
-  base: '/',
+  base: '/benchmarks/app/',
   // @ts-expect-error - Vitest config
   test: {
     globals: true,

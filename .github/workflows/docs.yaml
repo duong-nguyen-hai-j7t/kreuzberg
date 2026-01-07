@@ -34,6 +34,16 @@ jobs:
         with:
           python-version: '3.13'
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
@@ -45,8 +55,39 @@ jobs:
       - name: Configure Git for mike
         run: scripts/ci/docs/configure-git-for-mike.sh
 
-      - name: Ensure benchmark placeholder files exist
-        run: scripts/ci/docs/create-benchmark-placeholders.sh
+      - name: Build benchmark visualizer
+        working-directory: tools/benchmark-visualizer
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm run build
+          if [ ! -f dist/index.html ]; then
+            echo "Build failed: dist/index.html not found"
+            exit 1
+          fi
+          echo "Visualizer built to dist/"
+
+      - name: Fetch benchmark data from gh-pages
+        run: |
+          mkdir -p tools/benchmark-visualizer/dist-final
+          cp -r tools/benchmark-visualizer/dist/* tools/benchmark-visualizer/dist-final/
+
+          # Try to fetch from gh-pages branch
+          if git show origin/gh-pages:benchmarks/data/aggregated.json > /dev/null 2>&1; then
+            echo "Fetching benchmark data from gh-pages..."
+            git show origin/gh-pages:benchmarks/data/aggregated.json > tools/benchmark-visualizer/dist-final/aggregated.json
+            git show origin/gh-pages:benchmarks/data/metadata.json > tools/benchmark-visualizer/dist-final/metadata.json 2>/dev/null || echo '{}' > tools/benchmark-visualizer/dist-final/metadata.json
+          else
+            echo "No benchmark data found, using empty placeholder"
+            echo '{"by_framework_mode":{},"disk_sizes":{"python":{"size_bytes":256000000,"method":"du -sh","description":"Python runtime + dependencies (256 MB)"},"node":{"size_bytes":342000000,"method":"du -sh","description":"Node.js runtime + node_modules (342 MB)"},"go":{"size_bytes":45000000,"method":"du -sh","description":"Go statically linked binary (45 MB)"},"rust":{"size_bytes":52000000,"method":"du -sh","description":"Rust statically linked binary (52 MB)"}},"metadata":{"total_results":0,"framework_count":0,"file_type_count":0,"timestamp":"'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'"}}' > tools/benchmark-visualizer/dist-final/aggregated.json
+            echo '{}' > tools/benchmark-visualizer/dist-final/metadata.json
+          fi
+
+      - name: Integrate visualizer into docs
+        run: |
+          mkdir -p docs/benchmarks/app
+          cp -r tools/benchmark-visualizer/dist-final/* docs/benchmarks/app/
+          echo "Visualizer copied to docs/benchmarks/app/"
+          ls -lh docs/benchmarks/app/
 
       - name: Build v4 documentation with mike
         run: scripts/ci/docs/build-v4-docs.sh
