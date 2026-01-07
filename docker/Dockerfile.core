@@ -124,6 +124,10 @@ RUN groupadd -r kreuzberg && \
     mkdir -p /app/.kreuzberg && \
     chown -R kreuzberg:kreuzberg /app
 
+# Create config directories for volume mounts
+RUN mkdir -p /etc/kreuzberg /app/.config/kreuzberg && \
+    chown -R kreuzberg:kreuzberg /etc/kreuzberg /app/.config/kreuzberg
+
 # Environment configuration
 ENV KREUZBERG_CACHE_DIR=/app/.kreuzberg \
     TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata \

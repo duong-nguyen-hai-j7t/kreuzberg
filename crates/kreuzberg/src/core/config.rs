@@ -186,6 +186,16 @@ pub struct OcrConfig {
     pub tesseract_config: Option<crate::types::TesseractConfig>,
 }
 
+impl Default for OcrConfig {
+    fn default() -> Self {
+        Self {
+            backend: default_tesseract_backend(),
+            language: default_eng(),
+            tesseract_config: None,
+        }
+    }
+}
+
 /// Chunking configuration.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChunkingConfig {
@@ -490,6 +500,169 @@ impl ExtractionConfig {
         ocr_enabled || image_extraction_enabled
     }
 
+    /// Apply environment variable overrides to configuration.
+    ///
+    /// Environment variables have the highest precedence and will override any values
+    /// loaded from configuration files. This method supports the following environment variables:
+    ///
+    /// - `KREUZBERG_OCR_LANGUAGE`: OCR language (ISO 639-1 or 639-3 code, e.g., "eng", "fra", "deu")
+    /// - `KREUZBERG_OCR_BACKEND`: OCR backend ("tesseract", "easyocr", or "paddleocr")
+    /// - `KREUZBERG_CHUNKING_MAX_CHARS`: Maximum characters per chunk (positive integer)
+    /// - `KREUZBERG_CHUNKING_MAX_OVERLAP`: Maximum overlap between chunks (non-negative integer)
+    /// - `KREUZBERG_CACHE_ENABLED`: Cache enabled flag ("true" or "false")
+    /// - `KREUZBERG_TOKEN_REDUCTION_MODE`: Token reduction mode ("off", "light", "moderate", "aggressive", or "maximum")
+    ///
+    /// # Behavior
+    ///
+    /// - If an environment variable is set and valid, it overrides the current configuration value
+    /// - If a required parent config is `None` (e.g., `self.ocr` is None), it's created with defaults before applying the override
+    /// - Invalid values return a `KreuzbergError::Validation` with helpful error messages
+    /// - Missing or unset environment variables are silently ignored
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use kreuzberg::core::config::ExtractionConfig;
+    /// # fn example() -> kreuzberg::Result<()> {
+    /// let mut config = ExtractionConfig::from_file("config.toml")?;
+    /// // Set KREUZBERG_OCR_LANGUAGE=fra before calling
+    /// config.apply_env_overrides()?; // OCR language is now "fra"
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns `KreuzbergError::Validation` if:
+    /// - An environment variable contains an invalid value
+    /// - A number cannot be parsed as the expected type
+    /// - A boolean is not "true" or "false"
+    pub fn apply_env_overrides(&mut self) -> Result<()> {
+        use crate::core::config_validation::{
+            validate_language_code, validate_ocr_backend, validate_token_reduction_level,
+            validate_chunking_params,
+        };
+
+        // KREUZBERG_OCR_LANGUAGE override
+        if let Ok(lang) = std::env::var("KREUZBERG_OCR_LANGUAGE") {
+            validate_language_code(&lang)?;
+            if self.ocr.is_none() {
+                self.ocr = Some(OcrConfig::default());
+            }
+            if let Some(ref mut ocr) = self.ocr {
+                ocr.language = lang;
+            }
+        }
+
+        // KREUZBERG_OCR_BACKEND override
+        if let Ok(backend) = std::env::var("KREUZBERG_OCR_BACKEND") {
+            validate_ocr_backend(&backend)?;
+            if self.ocr.is_none() {
+                self.ocr = Some(OcrConfig::default());
+            }
+            if let Some(ref mut ocr) = self.ocr {
+                ocr.backend = backend;
+            }
+        }
+
+        // KREUZBERG_CHUNKING_MAX_CHARS override
+        if let Ok(max_chars_str) = std::env::var("KREUZBERG_CHUNKING_MAX_CHARS") {
+            let max_chars: usize = max_chars_str.parse().map_err(|_| {
+                KreuzbergError::Validation {
+                    message: format!(
+                        "Invalid value for KREUZBERG_CHUNKING_MAX_CHARS: '{}'. Must be a positive integer.",
+                        max_chars_str
+                    ),
+                    source: None,
+                }
+            })?;
+
+            if max_chars == 0 {
+                return Err(KreuzbergError::Validation {
+                    message: "KREUZBERG_CHUNKING_MAX_CHARS must be greater than 0".to_string(),
+                    source: None,
+                });
+            }
+
+            if self.chunking.is_none() {
+                self.chunking = Some(ChunkingConfig {
+                    max_chars: default_chunk_size(),
+                    max_overlap: default_chunk_overlap(),
+                    embedding: None,
+                    preset: None,
+                });
+            }
+
+            if let Some(ref mut chunking) = self.chunking {
+                // Validate against current overlap before updating
+                validate_chunking_params(max_chars, chunking.max_overlap)?;
+                chunking.max_chars = max_chars;
+            }
+        }
+
+        // KREUZBERG_CHUNKING_MAX_OVERLAP override
+        if let Ok(max_overlap_str) = std::env::var("KREUZBERG_CHUNKING_MAX_OVERLAP") {
+            let max_overlap: usize = max_overlap_str.parse().map_err(|_| {
+                KreuzbergError::Validation {
+                    message: format!(
+                        "Invalid value for KREUZBERG_CHUNKING_MAX_OVERLAP: '{}'. Must be a non-negative integer.",
+                        max_overlap_str
+                    ),
+                    source: None,
+                }
+            })?;
+
+            if self.chunking.is_none() {
+                self.chunking = Some(ChunkingConfig {
+                    max_chars: default_chunk_size(),
+                    max_overlap: default_chunk_overlap(),
+                    embedding: None,
+                    preset: None,
+                });
+            }
+
+            if let Some(ref mut chunking) = self.chunking {
+                // Validate against current max_chars before updating
+                validate_chunking_params(chunking.max_chars, max_overlap)?;
+                chunking.max_overlap = max_overlap;
+            }
+        }
+
+        // KREUZBERG_CACHE_ENABLED override
+        if let Ok(cache_str) = std::env::var("KREUZBERG_CACHE_ENABLED") {
+            let cache_enabled = match cache_str.to_lowercase().as_str() {
+                "true" => true,
+                "false" => false,
+                _ => {
+                    return Err(KreuzbergError::Validation {
+                        message: format!(
+                            "Invalid value for KREUZBERG_CACHE_ENABLED: '{}'. Must be 'true' or 'false'.",
+                            cache_str
+                        ),
+                        source: None,
+                    });
+                }
+            };
+            self.use_cache = cache_enabled;
+        }
+
+        // KREUZBERG_TOKEN_REDUCTION_MODE override
+        if let Ok(mode) = std::env::var("KREUZBERG_TOKEN_REDUCTION_MODE") {
+            validate_token_reduction_level(&mode)?;
+            if self.token_reduction.is_none() {
+                self.token_reduction = Some(TokenReductionConfig {
+                    mode: default_reduction_mode(),
+                    preserve_important_words: default_true(),
+                });
+            }
+            if let Some(ref mut token_reduction) = self.token_reduction {
+                token_reduction.mode = mode;
+            }
+        }
+
+        Ok(())
+    }
+
     /// Load configuration from a TOML file.
     ///
     /// # Arguments
@@ -680,10 +853,35 @@ impl ExtractionConfig {
 }
 
 #[cfg(test)]
+#[allow(unsafe_code)]
 mod tests {
     use super::*;
     use std::fs;
     use tempfile::tempdir;
+
+    fn set_env(key: &str, value: &str) {
+        unsafe {
+            std::env::set_var(key, value);
+        }
+    }
+
+    #[allow(unsafe_code)]
+    fn remove_env(key: &str) {
+        unsafe {
+            std::env::remove_var(key);
+        }
+    }
+
+    #[allow(unsafe_code)]
+    fn restore_env(key: &str, value: Option<String>) {
+        unsafe {
+            if let Some(v) = value {
+                std::env::set_var(key, v);
+            } else {
+                std::env::remove_var(key);
+            }
+        }
+    }
 
     #[test]
     fn test_default_config() {
@@ -1349,5 +1547,363 @@ enable_quality_processing: false
         assert!(config1.use_cache);
         assert!(!config1.enable_quality_processing);
         assert_eq!(config1.use_cache, config2.use_cache);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_apply_env_overrides_ocr_language() {
+        let original_lang = std::env::var("KREUZBERG_OCR_LANGUAGE").ok();
+
+        set_env("KREUZBERG_OCR_LANGUAGE", "fra");
+        let mut config = ExtractionConfig::default();
+        assert!(config.ocr.is_none());
+
+        config.apply_env_overrides().unwrap();
+
+        assert!(config.ocr.is_some());
+        assert_eq!(config.ocr.unwrap().language, "fra");
+
+        restore_env("KREUZBERG_OCR_LANGUAGE", original_lang);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_apply_env_overrides_ocr_backend() {
+        let original_backend = std::env::var("KREUZBERG_OCR_BACKEND").ok();
+
+        set_env("KREUZBERG_OCR_BACKEND", "easyocr");
+        let mut config = ExtractionConfig::default();
+        assert!(config.ocr.is_none());
+
+        config.apply_env_overrides().unwrap();
+
+        assert!(config.ocr.is_some());
+        assert_eq!(config.ocr.unwrap().backend, "easyocr");
+
+        restore_env("KREUZBERG_OCR_BACKEND", original_backend);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_apply_env_overrides_invalid_ocr_language() {
+        let original_lang = std::env::var("KREUZBERG_OCR_LANGUAGE").ok();
+
+        set_env("KREUZBERG_OCR_LANGUAGE", "invalid_lang");
+        let mut config = ExtractionConfig::default();
+
+        let result = config.apply_env_overrides();
+        assert!(result.is_err());
+        let err_msg = result.unwrap_err().to_string();
+        assert!(err_msg.contains("Invalid language code"));
+
+        restore_env("KREUZBERG_OCR_LANGUAGE", original_lang);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_apply_env_overrides_invalid_ocr_backend() {
+        let original_backend = std::env::var("KREUZBERG_OCR_BACKEND").ok();
+
+        set_env("KREUZBERG_OCR_BACKEND", "invalid_backend");
+        let mut config = ExtractionConfig::default();
+
+        let result = config.apply_env_overrides();
+        assert!(result.is_err());
+        let err_msg = result.unwrap_err().to_string();
+        assert!(err_msg.contains("Invalid OCR backend"));
+
+        restore_env("KREUZBERG_OCR_BACKEND", original_backend);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_apply_env_overrides_chunking_max_chars() {
+        let original_max_chars = std::env::var("KREUZBERG_CHUNKING_MAX_CHARS").ok();
+
+        set_env("KREUZBERG_CHUNKING_MAX_CHARS", "2000");
+        let mut config = ExtractionConfig::default();
+        assert!(config.chunking.is_none());
+
+        config.apply_env_overrides().unwrap();
+
+        assert!(config.chunking.is_some());
+        assert_eq!(config.chunking.unwrap().max_chars, 2000);
+
+        restore_env("KREUZBERG_CHUNKING_MAX_CHARS", original_max_chars);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_apply_env_overrides_chunking_max_overlap() {
+        let original_overlap = std::env::var("KREUZBERG_CHUNKING_MAX_OVERLAP").ok();
+
+        set_env("KREUZBERG_CHUNKING_MAX_OVERLAP", "300");
+        let mut config = ExtractionConfig::default();
+        assert!(config.chunking.is_none());
+
+        config.apply_env_overrides().unwrap();
+
+        assert!(config.chunking.is_some());
+        assert_eq!(config.chunking.unwrap().max_overlap, 300);
+
+        restore_env("KREUZBERG_CHUNKING_MAX_OVERLAP", original_overlap);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_apply_env_overrides_invalid_chunking_max_chars() {
+        let original_max_chars = std::env::var("KREUZBERG_CHUNKING_MAX_CHARS").ok();
+
+        set_env("KREUZBERG_CHUNKING_MAX_CHARS", "not_a_number");
+        let mut config = ExtractionConfig::default();
+
+        let result = config.apply_env_overrides();
+        assert!(result.is_err());
+        let err_msg = result.unwrap_err().to_string();
+        assert!(err_msg.contains("KREUZBERG_CHUNKING_MAX_CHARS"));
+
+        restore_env("KREUZBERG_CHUNKING_MAX_CHARS", original_max_chars);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_apply_env_overrides_chunking_max_chars_zero() {
+        let original_max_chars = std::env::var("KREUZBERG_CHUNKING_MAX_CHARS").ok();
+
+        set_env("KREUZBERG_CHUNKING_MAX_CHARS", "0");
+        let mut config = ExtractionConfig::default();
+
+        let result = config.apply_env_overrides();
+        assert!(result.is_err());
+        let err_msg = result.unwrap_err().to_string();
+        assert!(err_msg.contains("greater than 0"));
+
+        restore_env("KREUZBERG_CHUNKING_MAX_CHARS", original_max_chars);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_apply_env_overrides_chunking_overlap_validation() {
+        let original_overlap = std::env::var("KREUZBERG_CHUNKING_MAX_OVERLAP").ok();
+
+        set_env("KREUZBERG_CHUNKING_MAX_OVERLAP", "1500");
+        let mut config = ExtractionConfig::default();
+        // Set chunking with max_chars = 1000
+        config.chunking = Some(ChunkingConfig {
+            max_chars: 1000,
+            max_overlap: 200,
+            embedding: None,
+            preset: None,
+        });
+
+        let result = config.apply_env_overrides();
+        assert!(result.is_err());
+        let err_msg = result.unwrap_err().to_string();
+        assert!(err_msg.contains("overlap"));
+
+        restore_env("KREUZBERG_CHUNKING_MAX_OVERLAP", original_overlap);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_apply_env_overrides_cache_enabled_true() {
+        let original_cache = std::env::var("KREUZBERG_CACHE_ENABLED").ok();
+
+        set_env("KREUZBERG_CACHE_ENABLED", "true");
+        let mut config = ExtractionConfig::default();
+        config.use_cache = false;
+
+        config.apply_env_overrides().unwrap();
+        assert!(config.use_cache);
+
+        restore_env("KREUZBERG_CACHE_ENABLED", original_cache);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_apply_env_overrides_cache_enabled_false() {
+        let original_cache = std::env::var("KREUZBERG_CACHE_ENABLED").ok();
+
+        set_env("KREUZBERG_CACHE_ENABLED", "false");
+        let mut config = ExtractionConfig::default();
+        config.use_cache = true;
+
+        config.apply_env_overrides().unwrap();
+        assert!(!config.use_cache);
+
+        restore_env("KREUZBERG_CACHE_ENABLED", original_cache);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_apply_env_overrides_cache_enabled_case_insensitive() {
+        let original_cache = std::env::var("KREUZBERG_CACHE_ENABLED").ok();
+
+        set_env("KREUZBERG_CACHE_ENABLED", "TRUE");
+        let mut config = ExtractionConfig::default();
+        config.use_cache = false;
+
+        config.apply_env_overrides().unwrap();
+        assert!(config.use_cache);
+
+        set_env("KREUZBERG_CACHE_ENABLED", "FaLsE");
+        config.use_cache = true;
+        config.apply_env_overrides().unwrap();
+        assert!(!config.use_cache);
+
+        restore_env("KREUZBERG_CACHE_ENABLED", original_cache);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_apply_env_overrides_invalid_cache_enabled() {
+        let original_cache = std::env::var("KREUZBERG_CACHE_ENABLED").ok();
+
+        set_env("KREUZBERG_CACHE_ENABLED", "maybe");
+        let mut config = ExtractionConfig::default();
+
+        let result = config.apply_env_overrides();
+        assert!(result.is_err());
+        let err_msg = result.unwrap_err().to_string();
+        assert!(err_msg.contains("KREUZBERG_CACHE_ENABLED"));
+        assert!(err_msg.contains("'true' or 'false'"));
+
+        restore_env("KREUZBERG_CACHE_ENABLED", original_cache);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_apply_env_overrides_token_reduction_mode() {
+        let original_mode = std::env::var("KREUZBERG_TOKEN_REDUCTION_MODE").ok();
+
+        set_env("KREUZBERG_TOKEN_REDUCTION_MODE", "moderate");
+        let mut config = ExtractionConfig::default();
+        assert!(config.token_reduction.is_none());
+
+        config.apply_env_overrides().unwrap();
+
+        assert!(config.token_reduction.is_some());
+        assert_eq!(config.token_reduction.unwrap().mode, "moderate");
+
+        restore_env("KREUZBERG_TOKEN_REDUCTION_MODE", original_mode);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_apply_env_overrides_invalid_token_reduction_mode() {
+        let original_mode = std::env::var("KREUZBERG_TOKEN_REDUCTION_MODE").ok();
+
+        set_env("KREUZBERG_TOKEN_REDUCTION_MODE", "extreme");
+        let mut config = ExtractionConfig::default();
+
+        let result = config.apply_env_overrides();
+        assert!(result.is_err());
+        let err_msg = result.unwrap_err().to_string();
+        assert!(err_msg.contains("Invalid token reduction level"));
+
+        restore_env("KREUZBERG_TOKEN_REDUCTION_MODE", original_mode);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_apply_env_overrides_multiple_overrides() {
+        let original_lang = std::env::var("KREUZBERG_OCR_LANGUAGE").ok();
+        let original_backend = std::env::var("KREUZBERG_OCR_BACKEND").ok();
+        let original_max_chars = std::env::var("KREUZBERG_CHUNKING_MAX_CHARS").ok();
+        let original_cache = std::env::var("KREUZBERG_CACHE_ENABLED").ok();
+
+        set_env("KREUZBERG_OCR_LANGUAGE", "deu");
+        set_env("KREUZBERG_OCR_BACKEND", "paddleocr");
+        set_env("KREUZBERG_CHUNKING_MAX_CHARS", "3000");
+        set_env("KREUZBERG_CACHE_ENABLED", "false");
+
+        let mut config = ExtractionConfig::default();
+        config.apply_env_overrides().unwrap();
+
+        let ocr = config.ocr.as_ref().unwrap();
+        assert_eq!(ocr.language, "deu");
+        assert_eq!(ocr.backend, "paddleocr");
+        let chunking = config.chunking.as_ref().unwrap();
+        assert_eq!(chunking.max_chars, 3000);
+        assert!(!config.use_cache);
+
+        restore_env("KREUZBERG_OCR_LANGUAGE", original_lang);
+        restore_env("KREUZBERG_OCR_BACKEND", original_backend);
+        restore_env("KREUZBERG_CHUNKING_MAX_CHARS", original_max_chars);
+        restore_env("KREUZBERG_CACHE_ENABLED", original_cache);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_apply_env_overrides_preserves_existing_ocr_config() {
+        let original_lang = std::env::var("KREUZBERG_OCR_LANGUAGE").ok();
+
+        set_env("KREUZBERG_OCR_LANGUAGE", "fra");
+
+        let mut config = ExtractionConfig {
+            ocr: Some(OcrConfig {
+                backend: "tesseract".to_string(),
+                language: "eng".to_string(),
+                tesseract_config: None,
+            }),
+            ..Default::default()
+        };
+
+        config.apply_env_overrides().unwrap();
+
+        let ocr = config.ocr.unwrap();
+        assert_eq!(ocr.language, "fra");
+        assert_eq!(ocr.backend, "tesseract"); // Not overridden
+
+        restore_env("KREUZBERG_OCR_LANGUAGE", original_lang);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_apply_env_overrides_no_env_vars() {
+        // Ensure no env vars are set
+        remove_env("KREUZBERG_OCR_LANGUAGE");
+        remove_env("KREUZBERG_OCR_BACKEND");
+        remove_env("KREUZBERG_CHUNKING_MAX_CHARS");
+        remove_env("KREUZBERG_CHUNKING_MAX_OVERLAP");
+        remove_env("KREUZBERG_CACHE_ENABLED");
+        remove_env("KREUZBERG_TOKEN_REDUCTION_MODE");
+
+        let mut config = ExtractionConfig {
+            use_cache: false,
+            ocr: Some(OcrConfig {
+                backend: "tesseract".to_string(),
+                language: "eng".to_string(),
+                tesseract_config: None,
+            }),
+            ..Default::default()
+        };
+
+        // Should not change anything
+        config.apply_env_overrides().unwrap();
+
+        assert!(!config.use_cache);
+        assert_eq!(config.ocr.unwrap().language, "eng");
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn test_apply_env_overrides_chunking_params_validation() {
+        let original_max_chars = std::env::var("KREUZBERG_CHUNKING_MAX_CHARS").ok();
+
+        set_env("KREUZBERG_CHUNKING_MAX_CHARS", "500");
+        let mut config = ExtractionConfig::default();
+        config.chunking = Some(ChunkingConfig {
+            max_chars: 1000,
+            max_overlap: 600, // Valid: < 1000
+            embedding: None,
+            preset: None,
+        });
+
+        let result = config.apply_env_overrides();
+        assert!(result.is_err());
+        // After override, max_chars = 500, max_overlap = 600 (invalid: >= 500)
+
+        restore_env("KREUZBERG_CHUNKING_MAX_CHARS", original_max_chars);
     }
 }

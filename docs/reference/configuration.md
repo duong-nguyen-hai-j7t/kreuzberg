@@ -1058,6 +1058,681 @@ PDF-specific extraction configuration.
 
 ---
 
+## HierarchyConfig
+
+PDF document hierarchy extraction configuration for semantic text structure analysis.
+
+### Overview
+
+HierarchyConfig enables automatic extraction of document hierarchy levels (H1-H6) from PDF text by analyzing font size patterns. This is particularly useful for:
+
+- Building semantic document representations for RAG (Retrieval Augmented Generation) systems
+- Automatic table of contents extraction
+- Document structure understanding and analysis
+- Content organization and outlining
+
+The hierarchy detection works by:
+1. Extracting text blocks with font size metadata from the PDF
+2. Performing K-means clustering on font sizes to identify distinct size groups
+3. Mapping clusters to heading levels (h1-h6) and body text
+4. Merging adjacent blocks with the same hierarchy level
+5. Optionally including bounding box information for spatial awareness
+
+### Fields
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `enabled` | `bool` | `true` | Enable hierarchy extraction |
+| `k_clusters` | `usize` | `6` | Number of font size clusters (1-7). Default 6 provides H1-H6 with body text |
+| `include_bbox` | `bool` | `true` | Include bounding box coordinates in output |
+| `ocr_coverage_threshold` | `Option<f32>` | `None` | Smart OCR triggering threshold (0.0-1.0). Triggers OCR if text blocks cover less than this fraction of page |
+
+### How It Works
+
+#### Font Size Extraction
+Text blocks are extracted from PDFs with their precise font sizes. This metadata is preserved for analysis.
+
+#### K-means Clustering
+The font sizes are clustered using K-means algorithm with the specified number of clusters. Each cluster represents a distinct text hierarchy level, from largest fonts (headings) to smallest (body text).
+
+**Cluster-to-Level Mapping:**
+- For `k_clusters=6` (recommended): Creates 6 clusters → h1 (largest), h2, h3, h4, h5, body (smallest)
+- For `k_clusters=3`: Fast mode with just h1, h3, body (minimal detail)
+- For `k_clusters=7`: Maximum detail separating h1-h6 with distinct body text
+
+#### Block Merging
+Adjacent blocks with the same hierarchy level are merged to create logical content units. This merge process considers:
+- Spatial proximity (vertical and horizontal distance)
+- Bounding box overlap ratio
+- Text flow direction
+
+#### Output Structure
+Each extracted block contains:
+- Text content
+- Font size (in points)
+- Hierarchy level (h1-h6 or body)
+- Optional bounding box (left, top, right, bottom in PDF units)
+
+### Use Cases
+
+#### Semantic Document Understanding
+Extract hierarchical structure for understanding document semantics and building knowledge graphs:
+```
+H1: Document Title
+  H2: Section 1
+    H3: Subsection 1.1
+      Body text...
+    H3: Subsection 1.2
+      Body text...
+  H2: Section 2
+    H3: Subsection 2.1
+```
+
+#### Automatic Table of Contents Generation
+Build dynamic table of contents from extracted hierarchy levels (h1-h3) for document navigation.
+
+#### RAG System Optimization
+Use hierarchy information to improve context retrieval by chunking at appropriate heading boundaries rather than arbitrary character counts. This preserves semantic relationships.
+
+#### Document Analysis
+Extract and analyze document structure programmatically for compliance checking, content validation, or metadata extraction.
+
+### Configuration Examples
+
+#### Basic Hierarchy Extraction
+
+=== "C#"
+
+    ```csharp title="basic_hierarchy.cs"
+    using Kreuzberg;
+
+    var config = new ExtractionConfig
+    {
+        PdfOptions = new PdfConfig
+        {
+            Hierarchy = new HierarchyConfig
+            {
+                Enabled = true
+            }
+        }
+    };
+
+    var result = KreuzbergClient.ExtractFileSync("document.pdf", config);
+
+    // Access hierarchy from pages
+    if (result.Pages != null)
+    {
+        foreach (var page in result.Pages)
+        {
+            if (page.Hierarchy != null)
+            {
+                Console.WriteLine($"Page {page.PageNumber}: {page.Hierarchy.BlockCount} blocks");
+                foreach (var block in page.Hierarchy.Blocks)
+                {
+                    Console.WriteLine($"  [{block.Level}] {block.Text.Substring(0, 50)}...");
+                }
+            }
+        }
+    }
+    ```
+
+=== "Go"
+
+    ```go title="basic_hierarchy.go"
+    package main
+
+    import (
+        "fmt"
+        "kreuzberg"
+    )
+
+    func main() {
+        config := &kreuzberg.ExtractionConfig{
+            PdfOptions: &kreuzberg.PdfConfig{
+                Hierarchy: &kreuzberg.HierarchyConfig{
+                    Enabled: true,
+                },
+            },
+        }
+
+        result, err := kreuzberg.ExtractFileSync("document.pdf", config)
+        if err != nil {
+            panic(err)
+        }
+
+        if result.Pages != nil {
+            for _, page := range result.Pages {
+                if page.Hierarchy != nil {
+                    fmt.Printf("Page %d: %d blocks
+", page.PageNumber, page.Hierarchy.BlockCount)
+                    for _, block := range page.Hierarchy.Blocks {
+                        fmt.Printf("  [%s] %s...
+", block.Level, block.Text[:50])
+                    }
+                }
+            }
+        }
+    }
+    ```
+
+=== "Java"
+
+    ```java title="BasicHierarchy.java"
+    import com.kreuzberg.*;
+
+    public class BasicHierarchy {
+        public static void main(String[] args) throws Exception {
+            ExtractionConfig config = ExtractionConfig.builder()
+                .pdfOptions(PdfConfig.builder()
+                    .hierarchy(HierarchyConfig.builder()
+                        .enabled(true)
+                        .build())
+                    .build())
+                .build();
+
+            ExtractionResult result = KreuzbergClient.extractFileSync("document.pdf", config);
+
+            if (result.getPages() != null) {
+                for (PageContent page : result.getPages()) {
+                    if (page.getHierarchy() != null) {
+                        System.out.println("Page " + page.getPageNumber() + ": " +
+                            page.getHierarchy().getBlockCount() + " blocks");
+                        for (HierarchicalBlock block : page.getHierarchy().getBlocks()) {
+                            System.out.println("  [" + block.getLevel() + "] " +
+                                block.getText().substring(0, 50) + "...");
+                        }
+                    }
+                }
+            }
+        }
+    }
+    ```
+
+=== "Python"
+
+    --8<-- "snippets/python/config/pdf_hierarchy_config.md"
+
+=== "Ruby"
+
+    ```ruby title="basic_hierarchy.rb"
+    require 'kreuzberg'
+
+    config = Kreuzberg::ExtractionConfig.new(
+      pdf_options: Kreuzberg::PdfConfig.new(
+        hierarchy: Kreuzberg::HierarchyConfig.new(
+          enabled: true
+        )
+      )
+    )
+
+    result = Kreuzberg.extract_file_sync("document.pdf", config: config)
+
+    if result.pages
+      result.pages.each do |page|
+        if page.hierarchy
+          puts "Page #{page.page_number}: #{page.hierarchy.block_count} blocks"
+          page.hierarchy.blocks.each do |block|
+            puts "  [#{block.level}] #{block.text[0..49]}..."
+          end
+        end
+      end
+    end
+    ```
+
+=== "Rust"
+
+    --8<-- "snippets/rust/config/pdf_hierarchy_config.md"
+
+=== "TypeScript"
+
+    ```typescript title="basic_hierarchy.ts"
+    import { extractFileSync, ExtractionConfig, PdfConfig, HierarchyConfig } from 'kreuzberg';
+
+    const config: ExtractionConfig = {
+        pdfOptions: {
+            hierarchy: {
+                enabled: true
+            }
+        }
+    };
+
+    const result = extractFileSync("document.pdf", config);
+
+    if (result.pages) {
+        for (const page of result.pages) {
+            if (page.hierarchy) {
+                console.log(`Page ${page.pageNumber}: ${page.hierarchy.blockCount} blocks`);
+                for (const block of page.hierarchy.blocks) {
+                    console.log(`  [${block.level}] ${block.text.substring(0, 50)}...`);
+                }
+            }
+        }
+    }
+    ```
+
+#### Custom K-Clusters Configuration
+
+Configure clustering granularity for different hierarchy detail levels:
+
+=== "C#"
+
+    ```csharp title="custom_k_clusters.cs"
+    using Kreuzberg;
+
+    // Fast mode: 3 clusters (h1, h3, body) - minimal detail
+    var fastConfig = new ExtractionConfig
+    {
+        PdfOptions = new PdfConfig
+        {
+            Hierarchy = new HierarchyConfig
+            {
+                Enabled = true,
+                KClusters = 3  // Fast, identifies main structure only
+            }
+        }
+    };
+
+    // Balanced mode: 6 clusters (h1-h6) - default, recommended
+    var balancedConfig = new ExtractionConfig
+    {
+        PdfOptions = new PdfConfig
+        {
+            Hierarchy = new HierarchyConfig
+            {
+                Enabled = true,
+                KClusters = 6  // Balanced detail
+            }
+        }
+    };
+
+    // Detailed mode: 7 clusters (h1-h6 + distinct body) - maximum detail
+    var detailedConfig = new ExtractionConfig
+    {
+        PdfOptions = new PdfConfig
+        {
+            Hierarchy = new HierarchyConfig
+            {
+                Enabled = true,
+                KClusters = 7  // Maximum detail with body text separation
+            }
+        }
+    };
+    ```
+
+=== "Python"
+
+    ```python title="custom_k_clusters.py"
+    from kreuzberg import extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig
+
+    # Fast mode: 3 clusters
+    fast_config = ExtractionConfig(
+        pdf_options=PdfConfig(
+            hierarchy=HierarchyConfig(
+                enabled=True,
+                k_clusters=3  # Fast, identifies main structure only
+            )
+        )
+    )
+
+    # Balanced mode: 6 clusters (recommended)
+    balanced_config = ExtractionConfig(
+        pdf_options=PdfConfig(
+            hierarchy=HierarchyConfig(
+                enabled=True,
+                k_clusters=6  # Balanced detail
+            )
+        )
+    )
+
+    # Detailed mode: 7 clusters
+    detailed_config = ExtractionConfig(
+        pdf_options=PdfConfig(
+            hierarchy=HierarchyConfig(
+                enabled=True,
+                k_clusters=7  # Maximum detail with body text separation
+            )
+        )
+    )
+
+    result = extract_file_sync("document.pdf", config=balanced_config)
+    ```
+
+=== "Rust"
+
+    ```rust title="custom_k_clusters.rs"
+    use kreuzberg::{extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig};
+
+    fn main() -> kreuzberg::Result<()> {
+        // Fast mode: 3 clusters
+        let fast_config = ExtractionConfig {
+            pdf_options: Some(PdfConfig {
+                hierarchy: Some(HierarchyConfig {
+                    k_clusters: 3,
+                    ..Default::default()
+                }),
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        // Balanced mode: 6 clusters (recommended)
+        let balanced_config = ExtractionConfig {
+            pdf_options: Some(PdfConfig {
+                hierarchy: Some(HierarchyConfig {
+                    k_clusters: 6,
+                    ..Default::default()
+                }),
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        // Detailed mode: 7 clusters
+        let detailed_config = ExtractionConfig {
+            pdf_options: Some(PdfConfig {
+                hierarchy: Some(HierarchyConfig {
+                    k_clusters: 7,
+                    ..Default::default()
+                }),
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let result = extract_file_sync("document.pdf", None::<&str>, &balanced_config)?;
+        Ok(())
+    }
+    ```
+
+#### OCR Coverage Threshold
+
+Smart OCR triggering based on text coverage:
+
+=== "C#"
+
+    ```csharp title="ocr_coverage_threshold.cs"
+    using Kreuzberg;
+
+    var config = new ExtractionConfig
+    {
+        PdfOptions = new PdfConfig
+        {
+            Hierarchy = new HierarchyConfig
+            {
+                Enabled = true,
+                OcrCoverageThreshold = 0.5f  // Trigger OCR if <50% of page has text
+            }
+        }
+    };
+
+    var result = KreuzbergClient.ExtractFileSync("document.pdf", config);
+    ```
+
+=== "Python"
+
+    ```python title="ocr_coverage_threshold.py"
+    from kreuzberg import extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig
+
+    config = ExtractionConfig(
+        pdf_options=PdfConfig(
+            hierarchy=HierarchyConfig(
+                enabled=True,
+                ocr_coverage_threshold=0.5  # Trigger OCR if <50% of page has text
+            )
+        )
+    )
+
+    result = extract_file_sync("document.pdf", config=config)
+    ```
+
+=== "Rust"
+
+    ```rust title="ocr_coverage_threshold.rs"
+    use kreuzberg::{extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig};
+
+    fn main() -> kreuzberg::Result<()> {
+        let config = ExtractionConfig {
+            pdf_options: Some(PdfConfig {
+                hierarchy: Some(HierarchyConfig {
+                    ocr_coverage_threshold: Some(0.5),
+                    ..Default::default()
+                }),
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let result = extract_file_sync("document.pdf", None::<&str>, &config)?;
+        Ok(())
+    }
+    ```
+
+#### Disabling Bounding Boxes
+
+Reduce output size by excluding spatial information:
+
+=== "C#"
+
+    ```csharp title="no_bbox.cs"
+    using Kreuzberg;
+
+    var config = new ExtractionConfig
+    {
+        PdfOptions = new PdfConfig
+        {
+            Hierarchy = new HierarchyConfig
+            {
+                Enabled = true,
+                IncludeBbox = false  // Exclude bounding boxes
+            }
+        }
+    };
+
+    var result = KreuzbergClient.ExtractFileSync("document.pdf", config);
+    ```
+
+=== "Python"
+
+    ```python title="no_bbox.py"
+    from kreuzberg import extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig
+
+    config = ExtractionConfig(
+        pdf_options=PdfConfig(
+            hierarchy=HierarchyConfig(
+                enabled=True,
+                include_bbox=False  // Exclude bounding boxes
+            )
+        )
+    )
+
+    result = extract_file_sync("document.pdf", config=config)
+    ```
+
+### Performance Tuning
+
+#### K-clusters Selection
+
+Choose k_clusters based on your performance vs. detail requirements:
+
+| Setting | Speed | Detail | Best For |
+|---------|-------|--------|----------|
+| `k_clusters=3` | Very Fast | Minimal (h1, h3, body) | Quick document structure identification, real-time processing |
+| `k_clusters=6` | Balanced | Standard (h1-h6, body) | General purpose, RAG systems, recommended default |
+| `k_clusters=7` | Moderate | Detailed (h1-h6 separate body) | Fine-grained content analysis, content organization |
+
+#### Bounding Box Optimization
+
+**Include bounding boxes** (`include_bbox=true`, default) when:
+- Building visually-aware document processors
+- Need to correlate text with document position
+- Processing layout-sensitive documents (brochures, forms)
+
+**Exclude bounding boxes** (`include_bbox=false`) when:
+- Minimizing output size for network transmission
+- Bandwidth is constrained
+- Spatial information is not needed
+- Typical output reduction: 10-15% smaller
+
+#### OCR Integration
+
+The `ocr_coverage_threshold` parameter enables smart OCR triggering:
+
+```
+if (text_block_coverage < ocr_coverage_threshold) {
+    run_ocr()  // Trigger OCR on pages with insufficient text coverage
+}
+```
+
+**Common Scenarios:**
+- `ocr_coverage_threshold=0.5`: Trigger OCR on scanned pages (<50% text coverage)
+- `ocr_coverage_threshold=0.8`: Only OCR pages with very low text (>80% images)
+- `ocr_coverage_threshold=None`: Disable smart OCR triggering, rely on `force_ocr` flag
+
+### Output Format
+
+#### PageHierarchy Structure
+
+The extracted hierarchy is returned in `PageContent.hierarchy` when pages are extracted:
+
+```json
+{
+  "block_count": 12,
+  "blocks": [
+    {
+      "text": "Document Title",
+      "font_size": 24.0,
+      "level": "h1",
+      "bbox": [50.0, 100.0, 500.0, 130.0]
+    },
+    {
+      "text": "Introduction",
+      "font_size": 18.0,
+      "level": "h2",
+      "bbox": [50.0, 150.0, 300.0, 175.0]
+    },
+    {
+      "text": "This is the introductory paragraph with standard body text content.",
+      "font_size": 12.0,
+      "level": "body",
+      "bbox": [50.0, 200.0, 500.0, 250.0]
+    },
+    {
+      "text": "Key Findings",
+      "font_size": 18.0,
+      "level": "h2",
+      "bbox": [50.0, 280.0, 300.0, 305.0]
+    }
+  ]
+}
+```
+
+#### Field Meanings
+
+- **block_count**: Total number of hierarchical blocks on the page
+- **blocks**: Array of hierarchical blocks
+  - **text**: The text content of the block
+  - **font_size**: Font size in points (useful for verification and styling)
+  - **level**: Hierarchy level - "h1" through "h6" for headings, "body" for body text
+  - **bbox**: Optional bounding box as `[left, top, right, bottom]` in PDF units (points). Only present when `include_bbox=true`
+
+#### Accessing Hierarchy in Code
+
+=== "Python"
+
+    ```python
+    result = extract_file_sync("document.pdf", config=config)
+
+    for page in result.pages or []:
+        if page.hierarchy:
+            # Get all h1 headings
+            h1_blocks = [b for b in page.hierarchy.blocks if b.level == "h1"]
+
+            # Get all heading levels (h1-h6)
+            headings = [b for b in page.hierarchy.blocks if b.level.startswith("h")]
+
+            # Build outline with hierarchy
+            for block in page.hierarchy.blocks:
+                indent = int(block.level[1]) if block.level.startswith("h") else 0
+                print("  " * indent + block.text)
+    ```
+
+=== "Rust"
+
+    ```rust
+    for page in result.pages.iter().flat_map(|p| p.iter()) {
+        if let Some(hierarchy) = &page.hierarchy {
+            // Get all h1 headings
+            let h1_blocks: Vec<_> = hierarchy.blocks
+                .iter()
+                .filter(|b| b.level == "h1")
+                .collect();
+
+            // Build outline
+            for block in &hierarchy.blocks {
+                let level = if block.level.starts_with('h') {
+                    block.level[1..].parse::<usize>().unwrap_or(0)
+                } else {
+                    0
+                };
+                println!("{}{}", "  ".repeat(level), block.text);
+            }
+        }
+    }
+    ```
+
+### Best Practices
+
+1. **Always enable page extraction** when using hierarchy:
+   ```
+   pages = PageConfig(extract_pages=True)
+   ```
+   Hierarchy data is only populated when pages are extracted.
+
+2. **Use k_clusters=6 by default** (recommended). It provides good balance between detail and performance for most documents.
+
+3. **Include bounding boxes for RAG systems** that need spatial awareness for relevance ranking.
+
+4. **Test ocr_coverage_threshold** with your document set to find optimal OCR triggering point.
+
+5. **Process hierarchy at chunk boundaries** in RAG systems to preserve semantic relationships in context windows.
+
+### Example: Building a Table of Contents
+
+=== "Python"
+
+    ```python
+    from kreuzberg import extract_file_sync, ExtractionConfig, PdfConfig, HierarchyConfig, PageConfig
+
+    config = ExtractionConfig(
+        pdf_options=PdfConfig(
+            hierarchy=HierarchyConfig(enabled=True, k_clusters=6)
+        ),
+        pages=PageConfig(extract_pages=True)
+    )
+
+    result = extract_file_sync("document.pdf", config=config)
+
+    toc = []
+    for page in result.pages or []:
+        if page.hierarchy:
+            for block in page.hierarchy.blocks:
+                if block.level.startswith("h"):
+                    level = int(block.level[1])
+                    toc.append({
+                        "level": level,
+                        "text": block.text,
+                        "page": page.page_number
+                    })
+
+    # Print hierarchical TOC
+    for entry in toc:
+        indent = "  " * (entry["level"] - 1)
+        print(f"{indent}{entry['text']} (p. {entry['page']})")
+    ```
+
+
+---
+
 ## PageConfig
 
 Configuration for page extraction and tracking.

@@ -49,6 +49,8 @@ use kreuzberg::{
     ChunkingConfig, ExtractionConfig, LanguageDetectionConfig, OcrConfig, batch_extract_file_sync, detect_mime_type,
     extract_file_sync,
 };
+#[cfg(feature = "api")]
+use kreuzberg::ServerConfig;
 use serde_json::json;
 use std::path::{Path, PathBuf};
 use tracing_subscriber::EnvFilter;
@@ -168,15 +170,23 @@ enum Commands {
     },
 
     /// Start the API server
+    ///
+    /// Configuration is loaded with the following precedence (highest to lowest):
+    /// 1. CLI arguments (--host, --port)
+    /// 2. Environment variables (KREUZBERG_HOST, KREUZBERG_PORT)
+    /// 3. Config file (TOML, YAML, or JSON)
+    /// 4. Built-in defaults (127.0.0.1:8000)
+    ///
+    /// The config file can contain both extraction and server settings under [server] section.
     #[cfg(feature = "api")]
     Serve {
-        /// Host to bind to (e.g., "127.0.0.1" or "0.0.0.0")
-        #[arg(short = 'H', long, default_value = "127.0.0.1")]
-        host: String,
+        /// Host to bind to (e.g., "127.0.0.1" or "0.0.0.0"). CLI arg overrides config file and env vars.
+        #[arg(short = 'H', long)]
+        host: Option<String>,
 
-        /// Port to bind to
-        #[arg(short, long, default_value_t = 8000)]
-        port: u16,
+        /// Port to bind to. CLI arg overrides config file and env vars.
+        #[arg(short, long)]
+        port: Option<u16>,
 
         /// Path to config file (TOML, YAML, or JSON). If not specified, searches for kreuzberg.toml/yaml/json in current and parent directories.
         #[arg(short, long)]
@@ -576,16 +586,49 @@ fn main() -> Result<()> {
 
         #[cfg(feature = "api")]
         Commands::Serve {
-            host,
-            port,
+            host: cli_host,
+            port: cli_port,
             config: config_path,
         } => {
-            let config = load_config(config_path)?;
+            // Load extraction config
+            let extraction_config = load_config(config_path.clone())?;
 
-            println!("Starting Kreuzberg API server on http://{}:{}...", host, port);
+            // Load server config from same file or defaults
+            let mut server_config = if let Some(path) = &config_path {
+                ServerConfig::from_file(path).unwrap_or_default()
+            } else {
+                ServerConfig::default()
+            };
+
+            // Apply environment variable overrides (precedence: env vars > config file)
+            server_config.apply_env_overrides()?;
+
+            // CLI args override everything (highest precedence)
+            if let Some(host) = cli_host {
+                server_config.host = host;
+            }
+            if let Some(port) = cli_port {
+                server_config.port = port;
+            }
+
+            // Log the final configuration for debugging
+            tracing::info!(
+                "Starting Kreuzberg API server on http://{}",
+                server_config.listen_addr()
+            );
+
             let rt = tokio::runtime::Runtime::new()?;
-            rt.block_on(kreuzberg::api::serve_with_config(&host, port, config))
-                .with_context(|| format!("Failed to start API server on {}:{}. Ensure the port is not already in use and you have permission to bind to this address.", host, port))?;
+            rt.block_on(kreuzberg::api::serve_with_config(
+                &server_config.host,
+                server_config.port,
+                extraction_config,
+            ))
+            .with_context(|| {
+                format!(
+                    "Failed to start API server on {}. Ensure the port is not already in use and you have permission to bind to this address.",
+                    server_config.listen_addr()
+                )
+            })?;
         }
 
         #[cfg(feature = "mcp")]

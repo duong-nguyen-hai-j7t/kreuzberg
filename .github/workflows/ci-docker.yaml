@@ -95,6 +95,10 @@ jobs:
         if: ${{ !inputs.skip_tests }}
         run: scripts/ci/docker/run-feature-tests.sh "${{ matrix.variant }}"
 
+      - name: Run configuration tests
+        if: ${{ !inputs.skip_tests }}
+        run: scripts/ci/docker/run-config-tests.sh "${{ matrix.variant }}"
+
       - name: Save Docker image as artifact
         if: success()
         shell: bash

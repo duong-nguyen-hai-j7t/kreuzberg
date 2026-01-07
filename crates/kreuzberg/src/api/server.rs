@@ -1,7 +1,7 @@
 //! API server setup and configuration.
 
 use std::{
-    net::{IpAddr, SocketAddr},
+    net::SocketAddr,
     sync::Arc,
 };
 
@@ -16,7 +16,7 @@ use tower_http::{
     trace::TraceLayer,
 };
 
-use crate::{ExtractionConfig, Result};
+use crate::{core::ServerConfig, ExtractionConfig, Result};
 
 use super::{
     handlers::{
@@ -25,80 +25,70 @@ use super::{
     types::{ApiSizeLimits, ApiState},
 };
 
-/// Parse size limits from environment variables.
+/// Load ServerConfig with proper precedence order.
 ///
-/// Reads environment variables in the following order of preference:
-/// 1. `KREUZBERG_MAX_REQUEST_BODY_BYTES` - Maximum total request body size (in bytes)
-/// 2. `KREUZBERG_MAX_MULTIPART_FIELD_BYTES` - Maximum individual multipart field size (in bytes)
-/// 3. `KREUZBERG_MAX_UPLOAD_SIZE_MB` - (Legacy) Maximum upload size in MB (applies to both limits)
+/// This function implements the configuration hierarchy:
+/// 1. File (if provided)
+/// 2. Environment variables (via apply_env_overrides)
+/// 3. Defaults
 ///
-/// Falls back to default (100 MB) if not set or invalid.
+/// # Arguments
+///
+/// * `config_path` - Optional path to a ServerConfig file (TOML, YAML, or JSON)
+///
+/// # Returns
+///
+/// A configured ServerConfig with proper precedence applied.
+///
+/// # Errors
+///
+/// Returns an error if the config file cannot be read or parsed.
 ///
 /// # Examples
 ///
-/// ```bash
-/// # Method 1: Set limits in bytes (e.g., 500 MB)
-/// export KREUZBERG_MAX_REQUEST_BODY_BYTES=524288000  # 500 MB
-/// export KREUZBERG_MAX_MULTIPART_FIELD_BYTES=524288000  # 500 MB
+/// ```no_run
+/// use kreuzberg::api::load_server_config;
+/// use std::path::Path;
 ///
-/// # Method 2: Set limits in MB (legacy, backward compatible)
-/// export KREUZBERG_MAX_UPLOAD_SIZE_MB=500
+/// # fn example() -> kreuzberg::Result<()> {
+/// // Load from file with env overrides
+/// let config = load_server_config(Some(Path::new("server.toml")))?;
+///
+/// // Or use defaults with env overrides
+/// let config = load_server_config(None)?;
+/// # Ok(())
+/// # }
 /// ```
-fn parse_size_limits_from_env() -> ApiSizeLimits {
-    const DEFAULT_100MB_MB: usize = 100;
-
-    if let Ok(value) = std::env::var("KREUZBERG_MAX_REQUEST_BODY_BYTES") {
-        if let Ok(bytes) = value.parse::<usize>() {
-            if bytes > 0 {
-                let multipart_bytes = std::env::var("KREUZBERG_MAX_MULTIPART_FIELD_BYTES")
-                    .ok()
-                    .and_then(|v| v.parse::<usize>().ok())
-                    .unwrap_or(bytes);
-
-                tracing::info!(
-                    "Upload size limits configured from environment: request_body={} bytes ({:.1} GB), multipart_field={} bytes ({:.1} GB)",
-                    bytes,
-                    bytes as f64 / (1024.0 * 1024.0 * 1024.0),
-                    multipart_bytes,
-                    multipart_bytes as f64 / (1024.0 * 1024.0 * 1024.0)
-                );
-
-                return ApiSizeLimits::new(bytes, multipart_bytes);
+pub fn load_server_config(config_path: Option<&std::path::Path>) -> Result<ServerConfig> {
+    let mut config = if let Some(path) = config_path {
+        match ServerConfig::from_file(path) {
+            Ok(cfg) => cfg,
+            Err(e) => {
+                tracing::warn!("Failed to load server config from file: {}, using defaults", e);
+                ServerConfig::default()
             }
-        } else {
-            tracing::warn!(
-                "Failed to parse KREUZBERG_MAX_REQUEST_BODY_BYTES='{}', must be a valid usize",
-                value
-            );
         }
-    }
+    } else {
+        ServerConfig::default()
+    };
 
-    if let Ok(value) = std::env::var("KREUZBERG_MAX_UPLOAD_SIZE_MB") {
-        if let Ok(mb) = value.parse::<usize>() {
-            if mb > 0 {
-                tracing::info!(
-                    "Upload size limit configured from environment (legacy): {} MB ({} bytes)",
-                    mb,
-                    mb * 1024 * 1024
-                );
-                return ApiSizeLimits::from_mb(mb, mb);
-            } else {
-                tracing::warn!("Invalid KREUZBERG_MAX_UPLOAD_SIZE_MB value (must be > 0)");
-            }
-        } else {
-            tracing::warn!(
-                "Failed to parse KREUZBERG_MAX_UPLOAD_SIZE_MB='{}', must be a valid usize",
-                value
-            );
-        }
-    }
+    // Apply environment variable overrides with proper logging
+    config.apply_env_overrides()?;
 
-    let limits = ApiSizeLimits::from_mb(DEFAULT_100MB_MB, DEFAULT_100MB_MB);
     tracing::info!(
-        "Upload size limit: 100 MB (default, {} bytes) - Configure with KREUZBERG_MAX_REQUEST_BODY_BYTES or KREUZBERG_MAX_UPLOAD_SIZE_MB",
-        limits.max_request_body_bytes
+        "Server configuration loaded: host={}, port={}, request_body_limit={} MB, multipart_field_limit={} MB, CORS={}",
+        config.host,
+        config.port,
+        config.max_request_body_mb(),
+        config.max_multipart_field_mb(),
+        if config.cors_allows_all() {
+            "allow all origins".to_string()
+        } else {
+            format!("{} specific origins", config.cors_origins.len())
+        }
     );
-    limits
+
+    Ok(config)
 }
 
 /// Create the API router with all routes configured.
@@ -161,15 +151,58 @@ pub fn create_router(config: ExtractionConfig) -> Router {
 /// # }
 /// ```
 pub fn create_router_with_limits(config: ExtractionConfig, limits: ApiSizeLimits) -> Router {
+    create_router_with_limits_and_server_config(config, limits, ServerConfig::default())
+}
+
+/// Create the API router with custom size limits and server configuration.
+///
+/// This function provides full control over request limits, CORS, and server settings via ServerConfig.
+///
+/// # Arguments
+///
+/// * `config` - Default extraction configuration. Per-request configs override these defaults.
+/// * `limits` - Size limits for request bodies and multipart uploads.
+/// * `server_config` - Server configuration including host, port, and CORS settings.
+///
+/// # Examples
+///
+/// ```no_run
+/// use kreuzberg::{ExtractionConfig, api::create_router_with_limits, core::ServerConfig};
+///
+/// # #[tokio::main]
+/// # async fn main() -> kreuzberg::Result<()> {
+/// let extraction_config = ExtractionConfig::default();
+/// let mut server_config = ServerConfig::default();
+/// server_config.cors_origins = vec!["https://example.com".to_string()];
+/// let router = create_router_with_limits_and_server_config(
+///     extraction_config,
+///     Default::default(),
+///     server_config
+/// );
+/// # Ok(())
+/// # }
+/// ```
+pub fn create_router_with_limits_and_server_config(
+    config: ExtractionConfig,
+    limits: ApiSizeLimits,
+    server_config: ServerConfig,
+) -> Router {
     let state = ApiState {
         default_config: Arc::new(config),
     };
 
-    // SECURITY WARNING: The default allows all origins for development convenience,
-    let cors_layer = if let Ok(origins_str) = std::env::var("KREUZBERG_CORS_ORIGINS") {
-        let origins: Vec<_> = origins_str
-            .split(',')
-            .filter(|s| !s.trim().is_empty())
+    // CORS configuration based on ServerConfig
+    let cors_layer = if server_config.cors_allows_all() {
+        tracing::warn!(
+            "CORS configured to allow all origins (default). This permits CSRF attacks. \
+             For production, set KREUZBERG_CORS_ORIGINS environment variable to comma-separated \
+             list of allowed origins (e.g., 'https://app.example.com,https://api.example.com')"
+        );
+        CorsLayer::new().allow_origin(Any).allow_methods(Any).allow_headers(Any)
+    } else {
+        let origins: Vec<_> = server_config
+            .cors_origins
+            .iter()
             .filter_map(|s| s.trim().parse::<axum::http::HeaderValue>().ok())
             .collect();
 
@@ -181,18 +214,11 @@ pub fn create_router_with_limits(config: ExtractionConfig, limits: ApiSizeLimits
                 .allow_headers(Any)
         } else {
             tracing::warn!(
-                "KREUZBERG_CORS_ORIGINS set but empty/invalid - falling back to permissive CORS. \
+                "CORS origins configured but empty/invalid - falling back to permissive CORS. \
                  This allows CSRF attacks. Set explicit origins for production."
             );
             CorsLayer::new().allow_origin(Any).allow_methods(Any).allow_headers(Any)
         }
-    } else {
-        tracing::warn!(
-            "CORS configured to allow all origins (default). This permits CSRF attacks. \
-             For production, set KREUZBERG_CORS_ORIGINS environment variable to comma-separated \
-             list of allowed origins (e.g., 'https://app.example.com,https://api.example.com')"
-        );
-        CorsLayer::new().allow_origin(Any).allow_methods(Any).allow_headers(Any)
     };
 
     Router::new()
@@ -266,7 +292,7 @@ pub fn create_router_with_limits(config: ExtractionConfig, limits: ApiSizeLimits
 /// python -m kreuzberg.api
 /// ```
 pub async fn serve(host: impl AsRef<str>, port: u16) -> Result<()> {
-    let config = match ExtractionConfig::discover()? {
+    let extraction_config = match ExtractionConfig::discover()? {
         Some(config) => {
             tracing::info!("Loaded extraction config from discovered file");
             config
@@ -277,9 +303,10 @@ pub async fn serve(host: impl AsRef<str>, port: u16) -> Result<()> {
         }
     };
 
-    let limits = parse_size_limits_from_env();
+    let server_config = load_server_config(None)?;
+    let limits = ApiSizeLimits::new(server_config.max_request_body_bytes, server_config.max_multipart_field_bytes);
 
-    serve_with_config_and_limits(host, port, config, limits).await
+    serve_with_config_and_limits(host, port, extraction_config, limits).await
 }
 
 /// Start the API server with explicit config.
@@ -341,13 +368,21 @@ pub async fn serve_with_config_and_limits(
     config: ExtractionConfig,
     limits: ApiSizeLimits,
 ) -> Result<()> {
+    use std::net::IpAddr;
+
     let ip: IpAddr = host
         .as_ref()
         .parse()
         .map_err(|e| crate::error::KreuzbergError::validation(format!("Invalid host address: {}", e)))?;
 
+    let mut server_config = ServerConfig::default();
+    server_config.host = host.as_ref().to_string();
+    server_config.port = port;
+    server_config.max_request_body_bytes = limits.max_request_body_bytes;
+    server_config.max_multipart_field_bytes = limits.max_multipart_field_bytes;
+
     let addr = SocketAddr::new(ip, port);
-    let app = create_router_with_limits(config, limits);
+    let app = create_router_with_limits_and_server_config(config, limits, server_config);
 
     tracing::info!("Starting Kreuzberg API server on http://{}:{}", ip, port);
 
@@ -390,124 +425,26 @@ mod tests {
     }
 
     #[test]
-    #[serial_test::serial]
-    fn test_parse_size_limits_default_100mb() {
-        unsafe {
-            std::env::remove_var("KREUZBERG_MAX_REQUEST_BODY_BYTES");
-            std::env::remove_var("KREUZBERG_MAX_MULTIPART_FIELD_BYTES");
-            std::env::remove_var("KREUZBERG_MAX_UPLOAD_SIZE_MB");
-        }
-
-        let limits = parse_size_limits_from_env();
-        assert_eq!(limits.max_request_body_bytes, 100 * 1024 * 1024);
-        assert_eq!(limits.max_multipart_field_bytes, 100 * 1024 * 1024);
+    fn test_create_router_with_limits() {
+        let config = ExtractionConfig::default();
+        let limits = ApiSizeLimits::from_mb(50, 50);
+        let _router = create_router_with_limits(config, limits);
     }
 
     #[test]
-    #[serial_test::serial]
-    fn test_parse_size_limits_from_bytes_env_vars() {
-        unsafe {
-            std::env::set_var("KREUZBERG_MAX_REQUEST_BODY_BYTES", "5368709120");
-            std::env::set_var("KREUZBERG_MAX_MULTIPART_FIELD_BYTES", "2684354560");
-            std::env::remove_var("KREUZBERG_MAX_UPLOAD_SIZE_MB");
-        }
-
-        let limits = parse_size_limits_from_env();
-        assert_eq!(limits.max_request_body_bytes, 5 * 1024 * 1024 * 1024);
-        assert_eq!(limits.max_multipart_field_bytes, 2_684_354_560);
-
-        unsafe {
-            std::env::remove_var("KREUZBERG_MAX_REQUEST_BODY_BYTES");
-            std::env::remove_var("KREUZBERG_MAX_MULTIPART_FIELD_BYTES");
-        }
+    fn test_create_router_with_server_config() {
+        let extraction_config = ExtractionConfig::default();
+        let limits = ApiSizeLimits::from_mb(100, 100);
+        let server_config = ServerConfig::default();
+        let _router = create_router_with_limits_and_server_config(extraction_config, limits, server_config);
     }
 
     #[test]
-    #[serial_test::serial]
-    fn test_parse_size_limits_bytes_env_var_only() {
-        unsafe {
-            std::env::set_var("KREUZBERG_MAX_REQUEST_BODY_BYTES", "1073741824");
-            std::env::remove_var("KREUZBERG_MAX_MULTIPART_FIELD_BYTES");
-            std::env::remove_var("KREUZBERG_MAX_UPLOAD_SIZE_MB");
-        }
-
-        let limits = parse_size_limits_from_env();
-        assert_eq!(limits.max_request_body_bytes, 1024 * 1024 * 1024);
-        assert_eq!(limits.max_multipart_field_bytes, 1024 * 1024 * 1024);
-
-        unsafe {
-            std::env::remove_var("KREUZBERG_MAX_REQUEST_BODY_BYTES");
-        }
-    }
-
-    #[test]
-    #[serial_test::serial]
-    fn test_parse_size_limits_from_legacy_mb_env_var() {
-        unsafe {
-            std::env::remove_var("KREUZBERG_MAX_REQUEST_BODY_BYTES");
-            std::env::remove_var("KREUZBERG_MAX_MULTIPART_FIELD_BYTES");
-            std::env::set_var("KREUZBERG_MAX_UPLOAD_SIZE_MB", "5000");
-        }
-
-        let limits = parse_size_limits_from_env();
-        assert_eq!(limits.max_request_body_bytes, 5000 * 1024 * 1024);
-        assert_eq!(limits.max_multipart_field_bytes, 5000 * 1024 * 1024);
-
-        unsafe {
-            std::env::remove_var("KREUZBERG_MAX_UPLOAD_SIZE_MB");
-        }
-    }
-
-    #[test]
-    #[serial_test::serial]
-    fn test_parse_size_limits_invalid_bytes_env_var() {
-        unsafe {
-            std::env::set_var("KREUZBERG_MAX_REQUEST_BODY_BYTES", "not a number");
-            std::env::remove_var("KREUZBERG_MAX_MULTIPART_FIELD_BYTES");
-            std::env::remove_var("KREUZBERG_MAX_UPLOAD_SIZE_MB");
-        }
-
-        let limits = parse_size_limits_from_env();
-        assert_eq!(limits.max_request_body_bytes, 100 * 1024 * 1024);
-
-        unsafe {
-            std::env::remove_var("KREUZBERG_MAX_REQUEST_BODY_BYTES");
-        }
-    }
-
-    #[test]
-    #[serial_test::serial]
-    fn test_parse_size_limits_zero_bytes_env_var() {
-        unsafe {
-            std::env::set_var("KREUZBERG_MAX_REQUEST_BODY_BYTES", "0");
-            std::env::remove_var("KREUZBERG_MAX_MULTIPART_FIELD_BYTES");
-            std::env::remove_var("KREUZBERG_MAX_UPLOAD_SIZE_MB");
-        }
-
-        let limits = parse_size_limits_from_env();
-        assert_eq!(limits.max_request_body_bytes, 100 * 1024 * 1024);
-
-        unsafe {
-            std::env::remove_var("KREUZBERG_MAX_REQUEST_BODY_BYTES");
-        }
-    }
-
-    #[test]
-    #[serial_test::serial]
-    fn test_parse_size_limits_bytes_env_var_precedence() {
-        unsafe {
-            std::env::set_var("KREUZBERG_MAX_REQUEST_BODY_BYTES", "1073741824");
-            std::env::remove_var("KREUZBERG_MAX_MULTIPART_FIELD_BYTES");
-            std::env::set_var("KREUZBERG_MAX_UPLOAD_SIZE_MB", "5000");
-        }
-
-        let limits = parse_size_limits_from_env();
-        assert_eq!(limits.max_request_body_bytes, 1024 * 1024 * 1024);
-        assert_ne!(limits.max_request_body_bytes, 5000 * 1024 * 1024);
-
-        unsafe {
-            std::env::remove_var("KREUZBERG_MAX_REQUEST_BODY_BYTES");
-            std::env::remove_var("KREUZBERG_MAX_UPLOAD_SIZE_MB");
-        }
+    fn test_server_config_cors_handling() {
+        let extraction_config = ExtractionConfig::default();
+        let limits = ApiSizeLimits::default();
+        let mut server_config = ServerConfig::default();
+        server_config.cors_origins = vec!["https://example.com".to_string()];
+        let _router = create_router_with_limits_and_server_config(extraction_config, limits, server_config);
     }
 }

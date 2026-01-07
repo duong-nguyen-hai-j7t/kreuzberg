@@ -303,7 +303,7 @@ impl DocumentExtractor for DocxExtractor {
             tables,
             detected_languages: None,
             chunks: None,
-            images: None,
+            images: Some(vec![]),
         })
     }
 

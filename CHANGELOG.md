@@ -23,6 +23,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+#### PHP
+- **Table Extraction Config**: Added proper `extract_tables` configuration support to PHP FFI extraction functions
+  - Config flag now correctly filters table results based on user preferences
+  - Added error metadata handling for batch operations
+  - Improved embedding result serialization with proper structure
+  - Updated tests to validate table extraction configuration
+- **Test Runner**: Added wrapper script to handle ONNX Runtime cleanup error in test suite
+  - Auto-detects ONNX Runtime library location across macOS, Linux, and Windows
+  - Handles exit code 134 from mutex cleanup error during process shutdown
+  - All tests pass successfully (579 tests, 1598 assertions) before cleanup error occurs
+  - Workaround for ort v2.0.0-rc.10 issue (pykeio/ort#441), will be resolved when fastembed upgrades
+
 #### Documentation
 - **Go Installation**: Updated README with correct `go get` instructions for monorepo structure ([#264](https://github.com/kreuzberg-dev/kreuzberg/issues/264))
   - Clarified that `@latest` doesn't work due to Go module discovery limitations

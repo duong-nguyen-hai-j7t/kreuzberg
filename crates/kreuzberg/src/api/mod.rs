@@ -85,7 +85,8 @@ mod types;
 
 pub use error::ApiError;
 pub use server::{
-    create_router, create_router_with_limits, serve, serve_default, serve_with_config, serve_with_config_and_limits,
+    create_router, create_router_with_limits, create_router_with_limits_and_server_config, load_server_config, serve,
+    serve_default, serve_with_config, serve_with_config_and_limits,
 };
 pub use types::{
     ApiSizeLimits, ApiState, CacheClearResponse, CacheStatsResponse, EmbedRequest, EmbedResponse, ErrorResponse,

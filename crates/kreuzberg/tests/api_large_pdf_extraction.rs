@@ -446,8 +446,7 @@ async fn test_extract_multiple_large_pdfs() {
 /// Test that API respects environment variable configuration for size limits.
 ///
 /// This test documents how the API parses size limits from the environment,
-/// though the actual environment variable reading is handled by
-/// `parse_size_limits_from_env()` in server.rs.
+/// via the ServerConfig which handles environment variable reading.
 ///
 /// # Note
 ///

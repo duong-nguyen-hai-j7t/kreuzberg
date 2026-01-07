@@ -139,17 +139,23 @@ impl DocumentExtractor for PptxExtractor {
         additional.insert("image_count".to_string(), serde_json::json!(pptx_result.image_count));
         additional.insert("table_count".to_string(), serde_json::json!(pptx_result.table_count));
 
-        let images = if !pptx_result.images.is_empty() {
-            #[cfg(feature = "ocr")]
-            {
-                let processed_images = self.process_images_with_ocr(pptx_result.images, config).await?;
-                Some(processed_images)
-            }
-            #[cfg(not(feature = "ocr"))]
-            {
-                Some(pptx_result.images)
+        let images = if extract_images {
+            // Image extraction is enabled, return images or empty vector
+            if !pptx_result.images.is_empty() {
+                #[cfg(feature = "ocr")]
+                {
+                    let processed_images = self.process_images_with_ocr(pptx_result.images, config).await?;
+                    Some(processed_images)
+                }
+                #[cfg(not(feature = "ocr"))]
+                {
+                    Some(pptx_result.images)
+                }
+            } else {
+                Some(vec![])
             }
         } else {
+            // Image extraction is disabled
             None
         };
 
@@ -196,17 +202,23 @@ impl DocumentExtractor for PptxExtractor {
         additional.insert("image_count".to_string(), serde_json::json!(pptx_result.image_count));
         additional.insert("table_count".to_string(), serde_json::json!(pptx_result.table_count));
 
-        let images = if !pptx_result.images.is_empty() {
-            #[cfg(feature = "ocr")]
-            {
-                let processed_images = self.process_images_with_ocr(pptx_result.images, config).await?;
-                Some(processed_images)
-            }
-            #[cfg(not(feature = "ocr"))]
-            {
-                Some(pptx_result.images)
+        let images = if extract_images {
+            // Image extraction is enabled, return images or empty vector
+            if !pptx_result.images.is_empty() {
+                #[cfg(feature = "ocr")]
+                {
+                    let processed_images = self.process_images_with_ocr(pptx_result.images, config).await?;
+                    Some(processed_images)
+                }
+                #[cfg(not(feature = "ocr"))]
+                {
+                    Some(pptx_result.images)
+                }
+            } else {
+                Some(vec![])
             }
         } else {
+            // Image extraction is disabled
             None
         };
 

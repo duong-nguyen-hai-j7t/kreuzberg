@@ -92,6 +92,9 @@ pub use core::config::{
     LanguageDetectionConfig, OcrConfig, PostProcessorConfig, TokenReductionConfig,
 };
 
+#[cfg(feature = "api")]
+pub use core::server_config::ServerConfig;
+
 #[cfg(feature = "pdf")]
 pub use core::config::PdfConfig;
 

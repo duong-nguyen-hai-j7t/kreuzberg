@@ -39,6 +39,7 @@ pub mod formats;
 pub mod io;
 pub mod mime;
 pub mod pipeline;
+pub mod server_config;
 
 pub use config::{
     ChunkingConfig, ExtractionConfig, ImageExtractionConfig, LanguageDetectionConfig, OcrConfig, TokenReductionConfig,
@@ -49,6 +50,7 @@ pub use config_validation::{
     validate_token_reduction_level,
 };
 pub use formats::{KNOWN_FORMATS, is_valid_format_field};
+pub use server_config::ServerConfig;
 
 #[cfg(feature = "tokio-runtime")]
 pub use batch_optimizations::{BatchProcessor, BatchProcessorConfig};
