@@ -272,16 +272,37 @@ run_container() {
   local image="$2"
   local port="$3"
   shift 3
-  local docker_args=("$@")
+
+  # Separate docker options from command arguments
+  local docker_opts=()
+  local cmd_args=()
+  local after_separator=false
+
+  while [ $# -gt 0 ]; do
+    if [ "$1" = "--" ]; then
+      after_separator=true
+      shift
+      continue
+    fi
+
+    if [ "$after_separator" = true ]; then
+      cmd_args+=("$1")
+    else
+      docker_opts+=("$1")
+    fi
+    shift
+  done
 
   log_debug "Running container: $container_name"
-  log_debug "Docker args: ${docker_args[*]}"
+  log_debug "Docker opts: ${docker_opts[*]}"
+  log_debug "Command args: ${cmd_args[*]}"
 
   if ! docker run -d \
     --name "$container_name" \
     -p "$port:8000" \
-    "${docker_args[@]}" \
-    "$image" >/dev/null 2>&1; then
+    "${docker_opts[@]}" \
+    "$image" \
+    "${cmd_args[@]}" >/dev/null 2>&1; then
     return 1
   fi
 
