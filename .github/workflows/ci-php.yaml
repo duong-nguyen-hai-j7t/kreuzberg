@@ -43,6 +43,7 @@ on:
       - 'scripts/ci/php/**'
       - 'scripts/ci/cache/**'
       - 'scripts/ci/actions/**'
+  workflow_dispatch:
 
 concurrency:
   group: ci-php-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

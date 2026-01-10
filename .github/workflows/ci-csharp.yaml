@@ -41,6 +41,7 @@ on:
       - 'scripts/ci/csharp/**'
       - 'scripts/ci/cache/**'
       - 'scripts/ci/actions/**'
+  workflow_dispatch:
 
 concurrency:
   group: ci-csharp-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/actions/**'
+      - '.github/workflows/ci-docker.yaml'
       - 'crates/kreuzberg/**'
       - 'crates/kreuzberg-cli/**'
       - 'crates/kreuzberg-tesseract/**'
@@ -14,11 +15,11 @@ on:
       - 'Cargo.lock'
       - '.cargo/config.toml'
       - 'scripts/ci/docker/**'
-      - '.github/workflows/ci-docker.yaml'
   pull_request:
     branches: [main]
     paths:
       - '.github/actions/**'
+      - '.github/workflows/ci-docker.yaml'
       - 'crates/kreuzberg/**'
       - 'crates/kreuzberg-cli/**'
       - 'crates/kreuzberg-tesseract/**'
@@ -28,7 +29,6 @@ on:
       - 'Cargo.lock'
       - '.cargo/config.toml'
       - 'scripts/ci/docker/**'
-      - '.github/workflows/ci-docker.yaml'
   workflow_dispatch:
     inputs:
       skip_tests:

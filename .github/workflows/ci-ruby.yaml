@@ -47,6 +47,7 @@ name: CI Ruby
       - 'scripts/ci/ruby/**'
       - 'scripts/ci/cache/**'
       - 'scripts/ci/actions/**'
+  workflow_dispatch:
 
 concurrency:
   group: ci-ruby-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

@@ -45,6 +45,7 @@ on:
       - 'scripts/ci/python/**'
       - 'scripts/ci/cache/**'
       - 'scripts/ci/actions/**'
+  workflow_dispatch:
 
 concurrency:
   group: ci-python-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

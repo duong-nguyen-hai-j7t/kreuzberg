@@ -59,6 +59,7 @@ on:
       - 'Cargo.toml'
       - 'Cargo.lock'
       - '.github/workflows/ci-validate.yaml'
+  workflow_dispatch:
 
 concurrency:
   group: ci-validate-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

@@ -43,6 +43,7 @@ on:
       - 'scripts/ci/actions/**'
       - 'scripts/install-system-pdfium-linux.sh'
       - 'scripts/install-system-pdfium-macos.sh'
+  workflow_dispatch:
 
 permissions:
   contents: read

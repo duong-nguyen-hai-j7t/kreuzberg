@@ -43,6 +43,7 @@ name: CI Elixir
       - 'scripts/ci/elixir/**'
       - 'scripts/ci/cache/**'
       - 'scripts/ci/actions/**'
+  workflow_dispatch:
 
 concurrency:
   group: ci-elixir-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
