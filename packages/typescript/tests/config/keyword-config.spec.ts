@@ -5,14 +5,8 @@
  * extraction algorithms, scoring thresholds, and language-specific settings.
  */
 
-import { describe, it, expect } from "vitest";
-import type {
-	KeywordConfig,
-	KeywordAlgorithm,
-	YakeParams,
-	RakeParams,
-	ExtractionConfig,
-} from "@kreuzberg/core";
+import type { ExtractionConfig, KeywordAlgorithm, KeywordConfig, RakeParams, YakeParams } from "@kreuzberg/core";
+import { describe, expect, it } from "vitest";
 
 describe("WASM: KeywordConfig", () => {
 	describe("type definitions", () => {

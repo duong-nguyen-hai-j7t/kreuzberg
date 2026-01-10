@@ -8,10 +8,10 @@
  */
 
 import {
-	getErrorCodeName as get_error_code_name,
-	getErrorCodeDescription as get_error_code_description,
 	classifyError as classify_error,
 	type ErrorClassification,
+	getErrorCodeDescription as get_error_code_description,
+	getErrorCodeName as get_error_code_name,
 } from "@kreuzberg/node";
 
 /**

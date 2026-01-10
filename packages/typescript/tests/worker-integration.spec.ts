@@ -10,7 +10,7 @@
  * @group extraction
  */
 
-import { describe, expect, it, beforeEach, afterEach, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 /**
  * Mock worker message for WASM task
@@ -99,8 +99,7 @@ class MockWorker {
 			active: this.active,
 			processedTasks: this.processedTasks,
 			totalProcessingTime: this.totalProcessingTime,
-			averageProcessingTime:
-				this.processedTasks > 0 ? this.totalProcessingTime / this.processedTasks : 0,
+			averageProcessingTime: this.processedTasks > 0 ? this.totalProcessingTime / this.processedTasks : 0,
 			lastActivity: this.lastActivity,
 		};
 	}

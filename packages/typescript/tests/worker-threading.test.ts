@@ -9,7 +9,7 @@
  * @group worker-pool
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 /**
  * Realistic worker implementation simulating actual WASM Worker behavior
@@ -111,11 +111,7 @@ class WorkerSimulator {
 /**
  * Async wrapper for worker message passing with timeout
  */
-function createWorkerPromise<T = unknown>(
-	worker: WorkerSimulator,
-	data: unknown,
-	timeout = 1000
-): Promise<T> {
+function createWorkerPromise<T = unknown>(worker: WorkerSimulator, data: unknown, timeout = 1000): Promise<T> {
 	return new Promise((resolve, reject) => {
 		let resolved = false;
 		const timer = setTimeout(() => {
@@ -223,7 +219,7 @@ describe("Worker Threading", () => {
 						const worker = new WorkerSimulator();
 						workers.push(worker);
 						return worker;
-					})
+					}),
 				);
 			}
 
@@ -252,10 +248,7 @@ describe("Worker Threading", () => {
 				nullValue: null,
 			};
 
-			const result = await createWorkerPromise<typeof complexData>(
-				worker,
-				complexData
-			);
+			const result = await createWorkerPromise<typeof complexData>(worker, complexData);
 
 			expect(result).toEqual(complexData);
 			expect(result.nested.level1.level2).toBe("deep");
@@ -267,11 +260,7 @@ describe("Worker Threading", () => {
 			workers.push(worker);
 
 			const largeArray = Array.from({ length: 10000 }, (_, i) => i);
-			const result = await createWorkerPromise<typeof largeArray>(
-				worker,
-				largeArray,
-				5000
-			);
+			const result = await createWorkerPromise<typeof largeArray>(worker, largeArray, 5000);
 
 			expect(result).toHaveLength(10000);
 			expect(result[5000]).toBe(5000);
@@ -298,9 +287,7 @@ describe("Worker Threading", () => {
 			workers.push(worker);
 
 			// Queue up multiple messages at once
-			const promises = Array.from({ length: 5 }, (_, i) =>
-				createWorkerPromise<number>(worker, i, 2000)
-			);
+			const promises = Array.from({ length: 5 }, (_, i) => createWorkerPromise<number>(worker, i, 2000));
 
 			const results = await Promise.all(promises);
 
@@ -428,9 +415,7 @@ describe("Worker Threading", () => {
 			const startTime = Date.now();
 
 			// Send concurrent messages to each worker
-			const promises = pool.map((worker, index) =>
-				createWorkerPromise<number>(worker, index, 1000)
-			);
+			const promises = pool.map((worker, index) => createWorkerPromise<number>(worker, index, 1000));
 
 			const results = await Promise.all(promises);
 			const totalTime = Date.now() - startTime;
@@ -485,10 +470,7 @@ describe("Worker Threading", () => {
 			}).toThrow();
 
 			// Workers 1 and 3 should still work concurrently
-			const promises = [
-				createWorkerPromise<number>(worker1, 1),
-				createWorkerPromise<number>(worker3, 3),
-			];
+			const promises = [createWorkerPromise<number>(worker1, 1), createWorkerPromise<number>(worker3, 3)];
 
 			const results = await Promise.all(promises);
 			expect(results).toContain(1);
@@ -605,9 +587,7 @@ describe("Worker Threading", () => {
 			workers.push(unresponsiveWorker);
 
 			// Should timeout waiting for response
-			await expect(
-				createWorkerPromise(unresponsiveWorker, "test", 100)
-			).rejects.toThrow("Worker message timeout");
+			await expect(createWorkerPromise(unresponsiveWorker, "test", 100)).rejects.toThrow("Worker message timeout");
 		});
 
 		it("should handle error callbacks in message handlers", async () => {
@@ -666,9 +646,7 @@ describe("Worker Threading", () => {
 			}
 
 			// Concurrent communication phase
-			const results = await Promise.all(
-				pool.map((w, i) => createWorkerPromise<number>(w, i))
-			);
+			const results = await Promise.all(pool.map((w, i) => createWorkerPromise<number>(w, i)));
 
 			expect(results).toContain(0);
 			expect(results).toContain(1);
@@ -695,11 +673,7 @@ describe("Worker Threading", () => {
 
 			// Multiple message cycles
 			for (let cycle = 0; cycle < 3; cycle++) {
-				const result = await createWorkerPromise<number>(
-					worker,
-					cycle * 10,
-					1000
-				);
+				const result = await createWorkerPromise<number>(worker, cycle * 10, 1000);
 				expect(result).toBe(cycle * 10);
 				expect(worker.isTerminated()).toBe(false);
 			}

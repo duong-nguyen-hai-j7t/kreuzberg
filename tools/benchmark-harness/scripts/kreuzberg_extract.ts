@@ -49,7 +49,7 @@ async function extractAsyncBatch(filePaths: string[]): Promise<ExtractionOutput[
 	const results = await Promise.all(promises);
 	const totalDurationMs = performance.now() - start;
 
-	return results.map((result, index) => ({
+	return results.map((result, _index) => ({
 		...result,
 		_batch_total_ms: totalDurationMs,
 	}));

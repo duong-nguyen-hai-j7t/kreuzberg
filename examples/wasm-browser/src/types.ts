@@ -1,24 +1,13 @@
 /**
  * Type definitions for the Kreuzberg WASM API
+ *
+ * Most types are re-exported from @kreuzberg/wasm for consistency.
  */
 
-export interface ExtractionConfig {
-	chunking?: {
-		maxChars?: number;
-		maxOverlap?: number;
-	};
-}
+import type { ExtractionResult } from "@kreuzberg/wasm";
 
-export interface ExtractionResult {
-	content: string;
-	mimeType: string;
-	metadata?: {
-		pages?: number;
-		pdf?: Record<string, unknown>;
-		ocr?: Record<string, unknown>;
-		format_type?: string;
-	};
-}
+// Re-export types from @kreuzberg/wasm
+export type { ExtractionConfig, ExtractionResult } from "@kreuzberg/wasm";
 
 export interface ExtractionError {
 	message: string;

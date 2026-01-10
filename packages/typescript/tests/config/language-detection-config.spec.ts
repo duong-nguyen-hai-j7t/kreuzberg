@@ -5,8 +5,8 @@
  * automatic language detection with confidence thresholds and multi-language support.
  */
 
-import { describe, it, expect } from "vitest";
-import type { LanguageDetectionConfig, ExtractionConfig } from "@kreuzberg/core";
+import type { ExtractionConfig, LanguageDetectionConfig } from "@kreuzberg/core";
+import { describe, expect, it } from "vitest";
 
 describe("WASM: LanguageDetectionConfig", () => {
 	describe("type definitions", () => {
@@ -133,14 +133,11 @@ describe("WASM: LanguageDetectionConfig", () => {
 
 	describe("memory efficiency", () => {
 		it("should not create excessive objects", () => {
-			const configs: LanguageDetectionConfig[] = Array.from(
-				{ length: 1000 },
-				() => ({
-					enabled: true,
-					minConfidence: 0.8,
-					detectMultiple: false,
-				})
-			);
+			const configs: LanguageDetectionConfig[] = Array.from({ length: 1000 }, () => ({
+				enabled: true,
+				minConfidence: 0.8,
+				detectMultiple: false,
+			}));
 
 			expect(configs).toHaveLength(1000);
 			configs.forEach((config) => {
@@ -150,12 +147,10 @@ describe("WASM: LanguageDetectionConfig", () => {
 
 		it("should handle various confidence thresholds", () => {
 			const thresholds = [0.1, 0.3, 0.5, 0.7, 0.9];
-			const configs: LanguageDetectionConfig[] = thresholds.map(
-				(threshold) => ({
-					enabled: true,
-					minConfidence: threshold,
-				})
-			);
+			const configs: LanguageDetectionConfig[] = thresholds.map((threshold) => ({
+				enabled: true,
+				minConfidence: threshold,
+			}));
 
 			expect(configs).toHaveLength(5);
 			expect(configs[0].minConfidence).toBe(0.1);

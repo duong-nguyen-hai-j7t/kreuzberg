@@ -30,7 +30,14 @@
 	},
 	"overrides": [
 		{
-			"includes": ["**/tests/**", "**/*.spec.ts", "**/*.test.ts", "**/*.test.tsx", "e2e/wasm-deno/**", "e2e/wasm-workers/**"],
+			"includes": [
+				"**/tests/**",
+				"**/*.spec.ts",
+				"**/*.test.ts",
+				"**/*.test.tsx",
+				"e2e/wasm-deno/**",
+				"e2e/wasm-workers/**"
+			],
 			"linter": {
 				"rules": {
 					"suspicious": {
@@ -87,7 +94,10 @@
 			}
 		},
 		{
-			"includes": ["tools/benchmark-visualizer/src/components/ui/**", "tools/benchmark-visualizer/src/components/layout/**"],
+			"includes": [
+				"tools/benchmark-visualizer/src/components/ui/**",
+				"tools/benchmark-visualizer/src/components/layout/**"
+			],
 			"linter": {
 				"rules": {
 					"a11y": {

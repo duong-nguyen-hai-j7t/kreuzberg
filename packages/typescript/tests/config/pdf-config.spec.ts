@@ -5,8 +5,8 @@
  * extraction options including image extraction, passwords, metadata, and fonts.
  */
 
-import { describe, it, expect } from "vitest";
-import type { PdfConfig, FontConfig, ExtractionConfig } from "@kreuzberg/core";
+import type { ExtractionConfig, FontConfig, PdfConfig } from "@kreuzberg/core";
+import { describe, expect, it } from "vitest";
 
 describe("WASM: PdfConfig", () => {
 	describe("type definitions", () => {
@@ -164,10 +164,7 @@ describe("WASM: PdfConfig", () => {
 		});
 
 		it("should handle multiple font directories", () => {
-			const fontDirs = Array.from(
-				{ length: 50 },
-				(_, i) => `/fonts/dir${i}`
-			);
+			const fontDirs = Array.from({ length: 50 }, (_, i) => `/fonts/dir${i}`);
 			const config: PdfConfig = {
 				extractImages: true,
 				fontConfig: {
@@ -359,18 +356,12 @@ describe("WASM: PdfConfig", () => {
 				...original,
 				fontConfig: {
 					...original.fontConfig,
-					customFontDirs: [
-						...(original.fontConfig?.customFontDirs || []),
-						"/more-fonts",
-					],
+					customFontDirs: [...(original.fontConfig?.customFontDirs || []), "/more-fonts"],
 				},
 			};
 
 			expect(original.fontConfig?.customFontDirs).toEqual(["/fonts"]);
-			expect(updated.fontConfig?.customFontDirs).toEqual([
-				"/fonts",
-				"/more-fonts",
-			]);
+			expect(updated.fontConfig?.customFontDirs).toEqual(["/fonts", "/more-fonts"]);
 		});
 	});
 

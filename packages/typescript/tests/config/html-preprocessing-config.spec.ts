@@ -6,12 +6,8 @@
  * and form removal options.
  */
 
-import { describe, it, expect } from "vitest";
-import type {
-	HtmlPreprocessingOptions,
-	HtmlConversionOptions,
-	ExtractionConfig,
-} from "@kreuzberg/core";
+import type { ExtractionConfig, HtmlConversionOptions, HtmlPreprocessingOptions } from "@kreuzberg/core";
+import { describe, expect, it } from "vitest";
 
 describe("WASM: HtmlPreprocessingOptions", () => {
 	describe("type definitions", () => {
@@ -157,15 +153,12 @@ describe("WASM: HtmlPreprocessingOptions", () => {
 
 	describe("memory efficiency", () => {
 		it("should not create excessive objects", () => {
-			const configs: HtmlPreprocessingOptions[] = Array.from(
-				{ length: 1000 },
-				() => ({
-					enabled: true,
-					preset: "standard",
-					removeNavigation: true,
-					removeForms: false,
-				})
-			);
+			const configs: HtmlPreprocessingOptions[] = Array.from({ length: 1000 }, () => ({
+				enabled: true,
+				preset: "standard",
+				removeNavigation: true,
+				removeForms: false,
+			}));
 
 			expect(configs).toHaveLength(1000);
 			configs.forEach((config) => {

@@ -5,8 +5,8 @@
  * image extraction parameters including DPI, dimensions, and auto-adjustment.
  */
 
-import { describe, it, expect } from "vitest";
-import type { ImageExtractionConfig, ExtractionConfig } from "@kreuzberg/core";
+import type { ExtractionConfig, ImageExtractionConfig } from "@kreuzberg/core";
+import { describe, expect, it } from "vitest";
 
 describe("WASM: ImageExtractionConfig", () => {
 	describe("type definitions", () => {
@@ -147,14 +147,11 @@ describe("WASM: ImageExtractionConfig", () => {
 
 	describe("memory efficiency", () => {
 		it("should not create excessive objects", () => {
-			const configs: ImageExtractionConfig[] = Array.from(
-				{ length: 1000 },
-				() => ({
-					extractImages: true,
-					targetDpi: 300,
-					maxImageDimension: 4096,
-				})
-			);
+			const configs: ImageExtractionConfig[] = Array.from({ length: 1000 }, () => ({
+				extractImages: true,
+				targetDpi: 300,
+				maxImageDimension: 4096,
+			}));
 
 			expect(configs).toHaveLength(1000);
 			configs.forEach((config) => {

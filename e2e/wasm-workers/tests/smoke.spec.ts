@@ -1,9 +1,9 @@
 // Auto-generated tests for smoke fixtures.
 
-import { describe, it, expect } from "vitest";
-import { extractBytes } from "@kreuzberg/wasm";
-import { assertions, buildConfig, getFixture, shouldSkipFixture } from "./helpers.js";
 import type { ExtractionResult } from "@kreuzberg/wasm";
+import { extractBytes } from "@kreuzberg/wasm";
+import { describe, expect, it } from "vitest";
+import { assertions, buildConfig, getFixture, shouldSkipFixture } from "./helpers.js";
 
 describe("smoke", () => {
 	it("smoke_docx_basic", async () => {
@@ -81,7 +81,7 @@ describe("smoke", () => {
 			return;
 		}
 		assertions.assertExpectedMime(result, ["image/png"]);
-		assertions.assertMetadataExpectation(result, "format", "PNG");
+		assertions.assertMetadataExpectation(result, "format", { eq: "PNG" });
 	});
 
 	it("smoke_json_basic", async () => {

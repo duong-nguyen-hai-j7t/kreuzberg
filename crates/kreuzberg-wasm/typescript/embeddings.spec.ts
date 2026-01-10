@@ -428,7 +428,7 @@ describe("Embedding Generation (WASM Bindings)", () => {
 			];
 
 			const results = await Promise.all(
-				texts.map((text) => extractBytes(new TextEncoder().encode(text), "text/plain", config))
+				texts.map((text) => extractBytes(new TextEncoder().encode(text), "text/plain", config)),
 			);
 
 			let embeddingDimension: number | null = null;

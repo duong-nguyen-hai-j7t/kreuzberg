@@ -14,9 +14,14 @@
  * NAPI-RS bindings with plain object configs (NO builder pattern).
  */
 
-import { describe, expect, it, beforeAll } from "vitest";
 import { readFileSync, realpathSync } from "node:fs";
-import { batchExtractFiles, batchExtractFilesSync, batchExtractBytes, batchExtractBytesSync } from "../../dist/index.js";
+import { beforeAll, describe, expect, it } from "vitest";
+import {
+	batchExtractBytes,
+	batchExtractBytesSync,
+	batchExtractFiles,
+	batchExtractFilesSync,
+} from "../../dist/index.js";
 import type { ExtractionConfig } from "../../src/types.js";
 import { getTestDocumentPath } from "../helpers/index.js";
 
@@ -209,9 +214,7 @@ describe("Batch File Extraction (Node.js Bindings)", () => {
 			}
 
 			// Create a large batch by repeating files
-			const largeBatch = Array(5)
-				.fill(files)
-				.flat();
+			const largeBatch = Array(5).fill(files).flat();
 
 			const results = await batchExtractFiles(largeBatch);
 
@@ -293,7 +296,11 @@ describe("Batch Bytes Extraction (Node.js Bindings)", () => {
 
 		it("should preserve order of bytes in batch", () => {
 			const dataList = [samplePdfBytes, sampleTxtBytes, sampleDocxBytes].filter((b) => b);
-			const mimeTypes = ["application/pdf", "text/plain", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"].slice(0, dataList.length);
+			const mimeTypes = [
+				"application/pdf",
+				"text/plain",
+				"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+			].slice(0, dataList.length);
 
 			if (dataList.length < 2) {
 				expect(true).toBe(true);
@@ -399,7 +406,11 @@ describe("Batch Bytes Extraction (Node.js Bindings)", () => {
 
 		it("should maintain order in async byte batch", async () => {
 			const dataList = [samplePdfBytes, sampleTxtBytes, sampleDocxBytes].filter((b) => b);
-			const mimeTypes = ["application/pdf", "text/plain", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"].slice(0, dataList.length);
+			const mimeTypes = [
+				"application/pdf",
+				"text/plain",
+				"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+			].slice(0, dataList.length);
 
 			if (dataList.length < 2) {
 				expect(true).toBe(true);

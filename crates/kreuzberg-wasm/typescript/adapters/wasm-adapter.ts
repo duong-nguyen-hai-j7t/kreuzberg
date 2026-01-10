@@ -243,7 +243,7 @@ export function jsToExtractionResult(jsValue: unknown): ExtractionResult {
 					}
 					if (typeof value === "string") {
 						const parsed = parseInt(value, 10);
-						if (isNaN(parsed)) {
+						if (Number.isNaN(parsed)) {
 							throw new Error(`Invalid chunk metadata: ${fieldName} must be a valid number, got "${value}"`);
 						}
 						return parsed;
@@ -256,20 +256,14 @@ export function jsToExtractionResult(jsValue: unknown): ExtractionResult {
 				// For now, treat byte offsets as character offsets since the content is UTF-8
 				const charStart = coerceToNumber(
 					metadata.charStart ?? metadata.char_start ?? metadata.byteStart ?? metadata.byte_start,
-					"charStart"
+					"charStart",
 				);
 				const charEnd = coerceToNumber(
 					metadata.charEnd ?? metadata.char_end ?? metadata.byteEnd ?? metadata.byte_end,
-					"charEnd"
+					"charEnd",
 				);
-				const chunkIndex = coerceToNumber(
-					metadata.chunkIndex ?? metadata.chunk_index,
-					"chunkIndex"
-				);
-				const totalChunks = coerceToNumber(
-					metadata.totalChunks ?? metadata.total_chunks,
-					"totalChunks"
-				);
+				const chunkIndex = coerceToNumber(metadata.chunkIndex ?? metadata.chunk_index, "chunkIndex");
+				const totalChunks = coerceToNumber(metadata.totalChunks ?? metadata.total_chunks, "totalChunks");
 
 				let tokenCount: number | null = null;
 				const tokenCountValue = metadata.tokenCount ?? metadata.token_count;

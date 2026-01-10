@@ -39,10 +39,10 @@ async function main() {
 
 	console.log("\n=== Metadata ===");
 	const pdfResult = extractFileSync("document.pdf");
-	if (pdfResult.metadata.pdf) {
-		console.log(`PDF Pages: ${pdfResult.metadata.pdf.pageCount}`);
-		console.log(`Author: ${pdfResult.metadata.pdf.author}`);
-		console.log(`Title: ${pdfResult.metadata.pdf.title}`);
+	if (pdfResult.metadata.format_type === "pdf") {
+		console.log(`PDF Pages: ${pdfResult.metadata.page_count}`);
+		console.log(`Author: ${pdfResult.metadata.author}`);
+		console.log(`Title: ${pdfResult.metadata.title}`);
 	}
 
 	console.log("\n=== Error Handling ===");

@@ -16,8 +16,8 @@
 
 import { readFileSync, realpathSync } from "node:fs";
 import { beforeAll, describe, expect, it } from "vitest";
-import type { ExtractionConfig, ExtractedImage } from "../../src/types.js";
 import { extractBytesSync, extractFileSync } from "../../dist/index.js";
+import type { ExtractedImage, ExtractionConfig } from "../../src/types.js";
 import { getTestDocumentPath } from "../helpers/index.js";
 
 let samplePdfPath: string;
@@ -283,17 +283,13 @@ describe("Image Extraction (Node.js Bindings)", () => {
 			];
 
 			if (result.images && result.images.length > 0) {
-				const detectedFormats = result.images.map((img) =>
-					img.format.toUpperCase()
-				);
+				const detectedFormats = result.images.map((img) => img.format.toUpperCase());
 
 				// At least one format should be in the supported list (case-insensitive)
 				const foundSupported = detectedFormats.some((fmt) =>
 					supportedFormats.some(
-						(supported) =>
-							fmt.includes(supported.toUpperCase()) ||
-							supported.toUpperCase().includes(fmt)
-					)
+						(supported) => fmt.includes(supported.toUpperCase()) || supported.toUpperCase().includes(fmt),
+					),
 				);
 
 				expect(foundSupported || result.images.length === 0).toBe(true);
@@ -379,21 +375,11 @@ describe("Image Extraction (Node.js Bindings)", () => {
 
 					if (image.colorspace !== null && image.colorspace !== undefined) {
 						expect(typeof image.colorspace).toBe("string");
-						const validColorspaces = [
-							"RGB",
-							"CMYK",
-							"Grayscale",
-							"Lab",
-							"Gray",
-						];
+						const validColorspaces = ["RGB", "CMYK", "Grayscale", "Lab", "Gray"];
 						const hasValidColorspace = validColorspaces.some((cs) =>
-							image.colorspace
-								?.toUpperCase()
-								.includes(cs.toUpperCase())
+							image.colorspace?.toUpperCase().includes(cs.toUpperCase()),
 						);
-						expect(
-							hasValidColorspace || image.colorspace.length > 0
-						).toBe(true);
+						expect(hasValidColorspace || image.colorspace.length > 0).toBe(true);
 					}
 				}
 			}
@@ -417,9 +403,7 @@ describe("Image Extraction (Node.js Bindings)", () => {
 			expect(result.content).toBeDefined();
 			// Images may be null or empty array for text documents
 			if (result.images) {
-				expect(Array.isArray(result.images) || result.images === null).toBe(
-					true
-				);
+				expect(Array.isArray(result.images) || result.images === null).toBe(true);
 			}
 		});
 
@@ -640,10 +624,7 @@ describe("Image Extraction (Node.js Bindings)", () => {
 				for (const image of result.images) {
 					expect(image).toHaveProperty("bitsPerComponent");
 
-					if (
-						image.bitsPerComponent !== null &&
-						image.bitsPerComponent !== undefined
-					) {
+					if (image.bitsPerComponent !== null && image.bitsPerComponent !== undefined) {
 						expect(image.bitsPerComponent).toBeGreaterThan(0);
 						const validBits = [1, 2, 4, 8, 16, 32];
 						expect(validBits).toContain(image.bitsPerComponent);

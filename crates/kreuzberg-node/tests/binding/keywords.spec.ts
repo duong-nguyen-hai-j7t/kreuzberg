@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { extractBytesSync, extractBytes } from "../../dist/index.js";
+import { extractBytes, extractBytesSync } from "../../dist/index.js";
 import type { ExtractionConfig } from "../../src/types.js";
 
 describe("Keyword Extraction", () => {
@@ -413,9 +413,7 @@ describe("Keyword Extraction", () => {
 				"Third document covering deep neural networks.",
 			];
 
-			const results = texts.map((text) =>
-				extractBytesSync(Buffer.from(text), "text/plain", config)
-			);
+			const results = texts.map((text) => extractBytesSync(Buffer.from(text), "text/plain", config));
 
 			expect(results).toHaveLength(3);
 			for (const result of results) {
@@ -438,9 +436,7 @@ describe("Keyword Extraction", () => {
 				},
 			};
 
-			const results = texts.map((text) =>
-				extractBytesSync(Buffer.from(text), "text/plain", config)
-			);
+			const results = texts.map((text) => extractBytesSync(Buffer.from(text), "text/plain", config));
 
 			expect(results).toHaveLength(texts.length);
 			for (let i = 0; i < results.length; i++) {
@@ -457,11 +453,7 @@ describe("Keyword Extraction", () => {
 				},
 			};
 
-			const texts = [
-				"First document with content and keywords.",
-				"",
-				"Third document also with content.",
-			];
+			const texts = ["First document with content and keywords.", "", "Third document also with content."];
 
 			const results = [];
 			for (const text of texts) {
@@ -490,9 +482,7 @@ describe("Keyword Extraction", () => {
 				"Natural language processing handles text analysis.",
 			];
 
-			const results = await Promise.all(
-				texts.map((text) => extractBytes(Buffer.from(text), "text/plain", config))
-			);
+			const results = await Promise.all(texts.map((text) => extractBytes(Buffer.from(text), "text/plain", config)));
 
 			expect(results).toHaveLength(3);
 			for (const result of results) {

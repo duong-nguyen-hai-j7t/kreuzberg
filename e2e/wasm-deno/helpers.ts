@@ -1,6 +1,3 @@
-import { assertEquals, assertExists } from "@std/assert";
-// @deno-types="../../crates/kreuzberg-wasm/dist/index.d.ts"
-import { extractBytes, initWasm } from "npm:@kreuzberg/wasm@^4.0.0";
 // @deno-types="../../crates/kreuzberg-wasm/dist/index.d.ts"
 import type {
 	ChunkingConfig,
@@ -16,6 +13,9 @@ import type {
 	TesseractConfig,
 	TokenReductionConfig,
 } from "npm:@kreuzberg/wasm@^4.0.0";
+// @deno-types="../../crates/kreuzberg-wasm/dist/index.d.ts"
+import { extractBytes, initWasm } from "npm:@kreuzberg/wasm@^4.0.0";
+import { assertEquals, assertExists } from "@std/assert";
 
 export type {
 	ChunkingConfig,

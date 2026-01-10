@@ -1,6 +1,6 @@
 <script lang="ts">
-import { onMount } from "svelte";
 import * as kreuzberg from "@kreuzberg/wasm";
+import { onMount } from "svelte";
 
 let _status = "Loading...";
 let _error: string | null = null;

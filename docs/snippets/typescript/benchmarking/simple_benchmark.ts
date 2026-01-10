@@ -33,13 +33,13 @@ async function benchmarkExtractions(): Promise<void> {
 
   console.log("\nFirst extraction (populates cache)...");
   start = performance.now();
-  const result1 = await extractFile(filePath, null, cacheConfig);
+  const _result1 = await extractFile(filePath, null, cacheConfig);
   const firstDuration = (performance.now() - start) / 1000;
   console.log(`  - Time: ${firstDuration.toFixed(3)}s`);
 
   console.log("Second extraction (from cache)...");
   start = performance.now();
-  const result2 = await extractFile(filePath, null, cacheConfig);
+  const _result2 = await extractFile(filePath, null, cacheConfig);
   const cachedDuration = (performance.now() - start) / 1000;
   console.log(`  - Time: ${cachedDuration.toFixed(3)}s`);
   console.log(`  - Cache speedup: ${(firstDuration / cachedDuration).toFixed(1)}x`);

@@ -6,7 +6,7 @@
  * To regenerate: cargo run -p kreuzberg-e2e-generator -- generate --lang wasm-workers
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 describe("Discover configuration from current or parent directories", () => {
 	it("should test config_discover", () => {});

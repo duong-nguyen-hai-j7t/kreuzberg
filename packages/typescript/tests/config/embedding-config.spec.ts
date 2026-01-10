@@ -5,8 +5,8 @@
  * text embedding models, dimensions, and caching options.
  */
 
-import { describe, it, expect } from "vitest";
 import type { ExtractionConfig } from "@kreuzberg/core";
+import { describe, expect, it } from "vitest";
 
 interface EmbeddingConfig {
 	model?: string;
@@ -157,14 +157,11 @@ describe("WASM: EmbeddingConfig", () => {
 
 	describe("memory efficiency", () => {
 		it("should not create excessive objects", () => {
-			const configs: EmbeddingConfig[] = Array.from(
-				{ length: 1000 },
-				() => ({
-					model: "text-embedding-3-small",
-					dimensions: 1536,
-					cache: true,
-				})
-			);
+			const configs: EmbeddingConfig[] = Array.from({ length: 1000 }, () => ({
+				model: "text-embedding-3-small",
+				dimensions: 1536,
+				cache: true,
+			}));
 
 			expect(configs).toHaveLength(1000);
 			configs.forEach((config) => {

@@ -25,7 +25,7 @@ function getDirectory(): string {
 	// Fallback for ESM
 	try {
 		// Use eval to avoid esbuild warnings about import.meta in CJS builds
-		// @ts-ignore - import.meta is only available in ESM
+		// biome-ignore lint/security/noGlobalEval: Required to handle both CJS and ESM contexts at runtime
 		const url = eval("import.meta.url");
 		return dirname(fileURLToPath(url));
 	} catch {

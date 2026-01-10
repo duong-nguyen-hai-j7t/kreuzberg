@@ -9,9 +9,9 @@
  * allowing Deno and other tools to resolve types correctly.
  */
 
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const distDir = path.join(__dirname, "..", "dist");
@@ -32,16 +32,10 @@ function fixModuleReferences(filePath) {
 	// Handles: from './types.js' -> from './types.d.ts'
 	// Handles: from '../types.js' -> from '../types.d.ts'
 	// Handles: from './adapters/wasm-adapter.js' -> from './adapters/wasm-adapter.d.ts'
-	content = content.replace(
-		/(from\s+['"])(\.\.?\/[^'"]+)(\.js)(['"])/g,
-		"$1$2.d.ts$4"
-	);
+	content = content.replace(/(from\s+['"])(\.\.?\/[^'"]+)(\.js)(['"])/g, "$1$2.d.ts$4");
 
 	// Also fix any import() type references
-	content = content.replace(
-		/(import\(['"])(\.\.?\/[^'"]+)(\.js)(['"]\))/g,
-		"$1$2.d.ts$4"
-	);
+	content = content.replace(/(import\(['"])(\.\.?\/[^'"]+)(\.js)(['"]\))/g, "$1$2.d.ts$4");
 
 	if (content !== originalContent) {
 		fs.writeFileSync(filePath, content);

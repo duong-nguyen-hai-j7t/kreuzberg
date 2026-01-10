@@ -5,8 +5,8 @@
  * document hierarchy extraction and heading level handling.
  */
 
-import { describe, it, expect } from "vitest";
 import type { ExtractionConfig } from "@kreuzberg/core";
+import { describe, expect, it } from "vitest";
 
 interface HierarchyConfig {
 	detectHeadings?: boolean;
@@ -133,14 +133,11 @@ describe("WASM: HierarchyConfig", () => {
 
 	describe("memory efficiency", () => {
 		it("should not create excessive objects", () => {
-			const configs: HierarchyConfig[] = Array.from(
-				{ length: 1000 },
-				() => ({
-					detectHeadings: true,
-					preserveHierarchy: true,
-					maxDepth: 5,
-				})
-			);
+			const configs: HierarchyConfig[] = Array.from({ length: 1000 }, () => ({
+				detectHeadings: true,
+				preserveHierarchy: true,
+				maxDepth: 5,
+			}));
 
 			expect(configs).toHaveLength(1000);
 			configs.forEach((config) => {

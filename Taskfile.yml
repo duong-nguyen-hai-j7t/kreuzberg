@@ -47,6 +47,8 @@ includes:
     taskfile: .task/tools/pdfium.yml
   docs:
     taskfile: .task/tools/docs.yml
+  typescript:
+    taskfile: .task/tools/typescript.yml
   _tools:
     taskfile: .task/tools/general.yml
     flatten: true

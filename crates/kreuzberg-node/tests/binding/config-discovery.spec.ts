@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { describe, expect, it, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { ExtractionConfig } from "../../dist/index.js";
 import type { ExtractionConfig as ExtractionConfigType } from "../../src/types.js";
 
@@ -424,9 +424,7 @@ targetDpi = 300`;
 				expect(config.ocr?.backend).toBe("tesseract");
 				expect(config.ocr?.language).toBe("deu");
 				// Other fields should be undefined or default
-				expect(config.enableQualityProcessing === undefined || config.enableQualityProcessing === null).toBe(
-					true,
-				);
+				expect(config.enableQualityProcessing === undefined || config.enableQualityProcessing === null).toBe(true);
 			}
 		});
 	});

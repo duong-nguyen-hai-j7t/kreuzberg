@@ -1,4 +1,3 @@
-import { expect } from "vitest";
 import type {
 	ChunkingConfig,
 	ExtractionConfig,
@@ -11,6 +10,7 @@ import type {
 	TesseractConfig,
 	TokenReductionConfig,
 } from "@kreuzberg/wasm";
+import { expect } from "vitest";
 
 export function getFixture(fixturePath: string): Uint8Array | null {
 	console.warn(`[SKIP] Cloudflare Workers cannot load fixtures from disk. Fixture: ${fixturePath}`);

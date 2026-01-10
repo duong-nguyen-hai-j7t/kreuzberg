@@ -21,19 +21,19 @@ import {
 	batchExtractFiles,
 	batchExtractFilesSync,
 	clearPostProcessors,
+	type ExtractionConfig,
 	extractBytes,
 	extractBytesSync,
 	extractFile,
 	extractFileSync,
+	KreuzbergError,
+	MissingDependencyError,
+	OcrError,
+	ParsingError,
 	registerOcrBackend,
 	registerPostProcessor,
 	unregisterPostProcessor,
-	KreuzbergError,
-	ParsingError,
 	ValidationError,
-	OcrError,
-	MissingDependencyError,
-	type ExtractionConfig,
 } from "../../dist/index.js";
 
 describe("Error Handling", () => {
@@ -260,9 +260,7 @@ endobj`,
 		});
 
 		it("should handle gracefully mixed encoding issues", () => {
-			const mixedEncoding = Buffer.from([
-				0x48, 0x65, 0x6c, 0x6c, 0x6f, 0xff, 0xfe, 0x54, 0x65, 0x73, 0x74,
-			]);
+			const mixedEncoding = Buffer.from([0x48, 0x65, 0x6c, 0x6c, 0x6f, 0xff, 0xfe, 0x54, 0x65, 0x73, 0x74]);
 
 			try {
 				extractBytesSync(mixedEncoding, "text/plain", null);
@@ -353,9 +351,7 @@ endobj`,
 				extractBytesSync(Buffer.from("test"), "application/invalid", null);
 			}).toThrow();
 
-			const asyncError = await expect(
-				extractBytes(Buffer.from("test"), "application/invalid", null),
-			).rejects.toThrow();
+			const asyncError = await expect(extractBytes(Buffer.from("test"), "application/invalid", null)).rejects.toThrow();
 
 			expect(syncError).toBeDefined();
 			expect(asyncError).toBeDefined();
@@ -375,9 +371,7 @@ endobj`,
 				expect(result.metadata).toBeDefined();
 				// Check for error_type field that contains error information
 				expect(
-					result.metadata.error_type ||
-					result.metadata.error ||
-					result.content.toLowerCase().includes("error")
+					result.metadata.error_type || result.metadata.error || result.content.toLowerCase().includes("error"),
 				).toBeTruthy();
 			});
 		});
@@ -533,7 +527,7 @@ endobj`,
 
 		it("should allow registering postprocessor", () => {
 			const processor = {
-				name: () => "test_processor_" + Math.random(),
+				name: () => `test_processor_${Math.random()}`,
 				process: (result: any) => result,
 				processingStage: () => "middle" as const,
 			};

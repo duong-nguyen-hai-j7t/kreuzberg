@@ -1,74 +1,74 @@
-import { describe, it, expect, beforeAll, afterEach } from "vitest";
 import { readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
-	extractFile,
-	extractFileSync,
-	extractBytes,
-	extractBytesSync,
-	batchExtractFiles,
-	batchExtractFilesSync,
+	__version__,
 	batchExtractBytes,
 	batchExtractBytesSync,
-	ExtractionConfig,
+	batchExtractFiles,
+	batchExtractFilesSync,
+	CacheError,
+	type Chunk,
+	type ChunkingConfig,
+	classifyError,
+	clearDocumentExtractors,
+	clearOcrBackends,
+	clearPostProcessors,
+	clearValidators,
 	detectMimeType,
 	detectMimeTypeFromPath,
-	validateMimeType,
-	getExtensionsForMime,
-	registerPostProcessor,
-	unregisterPostProcessor,
-	clearPostProcessors,
-	listPostProcessors,
-	registerValidator,
-	unregisterValidator,
-	clearValidators,
-	listValidators,
-	registerOcrBackend,
-	unregisterOcrBackend,
-	clearOcrBackends,
-	listOcrBackends,
-	listDocumentExtractors,
-	unregisterDocumentExtractor,
-	clearDocumentExtractors,
-	KreuzbergError,
-	ValidationError,
-	ParsingError,
-	OcrError,
-	CacheError,
-	MissingDependencyError,
-	ImageProcessingError,
-	PluginError,
+	type ErrorClassification,
 	ErrorCode,
+	type ExtractedImage,
+	ExtractionConfig,
+	type ExtractionResult,
+	extractBytes,
+	extractBytesSync,
+	extractFile,
+	extractFileSync,
+	getEmbeddingPreset,
+	getErrorCodeDescription,
+	getErrorCodeName,
+	getExtensionsForMime,
 	getLastErrorCode,
 	getLastPanicContext,
-	getErrorCodeName,
-	getErrorCodeDescription,
-	classifyError,
+	type HtmlConversionOptions,
+	type HtmlPreprocessingOptions,
+	type ImageExtractionConfig,
+	ImageProcessingError,
+	type KeywordConfig,
+	KreuzbergError,
+	type LanguageDetectionConfig,
+	listDocumentExtractors,
 	listEmbeddingPresets,
-	getEmbeddingPreset,
-	__version__,
-	type ExtractionResult,
-	type Chunk,
-	type ExtractedImage,
-	type Table,
-	type PostProcessorProtocol,
-	type ValidatorProtocol,
+	listOcrBackends,
+	listPostProcessors,
+	listValidators,
+	MissingDependencyError,
 	type OcrBackendProtocol,
 	type OcrConfig,
-	type ChunkingConfig,
+	OcrError,
 	type PageConfig,
-	type PdfConfig,
-	type ImageExtractionConfig,
-	type KeywordConfig,
-	type LanguageDetectionConfig,
-	type TokenReductionConfig,
-	type PostProcessorConfig,
-	type HtmlPreprocessingOptions,
-	type HtmlConversionOptions,
 	type PageContent,
-	type ErrorClassification,
+	ParsingError,
+	type PdfConfig,
+	PluginError,
+	type PostProcessorConfig,
+	type PostProcessorProtocol,
+	registerOcrBackend,
+	registerPostProcessor,
+	registerValidator,
+	type Table,
+	type TokenReductionConfig,
+	unregisterDocumentExtractor,
+	unregisterOcrBackend,
+	unregisterPostProcessor,
+	unregisterValidator,
+	ValidationError,
+	type ValidatorProtocol,
+	validateMimeType,
 } from "@kreuzberg/node";
+import { afterEach, beforeAll, describe, expect, it } from "vitest";
 
 describe("Kreuzberg TypeScript/Node.js Bindings", () => {
 	describe("Version Info", () => {
@@ -215,28 +215,28 @@ describe("Kreuzberg TypeScript/Node.js Bindings", () => {
 		});
 
 		it("should extract from text file (sync)", () => {
-				const result = extractFileSync(testTxtFile, null);
+			const result = extractFileSync(testTxtFile, null);
 			expect(result).toBeDefined();
 			expect(typeof result).toBe("object");
 			validateExtractionResult(result);
 		});
 
 		it("should extract from text file (async)", async () => {
-				const result = await extractFile(testTxtFile, null);
+			const result = await extractFile(testTxtFile, null);
 			expect(result).toBeDefined();
 			expect(typeof result).toBe("object");
 			validateExtractionResult(result);
 		});
 
 		it("should extract from bytes (sync)", () => {
-				const result = extractBytesSync(testTxtBuffer, "text/plain", null);
+			const result = extractBytesSync(testTxtBuffer, "text/plain", null);
 			expect(result).toBeDefined();
 			expect(typeof result).toBe("object");
 			validateExtractionResult(result);
 		});
 
 		it("should extract from bytes (async)", async () => {
-				const result = await extractBytes(testTxtBuffer, "text/plain", null);
+			const result = await extractBytes(testTxtBuffer, "text/plain", null);
 			expect(result).toBeDefined();
 			expect(typeof result).toBe("object");
 			validateExtractionResult(result);
@@ -276,7 +276,7 @@ describe("Kreuzberg TypeScript/Node.js Bindings", () => {
 		});
 
 		it("should batch extract files (sync)", () => {
-				const results = batchExtractFilesSync(testFiles, null);
+			const results = batchExtractFilesSync(testFiles, null);
 			expect(Array.isArray(results)).toBe(true);
 			expect(results.length).toBe(testFiles.length);
 			for (const result of results) {
@@ -285,7 +285,7 @@ describe("Kreuzberg TypeScript/Node.js Bindings", () => {
 		});
 
 		it("should batch extract files (async)", async () => {
-				const results = await batchExtractFiles(testFiles, null);
+			const results = await batchExtractFiles(testFiles, null);
 			expect(Array.isArray(results)).toBe(true);
 			expect(results.length).toBe(testFiles.length);
 			for (const result of results) {
@@ -294,7 +294,7 @@ describe("Kreuzberg TypeScript/Node.js Bindings", () => {
 		});
 
 		it("should batch extract bytes (sync)", () => {
-				const results = batchExtractBytesSync(testBuffers, testMimeTypes, null);
+			const results = batchExtractBytesSync(testBuffers, testMimeTypes, null);
 			expect(Array.isArray(results)).toBe(true);
 			expect(results.length).toBe(testBuffers.length);
 			for (const result of results) {
@@ -303,7 +303,7 @@ describe("Kreuzberg TypeScript/Node.js Bindings", () => {
 		});
 
 		it("should batch extract bytes (async)", async () => {
-				const results = await batchExtractBytes(testBuffers, testMimeTypes, null);
+			const results = await batchExtractBytes(testBuffers, testMimeTypes, null);
 			expect(Array.isArray(results)).toBe(true);
 			expect(results.length).toBe(testBuffers.length);
 			for (const result of results) {
@@ -312,13 +312,13 @@ describe("Kreuzberg TypeScript/Node.js Bindings", () => {
 		});
 
 		it("should handle empty batch gracefully", () => {
-				const results = batchExtractFilesSync([], null);
+			const results = batchExtractFilesSync([], null);
 			expect(Array.isArray(results)).toBe(true);
 			expect(results.length).toBe(0);
 		});
 
 		it("should handle single item batch", () => {
-				const results = batchExtractFilesSync([testFiles[0]], null);
+			const results = batchExtractFilesSync([testFiles[0]], null);
 			expect(Array.isArray(results)).toBe(true);
 			expect(results.length).toBe(1);
 		});

@@ -1,34 +1,34 @@
-import { extractFile, ExtractionConfig, KeywordConfig, YakeParams, RakeParams } from '@kreuzberg/wasm';
+import { type ExtractionConfig, extractFile } from "@kreuzberg/wasm";
 
 // Example 1: Basic YAKE configuration
 // Uses YAKE algorithm with default parameters and English stopword filtering
 async function basicYake(): Promise<void> {
 	const config: ExtractionConfig = {
 		keywords: {
-			algorithm: 'yake',
+			algorithm: "yake",
 			maxKeywords: 10,
 			minScore: 0.0,
 			ngramRange: [1, 3],
-			language: 'en',
+			language: "en",
 			yakeParams: null,
 			rakeParams: null,
 		},
 	};
 
-	const result = await extractFile('document.pdf', null, config);
-	console.log('Keywords:', result.keywords);
+	const result = await extractFile("document.pdf", null, config);
+	console.log("Keywords:", result.keywords);
 }
 
 // Example 2: Advanced YAKE with custom parameters
 // Fine-tunes YAKE with custom window size for co-occurrence analysis
-async function advancedYake(): Promise<void> {
+async function _advancedYake(): Promise<void> {
 	const config: ExtractionConfig = {
 		keywords: {
-			algorithm: 'yake',
+			algorithm: "yake",
 			maxKeywords: 15,
 			minScore: 0.1,
 			ngramRange: [1, 2],
-			language: 'en',
+			language: "en",
 			yakeParams: {
 				windowSize: 1,
 			},
@@ -36,20 +36,20 @@ async function advancedYake(): Promise<void> {
 		},
 	};
 
-	const result = await extractFile('document.pdf', null, config);
-	console.log('Keywords:', result.keywords);
+	const result = await extractFile("document.pdf", null, config);
+	console.log("Keywords:", result.keywords);
 }
 
 // Example 3: RAKE configuration
 // Uses RAKE algorithm for rapid keyword extraction with phrase constraints
-async function rakeConfig(): Promise<void> {
+async function _rakeConfig(): Promise<void> {
 	const config: ExtractionConfig = {
 		keywords: {
-			algorithm: 'rake',
+			algorithm: "rake",
 			maxKeywords: 10,
 			minScore: 5.0,
 			ngramRange: [1, 3],
-			language: 'en',
+			language: "en",
 			yakeParams: null,
 			rakeParams: {
 				minWordLength: 1,
@@ -58,8 +58,8 @@ async function rakeConfig(): Promise<void> {
 		},
 	};
 
-	const result = await extractFile('document.pdf', null, config);
-	console.log('Keywords:', result.keywords);
+	const result = await extractFile("document.pdf", null, config);
+	console.log("Keywords:", result.keywords);
 }
 
 basicYake();

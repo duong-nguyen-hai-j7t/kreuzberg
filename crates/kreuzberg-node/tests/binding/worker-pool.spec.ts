@@ -17,22 +17,22 @@
  * issues when run in CI environments. Set RUN_WORKER_POOL_TESTS=1 to enable.
  */
 
-import { describe, expect, it, beforeAll, afterAll } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 // Skip worker pool tests by default as they can be flaky in CI environments
 const runWorkerPoolTests = process.env.RUN_WORKER_POOL_TESTS === "1";
+
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
-	createWorkerPool,
-	getWorkerPoolStats,
-	extractFileInWorker,
 	batchExtractFilesInWorker,
 	closeWorkerPool,
+	createWorkerPool,
+	extractFileInWorker,
 	extractFileSync,
+	getWorkerPoolStats,
 } from "../../dist/index.js";
-import type { WorkerPool, ExtractionConfig } from "../../src/types.js";
-import { resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-import { dirname } from "node:path";
+import type { ExtractionConfig, WorkerPool } from "../../src/types.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -141,9 +141,7 @@ describe.skipIf(!runWorkerPoolTests)("Worker Pool APIs (Node.js Bindings)", () =
 				expect(result).toBeDefined();
 				expect(result.content).toBeDefined();
 				expect(result.content.length).toBeGreaterThan(0);
-				expect(result.mimeType).toBe(
-					"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-				);
+				expect(result.mimeType).toBe("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 			} finally {
 				await closeWorkerPool(pool);
 			}
@@ -217,9 +215,7 @@ describe.skipIf(!runWorkerPoolTests)("Worker Pool APIs (Node.js Bindings)", () =
 
 				// Verify order matches input
 				expect(results[0].mimeType).toBe("application/pdf");
-				expect(results[1].mimeType).toBe(
-					"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-				);
+				expect(results[1].mimeType).toBe("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 				expect(results[2].mimeType).toBe("text/plain");
 			} finally {
 				await closeWorkerPool(pool);
@@ -244,14 +240,7 @@ describe.skipIf(!runWorkerPoolTests)("Worker Pool APIs (Node.js Bindings)", () =
 			const pool = createWorkerPool(2);
 			try {
 				// Create batch larger than pool size
-				const files = [
-					TEST_PDF,
-					TEST_DOCX,
-					TEST_TXT,
-					TEST_PDF,
-					TEST_DOCX,
-					TEST_TXT,
-				];
+				const files = [TEST_PDF, TEST_DOCX, TEST_TXT, TEST_PDF, TEST_DOCX, TEST_TXT];
 
 				const results = await batchExtractFilesInWorker(pool, files, {
 					useCache: false,
@@ -309,9 +298,7 @@ describe.skipIf(!runWorkerPoolTests)("Worker Pool APIs (Node.js Bindings)", () =
 
 				// Verify correct MIME types
 				expect(results[0].mimeType).toBe("application/pdf");
-				expect(results[1].mimeType).toBe(
-					"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-				);
+				expect(results[1].mimeType).toBe("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 				expect(results[2].mimeType).toBe("text/plain");
 			} finally {
 				await closeWorkerPool(pool);
@@ -401,9 +388,7 @@ describe.skipIf(!runWorkerPoolTests)("Worker Pool APIs (Node.js Bindings)", () =
 				const files = [TEST_PDF, "/nonexistent/file.pdf", TEST_TXT];
 
 				// Batch should fail if any file fails
-				await expect(
-					batchExtractFilesInWorker(pool, files, { useCache: false }),
-				).rejects.toThrow();
+				await expect(batchExtractFilesInWorker(pool, files, { useCache: false })).rejects.toThrow();
 			} finally {
 				await closeWorkerPool(pool);
 			}

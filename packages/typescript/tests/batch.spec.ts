@@ -10,12 +10,7 @@
  * @group extraction
  */
 
-import type {
-	ChunkingConfig,
-	ExtractionConfig,
-	ExtractionResult,
-	KeywordConfig,
-} from "@kreuzberg/core";
+import type { ChunkingConfig, ExtractionConfig, ExtractionResult, KeywordConfig } from "@kreuzberg/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 /**
@@ -67,10 +62,7 @@ class MockBatchExtractor {
 	/**
 	 * Extract multiple documents sequentially
 	 */
-	async batchExtract(
-		filePaths: string[],
-		config?: ExtractionConfig,
-	): Promise<ExtractionResult[]> {
+	async batchExtract(filePaths: string[], config?: ExtractionConfig): Promise<ExtractionResult[]> {
 		const results: ExtractionResult[] = [];
 
 		for (const filePath of filePaths) {

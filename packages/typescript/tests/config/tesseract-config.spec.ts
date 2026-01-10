@@ -6,8 +6,8 @@
  * table detection, and character whitelisting.
  */
 
-import { describe, it, expect } from "vitest";
-import type { TesseractConfig, OcrConfig, ExtractionConfig } from "@kreuzberg/core";
+import type { ExtractionConfig, OcrConfig, TesseractConfig } from "@kreuzberg/core";
+import { describe, expect, it } from "vitest";
 
 describe("WASM: TesseractConfig", () => {
 	describe("type definitions", () => {
@@ -81,9 +81,7 @@ describe("WASM: TesseractConfig", () => {
 
 			expect(parsed.psm).toBe(11);
 			expect(parsed.enableTableDetection).toBe(true);
-			expect(parsed.tesseditCharWhitelist).toBe(
-				"abcdefghijklmnopqrstuvwxyz"
-			);
+			expect(parsed.tesseditCharWhitelist).toBe("abcdefghijklmnopqrstuvwxyz");
 		});
 	});
 
@@ -151,9 +149,7 @@ describe("WASM: TesseractConfig", () => {
 		});
 
 		it("should handle large whitelist strings efficiently", () => {
-			const longWhitelist = Array.from({ length: 1000 }, (_, i) => i % 10).join(
-				""
-			);
+			const longWhitelist = Array.from({ length: 1000 }, (_, i) => i % 10).join("");
 			const config: TesseractConfig = {
 				psm: 6,
 				tesseditCharWhitelist: longWhitelist,

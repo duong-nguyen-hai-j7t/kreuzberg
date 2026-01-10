@@ -5,8 +5,8 @@
  * types for comprehensive document extraction control.
  */
 
-import { describe, it, expect } from "vitest";
 import type { ExtractionConfig } from "@kreuzberg/core";
+import { describe, expect, it } from "vitest";
 
 describe("WASM: ExtractionConfig", () => {
 	describe("type definitions", () => {
@@ -174,9 +174,7 @@ describe("WASM: ExtractionConfig", () => {
 			const cloned = structuredClone(config);
 
 			expect(cloned.pdfOptions?.fontConfig?.customFontDirs).toEqual(["/fonts"]);
-			expect(cloned.ocr?.tesseractConfig?.tesseditCharWhitelist).toBe(
-				"abc123"
-			);
+			expect(cloned.ocr?.tesseractConfig?.tesseditCharWhitelist).toBe("abc123");
 		});
 	});
 

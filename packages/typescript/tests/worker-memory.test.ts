@@ -7,7 +7,7 @@
  * @group worker-pool
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 /**
  * Memory statistics for a worker
@@ -81,12 +81,7 @@ class MemoryAwareWorker {
 		}
 	}
 
-	createView(
-		bufferName: string,
-		viewType: string,
-		offset: number,
-		length: number
-	): ArrayBufferView {
+	createView(bufferName: string, viewType: string, offset: number, length: number): ArrayBufferView {
 		const shared = this.sharedBuffers.get(bufferName);
 		if (!shared) {
 			throw new Error(`Shared buffer not found: ${bufferName}`);
@@ -517,9 +512,7 @@ describe("Worker Memory Management", () => {
 
 			// Verify chronological ordering (timestamps should not decrease)
 			for (let i = 1; i < accessLog.length; i++) {
-				expect(accessLog[i].timestamp).toBeGreaterThanOrEqual(
-					accessLog[i - 1].timestamp
-				);
+				expect(accessLog[i].timestamp).toBeGreaterThanOrEqual(accessLog[i - 1].timestamp);
 			}
 
 			// Verify we have both read and write operations

@@ -7,9 +7,9 @@ interface ExtractedData {
 	text: string;
 	metadata?: Record<string, unknown>;
 	tables?: Array<{
-		cells: string[][];
-		markdown: string;
-		pageNumber: number;
+		cells?: string[][];
+		markdown?: string;
+		pageNumber?: number;
 	}>;
 }
 

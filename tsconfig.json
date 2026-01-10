@@ -1,8 +1,52 @@
 {
-	"extends": "./crates/kreuzberg-node/tsconfig.json",
+	"$schema": "https://json.schemastore.org/tsconfig",
 	"compilerOptions": {
+		"target": "ES2022",
+		"lib": ["ES2022"],
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+
+		"strict": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+		"strictBindCallApply": true,
+		"strictPropertyInitialization": true,
+		"noImplicitThis": true,
+		"useUnknownInCatchVariables": true,
+		"alwaysStrict": true,
+
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"exactOptionalPropertyTypes": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"noPropertyAccessFromIndexSignature": true,
+
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"verbatimModuleSyntax": true,
+
 		"noEmit": true
 	},
-	"include": ["crates/*/typescript/**/*.ts", "crates/*/typescript/**/*.d.ts", "tools/**/scripts/**/*.ts"],
-	"exclude": ["node_modules", "**/dist", "**/*.spec.ts", "**/tests/**/*"]
+	"files": [],
+	"references": [
+		{ "path": "./crates/kreuzberg-node" },
+		{ "path": "./crates/kreuzberg-wasm" },
+		{ "path": "./packages/typescript/core" },
+		{ "path": "./tools/benchmark-visualizer" },
+		{ "path": "./examples/typescript" },
+		{ "path": "./examples/wasm-browser" },
+		{ "path": "./examples/wasm-cloudflare-workers" },
+		{ "path": "./tests/test_apps/node" },
+		{ "path": "./tests/test_apps/wasm" },
+		{ "path": "./tests/test_apps/browser-vite-svelte" },
+		{ "path": "./e2e/wasm-workers" }
+	]
 }

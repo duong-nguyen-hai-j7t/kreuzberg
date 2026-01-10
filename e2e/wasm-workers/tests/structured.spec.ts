@@ -1,9 +1,9 @@
 // Auto-generated tests for structured fixtures.
 
-import { describe, it, expect } from "vitest";
-import { extractBytes } from "@kreuzberg/wasm";
-import { assertions, buildConfig, getFixture, shouldSkipFixture } from "./helpers.js";
 import type { ExtractionResult } from "@kreuzberg/wasm";
+import { extractBytes } from "@kreuzberg/wasm";
+import { describe, expect, it } from "vitest";
+import { assertions, buildConfig, getFixture, shouldSkipFixture } from "./helpers.js";
 
 describe("structured", () => {
 	it("structured_json_basic", async () => {

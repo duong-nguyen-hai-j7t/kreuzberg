@@ -1,29 +1,29 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { describe, it, expect, beforeAll } from "vitest";
 import type {
+	ChunkingConfig,
 	ExtractionConfig,
 	ExtractionResult,
-	OcrConfig,
-	ChunkingConfig,
 	ImageExtractionConfig,
-	PdfConfig,
 	Metadata,
+	OcrConfig,
+	PdfConfig,
 	Table,
 } from "@kreuzberg/wasm";
 import {
-	initWasm,
-	isInitialized,
-	getVersion,
-	extractBytes,
-	extractBytesSync,
 	batchExtractBytes,
 	batchExtractBytesSync,
-	fileToUint8Array,
-	isValidExtractionResult,
 	configToJS,
+	extractBytes,
+	extractBytesSync,
+	fileToUint8Array,
+	getVersion,
+	initWasm,
+	isInitialized,
+	isValidExtractionResult,
 	wrapWasmError,
 } from "@kreuzberg/wasm";
+import { beforeAll, describe, expect, it } from "vitest";
 
 const TEST_DOCS_DIR = resolve(__dirname, "../test_documents");
 

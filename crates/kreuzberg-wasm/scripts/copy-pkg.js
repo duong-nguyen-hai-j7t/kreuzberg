@@ -3,9 +3,9 @@
  * Post-build script to copy pkg directory to dist and fix import paths
  */
 
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const pkg = path.join(__dirname, "..", "pkg");

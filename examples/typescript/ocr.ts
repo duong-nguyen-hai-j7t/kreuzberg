@@ -53,9 +53,9 @@ async function main() {
 	const imageResult = extractFileSync("screenshot.png", null, imageConfig);
 	console.log(`Extracted from image: ${imageResult.content.length} characters`);
 
-	if (imageResult.metadata.ocr) {
-		console.log(`OCR Language: ${imageResult.metadata.ocr.language}`);
-		console.log(`Table Count: ${imageResult.metadata.ocr.tableCount}`);
+	if (imageResult.metadata.format_type === "ocr") {
+		console.log(`OCR Language: ${imageResult.metadata.language}`);
+		console.log(`Table Count: ${imageResult.metadata.table_count}`);
 	}
 
 	console.log("\n=== OCR Table Extraction ===");

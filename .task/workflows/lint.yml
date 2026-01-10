@@ -14,6 +14,7 @@ tasks:
       - task: ruby:lint
       - task: php:lint
       - task: elixir:lint
+      - task: typescript:typecheck
 
   check:
     desc: Run all linters in check-only mode (no modifications)
@@ -28,6 +29,7 @@ tasks:
       - task: ruby:lint:check
       - task: php:lint:check
       - task: elixir:lint:check
+      - task: typescript:typecheck:check
 
   core:
     desc: Lint core Rust code with auto-fix
@@ -56,12 +58,14 @@ tasks:
     cmds:
       - task: node:lint
       - task: wasm:lint
+      - task: typescript:typecheck
 
   js-ecosystem:check:
     desc: Check JS ecosystem linting without modifications
     cmds:
       - task: node:lint:check
       - task: wasm:lint:check
+      - task: typescript:typecheck:check
 
   systems:
     desc: Lint systems languages (Rust, Go, C#) with auto-fix
@@ -99,6 +103,7 @@ tasks:
       - task: node:lint
       - task: wasm:lint
       - task: python:lint
+      - task: typescript:typecheck
 
   web:check:
     desc: Check web-focused bindings linting without modifications
@@ -106,6 +111,7 @@ tasks:
       - task: node:lint:check
       - task: wasm:lint:check
       - task: python:lint:check
+      - task: typescript:typecheck:check
 
   rust:
     desc: Lint Rust code with auto-fix
@@ -196,3 +202,13 @@ tasks:
     desc: Check PHP code linting without modifications
     cmds:
       - task: php:lint:check
+
+  typescript:
+    desc: Run TypeScript type checking
+    cmds:
+      - task: typescript:typecheck
+
+  typescript:check:
+    desc: Run TypeScript type checking (check-only mode)
+    cmds:
+      - task: typescript:typecheck:check

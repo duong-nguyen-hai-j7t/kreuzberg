@@ -87,7 +87,7 @@
     </div>
 
     <script type="module">
-        import init, { initialize_pdfium_render, extract_from_bytes } from '../pkg/kreuzberg_wasm.js';
+        import init, { extract_from_bytes, initialize_pdfium_render } from '../pkg/kreuzberg_wasm.js';
 
         let wasmModule;
         let pdfiumInitialized = false;
@@ -111,7 +111,7 @@
                 document.getElementById('pdfiumBtn').disabled = false;
             } catch (error) {
                 statusEl.className = 'status error';
-                statusEl.textContent = '✗ Error initializing: ' + error.message;
+                statusEl.textContent = `✗ Error initializing: ${error.message}`;
                 btn.disabled = false;
             }
         };
@@ -145,7 +145,7 @@
                 document.getElementById('extractBtn').disabled = false;
             } catch (error) {
                 statusEl.className = 'status error';
-                statusEl.textContent = '✗ Error initializing PDFium: ' + error.message;
+                statusEl.textContent = `✗ Error initializing PDFium: ${error.message}`;
                 statusEl.textContent += '\n\nNote: Make sure pdfium.js and pdfium.wasm are in the same directory as this HTML file.';
                 btn.disabled = false;
             }
@@ -200,7 +200,7 @@
                 btn.disabled = false;
             } catch (error) {
                 statusEl.className = 'status error';
-                statusEl.textContent = '✗ Error extracting PDF: ' + error.message;
+                statusEl.textContent = `✗ Error extracting PDF: ${error.message}`;
 
                 if (error.message.includes('PdfiumWASMModuleNotConfigured')) {
                     statusEl.textContent += '\n\nThis error means PDFium was not properly initialized. Please try initializing PDFium again.';

@@ -4,14 +4,14 @@
  * Tests for error classification, code lookups, and validation functions.
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
-	ErrorCode,
-	getErrorCodeName,
-	getErrorCodeDescription,
 	classifyErrorMessage,
-	isValidErrorCode,
+	ErrorCode,
+	getErrorCodeDescription,
 	getErrorCodeKey,
+	getErrorCodeName,
+	isValidErrorCode,
 } from "./errors";
 
 describe("ErrorCode constants", () => {

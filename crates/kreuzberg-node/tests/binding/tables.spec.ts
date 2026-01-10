@@ -18,8 +18,8 @@
 
 import { readFileSync, realpathSync } from "node:fs";
 import { beforeAll, describe, expect, it } from "vitest";
-import type { ExtractionConfig, Table } from "../../src/types.js";
 import { extractBytesSync, extractFileSync } from "../../dist/index.js";
+import type { ExtractionConfig, Table } from "../../src/types.js";
 import { getTestDocumentPath } from "../helpers/index.js";
 
 let tinyPdfPath: string;
@@ -199,9 +199,7 @@ describe("Table Extraction Quality (Node.js Bindings)", () => {
 			const result = extractFileSync(mediumPdfPath, config);
 
 			if (result.tables && result.tables.length > 0) {
-				const allCellContent = result.tables.flatMap((t) =>
-					t.cells.flatMap((row) => row.join(" "))
-				);
+				const allCellContent = result.tables.flatMap((t) => t.cells.flatMap((row) => row.join(" ")));
 
 				// Content should be preserved with possible special characters
 				for (const content of allCellContent) {
@@ -307,11 +305,7 @@ describe("Table Extraction Quality (Node.js Bindings)", () => {
 				},
 			};
 
-			const result = extractBytesSync(
-				Buffer.from(tinyPdfBytes),
-				"application/pdf",
-				config
-			);
+			const result = extractBytesSync(Buffer.from(tinyPdfBytes), "application/pdf", config);
 
 			expect(result).toBeDefined();
 			expect(result.tables).toBeDefined();
@@ -403,9 +397,7 @@ describe("Table Extraction Quality (Node.js Bindings)", () => {
 
 			// First table should be identical
 			if (result1.tables.length > 0 && result2.tables.length > 0) {
-				expect(result1.tables[0].cells.length).toBe(
-					result2.tables[0].cells.length
-				);
+				expect(result1.tables[0].cells.length).toBe(result2.tables[0].cells.length);
 			}
 		});
 
@@ -489,9 +481,7 @@ describe("Table Extraction Quality (Node.js Bindings)", () => {
 					const lines = markdown.split("\n");
 					if (lines.length > 1) {
 						// Look for alignment row (contains dashes and pipes)
-						const hasAlignmentRow = lines.some((line) =>
-							/\|[\s\-:]+\|/.test(line)
-						);
+						const hasAlignmentRow = lines.some((line) => /\|[\s\-:]+\|/.test(line));
 
 						expect(hasAlignmentRow || markdown.length === 0).toBe(true);
 					}
@@ -542,10 +532,7 @@ describe("Table Extraction Quality (Node.js Bindings)", () => {
 						for (let colIdx = 0; colIdx < row.length; colIdx++) {
 							const cellKey = rowIdx * 1000 + colIdx;
 							const currentMax = maxCellLengths.get(cellKey) || 0;
-							maxCellLengths.set(
-								cellKey,
-								Math.max(currentMax, row[colIdx].length)
-							);
+							maxCellLengths.set(cellKey, Math.max(currentMax, row[colIdx].length));
 						}
 					}
 				}
@@ -719,15 +706,11 @@ describe("Table Extraction Quality (Node.js Bindings)", () => {
 
 			// First table structure should match
 			if (result1.tables.length > 0 && result2.tables.length > 0) {
-				expect(result1.tables[0].cells.length).toBe(
-					result2.tables[0].cells.length
-				);
+				expect(result1.tables[0].cells.length).toBe(result2.tables[0].cells.length);
 
 				// Cell content should match
 				for (let i = 0; i < result1.tables[0].cells.length; i++) {
-					expect(result1.tables[0].cells[i]).toEqual(
-						result2.tables[0].cells[i]
-					);
+					expect(result1.tables[0].cells[i]).toEqual(result2.tables[0].cells[i]);
 				}
 			}
 		});
@@ -767,9 +750,7 @@ describe("Table Extraction Quality (Node.js Bindings)", () => {
 					const currTable = result.tables[i];
 
 					// Page numbers should be non-decreasing
-					expect(currTable.pageNumber).toBeGreaterThanOrEqual(
-						prevTable.pageNumber
-					);
+					expect(currTable.pageNumber).toBeGreaterThanOrEqual(prevTable.pageNumber);
 				}
 			}
 		});
@@ -788,10 +769,7 @@ describe("Table Extraction Quality (Node.js Bindings)", () => {
 			};
 
 			const resultWith = extractFileSync(tinyPdfPath, configWithTables);
-			const resultWithout = extractFileSync(
-				tinyPdfPath,
-				configWithoutTables
-			);
+			const resultWithout = extractFileSync(tinyPdfPath, configWithoutTables);
 
 			// With tables enabled should extract tables or have valid array
 			expect(resultWith.tables).toBeDefined();

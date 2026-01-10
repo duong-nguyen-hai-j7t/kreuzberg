@@ -5,12 +5,8 @@
  * HTML-to-Markdown conversion parameters with comprehensive formatting options.
  */
 
-import { describe, it, expect } from "vitest";
-import type {
-	HtmlConversionOptions,
-	HtmlPreprocessingOptions,
-	ExtractionConfig,
-} from "@kreuzberg/core";
+import type { ExtractionConfig, HtmlConversionOptions, HtmlPreprocessingOptions } from "@kreuzberg/core";
+import { describe, expect, it } from "vitest";
 
 describe("WASM: HtmlConversionOptions", () => {
 	describe("type definitions", () => {
@@ -162,14 +158,11 @@ describe("WASM: HtmlConversionOptions", () => {
 
 	describe("memory efficiency", () => {
 		it("should not create excessive objects", () => {
-			const configs: HtmlConversionOptions[] = Array.from(
-				{ length: 1000 },
-				() => ({
-					headingStyle: "atx" as "atx" | "underlined" | "atx_closed",
-					listIndentType: "spaces" as "spaces" | "tabs",
-					listIndentWidth: 2,
-				})
-			);
+			const configs: HtmlConversionOptions[] = Array.from({ length: 1000 }, () => ({
+				headingStyle: "atx" as "atx" | "underlined" | "atx_closed",
+				listIndentType: "spaces" as "spaces" | "tabs",
+				listIndentWidth: 2,
+			}));
 
 			expect(configs).toHaveLength(1000);
 			configs.forEach((config) => {
@@ -195,11 +188,7 @@ describe("WASM: HtmlConversionOptions", () => {
 		it("should enforce headingStyle as valid string when defined", () => {
 			const config: HtmlConversionOptions = { headingStyle: "atx" };
 			if (config.headingStyle !== undefined) {
-				expect([
-					"atx",
-					"underlined",
-					"atx_closed",
-				]).toContain(config.headingStyle);
+				expect(["atx", "underlined", "atx_closed"]).toContain(config.headingStyle);
 			}
 		});
 

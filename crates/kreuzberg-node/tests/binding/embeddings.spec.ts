@@ -13,7 +13,7 @@
  * NAPI-RS bindings with plain object configs (NO builder pattern).
  */
 
-import { describe, expect, it, beforeAll } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { extractBytesSync } from "../../dist/index.js";
 import type { ExtractionConfig, JsEmbeddingModelType } from "../../src/types.js";
 
@@ -325,7 +325,8 @@ describe("Embedding Vector Generation (Node.js Bindings)", () => {
 				},
 			};
 
-			const longText = "This is a long text that will be chunked into multiple pieces. " +
+			const longText =
+				"This is a long text that will be chunked into multiple pieces. " +
 				"Each chunk should have embeddings with the same dimensions. " +
 				"Consistency is important for downstream processing tasks.";
 
@@ -377,9 +378,7 @@ describe("Embedding Vector Generation (Node.js Bindings)", () => {
 
 			const startTime = performance.now();
 
-			const results = texts.map((text) =>
-				extractBytesSync(new TextEncoder().encode(text), "text/plain", config)
-			);
+			const results = texts.map((text) => extractBytesSync(new TextEncoder().encode(text), "text/plain", config));
 
 			const endTime = performance.now();
 			const executionTime = endTime - startTime;
@@ -416,9 +415,7 @@ describe("Embedding Vector Generation (Node.js Bindings)", () => {
 				"Deep neural networks learn complex patterns.",
 			];
 
-			const results = texts.map((text) =>
-				extractBytesSync(new TextEncoder().encode(text), "text/plain", config)
-			);
+			const results = texts.map((text) => extractBytesSync(new TextEncoder().encode(text), "text/plain", config));
 
 			let embeddingDimension: number | null = null;
 
@@ -516,7 +513,8 @@ describe("Embedding Vector Generation (Node.js Bindings)", () => {
 				},
 			};
 
-			const text = "This long text will be split into multiple chunks. " +
+			const text =
+				"This long text will be split into multiple chunks. " +
 				"Each chunk will have its own embedding. " +
 				"Embeddings preserve semantic meaning of each chunk.";
 
@@ -526,9 +524,7 @@ describe("Embedding Vector Generation (Node.js Bindings)", () => {
 			expect(result.chunks).toBeDefined();
 
 			if (result.chunks && result.chunks.length > 0) {
-				const embeddingCount = result.chunks.filter(
-					(chunk) => chunk.embedding && chunk.embedding.length > 0
-				).length;
+				const embeddingCount = result.chunks.filter((chunk) => chunk.embedding && chunk.embedding.length > 0).length;
 
 				// Most chunks should have embeddings
 				expect(embeddingCount).toBeGreaterThan(0);
@@ -894,7 +890,8 @@ describe("Embedding Vector Generation (Node.js Bindings)", () => {
 				},
 			};
 
-			const text = "Consistency of normalization across multiple chunks is important. " +
+			const text =
+				"Consistency of normalization across multiple chunks is important. " +
 				"Each chunk should have properly normalized embeddings. " +
 				"This ensures uniform downstream processing.";
 
@@ -1053,185 +1050,180 @@ describe("Embedding Vector Generation (Node.js Bindings)", () => {
 			expect(result.chunks).toBeDefined();
 		});
 
-	describe("mathematical properties validation", () => {
-		it("should produce vectors with valid floating-point values", () => {
-			const config: ExtractionConfig = {
-				chunking: {
-					maxChars: 500,
-					maxOverlap: 100,
-					embedding: {
-						model: {
-							modelType: "preset",
-							value: "balanced",
-						},
-						normalize: true,
-					},
-				},
-			};
-
-			const text = "Validating floating-point properties of embedding values.";
-			const textBytes = new TextEncoder().encode(text);
-			const result = extractBytesSync(textBytes, "text/plain", config);
-
-			if (result.chunks && result.chunks.length > 0) {
-				for (const chunk of result.chunks) {
-					if (chunk.embeddings && chunk.embeddings.length > 0) {
-						const embedding = chunk.embeddings[0];
-
-						for (let i = 0; i < embedding.length; i++) {
-							const value = embedding[i];
-							expect(Number.isFinite(value)).toBe(true);
-							expect(value).not.toBeNaN();
-							expect(value).toBeGreaterThanOrEqual(-2.0);
-							expect(value).toBeLessThanOrEqual(2.0);
-						}
-					}
-				}
-			}
-		});
-
-		it("should not produce dead embeddings (all-zero vectors)", () => {
-			const config: ExtractionConfig = {
-				chunking: {
-					maxChars: 500,
-					maxOverlap: 100,
-					embedding: {
-						model: {
-							modelType: "preset",
-							value: "balanced",
-						},
-						normalize: true,
-					},
-				},
-			};
-
-			const text = "Testing for dead embeddings and zero vectors.";
-			const textBytes = new TextEncoder().encode(text);
-			const result = extractBytesSync(textBytes, "text/plain", config);
-
-			if (result.chunks && result.chunks.length > 0) {
-				for (const chunk of result.chunks) {
-					if (chunk.embeddings && chunk.embeddings.length > 0) {
-						const embedding = chunk.embeddings[0];
-						const magnitude = embedding.reduce((sum, val) => sum + Math.abs(val), 0);
-
-						expect(magnitude).toBeGreaterThan(0.1);
-					}
-				}
-			}
-		});
-
-		it("should produce unit similarity for identical vectors", () => {
-			const config: ExtractionConfig = {
-				chunking: {
-					maxChars: 500,
-					maxOverlap: 100,
-					embedding: {
-						model: {
-							modelType: "preset",
-							value: "balanced",
-						},
-						normalize: true,
-					},
-				},
-			};
-
-			const text = "Testing identical vector similarity.";
-			const textBytes = new TextEncoder().encode(text);
-			const result = extractBytesSync(textBytes, "text/plain", config);
-
-			if (result.chunks && result.chunks.length > 0) {
-				for (const chunk of result.chunks) {
-					if (chunk.embeddings && chunk.embeddings.length > 0) {
-						const embedding = chunk.embeddings[0];
-
-						// Vector with itself should have similarity 1.0
-						const similarity = cosineSimilarity(embedding, embedding);
-						expect(similarity).toBeCloseTo(1.0, 4);
-					}
-				}
-			}
-		});
-
-		it("should maintain consistent dimensions across batch operations", () => {
-			const config: ExtractionConfig = {
-				chunking: {
-					maxChars: 150,
-					maxOverlap: 30,
-					embedding: {
-						model: {
-							modelType: "preset",
-							value: "balanced",
+		describe("mathematical properties validation", () => {
+			it("should produce vectors with valid floating-point values", () => {
+				const config: ExtractionConfig = {
+					chunking: {
+						maxChars: 500,
+						maxOverlap: 100,
+						embedding: {
+							model: {
+								modelType: "preset",
+								value: "balanced",
+							},
+							normalize: true,
 						},
 					},
-				},
-			};
+				};
 
-			const texts = [
-				"First document about machine learning.",
-				"Second document about neural networks.",
-				"Third document about deep learning.",
-			];
-
-			const dimensions: number[] = [];
-
-			for (const text of texts) {
+				const text = "Validating floating-point properties of embedding values.";
 				const textBytes = new TextEncoder().encode(text);
 				const result = extractBytesSync(textBytes, "text/plain", config);
 
-				if (result.chunks) {
+				if (result.chunks && result.chunks.length > 0) {
 					for (const chunk of result.chunks) {
 						if (chunk.embeddings && chunk.embeddings.length > 0) {
-							dimensions.push(chunk.embeddings[0].length);
+							const embedding = chunk.embeddings[0];
+
+							for (let i = 0; i < embedding.length; i++) {
+								const value = embedding[i];
+								expect(Number.isFinite(value)).toBe(true);
+								expect(value).not.toBeNaN();
+								expect(value).toBeGreaterThanOrEqual(-2.0);
+								expect(value).toBeLessThanOrEqual(2.0);
+							}
 						}
 					}
 				}
-			}
+			});
 
-			// All dimensions should be identical
-			if (dimensions.length > 1) {
-				const firstDim = dimensions[0];
-				for (const dim of dimensions) {
-					expect(dim).toBe(firstDim);
-				}
-			}
-		});
-
-		it("should be deterministic across multiple runs", () => {
-			const config: ExtractionConfig = {
-				chunking: {
-					maxChars: 500,
-					maxOverlap: 100,
-					embedding: {
-						model: {
-							modelType: "preset",
-							value: "balanced",
+			it("should not produce dead embeddings (all-zero vectors)", () => {
+				const config: ExtractionConfig = {
+					chunking: {
+						maxChars: 500,
+						maxOverlap: 100,
+						embedding: {
+							model: {
+								modelType: "preset",
+								value: "balanced",
+							},
+							normalize: true,
 						},
-						normalize: true,
 					},
-				},
-			};
+				};
 
-			const text = "Testing deterministic embedding generation.";
-			const textBytes = new TextEncoder().encode(text);
+				const text = "Testing for dead embeddings and zero vectors.";
+				const textBytes = new TextEncoder().encode(text);
+				const result = extractBytesSync(textBytes, "text/plain", config);
 
-			const result1 = extractBytesSync(textBytes, "text/plain", config);
-			const result2 = extractBytesSync(textBytes, "text/plain", config);
+				if (result.chunks && result.chunks.length > 0) {
+					for (const chunk of result.chunks) {
+						if (chunk.embeddings && chunk.embeddings.length > 0) {
+							const embedding = chunk.embeddings[0];
+							const magnitude = embedding.reduce((sum, val) => sum + Math.abs(val), 0);
 
-			if (
-				result1.chunks &&
-				result2.chunks &&
-				result1.chunks.length > 0 &&
-				result2.chunks.length > 0
-			) {
-				const emb1 = result1.chunks[0].embeddings?.[0];
-				const emb2 = result2.chunks[0].embeddings?.[0];
-
-				if (emb1 && emb2) {
-					expect(emb1).toEqual(emb2);
+							expect(magnitude).toBeGreaterThan(0.1);
+						}
+					}
 				}
-			}
+			});
+
+			it("should produce unit similarity for identical vectors", () => {
+				const config: ExtractionConfig = {
+					chunking: {
+						maxChars: 500,
+						maxOverlap: 100,
+						embedding: {
+							model: {
+								modelType: "preset",
+								value: "balanced",
+							},
+							normalize: true,
+						},
+					},
+				};
+
+				const text = "Testing identical vector similarity.";
+				const textBytes = new TextEncoder().encode(text);
+				const result = extractBytesSync(textBytes, "text/plain", config);
+
+				if (result.chunks && result.chunks.length > 0) {
+					for (const chunk of result.chunks) {
+						if (chunk.embeddings && chunk.embeddings.length > 0) {
+							const embedding = chunk.embeddings[0];
+
+							// Vector with itself should have similarity 1.0
+							const similarity = cosineSimilarity(embedding, embedding);
+							expect(similarity).toBeCloseTo(1.0, 4);
+						}
+					}
+				}
+			});
+
+			it("should maintain consistent dimensions across batch operations", () => {
+				const config: ExtractionConfig = {
+					chunking: {
+						maxChars: 150,
+						maxOverlap: 30,
+						embedding: {
+							model: {
+								modelType: "preset",
+								value: "balanced",
+							},
+						},
+					},
+				};
+
+				const texts = [
+					"First document about machine learning.",
+					"Second document about neural networks.",
+					"Third document about deep learning.",
+				];
+
+				const dimensions: number[] = [];
+
+				for (const text of texts) {
+					const textBytes = new TextEncoder().encode(text);
+					const result = extractBytesSync(textBytes, "text/plain", config);
+
+					if (result.chunks) {
+						for (const chunk of result.chunks) {
+							if (chunk.embeddings && chunk.embeddings.length > 0) {
+								dimensions.push(chunk.embeddings[0].length);
+							}
+						}
+					}
+				}
+
+				// All dimensions should be identical
+				if (dimensions.length > 1) {
+					const firstDim = dimensions[0];
+					for (const dim of dimensions) {
+						expect(dim).toBe(firstDim);
+					}
+				}
+			});
+
+			it("should be deterministic across multiple runs", () => {
+				const config: ExtractionConfig = {
+					chunking: {
+						maxChars: 500,
+						maxOverlap: 100,
+						embedding: {
+							model: {
+								modelType: "preset",
+								value: "balanced",
+							},
+							normalize: true,
+						},
+					},
+				};
+
+				const text = "Testing deterministic embedding generation.";
+				const textBytes = new TextEncoder().encode(text);
+
+				const result1 = extractBytesSync(textBytes, "text/plain", config);
+				const result2 = extractBytesSync(textBytes, "text/plain", config);
+
+				if (result1.chunks && result2.chunks && result1.chunks.length > 0 && result2.chunks.length > 0) {
+					const emb1 = result1.chunks[0].embeddings?.[0];
+					const emb2 = result2.chunks[0].embeddings?.[0];
+
+					if (emb1 && emb2) {
+						expect(emb1).toEqual(emb2);
+					}
+				}
+			});
 		});
 	});
-});
 });

@@ -39,11 +39,7 @@ class MockAsyncExtractor {
 	/**
 	 * Extract text from document asynchronously
 	 */
-	async extract(
-		data: Uint8Array,
-		config: ExtractionConfig = {},
-		delayMs = 50,
-	): Promise<ExtractionResult> {
+	async extract(data: Uint8Array, config: ExtractionConfig = {}, delayMs = 50): Promise<ExtractionResult> {
 		if (!this.isInitialized) {
 			throw new Error("Extractor not initialized");
 		}
@@ -69,11 +65,7 @@ class MockAsyncExtractor {
 	/**
 	 * Extract with timeout enforcement
 	 */
-	async extractWithTimeout(
-		data: Uint8Array,
-		config: ExtractionConfig,
-		timeoutMs: number,
-	): Promise<ExtractionResult> {
+	async extractWithTimeout(data: Uint8Array, config: ExtractionConfig, timeoutMs: number): Promise<ExtractionResult> {
 		return Promise.race([
 			this.extract(data, config, 100),
 			new Promise<ExtractionResult>((_, reject) =>
@@ -85,11 +77,7 @@ class MockAsyncExtractor {
 	/**
 	 * Extract with AbortSignal support
 	 */
-	async extractWithAbort(
-		data: Uint8Array,
-		config: ExtractionConfig,
-		signal?: AbortSignal,
-	): Promise<ExtractionResult> {
+	async extractWithAbort(data: Uint8Array, config: ExtractionConfig, signal?: AbortSignal): Promise<ExtractionResult> {
 		if (signal?.aborted) {
 			throw new Error("Operation aborted");
 		}
@@ -121,9 +109,7 @@ class MockAsyncExtractor {
 	/**
 	 * Batch extract multiple documents concurrently
 	 */
-	async batchExtract(
-		documents: Array<{ data: Uint8Array; config?: ExtractionConfig }>,
-	): Promise<ExtractionResult[]> {
+	async batchExtract(documents: Array<{ data: Uint8Array; config?: ExtractionConfig }>): Promise<ExtractionResult[]> {
 		const operations = documents.map((doc) => this.extract(doc.data, doc.config, 50));
 
 		return Promise.all(operations);
@@ -185,9 +171,7 @@ describe("async: Promise-based Extraction", () => {
 
 	it("should preserve data through Promise chain", async () => {
 		const data = new Uint8Array([10, 20, 30]);
-		const result = await extractor
-			.extract(data)
-			.then((res) => ({ ...res, processed: true }));
+		const result = await extractor.extract(data).then((res) => ({ ...res, processed: true }));
 
 		expect((result as Record<string, unknown>).processed).toBe(true);
 	});
@@ -294,13 +278,11 @@ describe("async: Error Handling in Async Context", () => {
 	it("should support error recovery with fallback", async () => {
 		const data = new Uint8Array([1, 2, 3]);
 
-		const result = await extractor
-			.extract(data)
-			.catch(() => ({
-				text: "Fallback content",
-				chunks: [],
-				metadata: { fallback: true },
-			}));
+		const result = await extractor.extract(data).catch(() => ({
+			text: "Fallback content",
+			chunks: [],
+			metadata: { fallback: true },
+		}));
 
 		expect(result.text).toBeTruthy();
 	});
@@ -432,11 +414,7 @@ describe("async: Concurrent Async Operations", () => {
 		const data3 = new Uint8Array([7, 8, 9]);
 
 		const startTime = Date.now();
-		const results = await Promise.all([
-			extractor.extract(data1),
-			extractor.extract(data2),
-			extractor.extract(data3),
-		]);
+		const results = await Promise.all([extractor.extract(data1), extractor.extract(data2), extractor.extract(data3)]);
 		const elapsed = Date.now() - startTime;
 
 		expect(results).toHaveLength(3);
@@ -514,7 +492,7 @@ describe("async: Async Configuration Passing", () => {
 		const result = await extractor.extract(data, {});
 
 		expect(result).toBeDefined();
-		expect((result.metadata.config as ExtractionConfig)).toEqual({});
+		expect(result.metadata.config as ExtractionConfig).toEqual({});
 	});
 
 	it("should pass complex config through async operation", async () => {
@@ -580,10 +558,7 @@ describe("async: Resource Cleanup", () => {
 	});
 
 	it("should cleanup after batch extraction", async () => {
-		const documents = [
-			{ data: new Uint8Array([1, 2, 3]) },
-			{ data: new Uint8Array([4, 5, 6]) },
-		];
+		const documents = [{ data: new Uint8Array([1, 2, 3]) }, { data: new Uint8Array([4, 5, 6]) }];
 
 		await extractor.batchExtract(documents);
 

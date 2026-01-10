@@ -1,22 +1,22 @@
-import { readFileSync, existsSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { describe, it, expect, beforeAll } from "vitest";
 import {
-	extractFileSync,
-	extractFile,
-	extractBytesSync,
-	extractBytes,
-	batchExtractFilesSync,
-	batchExtractFiles,
-	batchExtractBytesSync,
 	batchExtractBytes,
-	detectMimeTypeFromPath,
+	batchExtractBytesSync,
+	batchExtractFiles,
+	batchExtractFilesSync,
 	detectMimeType,
+	detectMimeTypeFromPath,
+	extractBytes,
+	extractBytesSync,
+	extractFile,
+	extractFileSync,
 	KreuzbergError,
-	ValidationError,
 	ParsingError,
+	ValidationError,
 } from "@kreuzberg/node";
+import { beforeAll, describe, expect, it } from "vitest";
 
 const TEST_TIMEOUT_MS = 60_000;
 const __dirname = dirname(fileURLToPath(import.meta.url));

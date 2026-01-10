@@ -1,0 +1,17 @@
+version: "3"
+
+includes:
+  _cfg:
+    taskfile: ../config/vars.yml
+    internal: true
+
+tasks:
+  typecheck:
+    desc: Run TypeScript type checking across all projects (uses pnpm workspace typecheck)
+    cmds:
+      - pnpm typecheck
+
+  typecheck:check:
+    desc: Alias for typecheck (for consistency with other tools)
+    cmds:
+      - task: typecheck

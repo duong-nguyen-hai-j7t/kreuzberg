@@ -5,8 +5,8 @@
  * chunking strategy, chunk size, overlap, and embedding options.
  */
 
-import { describe, it, expect } from "vitest";
 import type { ChunkingConfig, ExtractionConfig } from "@kreuzberg/core";
+import { describe, expect, it } from "vitest";
 
 describe("WASM: ChunkingConfig", () => {
 	describe("type definitions", () => {

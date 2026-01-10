@@ -5,8 +5,8 @@
  * token reduction strategies and important word preservation for text optimization.
  */
 
-import { describe, it, expect } from "vitest";
-import type { TokenReductionConfig, ExtractionConfig } from "@kreuzberg/core";
+import type { ExtractionConfig, TokenReductionConfig } from "@kreuzberg/core";
+import { describe, expect, it } from "vitest";
 
 describe("WASM: TokenReductionConfig", () => {
 	describe("type definitions", () => {
@@ -119,13 +119,10 @@ describe("WASM: TokenReductionConfig", () => {
 
 	describe("memory efficiency", () => {
 		it("should not create excessive objects", () => {
-			const configs: TokenReductionConfig[] = Array.from(
-				{ length: 1000 },
-				() => ({
-					mode: "balanced",
-					preserveImportantWords: true,
-				})
-			);
+			const configs: TokenReductionConfig[] = Array.from({ length: 1000 }, () => ({
+				mode: "balanced",
+				preserveImportantWords: true,
+			}));
 
 			expect(configs).toHaveLength(1000);
 			configs.forEach((config) => {

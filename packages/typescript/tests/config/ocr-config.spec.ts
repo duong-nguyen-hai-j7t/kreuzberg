@@ -5,8 +5,8 @@
  * language settings, and Tesseract-specific options for document processing.
  */
 
-import { describe, it, expect } from "vitest";
-import type { OcrConfig, ExtractionConfig } from "@kreuzberg/core";
+import type { ExtractionConfig, OcrConfig } from "@kreuzberg/core";
+import { describe, expect, it } from "vitest";
 
 describe("WASM: OcrConfig", () => {
 	describe("type definitions", () => {

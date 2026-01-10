@@ -1,7 +1,7 @@
 // Auto-generated tests for pdf fixtures.
 
-import { assertions, buildConfig, extractBytes, initWasm, resolveDocument, shouldSkipFixture } from "./helpers.ts";
 import type { ExtractionResult } from "./helpers.ts";
+import { assertions, buildConfig, extractBytes, initWasm, resolveDocument, shouldSkipFixture } from "./helpers.ts";
 
 await initWasm();
 

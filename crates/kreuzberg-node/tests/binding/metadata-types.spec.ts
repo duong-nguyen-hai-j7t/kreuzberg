@@ -41,8 +41,8 @@ import type {
 	TextMetadata,
 	XmlMetadata,
 } from "../../src/types";
-import { createTempFile, getTestDocumentPath, loadTestDocument } from "../helpers/test-utils.js";
 import { extractBytesSync, extractFileSync } from "../../typescript/index.js";
+import { createTempFile, getTestDocumentPath, loadTestDocument } from "../helpers/test-utils.js";
 
 type AssertMetadataCompatible = Metadata extends NapiMetadata ? true : never;
 type AssertNapiMetadataCompatible = NapiMetadata extends Metadata ? true : never;

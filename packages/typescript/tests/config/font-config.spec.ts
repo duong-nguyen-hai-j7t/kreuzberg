@@ -5,8 +5,8 @@
  * font provider and add custom font directories.
  */
 
-import { describe, it, expect } from "vitest";
-import type { FontConfig, PdfConfig, ExtractionConfig } from "@kreuzberg/core";
+import type { ExtractionConfig, FontConfig, PdfConfig } from "@kreuzberg/core";
+import { describe, expect, it } from "vitest";
 
 describe("WASM: FontConfig", () => {
 	describe("type definitions", () => {
@@ -30,13 +30,7 @@ describe("WASM: FontConfig", () => {
 		it("should support various directory paths", () => {
 			const config: FontConfig = {
 				enabled: true,
-				customFontDirs: [
-					"/usr/share/fonts",
-					"/usr/local/share/fonts",
-					"~/fonts",
-					"./fonts",
-					"/path/with/spaces/fonts",
-				],
+				customFontDirs: ["/usr/share/fonts", "/usr/local/share/fonts", "~/fonts", "./fonts", "/path/with/spaces/fonts"],
 			};
 
 			expect(config.customFontDirs).toHaveLength(5);
@@ -107,9 +101,7 @@ describe("WASM: FontConfig", () => {
 			const cloned = structuredClone(pdfConfig);
 
 			expect(cloned.fontConfig?.enabled).toBe(true);
-			expect(cloned.fontConfig?.customFontDirs).toEqual([
-				"/usr/share/fonts",
-			]);
+			expect(cloned.fontConfig?.customFontDirs).toEqual(["/usr/share/fonts"]);
 		});
 
 		it("should preserve complex font configurations", () => {
@@ -125,11 +117,7 @@ describe("WASM: FontConfig", () => {
 
 			const cloned = structuredClone(extractionConfig);
 
-			expect(cloned.pdfOptions?.fontConfig?.customFontDirs).toEqual([
-				"/fonts1",
-				"/fonts2",
-				"/fonts3",
-			]);
+			expect(cloned.pdfOptions?.fontConfig?.customFontDirs).toEqual(["/fonts1", "/fonts2", "/fonts3"]);
 		});
 	});
 
@@ -147,10 +135,7 @@ describe("WASM: FontConfig", () => {
 		});
 
 		it("should handle large font directory lists", () => {
-			const fontDirs = Array.from(
-				{ length: 100 },
-				(_, i) => `/fonts/dir${i}`
-			);
+			const fontDirs = Array.from({ length: 100 }, (_, i) => `/fonts/dir${i}`);
 			const config: FontConfig = {
 				enabled: true,
 				customFontDirs: fontDirs,
@@ -160,8 +145,7 @@ describe("WASM: FontConfig", () => {
 		});
 
 		it("should handle long path strings", () => {
-			const longPath =
-				"/very/long/path/".repeat(10) + "fonts/directory";
+			const longPath = `${"/very/long/path/".repeat(10)}fonts/directory`;
 			const config: FontConfig = {
 				enabled: true,
 				customFontDirs: [longPath],
@@ -269,9 +253,7 @@ describe("WASM: FontConfig", () => {
 				customFontDirs: ["/usr/share/fonts", "/usr/local/share/fonts"],
 			};
 
-			expect(config.customFontDirs?.every((dir) => dir.startsWith("/"))).toBe(
-				true
-			);
+			expect(config.customFontDirs?.every((dir) => dir.startsWith("/"))).toBe(true);
 		});
 
 		it("should handle relative paths", () => {
@@ -343,9 +325,7 @@ describe("WASM: FontConfig", () => {
 
 			const updated: FontConfig = {
 				...original,
-				customFontDirs: (original.customFontDirs || []).filter(
-					(dir) => !dir.includes("fonts2")
-				),
+				customFontDirs: (original.customFontDirs || []).filter((dir) => !dir.includes("fonts2")),
 			};
 
 			expect(original.customFontDirs).toEqual(["/fonts1", "/fonts2", "/fonts3"]);
@@ -365,18 +345,12 @@ describe("WASM: FontConfig", () => {
 				...original,
 				fontConfig: {
 					...original.fontConfig,
-					customFontDirs: [
-						...(original.fontConfig?.customFontDirs || []),
-						"/more-fonts",
-					],
+					customFontDirs: [...(original.fontConfig?.customFontDirs || []), "/more-fonts"],
 				},
 			};
 
 			expect(original.fontConfig?.customFontDirs).toEqual(["/fonts"]);
-			expect(updated.fontConfig?.customFontDirs).toEqual([
-				"/fonts",
-				"/more-fonts",
-			]);
+			expect(updated.fontConfig?.customFontDirs).toEqual(["/fonts", "/more-fonts"]);
 		});
 	});
 
@@ -384,11 +358,7 @@ describe("WASM: FontConfig", () => {
 		it("should support system font directories", () => {
 			const config: FontConfig = {
 				enabled: true,
-				customFontDirs: [
-					"/usr/share/fonts",
-					"/usr/local/share/fonts",
-					"~/.fonts",
-				],
+				customFontDirs: ["/usr/share/fonts", "/usr/local/share/fonts", "~/.fonts"],
 			};
 
 			expect(config.customFontDirs).toHaveLength(3);

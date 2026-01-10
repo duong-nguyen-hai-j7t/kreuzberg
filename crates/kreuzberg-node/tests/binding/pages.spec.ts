@@ -11,8 +11,8 @@
 
 import { readFileSync, realpathSync } from "node:fs";
 import { beforeAll, describe, expect, it } from "vitest";
-import type { ExtractionConfig, PageContent } from "../../src/types";
 import { extractBytesSync, extractFileSync } from "../../dist/index.js";
+import type { ExtractionConfig, PageContent } from "../../src/types";
 import { getTestDocumentPath } from "../helpers/index.js";
 
 let samplePdfPath: string;
@@ -134,11 +134,7 @@ describe("Pages Extraction (Node.js Bindings)", () => {
 		});
 
 		it("should handle multiple custom marker formats", () => {
-			const formats = [
-				"--- PAGE {page_num} ---",
-				"[Page {page_num}]",
-				"Page {page_num}:",
-			];
+			const formats = ["--- PAGE {page_num} ---", "[Page {page_num}]", "Page {page_num}:"];
 
 			for (const markerFormat of formats) {
 				const config: ExtractionConfig = {
@@ -223,9 +219,7 @@ describe("Pages Extraction (Node.js Bindings)", () => {
 
 			if (result.pages && result.pages.length > 1) {
 				for (let i = 0; i < result.pages.length - 1; i++) {
-					expect(result.pages[i].pageNumber).toBeLessThan(
-						result.pages[i + 1].pageNumber
-					);
+					expect(result.pages[i].pageNumber).toBeLessThan(result.pages[i + 1].pageNumber);
 				}
 			}
 		});

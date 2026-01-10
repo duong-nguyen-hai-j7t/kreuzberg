@@ -1,4 +1,4 @@
-import { describe, expect, it, afterAll } from "vitest";
+import { afterAll, describe, expect, it } from "vitest";
 
 /**
  * Integration tests for GutenOcrBackend.

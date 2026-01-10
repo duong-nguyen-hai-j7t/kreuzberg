@@ -8,7 +8,7 @@
  * @group worker-pool
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 /**
  * Represents worker state throughout its lifecycle
@@ -132,7 +132,6 @@ class LifecycleWorker {
 class WorkerPool {
 	private workers: Map<string, LifecycleWorker> = new Map();
 	private nextId = 0;
-	private initialPoolSize: number;
 
 	constructor(size: number) {
 		this.initialPoolSize = size;
@@ -160,9 +159,7 @@ class WorkerPool {
 	}
 
 	getActiveWorkerCount(): number {
-		return Array.from(this.workers.values()).filter(
-			(w) => !w.getState().terminated
-		).length;
+		return Array.from(this.workers.values()).filter((w) => !w.getState().terminated).length;
 	}
 
 	terminateWorker(id: string): boolean {
@@ -534,9 +531,7 @@ describe("Worker Lifecycle", () => {
 			// Message handler should have been invoked
 			expect(messageHandler).toHaveBeenCalled();
 			// The message is wrapped in an event object with data property
-			expect(messageHandler).toHaveBeenCalledWith(
-				expect.objectContaining({ data: "test data" })
-			);
+			expect(messageHandler).toHaveBeenCalledWith(expect.objectContaining({ data: "test data" }));
 		});
 
 		it("should emit terminate event on termination", () => {

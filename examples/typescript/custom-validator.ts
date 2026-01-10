@@ -83,12 +83,11 @@ class PDFValidator implements ValidatorProtocol {
 			return;
 		}
 
-		const pdfMetadata = result.metadata.pdf;
-		if (!pdfMetadata) {
+		if (result.metadata.format_type !== "pdf") {
 			throw new Error("ValidationError: PDF metadata missing");
 		}
 
-		const pageCount = pdfMetadata.pageCount;
+		const pageCount = result.metadata.page_count;
 		if (!pageCount || pageCount < this.minPages) {
 			throw new Error(`ValidationError: PDF has too few pages (${pageCount})`);
 		}

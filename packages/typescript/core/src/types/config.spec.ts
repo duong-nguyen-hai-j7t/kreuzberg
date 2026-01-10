@@ -5,7 +5,7 @@
  * font provider and add custom font directories.
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import type { FontConfig, PdfConfig } from "./config";
 
 describe("FontConfig", () => {

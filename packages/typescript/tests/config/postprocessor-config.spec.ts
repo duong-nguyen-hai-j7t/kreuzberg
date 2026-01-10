@@ -5,8 +5,8 @@
  * post-processing and control specific processors.
  */
 
-import { describe, it, expect } from "vitest";
-import type { PostProcessorConfig, ExtractionConfig } from "@kreuzberg/core";
+import type { ExtractionConfig, PostProcessorConfig } from "@kreuzberg/core";
+import { describe, expect, it } from "vitest";
 
 describe("WASM: PostProcessorConfig", () => {
 	describe("type definitions", () => {
@@ -110,21 +110,13 @@ describe("WASM: PostProcessorConfig", () => {
 			const cloned = structuredClone(extractionConfig);
 
 			expect(cloned.postprocessor?.enabled).toBe(true);
-			expect(cloned.postprocessor?.enabledProcessors).toEqual([
-				"grammar",
-				"clarity",
-			]);
+			expect(cloned.postprocessor?.enabledProcessors).toEqual(["grammar", "clarity"]);
 		});
 
 		it("should preserve complex processor lists", () => {
 			const config: PostProcessorConfig = {
 				enabled: true,
-				enabledProcessors: [
-					"spell-check",
-					"grammar-check",
-					"style-check",
-					"format-check",
-				],
+				enabledProcessors: ["spell-check", "grammar-check", "style-check", "format-check"],
 				disabledProcessors: ["debug-mode", "verbose-output"],
 			};
 
@@ -137,13 +129,10 @@ describe("WASM: PostProcessorConfig", () => {
 
 	describe("memory efficiency", () => {
 		it("should not create excessive objects", () => {
-			const configs: PostProcessorConfig[] = Array.from(
-				{ length: 1000 },
-				() => ({
-					enabled: true,
-					enabledProcessors: ["proc1", "proc2"],
-				})
-			);
+			const configs: PostProcessorConfig[] = Array.from({ length: 1000 }, () => ({
+				enabled: true,
+				enabledProcessors: ["proc1", "proc2"],
+			}));
 
 			expect(configs).toHaveLength(1000);
 			configs.forEach((config) => {
@@ -152,10 +141,7 @@ describe("WASM: PostProcessorConfig", () => {
 		});
 
 		it("should handle large processor lists", () => {
-			const processors = Array.from(
-				{ length: 100 },
-				(_, i) => `processor_${i}`
-			);
+			const processors = Array.from({ length: 100 }, (_, i) => `processor_${i}`);
 			const config: PostProcessorConfig = {
 				enabled: true,
 				enabledProcessors: processors,
@@ -205,10 +191,7 @@ describe("WASM: PostProcessorConfig", () => {
 
 			expect(config.postprocessor).toBeDefined();
 			expect(config.postprocessor?.enabled).toBe(true);
-			expect(config.postprocessor?.enabledProcessors).toEqual([
-				"processor1",
-				"processor2",
-			]);
+			expect(config.postprocessor?.enabledProcessors).toEqual(["processor1", "processor2"]);
 		});
 
 		it("should handle null postprocessor config", () => {
@@ -344,11 +327,7 @@ describe("WASM: PostProcessorConfig", () => {
 		it("should support enabling specific processors", () => {
 			const config: PostProcessorConfig = {
 				enabled: true,
-				enabledProcessors: [
-					"spell-check",
-					"grammar-check",
-					"clarity-enhancement",
-				],
+				enabledProcessors: ["spell-check", "grammar-check", "clarity-enhancement"],
 			};
 
 			expect(config.enabledProcessors).toHaveLength(3);

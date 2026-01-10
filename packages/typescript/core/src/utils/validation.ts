@@ -15,7 +15,7 @@ function getNativeModule(): Record<string, any> {
 	if (!nativeModule) {
 		try {
 			nativeModule = require("kreuzberg-node");
-		} catch (error) {
+		} catch (_error) {
 			throw new Error("Unable to load native kreuzberg-node module. Please ensure it is properly compiled.");
 		}
 	}
@@ -43,7 +43,7 @@ function getNativeModule(): Record<string, any> {
  * ```
  */
 export function validateBinarizationMethod(method: string): void {
-	const validator = getNativeModule().validateBinarizationMethod;
+	const validator = getNativeModule()['validateBinarizationMethod'];
 	if (!validator(method)) {
 		throw new Error(`Invalid binarization method: ${method}`);
 	}
@@ -69,7 +69,7 @@ export function validateBinarizationMethod(method: string): void {
  * ```
  */
 export function validateOcrBackend(backend: string): void {
-	const validator = getNativeModule().validateOcrBackend;
+	const validator = getNativeModule()['validateOcrBackend'];
 	if (!validator(backend)) {
 		throw new Error(`Invalid OCR backend: ${backend}`);
 	}
@@ -95,7 +95,7 @@ export function validateOcrBackend(backend: string): void {
  * ```
  */
 export function validateLanguageCode(code: string): void {
-	const validator = getNativeModule().validateLanguageCode;
+	const validator = getNativeModule()['validateLanguageCode'];
 	if (!validator(code)) {
 		throw new Error(`Invalid language code: ${code}`);
 	}
@@ -121,7 +121,7 @@ export function validateLanguageCode(code: string): void {
  * ```
  */
 export function validateTokenReductionLevel(level: string): void {
-	const validator = getNativeModule().validateTokenReductionLevel;
+	const validator = getNativeModule()['validateTokenReductionLevel'];
 	if (!validator(level)) {
 		throw new Error(`Invalid token reduction level: ${level}`);
 	}
@@ -147,7 +147,7 @@ export function validateTokenReductionLevel(level: string): void {
  * ```
  */
 export function validateTesseractPsm(psm: number): void {
-	const validator = getNativeModule().validateTesseractPsm;
+	const validator = getNativeModule()['validateTesseractPsm'];
 	if (!validator(psm)) {
 		throw new Error(`Invalid Tesseract PSM: ${psm}. Valid range: 0-13`);
 	}
@@ -173,7 +173,7 @@ export function validateTesseractPsm(psm: number): void {
  * ```
  */
 export function validateTesseractOem(oem: number): void {
-	const validator = getNativeModule().validateTesseractOem;
+	const validator = getNativeModule()['validateTesseractOem'];
 	if (!validator(oem)) {
 		throw new Error(`Invalid Tesseract OEM: ${oem}. Valid range: 0-3`);
 	}
@@ -199,7 +199,7 @@ export function validateTesseractOem(oem: number): void {
  * ```
  */
 export function validateOutputFormat(format: string): void {
-	const validator = getNativeModule().validateOutputFormat;
+	const validator = getNativeModule()['validateOutputFormat'];
 	if (!validator(format)) {
 		throw new Error(`Invalid output format: ${format}`);
 	}
@@ -225,7 +225,7 @@ export function validateOutputFormat(format: string): void {
  * ```
  */
 export function validateConfidence(confidence: number): void {
-	const validator = getNativeModule().validateConfidence;
+	const validator = getNativeModule()['validateConfidence'];
 	if (!validator(confidence)) {
 		throw new Error(`Invalid confidence: ${confidence}. Valid range: 0.0-1.0`);
 	}
@@ -251,7 +251,7 @@ export function validateConfidence(confidence: number): void {
  * ```
  */
 export function validateDpi(dpi: number): void {
-	const validator = getNativeModule().validateDpi;
+	const validator = getNativeModule()['validateDpi'];
 	if (!validator(dpi)) {
 		throw new Error(`Invalid DPI: ${dpi}. Valid range: 1-2400`);
 	}
@@ -278,7 +278,7 @@ export function validateDpi(dpi: number): void {
  * ```
  */
 export function validateChunkingParams(maxChars: number, maxOverlap: number): void {
-	const validator = getNativeModule().validateChunkingParams;
+	const validator = getNativeModule()['validateChunkingParams'];
 	if (!validator(maxChars, maxOverlap)) {
 		throw new Error(`Invalid chunking params: maxChars=${maxChars}, maxOverlap=${maxOverlap}`);
 	}
@@ -298,7 +298,7 @@ export function validateChunkingParams(maxChars: number, maxOverlap: number): vo
  * ```
  */
 export async function getValidBinarizationMethods(): Promise<string[]> {
-	const getter = getNativeModule().getValidBinarizationMethods;
+	const getter = getNativeModule()['getValidBinarizationMethods'];
 	return getter();
 }
 
@@ -316,7 +316,7 @@ export async function getValidBinarizationMethods(): Promise<string[]> {
  * ```
  */
 export async function getValidLanguageCodes(): Promise<string[]> {
-	const getter = getNativeModule().getValidLanguageCodes;
+	const getter = getNativeModule()['getValidLanguageCodes'];
 	return getter();
 }
 
@@ -334,7 +334,7 @@ export async function getValidLanguageCodes(): Promise<string[]> {
  * ```
  */
 export async function getValidOcrBackends(): Promise<string[]> {
-	const getter = getNativeModule().getValidOcrBackends;
+	const getter = getNativeModule()['getValidOcrBackends'];
 	return getter();
 }
 
@@ -352,6 +352,6 @@ export async function getValidOcrBackends(): Promise<string[]> {
  * ```
  */
 export async function getValidTokenReductionLevels(): Promise<string[]> {
-	const getter = getNativeModule().getValidTokenReductionLevels;
+	const getter = getNativeModule()['getValidTokenReductionLevels'];
 	return getter();
 }

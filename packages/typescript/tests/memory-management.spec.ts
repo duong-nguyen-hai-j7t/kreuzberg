@@ -13,7 +13,7 @@
  * @group critical
  */
 
-import { describe, expect, it, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 /**
  * Memory allocation tracker for WASM module

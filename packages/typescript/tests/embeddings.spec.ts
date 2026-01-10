@@ -184,11 +184,7 @@ describe("WASM: Embeddings", () => {
 
 	describe("batch embedding operations", () => {
 		it("should generate embeddings for multiple chunks", () => {
-			const chunks = [
-				"First chunk of text",
-				"Second chunk of text",
-				"Third chunk of text",
-			];
+			const chunks = ["First chunk of text", "Second chunk of text", "Third chunk of text"];
 
 			const embeddings = chunks.map((chunk) => generateEmbedding(chunk, 256));
 
@@ -258,11 +254,7 @@ describe("WASM: Embeddings", () => {
 		});
 
 		it("should maintain embedding correspondence with chunks", () => {
-			const texts = [
-				"Introduction paragraph",
-				"Main content section",
-				"Conclusion remarks",
-			];
+			const texts = ["Introduction paragraph", "Main content section", "Conclusion remarks"];
 
 			const chunks: TestChunk[] = texts.map((text, i) => ({
 				content: text,
@@ -287,9 +279,7 @@ describe("WASM: Embeddings", () => {
 			const vector = [3, 4]; // magnitude = 5
 			const normalized = normalizeVector(vector);
 
-			const magnitude = Math.sqrt(
-				normalized[0] * normalized[0] + normalized[1] * normalized[1]
-			);
+			const magnitude = Math.sqrt(normalized[0] * normalized[0] + normalized[1] * normalized[1]);
 
 			expect(magnitude).toBeCloseTo(1, 5);
 		});

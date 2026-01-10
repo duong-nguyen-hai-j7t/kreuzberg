@@ -92,13 +92,13 @@ function generateMarkdownTable(cells: string[][]): string {
 
 	// Add first row (header)
 	if (cells[0]) {
-		lines.push("| " + cells[0].join(" | ") + " |");
-		lines.push("|" + cells[0].map(() => " --- ").join("|") + "|");
+		lines.push(`| ${cells[0].join(" | ")} |`);
+		lines.push(`|${cells[0].map(() => " --- ").join("|")}|`);
 	}
 
 	// Add data rows
 	for (let i = 1; i < cells.length; i++) {
-		lines.push("| " + cells[i].join(" | ") + " |");
+		lines.push(`| ${cells[i].join(" | ")} |`);
 	}
 
 	return lines.join("\n");
@@ -333,7 +333,10 @@ describe("WASM: Tables Extraction", () => {
 					pageNumber: 1,
 				},
 				{
-					cells: [["C", "D"], ["E", "F"]],
+					cells: [
+						["C", "D"],
+						["E", "F"],
+					],
 					markdown: "| C | D |\n| E | F |",
 					pageNumber: 2,
 				},
@@ -390,7 +393,11 @@ describe("WASM: Tables Extraction", () => {
 
 		it("should handle table with many columns", () => {
 			const cols = 15;
-			const cells: string[][] = [Array(cols).fill(null).map((_, i) => `Col${i}`)];
+			const cells: string[][] = [
+				Array(cols)
+					.fill(null)
+					.map((_, i) => `Col${i}`),
+			];
 
 			const markdown = generateMarkdownTable(cells);
 
