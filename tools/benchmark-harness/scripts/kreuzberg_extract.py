@@ -14,13 +14,20 @@ import sys
 import time
 from typing import Any
 
-from kreuzberg import batch_extract_files_sync, extract_file, extract_file_sync
+from kreuzberg import (
+    ExtractionConfig,
+    batch_extract_files_sync,
+    extract_file,
+    extract_file_sync,
+)
 
 
 def extract_sync(file_path: str) -> dict[str, Any]:
     """Extract using synchronous API."""
+    # Use minimal config to disable quality processing for benchmarking
+    config = ExtractionConfig()
     start = time.perf_counter()
-    result = extract_file_sync(file_path)
+    result = extract_file_sync(file_path, config=config)
     duration_ms = (time.perf_counter() - start) * 1000.0
 
     return {
@@ -32,8 +39,10 @@ def extract_sync(file_path: str) -> dict[str, Any]:
 
 async def extract_async(file_path: str) -> dict[str, Any]:
     """Extract using asynchronous API."""
+    # Use minimal config to disable quality processing for benchmarking
+    config = ExtractionConfig()
     start = time.perf_counter()
-    result = await extract_file(file_path)
+    result = await extract_file(file_path, config=config)
     duration_ms = (time.perf_counter() - start) * 1000.0
 
     return {
@@ -45,8 +54,10 @@ async def extract_async(file_path: str) -> dict[str, Any]:
 
 def extract_batch_sync(file_paths: list[str]) -> list[dict[str, Any]]:
     """Extract multiple files using batch API."""
+    # Use minimal config to disable quality processing for benchmarking
+    config = ExtractionConfig()
     start = time.perf_counter()
-    results = batch_extract_files_sync(file_paths)  # type: ignore[arg-type]
+    results = batch_extract_files_sync(file_paths, config=config)  # type: ignore[arg-type]
     total_duration_ms = (time.perf_counter() - start) * 1000.0
 
     per_file_duration_ms = total_duration_ms / len(file_paths) if file_paths else 0
