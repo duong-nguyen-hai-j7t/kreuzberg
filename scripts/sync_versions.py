@@ -422,7 +422,7 @@ def main():
     unchanged_files: List[str] = []
 
     for pkg_json in repo_root.rglob("package.json"):
-        if any(part in pkg_json.parts for part in ["node_modules", ".git", "target", "dist", "examples"]):
+        if any(part in pkg_json.parts for part in ["node_modules", ".git", "target", "dist", "bin", "obj", "tmp"]):
             continue
 
         changed, old_ver, new_ver = update_package_json(pkg_json, version)
@@ -436,6 +436,7 @@ def main():
 
     for pyproject in [
         repo_root / "packages/python/pyproject.toml",
+        repo_root / "examples/python/pyproject.toml",
     ]:
         if pyproject.exists():
             changed, old_ver, new_ver = update_pyproject_toml(pyproject, version)
@@ -534,7 +535,7 @@ def main():
         ),
         (
             repo_root / "packages/java/README.md",
-            r'\d+\.\d+\.\d+-rc\.\d+',
+            r'\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?',
             version,
         ),
         (
@@ -544,12 +545,12 @@ def main():
         ),
         (
             repo_root / "packages/go/README.md",
-            r'\d+\.\d+\.\d+-rc\.\d+',
+            r'\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?',
             version,
         ),
         (
             repo_root / "packages/go/v4/doc.go",
-            r'\d+\.\d+\.\d+-rc\.\d+',
+            r'\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?',
             version,
         ),
         (
@@ -624,12 +625,12 @@ def main():
         ),
         (
             repo_root / "docs/reference/api-go.md",
-            r'(\d+\.\d+\.\d+-rc\.\d+)',
+            r'\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?',
             version,
         ),
         (
             repo_root / "docs/reference/api-java.md",
-            r'(\d+\.\d+\.\d+-rc\.\d+)',
+            r'\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?',
             version,
         ),
         # Test app descriptions
@@ -642,6 +643,39 @@ def main():
             repo_root / "tests/test_apps/python/pyproject.toml",
             r'(description = "Comprehensive API coverage test for Kreuzberg )[\d\.\-rcRC]+( Python bindings")',
             rf"\g<1>{version}\g<2>",
+        ),
+        # Doc comments with version examples
+        (
+            repo_root / "crates/kreuzberg-php/src/lib.rs",
+            r'(Version string in semver format \(e\.g\., ")([^"]+)("\))',
+            rf'\g<1>{version}\g<3>',
+        ),
+        (
+            repo_root / "packages/csharp/Kreuzberg/KreuzbergClient.cs",
+            r'(Version string in format ")([^"]+)(" or similar)',
+            rf'\g<1>{version}\g<3>',
+        ),
+        # Docker compose images
+        (
+            repo_root / "tests/test_apps/docker/docker-compose.yml",
+            r'(image: goldziher/kreuzberg:)\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?(-core)?',
+            rf'\g<1>{version}\g<2>',
+        ),
+        # Test app source code version references
+        (
+            repo_root / "tests/test_apps/rust/src/main.rs",
+            r'(//! Comprehensive test suite for Kreuzberg )\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?( Rust library)',
+            rf'\g<1>{version}\g<2>',
+        ),
+        (
+            repo_root / "tests/test_apps/rust/src/main.rs",
+            r'(println!\("\\nVersion: kreuzberg )\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?("\);)',
+            rf'\g<1>{version}\g<2>',
+        ),
+        (
+            repo_root / "tests/test_apps/python/main.py",
+            r'("""Comprehensive test suite for Kreuzberg Python bindings v)\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?(\.)$',
+            rf'\g<1>{version}\g<2>',
         ),
     ]
 
@@ -662,7 +696,7 @@ def main():
     for cargo_toml in repo_root.rglob("Cargo.toml"):
         if cargo_toml == repo_root / "Cargo.toml":
             continue
-        if "target" in cargo_toml.parts or "tmp" in cargo_toml.parts or "vendor" in cargo_toml.parts:
+        if any(part in cargo_toml.parts for part in ["target", "tmp", "vendor", "bin", "obj", "node_modules", "stage"]):
             continue
 
         content = cargo_toml.read_text()
@@ -682,7 +716,7 @@ def main():
                     unchanged_files.append(str(rel_path))
 
     for go_mod in repo_root.rglob("go.mod"):
-        if "target" in go_mod.parts or "vendor" in go_mod.parts:
+        if any(part in go_mod.parts for part in ["target", "vendor", "bin", "obj", "node_modules", "tmp", "stage"]):
             continue
 
         changed, old_ver, new_ver = update_go_mod(go_mod, f"{version}")

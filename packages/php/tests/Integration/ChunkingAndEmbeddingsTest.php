@@ -251,13 +251,14 @@ final class ChunkingAndEmbeddingsTest extends TestCase
 
         $chunk = $result->chunks[0];
 
-        $this->assertObjectHasProperty(
-            'metadata',
-            $chunk,
-            'Chunk should have metadata',
+        // Metadata is accessible via getMetadata() method
+        $this->assertTrue(
+            method_exists($chunk, 'getMetadata'),
+            'Chunk should have getMetadata method',
         );
+        $metadata = $chunk->getMetadata();
         $this->assertNotNull(
-            $chunk->metadata,
+            $metadata,
             'Chunk metadata should not be null',
         );
     }

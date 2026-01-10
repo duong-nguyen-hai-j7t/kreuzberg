@@ -133,32 +133,52 @@ final class ErrorHandlingTest extends TestCase
         }
     }
 
+    /**
+     * Batch operations return error results in metadata for individual failures
+     * rather than throwing exceptions. This allows the batch to continue.
+     */
     #[Test]
-    public function it_throws_exception_for_batch_with_nonexistent_files(): void
+    public function it_handles_batch_with_nonexistent_files_gracefully(): void
     {
         $files = [
             '/nonexistent/file1.pdf',
             '/nonexistent/file2.pdf',
         ];
 
-        $this->expectException(KreuzbergException::class);
-
         $kreuzberg = new Kreuzberg();
-        $kreuzberg->batchExtractFiles($files);
+        $results = $kreuzberg->batchExtractFiles($files);
+
+        $this->assertCount(2, $results, 'Should return results for all files');
+        foreach ($results as $result) {
+            $hasError = str_starts_with($result->content, 'Error:');
+            $this->assertTrue($hasError, 'Invalid file result should indicate error');
+        }
     }
 
+    /**
+     * Batch operations return error results in metadata for individual failures
+     * rather than throwing exceptions. This allows the batch to continue.
+     */
     #[Test]
-    public function it_throws_exception_for_batch_with_mixed_valid_invalid_files(): void
+    public function it_handles_batch_with_mixed_valid_invalid_files_gracefully(): void
     {
+        $validFile = $this->testDocumentsPath . '/pdfs/code_and_formula.pdf';
+        if (!file_exists($validFile)) {
+            $this->markTestSkipped("Test file not found: {$validFile}");
+        }
+
         $files = [
-            $this->testDocumentsPath . '/pdfs/code_and_formula.pdf',
+            $validFile,
             '/nonexistent/file.pdf',
         ];
 
-        $this->expectException(KreuzbergException::class);
-
         $kreuzberg = new Kreuzberg();
-        $kreuzberg->batchExtractFiles($files);
+        $results = $kreuzberg->batchExtractFiles($files);
+
+        $this->assertCount(2, $results, 'Should return results for all files');
+        $this->assertNotEmpty($results[0]->content, 'Valid file should have content');
+        $hasError = str_starts_with($results[1]->content, 'Error:');
+        $this->assertTrue($hasError, 'Invalid file result should indicate error');
     }
 
     #[Test]
@@ -183,16 +203,24 @@ final class ErrorHandlingTest extends TestCase
         $kreuzberg->batchExtractBytes($dataList, $mimeTypes);
     }
 
+    /**
+     * Batch operations return error results in metadata for individual failures
+     * rather than throwing exceptions. This allows the batch to continue.
+     */
     #[Test]
-    public function it_throws_exception_for_batch_with_empty_byte_arrays(): void
+    public function it_handles_batch_with_empty_byte_arrays_gracefully(): void
     {
         $dataList = ['', ''];
         $mimeTypes = ['application/pdf', 'application/pdf'];
 
-        $this->expectException(KreuzbergException::class);
-
         $kreuzberg = new Kreuzberg();
-        $kreuzberg->batchExtractBytes($dataList, $mimeTypes);
+        $results = $kreuzberg->batchExtractBytes($dataList, $mimeTypes);
+
+        $this->assertCount(2, $results, 'Should return results for all items');
+        foreach ($results as $result) {
+            $hasError = str_starts_with($result->content, 'Error:');
+            $this->assertTrue($hasError, 'Empty byte array result should indicate error');
+        }
     }
 
     #[Test]

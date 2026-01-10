@@ -245,12 +245,13 @@ final class ErrorHandlingTest extends TestCase
 
     /**
      * Test 8: Concurrent error states - batch with mixed valid/invalid files.
+     *
+     * Batch operations return error results in metadata for individual failures
+     * rather than throwing exceptions. This allows the batch to continue.
      */
     #[Test]
-    public function it_throws_error_for_batch_with_invalid_files(): void
+    public function it_handles_batch_with_invalid_files_gracefully(): void
     {
-        $this->expectException(KreuzbergException::class);
-
         $filePath = $this->testDocumentsPath . '/pdfs/code_and_formula.pdf';
         if (!file_exists($filePath)) {
             $this->markTestSkipped("Test file not found: {$filePath}");
@@ -262,8 +263,12 @@ final class ErrorHandlingTest extends TestCase
         ];
 
         $kreuzberg = new Kreuzberg();
-        // Should fail when processing the invalid file in batch
-        $kreuzberg->batchExtractFiles($files);
+        $results = $kreuzberg->batchExtractFiles($files);
+
+        $this->assertCount(2, $results, 'Should return results for all files');
+        $this->assertNotEmpty($results[0]->content, 'Valid file should have content');
+        $hasError = str_starts_with($results[1]->content, 'Error:');
+        $this->assertTrue($hasError, 'Invalid file result should indicate error');
     }
 
     /**

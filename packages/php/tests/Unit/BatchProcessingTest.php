@@ -180,18 +180,30 @@ final class BatchProcessingTest extends TestCase
         $this->assertNotEmpty($results[0]->content);
     }
 
+    /**
+     * Batch operations return error results in metadata for individual failures
+     * rather than throwing exceptions. This allows the batch to continue.
+     */
     #[Test]
-    public function it_throws_exception_for_batch_with_nonexistent_file(): void
+    public function it_handles_batch_with_nonexistent_file_gracefully(): void
     {
+        $validFile = $this->testDocumentsPath . '/pdfs/code_and_formula.pdf';
+        if (!file_exists($validFile)) {
+            $this->markTestSkipped("Test file not found: {$validFile}");
+        }
+
         $files = [
-            $this->testDocumentsPath . '/pdfs/code_and_formula.pdf',
+            $validFile,
             '/nonexistent/file.pdf',
         ];
 
-        $this->expectException(KreuzbergException::class);
-
         $kreuzberg = new Kreuzberg();
-        $kreuzberg->batchExtractFiles($files);
+        $results = $kreuzberg->batchExtractFiles($files);
+
+        $this->assertCount(2, $results, 'Should return results for all files');
+        $this->assertNotEmpty($results[0]->content, 'Valid file should have content');
+        $hasError = str_starts_with($results[1]->content, 'Error:');
+        $this->assertTrue($hasError, 'Invalid file result should indicate error');
     }
 
     #[Test]
