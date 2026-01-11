@@ -7,7 +7,7 @@ on:
     paths:
       - 'docs/**'
       - 'pyproject.toml'
-      - 'scripts/ci/docs/**'
+      - 'mkdocs.yml'
       - '.github/workflows/docs.yaml'
   workflow_dispatch:
 
@@ -26,8 +26,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -39,14 +37,10 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Install dependencies
-        run: scripts/ci/docs/install-dependencies.sh
-
-      - name: Configure Git for mike
-        run: scripts/ci/docs/configure-git-for-mike.sh
-
-      - name: Build v4 documentation with mike
-        run: scripts/ci/docs/build-v4-docs.sh
+      - name: Install dependencies and build docs
+        run: |
+          uv sync --group doc --no-editable --no-install-workspace --no-install-project
+          uv run --no-sync mkdocs build
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
