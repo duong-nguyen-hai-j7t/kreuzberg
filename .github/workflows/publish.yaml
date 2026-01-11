@@ -2074,8 +2074,8 @@ jobs:
 
   elixir-natives:
     name: Build Elixir native libs (${{ matrix.settings.label }})
-    needs: [prepare, check-hex]
-    if: ${{ needs.prepare.outputs.release_elixir == 'true' && (needs.check-hex.outputs.exists != 'true' || needs.prepare.outputs.dry_run == 'true') }}
+    needs: [prepare]
+    if: ${{ needs.prepare.outputs.release_elixir == 'true' }}
     runs-on: ${{ matrix.settings.os }}
     timeout-minutes: 180
     permissions:
@@ -2201,13 +2201,12 @@ jobs:
 
   upload-elixir-release:
     name: Upload Elixir binaries to GitHub Release
-    needs: [prepare, validate-versions, check-hex, elixir-natives]
+    needs: [prepare, validate-versions, elixir-natives]
     if: |
       always() &&
       needs.prepare.outputs.dry_run != 'true' &&
       needs.prepare.outputs.is_tag == 'true' &&
       needs.prepare.outputs.release_elixir == 'true' &&
-      needs.check-hex.outputs.exists != 'true' &&
       needs.elixir-natives.result == 'success'
     runs-on: ubuntu-latest
     permissions:

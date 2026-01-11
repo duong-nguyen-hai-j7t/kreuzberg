@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+#### Elixir Precompiled Binaries
+- **NIF binaries now uploaded to GitHub releases**: Fixed publish workflow that incorrectly skipped building and uploading Elixir NIF binaries when hex.pm package already existed ([#279](https://github.com/kreuzberg-dev/kreuzberg/issues/279))
+- The `elixir-natives` and `upload-elixir-release` jobs no longer depend on hex.pm package status, ensuring precompiled binaries are always available for `rustler_precompiled`
+
 #### PyPI Source Distribution
 - **sdist includes all workspace crates**: Fixed issue where `kreuzberg-tesseract` was missing from PyPI source distributions, causing builds from source to fail ([#277](https://github.com/kreuzberg-dev/kreuzberg/issues/277))
 - Changed `kreuzberg-tesseract` from published crate dependency to path dependency so maturin automatically includes it in sdist
@@ -1567,6 +1571,7 @@ This release introduces **Kreuzberg v4**, a complete rewrite with Rust core, pol
 - [Format Support](reference/formats.md) - Supported file formats
 - [Extraction Guide](guides/extraction.md) - Extraction examples
 
+[4.0.1]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.1
 [4.0.0]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0
 [4.0.0-rc.29]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.29
 [4.0.0-rc.28]: https://github.com/kreuzberg-dev/kreuzberg/releases/tag/v4.0.0-rc.28
