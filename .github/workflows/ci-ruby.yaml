@@ -74,9 +74,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        # FIXME: ARM64 disabled due to FFI library linking issues at test runtime
-        # See: https://github.com/kreuzberg-dev/kreuzberg/issues/278
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest]
     runs-on: ${{ matrix.os }}
     # Note: BUNDLE_GEMFILE is set per-step to avoid Windows path issues.
     # On Windows, github.workspace paths like D:/a/... get mangled to D:/d/a/... in bash shells.
@@ -493,9 +491,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        # FIXME: ARM64 disabled due to FFI library linking issues at test runtime
-        # See: https://github.com/kreuzberg-dev/kreuzberg/issues/278
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest]
     runs-on: ${{ matrix.os }}
     env:
       RUSTC_WRAPPER: ""
