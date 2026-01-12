@@ -8,18 +8,21 @@ retry_count=0
 install_cargo_llvm_cov() {
   echo "Attempting to install cargo-llvm-cov (attempt $((retry_count + 1))/$max_retries)..."
 
-  # Remove potentially corrupted cache on Windows to prevent fingerprint errors
-  if [[ "$RUNNER_OS" == "Windows" ]]; then
-    echo "Detected Windows platform. Clearing potentially corrupted cargo cache..."
-    # Remove the cargo-llvm-cov binary cache to force fresh install
-    rm -f ~/.cargo/bin/cargo-llvm-cov* 2>/dev/null || true
+  # Remove potentially corrupted binary cache on all platforms
+  echo "Clearing potentially corrupted cargo-llvm-cov binary..."
+  rm -f ~/.cargo/bin/cargo-llvm-cov* 2>/dev/null || true
 
+  # Platform-specific cache clearing
+  if [[ "$RUNNER_OS" == "Windows" ]]; then
+    echo "Detected Windows platform. Clearing additional cargo cache..."
     # Clear cargo registry index on Windows (can have corruption issues)
     rm -rf ~/.cargo/registry/index ~/.cargo/registry/cache/.cargo-ok 2>/dev/null || true
-
     # Force cargo to rebuild its internal state
     cargo metadata --quiet 2>/dev/null || true
   fi
+
+  # Clear cargo install fingerprints for cargo-llvm-cov to force fresh build
+  rm -rf /tmp/cargo-install*/release/.fingerprint/cargo-llvm-cov* 2>/dev/null || true
 
   # Install with force flag to bypass any cached state
   cargo install cargo-llvm-cov --force --locked 2>&1 || return 1

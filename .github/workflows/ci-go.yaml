@@ -77,8 +77,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install pkg-config (Windows)
+      - name: Install pkg-config (Windows, fallback)
         if: runner.os == 'Windows'
+        continue-on-error: true
         run: choco install pkgconfiglite -y
 
       - name: Configure Windows GNU toolchain env
@@ -280,8 +281,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install pkg-config (Windows)
+      - name: Install pkg-config (Windows, fallback)
         if: runner.os == 'Windows'
+        continue-on-error: true
         run: choco install pkgconfiglite -y
 
       - name: Configure Windows GNU toolchain env
