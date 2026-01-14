@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.0.5] - 2026-01-14
+
+### Added
+
+#### Go Module
+- **Automated FFI library installer**: New install command automatically downloads the correct FFI library for your platform from GitHub releases ([#281](https://github.com/kreuzberg-dev/kreuzberg/issues/281))
+  - Run `go run github.com/kreuzberg-dev/kreuzberg/packages/go/v4/cmd/install@latest` to install
+  - Supports macOS ARM64, Linux x86_64/ARM64, and Windows x86_64
+  - Outputs platform-specific CGO flags needed to build
+  - Eliminates manual download and configuration steps
+  - Security hardened: semver validation, path traversal protection, decompression bomb prevention, HTTP timeout
+
+---
+
 ## [4.0.4] - 2026-01-13
 
 ### Fixed

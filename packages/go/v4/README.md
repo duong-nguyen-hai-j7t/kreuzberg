@@ -54,14 +54,57 @@
 
 High-performance document intelligence for Go backed by the Rust core that powers every Kreuzberg binding.
 
-> **Version 4.0.3**
+> **Version 4.0.5**
 > Report issues at [github.com/kreuzberg-dev/kreuzberg](https://github.com/kreuzberg-dev/kreuzberg/issues).
 
 ## Install
 
 Kreuzberg Go binaries are **statically linked** — once built, they are self-contained and require no runtime library dependencies. Only the static library is needed at build time.
 
-### Quick Start (Monorepo Development)
+### Quick Start (Recommended)
+
+Use the install command to automatically download the FFI library for your platform:
+
+```bash
+# Install the FFI library (downloads from GitHub releases)
+go run github.com/kreuzberg-dev/kreuzberg/packages/go/v4/cmd/install@latest
+
+# The command will print the CGO environment variables needed
+# Example output:
+#   export CGO_CFLAGS="-I$HOME/.kreuzberg/include"
+#   export CGO_LDFLAGS="$HOME/.kreuzberg/lib/darwin_arm64/libkreuzberg_ffi.a -framework CoreFoundation ..."
+```
+
+Then add the Go module to your project:
+
+```bash
+go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@latest
+```
+
+Build with the CGO flags from the install command:
+
+```bash
+# Set the environment variables (add to your shell profile for persistence)
+export CGO_CFLAGS="-I$HOME/.kreuzberg/include"
+export CGO_LDFLAGS="..."  # Use the output from the install command
+
+go build
+```
+
+**Install command options:**
+
+```bash
+# Install a specific version
+go run github.com/kreuzberg-dev/kreuzberg/packages/go/v4/cmd/install@latest -version 4.0.5
+
+# Install to a custom directory
+go run github.com/kreuzberg-dev/kreuzberg/packages/go/v4/cmd/install@latest -dir /opt/kreuzberg
+
+# Show environment variables for existing installation
+go run github.com/kreuzberg-dev/kreuzberg/packages/go/v4/cmd/install@latest -env
+```
+
+### Monorepo Development
 
 For development in the Kreuzberg monorepo:
 
@@ -78,25 +121,11 @@ go build -v
 ./v4
 ```
 
-That's it! The resulting binary is self-contained and has no runtime dependencies on Kreuzberg libraries.
+The resulting binary is self-contained and has no runtime dependencies on Kreuzberg libraries.
 
-### Using Go Modules
+### Manual Installation
 
-To use this package via `go get`:
-
-```bash
-# Get the latest release
-go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@latest
-
-# Or a specific version
-go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@v4.0.3
-```
-
-You'll need to provide the static library at build time. See [Building with Static Libraries](#building-with-static-libraries) below.
-
-### Building with Static Libraries
-
-When building outside the Kreuzberg monorepo, you need to provide the static library (`.a` file on Unix, `.lib` on Windows).
+If you prefer manual installation over the install command:
 
 #### Option 1: Download Pre-built Static Library
 
@@ -104,23 +133,30 @@ Download the static library for your platform from [GitHub Releases](https://git
 
 ```bash
 # Example: Linux x86_64
-curl -LO https://github.com/kreuzberg-dev/kreuzberg/releases/download/v4.0.3/go-ffi-linux-x86_64.tar.gz
+curl -LO https://github.com/kreuzberg-dev/kreuzberg/releases/download/v4.0.5/go-ffi-linux-x86_64.tar.gz
 tar -xzf go-ffi-linux-x86_64.tar.gz
 
 # Copy to a permanent location
-mkdir -p ~/kreuzberg/lib
-cp kreuzberg-ffi/lib/libkreuzberg_ffi.a ~/kreuzberg/lib/
+mkdir -p ~/.kreuzberg/lib/linux_amd64
+mkdir -p ~/.kreuzberg/include
+cp kreuzberg-ffi/lib/libkreuzberg_ffi.a ~/.kreuzberg/lib/linux_amd64/
+cp kreuzberg-ffi/include/kreuzberg.h ~/.kreuzberg/include/
 ```
 
-Then build with `CGO_LDFLAGS`:
+Then set CGO flags (platform-specific):
 
 ```bash
-# Linux/macOS
-CGO_LDFLAGS="-L$HOME/kreuzberg/lib -lkreuzberg_ffi" go build
+# Linux
+export CGO_CFLAGS="-I$HOME/.kreuzberg/include"
+export CGO_LDFLAGS="-L$HOME/.kreuzberg/lib/linux_amd64 -Wl,-Bstatic -lkreuzberg_ffi -Wl,-Bdynamic -lpthread -ldl -lm -lstdc++"
 
-# Windows (MSVC)
-set CGO_LDFLAGS=-L%USERPROFILE%\kreuzberg\lib -lkreuzberg_ffi
-go build
+# macOS
+export CGO_CFLAGS="-I$HOME/.kreuzberg/include"
+export CGO_LDFLAGS="$HOME/.kreuzberg/lib/darwin_arm64/libkreuzberg_ffi.a -framework CoreFoundation -framework CoreServices -framework SystemConfiguration -framework Security -lc++"
+
+# Windows (PowerShell)
+$env:CGO_CFLAGS="-I$env:USERPROFILE\.kreuzberg\include"
+$env:CGO_LDFLAGS="-L$env:USERPROFILE\.kreuzberg\lib\windows_amd64 -lkreuzberg_ffi -lws2_32 -luserenv -lbcrypt -lntdll -static-libgcc -static-libstdc++"
 ```
 
 #### Option 2: Build Static Library Yourself
@@ -137,12 +173,10 @@ cargo build -p kreuzberg-ffi --release
 
 # The static library is now at: target/release/libkreuzberg_ffi.a
 # Copy it to a permanent location
-mkdir -p ~/kreuzberg/lib
-cp target/release/libkreuzberg_ffi.a ~/kreuzberg/lib/
-
-# Now you can build Go projects
-cd ~/my-go-project
-CGO_LDFLAGS="-L$HOME/kreuzberg/lib -lkreuzberg_ffi" go build
+mkdir -p ~/.kreuzberg/lib/$(go env GOOS)_$(go env GOARCH)
+mkdir -p ~/.kreuzberg/include
+cp target/release/libkreuzberg_ffi.a ~/.kreuzberg/lib/$(go env GOOS)_$(go env GOARCH)/
+cp crates/kreuzberg-ffi/kreuzberg.h ~/.kreuzberg/include/
 ```
 
 ### System Requirements
@@ -194,8 +228,11 @@ func main() {
 Build and run:
 
 ```bash
-# Build (make sure you have the static library available - see Install)
-CGO_LDFLAGS="-L$HOME/kreuzberg/lib -lkreuzberg_ffi" go build
+# First, install the FFI library (see Install section above)
+go run github.com/kreuzberg-dev/kreuzberg/packages/go/v4/cmd/install@latest
+
+# Build using the CGO flags from the install command output
+go build
 
 # Run - no library paths needed!
 ./myapp
