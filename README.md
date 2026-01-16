@@ -97,9 +97,6 @@ Each language binding provides comprehensive documentation with examples and bes
 
 > All language bindings include precompiled binaries for both x86_64 and aarch64 architectures on Linux and macOS.
 
-**Docker:**
-- **[Docker](https://docs.kreuzberg.dev/guides/docker/)** - Two images `core` and `full`. Available for both x86 and ARM
-
 ## Platform Support
 
 Complete architecture coverage across all language bindings:

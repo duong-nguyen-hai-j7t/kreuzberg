@@ -184,7 +184,7 @@ interface DocumentJob {
 	mimeType: string;
 }
 
-async function _processBatch(documents: DocumentJob[], concurrency: number = 3) {
+async function processBatch(documents: DocumentJob[], concurrency: number = 3) {
 	await initWasm();
 
 	const results: Record<string, string> = {};
@@ -441,7 +441,7 @@ interface DocumentJob {
 	mimeType: string;
 }
 
-async function _processBatch(documents: DocumentJob[], concurrency: number = 3) {
+async function processBatch(documents: DocumentJob[], concurrency: number = 3) {
 	await initWasm();
 
 	const results: Record<string, string> = {};

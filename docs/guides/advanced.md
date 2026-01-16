@@ -191,7 +191,7 @@ flowchart TD
     style ISOCodes fill:#FFB6C1
 ```
 
-Detect languages in extracted text using the fast `whatlang` library. Supports 60+ languages with ISO 639-3 codes.
+Detect languages in extracted text using the [`whatlang`](https://crates.io/crates/whatlang) Rust crate. Supports 60+ languages with ISO 639-3 codes.
 
 ### Configuration
 

@@ -1,4 +1,4 @@
-//! Language detection using whatlang library.
+//! Language detection using the whatlang Rust crate.
 //!
 //! Provides fast language detection for extracted text content.
 

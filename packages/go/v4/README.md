@@ -63,7 +63,7 @@ Kreuzberg Go binaries are **statically linked** - once built, they are self-cont
 
 ### Quick Start (Recommended)
 
-The simplest way to get started is using `go generate`:
+The simplest way to get started is using `go generate`. This automated approach handles all platform-specific configuration:
 
 ```bash
 # Step 1: Get the module
@@ -76,45 +76,75 @@ go generate github.com/kreuzberg-dev/kreuzberg/packages/go/v4
 go build
 ```
 
-That's it! The `go generate` command:
-1. Downloads the pre-built FFI library for your platform
-2. Generates a `cgo_flags.go` file with the correct CGO directives
-3. No environment variables needed!
+#### What `go generate` Does
 
-**Install command options:**
+When you run `go generate`, the `//go:generate` directive in `generate.go` automatically:
+
+1. **Detects your platform** - Identifies your OS and architecture (macOS ARM64, Linux x86_64, Linux ARM64, Windows x86_64)
+2. **Downloads pre-built FFI library** - Fetches `libkreuzberg_ffi.a` and `kreuzberg.h` from GitHub Releases
+3. **Stores in `~/.kreuzberg/`** - Platform-specific layout: `lib/{platform}/libkreuzberg_ffi.a`, `include/kreuzberg.h`
+4. **Generates `cgo_flags.go`** - Creates platform-specific CGO directives in your package directory
+5. **No environment variables needed** - The generated file handles all CGO configuration automatically
+
+The resulting binary is self-contained with no runtime dependencies on Kreuzberg libraries.
+
+### Installation Command Options
+
+If you need more control, run the installer directly with these flags:
 
 ```bash
-# Install a specific version
+# Install a specific version (default is 4.0.6)
 go run github.com/kreuzberg-dev/kreuzberg/packages/go/v4/cmd/install@latest -version 4.0.6
 
-# Install to a custom directory
+# Install to a custom directory (default is ~/.kreuzberg)
 go run github.com/kreuzberg-dev/kreuzberg/packages/go/v4/cmd/install@latest -dir /opt/kreuzberg
 
-# Show environment variables for existing installation
+# Show environment variables for existing installation (no download)
 go run github.com/kreuzberg-dev/kreuzberg/packages/go/v4/cmd/install@latest -env
 
-# Skip generating cgo_flags.go (if you prefer setting env vars manually)
+# Skip generating cgo_flags.go (manual environment setup)
 go run github.com/kreuzberg-dev/kreuzberg/packages/go/v4/cmd/install@latest -no-generate
+
+# Specify custom output directory for generated cgo_flags.go
+go run github.com/kreuzberg-dev/kreuzberg/packages/go/v4/cmd/install@latest -output ./mypackage
 ```
+
+**Flag Details:**
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-version` | `4.0.6` | Semantic version to download from GitHub Releases (e.g., `4.0.6`, `4.1.0`) |
+| `-dir` | `~/.kreuzberg` | Installation directory for FFI library and headers |
+| `-env` | `false` | Print environment variables for existing installation; skip download |
+| `-output` | Current directory | Output directory for generated `cgo_flags.go` file |
+| `-no-generate` | `false` | Skip generating `cgo_flags.go`; useful for manual CGO setup |
 
 ### Monorepo Development
 
-For development in the Kreuzberg monorepo, use the `kreuzberg_dev` build tag:
+For development in the Kreuzberg monorepo, use the `kreuzberg_dev` build tag. This tag enables a special CGO configuration that points to the local Rust build instead of the installed FFI library:
 
 ```bash
-# Build the static FFI library
+# Build the static FFI library from source
 cargo build -p kreuzberg-ffi --release
 
-# Go build with the dev tag (uses target/release/ paths)
+# Go build with the dev tag (points to target/release/)
 cd packages/go/v4
 go build -tags kreuzberg_dev -v
 
-# Run your binary (no library path needed - it's statically linked)
+# Run your binary (statically linked, no dependencies)
 ./v4
 ```
 
-The `kreuzberg_dev` tag enables the development CGO configuration that points to `target/release/`.
-The resulting binary is self-contained and has no runtime dependencies on Kreuzberg libraries.
+**How `kreuzberg_dev` Works:**
+
+The `kreuzberg_dev` build tag is controlled by the `//go:build !kreuzberg_dev` constraint in generated `cgo_flags.go`. When you build with `-tags kreuzberg_dev`, that file is skipped and an alternate development configuration is used that:
+
+1. Points to `target/release/libkreuzberg_ffi.a` from your Rust build
+2. Points to `crates/kreuzberg-ffi/include/kreuzberg.h` from source
+3. Requires a recent `cargo build -p kreuzberg-ffi --release` run
+4. Is useful for iterating on Rust changes without reinstalling FFI libraries
+
+To verify your development build is using the right paths, check the generated binaries compile cleanly against the Rust source.
 
 ### Manual Installation
 
@@ -196,6 +226,8 @@ The resulting binary will have ONNX Runtime statically linked or dynamically lin
 
 ## Quickstart
 
+Here's a minimal example to extract content from a PDF:
+
 ```go
 package main
 
@@ -221,7 +253,7 @@ func main() {
 Build and run:
 
 ```bash
-# First time setup (one-time)
+# First time setup (one-time) - downloads FFI and generates CGO configuration
 go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@latest
 go generate github.com/kreuzberg-dev/kreuzberg/packages/go/v4
 
@@ -230,7 +262,7 @@ go build
 ./myapp
 ```
 
-The binary is self-contained and can be distributed without any Kreuzberg library dependencies.
+The resulting binary is self-contained and can be distributed without any Kreuzberg library runtime dependencies. All dependencies are statically linked during compilation.
 
 ## Examples
 
