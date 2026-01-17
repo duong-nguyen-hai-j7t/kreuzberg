@@ -549,8 +549,9 @@ internal class HtmlConversionOptionsConverter : JsonConverter<HtmlConversionOpti
 
         if (!hasAnyValue)
         {
-            // Write null instead of empty object - FFI will use Option::None and apply defaults
-            writer.WriteNullValue();
+            // Write empty object when no values are set; FFI expects {} not null
+            writer.WriteStartObject();
+            writer.WriteEndObject();
             return;
         }
 

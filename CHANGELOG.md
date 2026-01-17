@@ -11,6 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+#### CI/CD
+- **Ruby CI cache cleanup**: Fixed Cargo fingerprint errors caused by stale rb_sys build artifacts
+  - Added cleanup of `packages/ruby/tmp/` directory in "Detect partial cache hit and clean stale fingerprints" step
+  - Prevents fingerprint mismatches when GitHub Actions restores partial Cargo cache
+  - Applied to both build-ruby-gem and test-ruby jobs
+
+#### C#
+- **HtmlConversionOptions serialization with no values**: Fixed JSON serialization to write empty object `{}` instead of `null` when HtmlConversionOptions has no values set
+  - Rust FFI expects an object type, not null value
+  - Changed `WriteNullValue()` to `WriteStartObject()` + `WriteEndObject()` for empty options
+  - Resolves "Runtime error: html_options must be an object" error on all HtmlToMarkdown calls with default options
+
 #### Python
 - **Type completions now working**: Fixed missing `_internal_bindings.pyi` type stub file in Python wheels ([#298](https://github.com/kreuzberg-dev/kreuzberg/issues/298))
   - Added `.pyi` file to Maturin include configuration in `pyproject.toml`
