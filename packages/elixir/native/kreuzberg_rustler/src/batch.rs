@@ -37,7 +37,7 @@ pub fn batch_extract_files<'a>(env: Env<'a>, paths: Vec<String>, mime_type: Opti
             Ok(result) => match convert_extraction_result_to_term(env, &result) {
                 Ok(term) => results.push(term),
                 Err(e) => {
-                    return Ok((atoms::error(), format!("Failed to encode result for '{}': {}", path, e)).encode(env))
+                    return Ok((atoms::error(), format!("Failed to encode result for '{}': {}", path, e)).encode(env));
                 }
             },
             Err(e) => return Ok((atoms::error(), format!("Extraction failed for '{}': {}", path, e)).encode(env)),
@@ -83,7 +83,7 @@ pub fn batch_extract_files_with_options<'a>(
             Ok(result) => match convert_extraction_result_to_term(env, &result) {
                 Ok(term) => results.push(term),
                 Err(e) => {
-                    return Ok((atoms::error(), format!("Failed to encode result for '{}': {}", path, e)).encode(env))
+                    return Ok((atoms::error(), format!("Failed to encode result for '{}': {}", path, e)).encode(env));
                 }
             },
             Err(e) => return Ok((atoms::error(), format!("Extraction failed for '{}': {}", path, e)).encode(env)),
@@ -149,7 +149,7 @@ pub fn batch_extract_bytes<'a>(
                         atoms::error(),
                         format!("Failed to encode result at index {}: {}", idx, e),
                     )
-                        .encode(env))
+                        .encode(env));
                 }
             },
             Err(e) => return Ok((atoms::error(), format!("Extraction failed at index {}: {}", idx, e)).encode(env)),
@@ -222,7 +222,7 @@ pub fn batch_extract_bytes_with_options<'a>(
                         atoms::error(),
                         format!("Failed to encode result at index {}: {}", idx, e),
                     )
-                        .encode(env))
+                        .encode(env));
                 }
             },
             Err(e) => return Ok((atoms::error(), format!("Extraction failed at index {}: {}", idx, e)).encode(env)),

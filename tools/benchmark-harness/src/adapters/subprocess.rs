@@ -135,7 +135,7 @@ impl SubprocessAdapter {
             cmd.current_dir(dir);
         }
         cmd.args(&self.args);
-        cmd.arg(absolute_path.to_string_lossy().as_ref());
+        cmd.arg(&*absolute_path.to_string_lossy());
 
         for (key, value) in &self.env {
             cmd.env(key, value);
@@ -204,7 +204,7 @@ impl SubprocessAdapter {
             } else {
                 cwd.join(path)
             };
-            cmd.arg(absolute_path.to_string_lossy().as_ref());
+            cmd.arg(&*absolute_path.to_string_lossy());
         }
 
         for (key, value) in &self.env {

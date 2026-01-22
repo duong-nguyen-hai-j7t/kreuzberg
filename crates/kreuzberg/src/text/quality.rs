@@ -677,7 +677,7 @@ mod tests {
     fn test_normalize_whitespace_cow_no_changes() {
         let text = Cow::Borrowed("normaltext");
         let result = normalize_whitespace_cow(text);
-        assert_eq!(result.as_ref(), "normaltext");
+        assert_eq!(&*result, "normaltext");
     }
 
     #[test]
