@@ -213,7 +213,8 @@ jobs:
       fail-fast: true
       matrix:
         # TODO: Re-enable ubuntu-24.04-arm once cargo fingerprint issues on ARM64 are resolved
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        # TODO: Re-enable windows-latest once Tesseract installation issues are resolved
+        os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     env:
       RUSTC_WRAPPER: ""

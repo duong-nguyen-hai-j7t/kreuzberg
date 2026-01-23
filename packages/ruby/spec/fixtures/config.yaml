@@ -23,7 +23,7 @@ pdf_options:
     - password2
   extract_metadata: true
 
-images:
+image_extraction:
   extract_images: true
   target_dpi: 300
   max_image_dimension: 4096
