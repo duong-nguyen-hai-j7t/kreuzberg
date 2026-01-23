@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.1.1] - 2026-01-23
+
+### Fixed
+
+#### PPTX/PPSX Extraction (GitHub Issue #321)
+- **PPTX extraction no longer fails on shapes without txBody**: Image placeholders and other shapes that don't contain text (e.g., `<p:ph type="pic"/>`) are now gracefully skipped instead of causing a "No txBody found" parsing error
+- **PPSX (PowerPoint Show) files now supported**: Added MIME type detection for `.ppsx` extension (`application/vnd.openxmlformats-officedocument.presentationml.slideshow`)
+- **PPTM (PowerPoint Macro-Enabled) files now supported**: Added MIME type detection for `.pptm` extension (`application/vnd.ms-powerpoint.presentation.macroEnabled.12`)
+
+---
+
 ## [4.1.0] - 2026-01-21
 
 ### Added

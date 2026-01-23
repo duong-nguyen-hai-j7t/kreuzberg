@@ -60,9 +60,12 @@ fn parse_group(node: &Node) -> Result<Vec<SlideElement>> {
     match tag_name {
         "sp" => {
             let position = extract_position(node);
-            match parse_sp(node)? {
-                ParsedContent::Text(text) => elements.push(SlideElement::Text(text, position)),
-                ParsedContent::List(list) => elements.push(SlideElement::List(list, position)),
+            // parse_sp returns None for shapes without txBody (e.g., image placeholders)
+            if let Some(content) = parse_sp(node)? {
+                match content {
+                    ParsedContent::Text(text) => elements.push(SlideElement::Text(text, position)),
+                    ParsedContent::List(list) => elements.push(SlideElement::List(list, position)),
+                }
             }
         }
         "graphicFrame" => {
@@ -85,11 +88,17 @@ fn parse_group(node: &Node) -> Result<Vec<SlideElement>> {
     Ok(elements)
 }
 
-fn parse_sp(sp_node: &Node) -> Result<ParsedContent> {
-    let tx_body_node = sp_node
+fn parse_sp(sp_node: &Node) -> Result<Option<ParsedContent>> {
+    // Some shapes like image placeholders (<p:ph type="pic"/>) don't have txBody.
+    // These should be skipped gracefully - they contain no text to extract.
+    // GitHub Issue #321 Bug 1
+    let tx_body_node = match sp_node
         .children()
         .find(|n| n.tag_name().name() == "txBody" && n.tag_name().namespace() == Some(P_NAMESPACE))
-        .ok_or_else(|| KreuzbergError::parsing("No txBody found".to_string()))?;
+    {
+        Some(node) => node,
+        None => return Ok(None), // Skip shapes without txBody
+    };
 
     let is_list = tx_body_node.descendants().any(|n| {
         n.is_element()
@@ -103,9 +112,9 @@ fn parse_sp(sp_node: &Node) -> Result<ParsedContent> {
     });
 
     if is_list {
-        Ok(ParsedContent::List(parse_list(&tx_body_node)?))
+        Ok(Some(ParsedContent::List(parse_list(&tx_body_node)?)))
     } else {
-        Ok(ParsedContent::Text(parse_text(&tx_body_node)?))
+        Ok(Some(ParsedContent::Text(parse_text(&tx_body_node)?)))
     }
 }
 

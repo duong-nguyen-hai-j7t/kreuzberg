@@ -57,6 +57,11 @@ static EXT_TO_MIME: Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
     m.insert("ods", OPENDOC_SPREADSHEET_MIME_TYPE);
 
     m.insert("pptx", POWER_POINT_MIME_TYPE);
+    m.insert(
+        "ppsx",
+        "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
+    );
+    m.insert("pptm", "application/vnd.ms-powerpoint.presentation.macroEnabled.12");
     m.insert("ppt", LEGACY_POWERPOINT_MIME_TYPE);
 
     m.insert("docx", DOCX_MIME_TYPE);
@@ -180,6 +185,8 @@ static SUPPORTED_MIME_TYPES: Lazy<HashSet<&'static str>> = Lazy::new(|| {
 
     set.insert(PDF_MIME_TYPE);
     set.insert(POWER_POINT_MIME_TYPE);
+    set.insert("application/vnd.openxmlformats-officedocument.presentationml.slideshow"); // PPSX
+    set.insert("application/vnd.ms-powerpoint.presentation.macroEnabled.12"); // PPTM
     set.insert(LEGACY_WORD_MIME_TYPE);
     set.insert(LEGACY_POWERPOINT_MIME_TYPE);
     set.insert(HTML_MIME_TYPE);
@@ -459,6 +466,14 @@ mod tests {
             ("test.xlsx", EXCEL_MIME_TYPE),
             ("test.xls", EXCEL_BINARY_MIME_TYPE),
             ("test.pptx", POWER_POINT_MIME_TYPE),
+            (
+                "test.ppsx",
+                "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
+            ),
+            (
+                "test.pptm",
+                "application/vnd.ms-powerpoint.presentation.macroEnabled.12",
+            ),
             ("test.ppt", LEGACY_POWERPOINT_MIME_TYPE),
             ("test.docx", DOCX_MIME_TYPE),
             ("test.doc", LEGACY_WORD_MIME_TYPE),
