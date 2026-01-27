@@ -11,6 +11,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.2.2] - 2026-01-27
+
+### Fixed
+
+#### Docker Images
+- **Tesseract OCR plugin initialization**: Fixed "OCR backend 'tesseract' not registered" error in published Docker images
+  - Removed hardcoded TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
+  - Added dynamic tessdata discovery checking multiple known paths (/usr/share/tesseract-ocr/*/tessdata, /usr/share/tesseract-ocr/tessdata, /usr/share/tessdata)
+  - Fixed permissions with chmod -R a+rx for non-root kreuzberg user
+  - Handles tesseract versions 4, 5, and alternative installations
+- **Embeddings plugin initialization**: Fixed "Failed to initialize embedding model: Failed to retrieve onnx/model.onnx" error
+  - Added HF_HOME=/app/.kreuzberg/huggingface environment variable
+  - Created persistent cache directory for Hugging Face models with proper kreuzberg user ownership
+  - Models now persist between container restarts via existing cache volume
+
+#### Rust Core
+- **XLSX OOM with Excel Solver files**: Fixed out-of-memory issue when processing XLSX files with sparse data at extreme cell positions ([#331](https://github.com/kreuzberg-dev/kreuzberg/issues/331))
+  - Excel Solver add-in stores configuration in cells at extreme positions (XFD1048550-1048575 = column 16384, rows near 1M)
+  - Calamine's `Range::from_sparse()` was allocating memory for the entire bounding box (16384 columns × 1048575 rows = 17 billion cells) even though actual data was only ~26 cells
+  - Added streaming cell reader to detect pathological bounding boxes (>100M cells) before allocation
+  - For sparse sheets with extreme dimensions, generate list-format markdown directly from cell stream
+  - Normal sheets continue using the original fast path
+  - Test file: 6.8KB with 26 cells, declared dimension A1:XFD1048575
+  - Before: 100GB+ memory consumption, process killed
+  - After: 901 char output, completes instantly
+
+---
+
 ## [4.2.1] - 2026-01-27
 
 **Patch Release: API Parity Fixes and CI Reliability Improvements**

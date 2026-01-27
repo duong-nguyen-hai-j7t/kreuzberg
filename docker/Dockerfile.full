@@ -164,9 +164,28 @@ RUN groupadd -r kreuzberg && \
 RUN mkdir -p /etc/kreuzberg /app/.config/kreuzberg && \
     chown -R kreuzberg:kreuzberg /etc/kreuzberg /app/.config/kreuzberg
 
+# Create Hugging Face cache directory for embeddings models
+RUN mkdir -p /app/.kreuzberg/huggingface && \
+    chown -R kreuzberg:kreuzberg /app/.kreuzberg/huggingface
+
+# Ensure read permissions on tessdata files for non-root user
+# Tessdata is installed in version-specific directory (e.g., tesseract-ocr/5 or tesseract-ocr/4)
+# Make all tessdata directories readable by the non-root kreuzberg user
+RUN set -eux; \
+    echo "Setting up tessdata permissions..."; \
+    for dir in /usr/share/tesseract-ocr/*/tessdata /usr/share/tesseract-ocr/tessdata /usr/share/tessdata; do \
+        if [ -d "$dir" ]; then \
+            chmod -R a+rx "$dir" 2>/dev/null || true; \
+            if [ -f "$dir/eng.traineddata" ]; then \
+                echo "✓ Found tessdata with eng.traineddata at: $dir"; \
+            fi; \
+        fi; \
+    done; \
+    echo "✓ Tessdata permissions configured"
+
 # Environment configuration
 ENV KREUZBERG_CACHE_DIR=/app/.kreuzberg \
-    TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata \
+    HF_HOME=/app/.kreuzberg/huggingface \
     RUST_LOG=info \
     LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/lib
 
