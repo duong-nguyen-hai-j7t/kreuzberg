@@ -38,6 +38,7 @@
 .env
 .fastembed_cache/
 .gemini/
+.hypothesis/
 .idea/
 .kreuzberg/
 .mcp.json
