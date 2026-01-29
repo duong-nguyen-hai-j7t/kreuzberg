@@ -903,6 +903,76 @@ export interface Metadata {
 }
 
 /**
+ * Semantic element type classification.
+ *
+ * Categorizes text content into semantic units for downstream processing.
+ * Supports the element types commonly found in structured documents.
+ */
+export type ElementType =
+	| "title"
+	| "narrative_text"
+	| "heading"
+	| "list_item"
+	| "table"
+	| "image"
+	| "page_break"
+	| "code_block"
+	| "block_quote"
+	| "footer"
+	| "header";
+
+/**
+ * Bounding box coordinates for element positioning.
+ *
+ * Represents rectangular coordinates in the document space.
+ */
+export interface BoundingBox {
+	/** Left x-coordinate */
+	x0: number;
+	/** Bottom y-coordinate */
+	y0: number;
+	/** Right x-coordinate */
+	x1: number;
+	/** Top y-coordinate */
+	y1: number;
+}
+
+/**
+ * Metadata for a semantic element.
+ *
+ * Contains structural and positioning information about an extracted element.
+ */
+export interface ElementMetadata {
+	/** Page number (1-indexed) */
+	pageNumber?: number | null;
+	/** Source filename or document name */
+	filename?: string | null;
+	/** Bounding box coordinates if available */
+	coordinates?: BoundingBox | null;
+	/** Position index in the element sequence */
+	elementIndex?: number | null;
+	/** Additional custom metadata */
+	additional?: Record<string, string>;
+}
+
+/**
+ * Semantic element extracted from document.
+ *
+ * Represents a logical unit of content with semantic classification,
+ * unique identifier, and metadata for tracking origin and position.
+ */
+export interface Element {
+	/** Unique element identifier */
+	elementId: string;
+	/** Semantic type of this element */
+	elementType: ElementType;
+	/** Text content of the element */
+	text: string;
+	/** Metadata about the element */
+	metadata: ElementMetadata;
+}
+
+/**
  * Complete extraction result from document processing.
  *
  * Contains all extracted content, metadata, and optional processed data like chunks and images.
@@ -929,6 +999,9 @@ export interface ExtractionResult {
 
 	/** Images extracted from document with metadata (if image extraction was enabled), null otherwise */
 	images: ExtractedImage[] | null;
+
+	/** Semantic elements extracted from document with type classification and metadata (if element extraction was enabled), null otherwise */
+	elements?: Element[] | null;
 
 	/** Per-page content when page extraction is enabled, null otherwise. Each item contains page number, content, tables, and images. */
 	pages?: PageContent[] | null;

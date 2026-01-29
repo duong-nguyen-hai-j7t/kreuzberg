@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Fixed
+
+#### TypeScript/Node Bindings
+- **Missing `elements` field**: Added `Element`, `ElementType`, `BoundingBox`, and `ElementMetadata` types to the TypeScript API surface, and `elements` field to `ExtractionResult`
+- **Batch function export name**: Fixed `batchExtractFile` (singular) reference in benchmark harness to `batchExtractFiles` (plural), matching the actual export
+
+---
+
 ## [4.2.3] - 2026-01-28
 
 ### Fixed

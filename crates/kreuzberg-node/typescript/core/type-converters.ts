@@ -7,7 +7,16 @@
  * @internal This module is part of the core infrastructure layer (Layer 1).
  */
 
-import type { Chunk, ExtractedImage, ExtractionResult, PageContent, Table } from "../types.js";
+import type {
+	BoundingBox,
+	Chunk,
+	Element,
+	ElementType,
+	ExtractedImage,
+	ExtractionResult,
+	PageContent,
+	Table,
+} from "../types.js";
 
 /**
  * Parse metadata JSON string to a record object.
@@ -95,6 +104,49 @@ function convertChunk(rawChunk: unknown): Chunk {
 			firstPage: ((metadata["first_page"] ?? metadata["firstPage"]) as number | null) ?? null,
 			// biome-ignore lint/complexity/useLiteralKeys: required for strict TypeScript noPropertyAccessFromIndexSignature
 			lastPage: ((metadata["last_page"] ?? metadata["lastPage"]) as number | null) ?? null,
+		},
+	};
+}
+
+/**
+ * Convert raw element object from native binding to typed Element.
+ *
+ * @param rawElement - Raw element object from native binding
+ * @returns Typed Element object
+ * @internal
+ */
+function convertElement(rawElement: unknown): Element {
+	if (!rawElement || typeof rawElement !== "object") {
+		return {
+			elementId: "",
+			elementType: "narrative_text",
+			text: "",
+			metadata: {},
+		};
+	}
+
+	const element = rawElement as Record<string, unknown>;
+	// biome-ignore lint/complexity/useLiteralKeys: required for strict TypeScript noPropertyAccessFromIndexSignature
+	const elementMetadata = (element["metadata"] as Record<string, unknown>) ?? {};
+
+	return {
+		// biome-ignore lint/complexity/useLiteralKeys: required for strict TypeScript noPropertyAccessFromIndexSignature
+		elementId: (element["element_id"] ?? element["elementId"] ?? "") as string,
+		// biome-ignore lint/complexity/useLiteralKeys: required for strict TypeScript noPropertyAccessFromIndexSignature
+		elementType: (element["element_type"] ?? element["elementType"] ?? "narrative_text") as ElementType,
+		// biome-ignore lint/complexity/useLiteralKeys: required for strict TypeScript noPropertyAccessFromIndexSignature
+		text: (element["text"] as string) ?? "",
+		metadata: {
+			// biome-ignore lint/complexity/useLiteralKeys: required for strict TypeScript noPropertyAccessFromIndexSignature
+			pageNumber: ((elementMetadata["page_number"] ?? elementMetadata["pageNumber"]) as number | null) ?? null,
+			// biome-ignore lint/complexity/useLiteralKeys: required for strict TypeScript noPropertyAccessFromIndexSignature
+			filename: (elementMetadata["filename"] as string | null) ?? null,
+			// biome-ignore lint/complexity/useLiteralKeys: required for strict TypeScript noPropertyAccessFromIndexSignature
+			coordinates: elementMetadata["coordinates"] ? (elementMetadata["coordinates"] as BoundingBox) : null,
+			// biome-ignore lint/complexity/useLiteralKeys: required for strict TypeScript noPropertyAccessFromIndexSignature
+			elementIndex: ((elementMetadata["element_index"] ?? elementMetadata["elementIndex"]) as number | null) ?? null,
+			// biome-ignore lint/complexity/useLiteralKeys: required for strict TypeScript noPropertyAccessFromIndexSignature
+			additional: (elementMetadata["additional"] as Record<string, string>) ?? {},
 		},
 	};
 }
@@ -198,6 +250,7 @@ function convertResult(rawResult: unknown): ExtractionResult {
 			detectedLanguages: null,
 			chunks: null,
 			images: null,
+			elements: null,
 			pages: null,
 		};
 	}
@@ -220,6 +273,7 @@ function convertResult(rawResult: unknown): ExtractionResult {
 		detectedLanguages: Array.isArray(result["detectedLanguages"]) ? (result["detectedLanguages"] as string[]) : null,
 		chunks: null,
 		images: null,
+		elements: null,
 		pages: null,
 	};
 
@@ -236,6 +290,12 @@ function convertResult(rawResult: unknown): ExtractionResult {
 	}
 
 	// biome-ignore lint/complexity/useLiteralKeys: required for strict TypeScript noPropertyAccessFromIndexSignature
+	const elementsData = result["elements"];
+	if (Array.isArray(elementsData)) {
+		returnObj.elements = (elementsData as unknown[]).map((element) => convertElement(element));
+	}
+
+	// biome-ignore lint/complexity/useLiteralKeys: required for strict TypeScript noPropertyAccessFromIndexSignature
 	const pagesData = result["pages"];
 	if (Array.isArray(pagesData)) {
 		returnObj.pages = (pagesData as unknown[]).map((page) => convertPageContent(page));
@@ -247,4 +307,12 @@ function convertResult(rawResult: unknown): ExtractionResult {
 /**
  * Export public conversion functions for use by extraction modules.
  */
-export { parseMetadata, ensureUint8Array, convertChunk, convertImage, convertPageContent, convertResult };
+export {
+	parseMetadata,
+	ensureUint8Array,
+	convertChunk,
+	convertElement,
+	convertImage,
+	convertPageContent,
+	convertResult,
+};

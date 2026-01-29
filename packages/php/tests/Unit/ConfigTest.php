@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Kreuzberg\Tests\Unit;
 
 use Kreuzberg\Config\ChunkingConfig;
-use Kreuzberg\Config\EmbeddingConfig;
 use Kreuzberg\Config\ExtractionConfig;
 use Kreuzberg\Config\ImageExtractionConfig;
 use Kreuzberg\Config\ImagePreprocessingConfig;
@@ -14,7 +13,9 @@ use Kreuzberg\Config\LanguageDetectionConfig;
 use Kreuzberg\Config\OcrConfig;
 use Kreuzberg\Config\PageConfig;
 use Kreuzberg\Config\PdfConfig;
+use Kreuzberg\Config\PostProcessorConfig;
 use Kreuzberg\Config\TesseractConfig;
+use Kreuzberg\Config\TokenReductionConfig;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -29,13 +30,14 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(OcrConfig::class)]
 #[CoversClass(PdfConfig::class)]
 #[CoversClass(ChunkingConfig::class)]
-#[CoversClass(EmbeddingConfig::class)]
 #[CoversClass(ImageExtractionConfig::class)]
 #[CoversClass(ImagePreprocessingConfig::class)]
 #[CoversClass(KeywordConfig::class)]
 #[CoversClass(LanguageDetectionConfig::class)]
 #[CoversClass(PageConfig::class)]
 #[CoversClass(TesseractConfig::class)]
+#[CoversClass(PostProcessorConfig::class)]
+#[CoversClass(TokenReductionConfig::class)]
 final class ConfigTest extends TestCase
 {
     #[Test]
@@ -43,52 +45,60 @@ final class ConfigTest extends TestCase
     {
         $config = new ExtractionConfig();
 
+        $this->assertTrue($config->useCache);
+        $this->assertTrue($config->enableQualityProcessing);
         $this->assertNull($config->ocr);
-        $this->assertNull($config->pdf);
+        $this->assertFalse($config->forceOcr);
         $this->assertNull($config->chunking);
-        $this->assertNull($config->embedding);
-        $this->assertNull($config->imageExtraction);
-        $this->assertNull($config->page);
+        $this->assertNull($config->images);
+        $this->assertNull($config->pdfOptions);
+        $this->assertNull($config->tokenReduction);
         $this->assertNull($config->languageDetection);
+        $this->assertNull($config->pages);
         $this->assertNull($config->keywords);
-        $this->assertFalse($config->extractImages);
-        $this->assertTrue($config->extractTables);
-        $this->assertFalse($config->preserveFormatting);
-        $this->assertNull($config->outputFormat);
+        $this->assertNull($config->postprocessor);
+        $this->assertNull($config->htmlOptions);
+        $this->assertNull($config->maxConcurrentExtractions);
+        $this->assertSame('unified', $config->resultFormat);
+        $this->assertSame('plain', $config->outputFormat);
     }
 
     #[Test]
     public function it_creates_extraction_config_with_custom_values(): void
     {
         $config = new ExtractionConfig(
-            extractImages: true,
-            extractTables: false,
-            preserveFormatting: true,
+            useCache: false,
+            enableQualityProcessing: false,
+            forceOcr: true,
+            resultFormat: 'element_based',
             outputFormat: 'markdown',
+            maxConcurrentExtractions: 5,
         );
 
-        $this->assertTrue($config->extractImages);
-        $this->assertFalse($config->extractTables);
-        $this->assertTrue($config->preserveFormatting);
+        $this->assertFalse($config->useCache);
+        $this->assertFalse($config->enableQualityProcessing);
+        $this->assertTrue($config->forceOcr);
+        $this->assertSame('element_based', $config->resultFormat);
         $this->assertSame('markdown', $config->outputFormat);
+        $this->assertSame(5, $config->maxConcurrentExtractions);
     }
 
     #[Test]
     public function it_converts_extraction_config_to_array(): void
     {
         $config = new ExtractionConfig(
-            extractImages: true,
-            extractTables: false,
-            preserveFormatting: true,
+            useCache: false,
+            forceOcr: true,
+            resultFormat: 'element_based',
             outputFormat: 'markdown',
         );
 
         $array = $config->toArray();
 
         $this->assertIsArray($array);
-        $this->assertTrue($array['extract_images']);
-        $this->assertFalse($array['extract_tables']);
-        $this->assertTrue($array['preserve_formatting']);
+        $this->assertFalse($array['use_cache']);
+        $this->assertTrue($array['force_ocr']);
+        $this->assertSame('element_based', $array['result_format']);
         $this->assertSame('markdown', $array['output_format']);
     }
 
@@ -167,36 +177,39 @@ final class ConfigTest extends TestCase
 
         $config = new ExtractionConfig(
             ocr: $ocrConfig,
-            pdf: $pdfConfig,
+            pdfOptions: $pdfConfig,
             chunking: $chunkingConfig,
-            extractImages: true,
+            forceOcr: true,
         );
 
         $array = $config->toArray();
 
         $this->assertIsArray($array);
         $this->assertArrayHasKey('ocr', $array);
-        $this->assertArrayHasKey('pdf', $array);
+        $this->assertArrayHasKey('pdf_options', $array);
         $this->assertArrayHasKey('chunking', $array);
-        $this->assertTrue($array['extract_images']);
+        $this->assertTrue($array['force_ocr']);
         $this->assertSame('tesseract', $array['ocr']['backend']);
         $this->assertSame('eng', $array['ocr']['language']);
     }
 
     #[Test]
-    public function it_filters_null_values_in_array_conversion(): void
+    public function it_filters_null_and_default_values_in_array_conversion(): void
     {
-        $config = new ExtractionConfig(
-            extractImages: false,
-            extractTables: true,
-        );
+        $config = new ExtractionConfig();
 
         $array = $config->toArray();
 
-        $this->assertArrayNotHasKey('ocr', $array);
-        $this->assertArrayNotHasKey('pdf', $array);
-        $this->assertArrayNotHasKey('chunking', $array);
+        // Default values should be filtered out
+        $this->assertArrayNotHasKey('use_cache', $array);
+        $this->assertArrayNotHasKey('enable_quality_processing', $array);
+        $this->assertArrayNotHasKey('force_ocr', $array);
+        $this->assertArrayNotHasKey('result_format', $array);
         $this->assertArrayNotHasKey('output_format', $array);
+        $this->assertArrayNotHasKey('ocr', $array);
+        $this->assertArrayNotHasKey('pdf_options', $array);
+        $this->assertArrayNotHasKey('chunking', $array);
+        $this->assertArrayNotHasKey('images', $array);
     }
 
     #[Test]
@@ -251,11 +264,74 @@ final class ConfigTest extends TestCase
     #[Test]
     public function it_creates_readonly_config_objects(): void
     {
-        $config = new ExtractionConfig(extractImages: true);
+        $config = new ExtractionConfig(forceOcr: true);
 
-        $this->assertTrue($config->extractImages);
+        $this->assertTrue($config->forceOcr);
 
         $reflection = new \ReflectionClass($config);
         $this->assertTrue($reflection->isReadOnly());
+    }
+
+    #[Test]
+    public function it_creates_image_extraction_config(): void
+    {
+        $imageExtractionConfig = new ImageExtractionConfig(
+            extractImages: true,
+            performOcr: true,
+            minWidth: 100,
+            minHeight: 100,
+        );
+
+        $this->assertTrue($imageExtractionConfig->extractImages);
+        $this->assertSame(100, $imageExtractionConfig->minWidth);
+        $this->assertSame(100, $imageExtractionConfig->minHeight);
+        $this->assertTrue($imageExtractionConfig->performOcr);
+    }
+
+    #[Test]
+    public function it_converts_extraction_config_with_html_options(): void
+    {
+        $htmlOptions = [
+            'heading_style' => 'atx',
+            'list_format' => 'unordered',
+        ];
+
+        $config = new ExtractionConfig(htmlOptions: $htmlOptions);
+
+        $array = $config->toArray();
+
+        $this->assertIsArray($array);
+        $this->assertArrayHasKey('html_options', $array);
+        $this->assertSame('atx', $array['html_options']['heading_style']);
+        $this->assertSame('unordered', $array['html_options']['list_format']);
+    }
+
+    #[Test]
+    public function it_creates_extraction_config_from_array(): void
+    {
+        $data = [
+            'use_cache' => false,
+            'enable_quality_processing' => false,
+            'force_ocr' => true,
+            'result_format' => 'element_based',
+            'output_format' => 'markdown',
+            'max_concurrent_extractions' => 4,
+            'ocr' => [
+                'backend' => 'tesseract',
+                'language' => 'eng',
+            ],
+        ];
+
+        $config = ExtractionConfig::fromArray($data);
+
+        $this->assertFalse($config->useCache);
+        $this->assertFalse($config->enableQualityProcessing);
+        $this->assertTrue($config->forceOcr);
+        $this->assertSame('element_based', $config->resultFormat);
+        $this->assertSame('markdown', $config->outputFormat);
+        $this->assertSame(4, $config->maxConcurrentExtractions);
+        $this->assertNotNull($config->ocr);
+        $this->assertSame('tesseract', $config->ocr->backend);
+        $this->assertSame('eng', $config->ocr->language);
     }
 }

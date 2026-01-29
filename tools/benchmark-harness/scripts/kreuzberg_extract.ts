@@ -4,10 +4,10 @@
  *
  * Supports two modes:
  * - async: extractFile() - asynchronous extraction (default)
- * - batch: batchExtractFile() - batch extraction for multiple files
+ * - batch: batchExtractFiles() - batch extraction for multiple files
  */
 
-import { batchExtractFile, extractFile } from "@kreuzberg/node";
+import { batchExtractFiles, extractFile } from "@kreuzberg/node";
 
 interface ExtractionOutput {
 	content: string;
@@ -30,7 +30,7 @@ async function extractAsync(filePath: string): Promise<ExtractionOutput> {
 
 async function extractBatch(filePaths: string[]): Promise<ExtractionOutput[]> {
 	const start = performance.now();
-	const results = await batchExtractFile(filePaths);
+	const results = await batchExtractFiles(filePaths);
 	const totalDurationMs = performance.now() - start;
 
 	const perFileDurationMs = filePaths.length > 0 ? totalDurationMs / filePaths.length : 0;

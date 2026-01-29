@@ -6,8 +6,8 @@ import pytest
 from kreuzberg import (
     batch_extract_bytes,
     batch_extract_bytes_sync,
-    batch_extract_file,
-    batch_extract_file_sync,
+    batch_extract_files,
+    batch_extract_files_sync,
     extract_bytes,
     extract_bytes_sync,
     extract_file,
@@ -64,7 +64,7 @@ async def test_api_batch_file_async() -> None:
 
     config = helpers.build_config(None)
 
-    results = await batch_extract_file([document_path], config=config)
+    results = await batch_extract_files([document_path], config=config)
     result = results[0]
 
     helpers.assert_expected_mime(result, ["application/pdf"])
@@ -80,7 +80,7 @@ def test_api_batch_file_sync() -> None:
 
     config = helpers.build_config(None)
 
-    results = batch_extract_file_sync([document_path], config=config)
+    results = batch_extract_files_sync([document_path], config=config)
     result = results[0]
 
     helpers.assert_expected_mime(result, ["application/pdf"])

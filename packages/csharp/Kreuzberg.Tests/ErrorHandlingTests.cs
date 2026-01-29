@@ -531,7 +531,7 @@ public class ErrorHandlingTests
     [Fact]
     public void LoadExtractionConfigFromFile_WithNonexistentFile_ThrowsException()
     {
-        var ex = Assert.Throws<KreuzbergValidationException>(() => KreuzbergClient.LoadExtractionConfigFromFile("/nonexistent/config.toml"));
+        var ex = Assert.Throws<KreuzbergIOException>(() => KreuzbergClient.LoadExtractionConfigFromFile("/nonexistent/config.toml"));
         Assert.NotNull(ex);
     }
 
@@ -674,7 +674,7 @@ public class ErrorHandlingTests
     [Fact]
     public async Task ExtractFileAsync_WithNonexistentFile_ThrowsException()
     {
-        var ex = await Assert.ThrowsAsync<KreuzbergValidationException>(() => KreuzbergClient.ExtractFileAsync("/nonexistent/file.pdf"));
+        var ex = await Assert.ThrowsAsync<KreuzbergIOException>(() => KreuzbergClient.ExtractFileAsync("/nonexistent/file.pdf"));
         Assert.NotNull(ex);
     }
 
