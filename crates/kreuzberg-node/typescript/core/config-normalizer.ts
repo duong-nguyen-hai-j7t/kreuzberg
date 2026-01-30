@@ -373,6 +373,9 @@ function normalizeExtractionConfig(config: ExtractionConfig | null): NativeExtra
 	const htmlOptions = normalizeHtmlOptions(config.htmlOptions);
 	setIfDefined(normalized, "htmlOptions", htmlOptions);
 
+	setIfDefined(normalized, "outputFormat", config.outputFormat);
+	setIfDefined(normalized, "resultFormat", config.resultFormat);
+
 	return normalized;
 }
 
