@@ -247,10 +247,10 @@ public sealed class ExtractionResult
     public List<Element>? Elements { get; set; }
 
     /// <summary>
-    /// Indicates whether extraction completed successfully.
+    /// Rich Djot content structure when extracting Djot documents.
     /// </summary>
-    [JsonPropertyName("success")]
-    public bool Success { get; set; }
+    [JsonPropertyName("djot_content")]
+    public DjotContent? DjotContent { get; set; }
 }
 
 /// <summary>
@@ -322,13 +322,13 @@ public sealed class PageContent
     /// Tables extracted from this page, if any.
     /// </summary>
     [JsonPropertyName("tables")]
-    public List<Table>? Tables { get; set; }
+    public List<Table> Tables { get; set; } = new();
 
     /// <summary>
-    /// Images extracted from this page, if any.
+    /// Images extracted from this page.
     /// </summary>
     [JsonPropertyName("images")]
-    public List<ExtractedImage>? Images { get; set; }
+    public List<ExtractedImage> Images { get; set; } = new();
 
     /// <summary>
     /// Hierarchy information for the page, if available.
@@ -635,32 +635,62 @@ public sealed class Metadata
     /// <summary>
     /// Detected or specified language of the document content.
     /// </summary>
-    [JsonPropertyName("language")]
-    public string? Language { get; set; }
+    [JsonPropertyName("title")]
+    public string? Title { get; set; }
 
     /// <summary>
-    /// Document date (creation or modification), if available.
-    /// </summary>
-    [JsonPropertyName("date")]
-    public string? Date { get; set; }
-
-    /// <summary>
-    /// Document subject, if available.
+    /// Document subject or description.
     /// </summary>
     [JsonPropertyName("subject")]
     public string? Subject { get; set; }
 
     /// <summary>
-    /// The detected document format type.
+    /// Primary author(s).
     /// </summary>
-    [JsonPropertyName("format_type")]
-    public FormatType FormatType { get; set; } = FormatType.Unknown;
+    [JsonPropertyName("authors")]
+    public List<string>? Authors { get; set; }
 
     /// <summary>
-    /// Format-specific metadata container.
+    /// Keywords/tags.
+    /// </summary>
+    [JsonPropertyName("keywords")]
+    public List<string>? Keywords { get; set; }
+
+    /// <summary>
+    /// Primary language (ISO 639 code).
+    /// </summary>
+    [JsonPropertyName("language")]
+    public string? Language { get; set; }
+
+    /// <summary>
+    /// Creation timestamp (ISO 8601 format).
+    /// </summary>
+    [JsonPropertyName("created_at")]
+    public string? CreatedAt { get; set; }
+
+    /// <summary>
+    /// Last modification timestamp (ISO 8601 format).
+    /// </summary>
+    [JsonPropertyName("modified_at")]
+    public string? ModifiedAt { get; set; }
+
+    /// <summary>
+    /// User who created the document.
+    /// </summary>
+    [JsonPropertyName("created_by")]
+    public string? CreatedBy { get; set; }
+
+    /// <summary>
+    /// User who last modified the document.
+    /// </summary>
+    [JsonPropertyName("modified_by")]
+    public string? ModifiedBy { get; set; }
+
+    /// <summary>
+    /// Format-specific metadata (discriminated union, flattened in JSON).
     /// </summary>
     [JsonPropertyName("format")]
-    public FormatMetadata Format { get; set; } = new();
+    public FormatMetadata? Format { get; set; }
 
     /// <summary>
     /// Image preprocessing metadata, if image preprocessing was applied.
@@ -686,12 +716,7 @@ public sealed class Metadata
     [JsonPropertyName("pages")]
     public PageStructure? Pages { get; set; }
 
-    /// <summary>
-    /// Extracted keywords from keyword extraction algorithms (YAKE, RAKE).
-    /// These are distinct from format-specific keywords (like HTML meta keywords).
-    /// </summary>
-    [JsonPropertyName("keywords")]
-    public List<ExtractedKeyword>? Keywords { get; set; }
+
 
     /// <summary>
     /// Additional untyped metadata fields captured as extension data.
@@ -895,13 +920,13 @@ public sealed class ExcelMetadata
     /// Number of sheets in the workbook.
     /// </summary>
     [JsonPropertyName("sheet_count")]
-    public int? SheetCount { get; set; }
+    public int SheetCount { get; set; }
 
     /// <summary>
     /// Names of the sheets in the workbook.
     /// </summary>
     [JsonPropertyName("sheet_names")]
-    public List<string>? SheetNames { get; set; }
+    public List<string> SheetNames { get; set; } = new();
 }
 
 /// <summary>
@@ -925,19 +950,19 @@ public sealed class EmailMetadata
     /// List of recipient email addresses.
     /// </summary>
     [JsonPropertyName("to_emails")]
-    public List<string>? ToEmails { get; set; }
+    public List<string> ToEmails { get; set; } = new();
 
     /// <summary>
     /// List of CC recipient email addresses.
     /// </summary>
     [JsonPropertyName("cc_emails")]
-    public List<string>? CcEmails { get; set; }
+    public List<string> CcEmails { get; set; } = new();
 
     /// <summary>
     /// List of BCC recipient email addresses.
     /// </summary>
     [JsonPropertyName("bcc_emails")]
-    public List<string>? BccEmails { get; set; }
+    public List<string> BccEmails { get; set; } = new();
 
     /// <summary>
     /// Unique message identifier from the email headers.
@@ -949,7 +974,7 @@ public sealed class EmailMetadata
     /// List of attachment filenames in the email.
     /// </summary>
     [JsonPropertyName("attachments")]
-    public List<string>? Attachments { get; set; }
+    public List<string> Attachments { get; set; } = new();
 }
 
 /// <summary>
@@ -961,31 +986,31 @@ public sealed class ArchiveMetadata
     /// Archive format name (e.g., "zip", "tar", "gz").
     /// </summary>
     [JsonPropertyName("format")]
-    public string? Format { get; set; }
+    public string Format { get; set; } = string.Empty;
 
     /// <summary>
     /// Number of files in the archive.
     /// </summary>
     [JsonPropertyName("file_count")]
-    public int? FileCount { get; set; }
+    public int FileCount { get; set; }
 
     /// <summary>
     /// List of file paths within the archive.
     /// </summary>
     [JsonPropertyName("file_list")]
-    public List<string>? FileList { get; set; }
+    public List<string> FileList { get; set; } = new();
 
     /// <summary>
     /// Total uncompressed size in bytes.
     /// </summary>
     [JsonPropertyName("total_size")]
-    public int? TotalSize { get; set; }
+    public long TotalSize { get; set; }
 
     /// <summary>
     /// Total compressed size in bytes.
     /// </summary>
     [JsonPropertyName("compressed_size")]
-    public int? CompressedSize { get; set; }
+    public long? CompressedSize { get; set; }
 }
 
 /// <summary>
@@ -1015,7 +1040,7 @@ public sealed class ImageMetadata
     /// EXIF metadata key-value pairs, if available.
     /// </summary>
     [JsonPropertyName("exif")]
-    public Dictionary<string, string>? Exif { get; set; }
+    public Dictionary<string, string> Exif { get; set; } = new();
 }
 
 /// <summary>
@@ -1027,13 +1052,13 @@ public sealed class XmlMetadata
     /// Total number of XML elements in the document.
     /// </summary>
     [JsonPropertyName("element_count")]
-    public int? ElementCount { get; set; }
+    public int ElementCount { get; set; }
 
     /// <summary>
     /// List of unique XML element names found in the document.
     /// </summary>
     [JsonPropertyName("unique_elements")]
-    public List<string>? UniqueElements { get; set; }
+    public List<string> UniqueElements { get; set; } = new();
 }
 
 /// <summary>
@@ -1045,19 +1070,19 @@ public sealed class TextMetadata
     /// Total number of lines in the document.
     /// </summary>
     [JsonPropertyName("line_count")]
-    public int? LineCount { get; set; }
+    public int LineCount { get; set; }
 
     /// <summary>
     /// Total number of words in the document.
     /// </summary>
     [JsonPropertyName("word_count")]
-    public int? WordCount { get; set; }
+    public int WordCount { get; set; }
 
     /// <summary>
     /// Total number of characters in the document.
     /// </summary>
     [JsonPropertyName("character_count")]
-    public int? CharacterCount { get; set; }
+    public int CharacterCount { get; set; }
 
     /// <summary>
     /// Headers found in the text document.
@@ -1249,7 +1274,7 @@ public sealed class LinkMetadata
     /// Additional HTML attributes on the link element.
     /// </summary>
     [JsonPropertyName("attributes")]
-    public Dictionary<string, string> Attributes { get; set; } = new();
+    public List<List<string>> Attributes { get; set; } = new();
 }
 
 /// <summary>
@@ -1291,7 +1316,7 @@ public sealed class HtmlImageMetadata
     /// Additional HTML attributes on the image element.
     /// </summary>
     [JsonPropertyName("attributes")]
-    public Dictionary<string, string> Attributes { get; set; } = new();
+    public List<List<string>> Attributes { get; set; } = new();
 }
 
 /// <summary>
@@ -1324,34 +1349,16 @@ public sealed class StructuredData
 public sealed class PptxMetadata
 {
     /// <summary>
-    /// Presentation title.
+    /// Total number of slides in the presentation.
     /// </summary>
-    [JsonPropertyName("title")]
-    public string? Title { get; set; }
+    [JsonPropertyName("slide_count")]
+    public int SlideCount { get; set; }
 
     /// <summary>
-    /// Presentation author.
+    /// Names of slides (if available).
     /// </summary>
-    [JsonPropertyName("author")]
-    public string? Author { get; set; }
-
-    /// <summary>
-    /// Presentation description.
-    /// </summary>
-    [JsonPropertyName("description")]
-    public string? Description { get; set; }
-
-    /// <summary>
-    /// Presentation summary.
-    /// </summary>
-    [JsonPropertyName("summary")]
-    public string? Summary { get; set; }
-
-    /// <summary>
-    /// Fonts used in the presentation.
-    /// </summary>
-    [JsonPropertyName("fonts")]
-    public List<string>? Fonts { get; set; }
+    [JsonPropertyName("slide_names")]
+    public List<string> SlideNames { get; set; } = new();
 }
 
 /// <summary>
@@ -1363,25 +1370,25 @@ public sealed class OcrMetadata
     /// Language used for OCR processing.
     /// </summary>
     [JsonPropertyName("language")]
-    public string? Language { get; set; }
+    public string Language { get; set; } = string.Empty;
 
     /// <summary>
     /// Page Segmentation Mode (PSM) used by the OCR engine.
     /// </summary>
     [JsonPropertyName("psm")]
-    public int? Psm { get; set; }
+    public int Psm { get; set; }
 
     /// <summary>
     /// Output format of the OCR results.
     /// </summary>
     [JsonPropertyName("output_format")]
-    public string? OutputFormat { get; set; }
+    public string OutputFormat { get; set; } = string.Empty;
 
     /// <summary>
     /// Number of tables detected by OCR.
     /// </summary>
     [JsonPropertyName("table_count")]
-    public int? TableCount { get; set; }
+    public int TableCount { get; set; }
 
     /// <summary>
     /// Number of rows in detected tables.
@@ -1440,14 +1447,14 @@ public sealed class PageBoundary
     /// <summary>
     /// Starting character offset in the document.
     /// </summary>
-    [JsonPropertyName("start")]
-    public int Start { get; set; }
+    [JsonPropertyName("byte_start")]
+    public long ByteStart { get; set; }
 
     /// <summary>
-    /// Ending character offset in the document.
+    /// Ending byte offset in the document.
     /// </summary>
-    [JsonPropertyName("end")]
-    public int End { get; set; }
+    [JsonPropertyName("byte_end")]
+    public long ByteEnd { get; set; }
 }
 
 /// <summary>
@@ -1458,32 +1465,38 @@ public sealed class PageInfo
     /// <summary>
     /// Page number (1-indexed).
     /// </summary>
-    [JsonPropertyName("page_number")]
-    public int PageNumber { get; set; }
+    [JsonPropertyName("number")]
+    public int Number { get; set; }
 
     /// <summary>
-    /// Page width (in points or pixels, depending on document type).
+    /// Page title (usually for presentations).
     /// </summary>
-    [JsonPropertyName("width")]
-    public double? Width { get; set; }
+    [JsonPropertyName("title")]
+    public string? Title { get; set; }
 
     /// <summary>
-    /// Page height (in points or pixels, depending on document type).
+    /// Dimensions in points (PDF) or pixels (images): [width, height].
     /// </summary>
-    [JsonPropertyName("height")]
-    public double? Height { get; set; }
+    [JsonPropertyName("dimensions")]
+    public double[]? Dimensions { get; set; }
 
     /// <summary>
-    /// Optional text representation of the page.
+    /// Number of images on this page.
     /// </summary>
-    [JsonPropertyName("text")]
-    public string? Text { get; set; }
+    [JsonPropertyName("image_count")]
+    public int? ImageCount { get; set; }
 
     /// <summary>
-    /// Optional labels or notes for the page.
+    /// Number of tables on this page.
     /// </summary>
-    [JsonPropertyName("labels")]
-    public List<string>? Labels { get; set; }
+    [JsonPropertyName("table_count")]
+    public int? TableCount { get; set; }
+
+    /// <summary>
+    /// Whether this page is hidden (e.g., in presentations).
+    /// </summary>
+    [JsonPropertyName("hidden")]
+    public bool? Hidden { get; set; }
 }
 
 /// <summary>
@@ -1785,7 +1798,7 @@ public sealed class ImagePreprocessingConfig
     /// Binarization method for converting to black and white.
     /// </summary>
     [JsonPropertyName("binarization_method")]
-    public string? BinarizationMode { get; init; }
+    public string? BinarizationMethod { get; init; }
 
     /// <summary>
     /// Whether to invert image colors.
@@ -2492,4 +2505,238 @@ public sealed class EmbeddingPreset
     /// </summary>
     [JsonPropertyName("description")]
     public string Description { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Comprehensive Djot document structure with semantic preservation.
+/// </summary>
+public sealed class DjotContent
+{
+    /// <summary>
+    /// Plain text representation for backwards compatibility.
+    /// </summary>
+    [JsonPropertyName("plain_text")]
+    public string PlainText { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Structured block-level content.
+    /// </summary>
+    [JsonPropertyName("blocks")]
+    public List<FormattedBlock> Blocks { get; set; } = new();
+
+    /// <summary>
+    /// Metadata from YAML frontmatter.
+    /// </summary>
+    [JsonPropertyName("metadata")]
+    public Metadata Metadata { get; set; } = new();
+
+    /// <summary>
+    /// Extracted tables as structured data.
+    /// </summary>
+    [JsonPropertyName("tables")]
+    public List<Table> Tables { get; set; } = new();
+
+    /// <summary>
+    /// Extracted images with metadata.
+    /// </summary>
+    [JsonPropertyName("images")]
+    public List<DjotImage> Images { get; set; } = new();
+
+    /// <summary>
+    /// Extracted links with URLs.
+    /// </summary>
+    [JsonPropertyName("links")]
+    public List<DjotLink> Links { get; set; } = new();
+
+    /// <summary>
+    /// Footnote definitions.
+    /// </summary>
+    [JsonPropertyName("footnotes")]
+    public List<Footnote> Footnotes { get; set; } = new();
+
+    /// <summary>
+    /// Attributes mapped by element identifier.
+    /// </summary>
+    [JsonPropertyName("attributes")]
+    public List<List<object>> Attributes { get; set; } = new();
+}
+
+/// <summary>
+/// Block-level element in a Djot document.
+/// </summary>
+public sealed class FormattedBlock
+{
+    /// <summary>
+    /// Type of block element.
+    /// </summary>
+    [JsonPropertyName("block_type")]
+    public string BlockType { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Heading level (1-6) for headings, or nesting level for lists.
+    /// </summary>
+    [JsonPropertyName("level")]
+    public int? Level { get; set; }
+
+    /// <summary>
+    /// Inline content within the block.
+    /// </summary>
+    [JsonPropertyName("inline_content")]
+    public List<InlineElement> InlineContent { get; set; } = new();
+
+    /// <summary>
+    /// Element attributes (classes, IDs, key-value pairs).
+    /// </summary>
+    [JsonPropertyName("attributes")]
+    public DjotAttributes? Attributes { get; set; }
+
+    /// <summary>
+    /// Language identifier for code blocks.
+    /// </summary>
+    [JsonPropertyName("language")]
+    public string? Language { get; set; }
+
+    /// <summary>
+    /// Raw code content for code blocks.
+    /// </summary>
+    [JsonPropertyName("code")]
+    public string? Code { get; set; }
+
+    /// <summary>
+    /// Nested blocks for containers (blockquotes, list items, divs).
+    /// </summary>
+    [JsonPropertyName("children")]
+    public List<FormattedBlock> Children { get; set; } = new();
+}
+
+/// <summary>
+/// Inline element within a block.
+/// </summary>
+public sealed class InlineElement
+{
+    /// <summary>
+    /// Type of inline element.
+    /// </summary>
+    [JsonPropertyName("element_type")]
+    public string ElementType { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Text content.
+    /// </summary>
+    [JsonPropertyName("content")]
+    public string Content { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Element attributes.
+    /// </summary>
+    [JsonPropertyName("attributes")]
+    public DjotAttributes? Attributes { get; set; }
+
+    /// <summary>
+    /// Additional metadata (e.g., href for links, src/alt for images).
+    /// </summary>
+    [JsonPropertyName("metadata")]
+    public Dictionary<string, string>? Metadata { get; set; }
+}
+
+/// <summary>
+/// Element attributes in Djot.
+/// </summary>
+public sealed class DjotAttributes
+{
+    /// <summary>
+    /// Element ID.
+    /// </summary>
+    [JsonPropertyName("id")]
+    public string? Id { get; set; }
+
+    /// <summary>
+    /// CSS classes.
+    /// </summary>
+    [JsonPropertyName("classes")]
+    public List<string> Classes { get; set; } = new();
+
+    /// <summary>
+    /// Key-value pairs.
+    /// </summary>
+    [JsonPropertyName("key_values")]
+    public List<List<string>> KeyValues { get; set; } = new();
+}
+
+/// <summary>
+/// Image element in Djot.
+/// </summary>
+public sealed class DjotImage
+{
+    /// <summary>
+    /// Image source URL or path.
+    /// </summary>
+    [JsonPropertyName("src")]
+    public string Src { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Alternative text.
+    /// </summary>
+    [JsonPropertyName("alt")]
+    public string Alt { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Optional title.
+    /// </summary>
+    [JsonPropertyName("title")]
+    public string? Title { get; set; }
+
+    /// <summary>
+    /// Element attributes.
+    /// </summary>
+    [JsonPropertyName("attributes")]
+    public DjotAttributes? Attributes { get; set; }
+}
+
+/// <summary>
+/// Link element in Djot.
+/// </summary>
+public sealed class DjotLink
+{
+    /// <summary>
+    /// Link URL.
+    /// </summary>
+    [JsonPropertyName("url")]
+    public string Url { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Link text content.
+    /// </summary>
+    [JsonPropertyName("text")]
+    public string Text { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Optional title.
+    /// </summary>
+    [JsonPropertyName("title")]
+    public string? Title { get; set; }
+
+    /// <summary>
+    /// Element attributes.
+    /// </summary>
+    [JsonPropertyName("attributes")]
+    public DjotAttributes? Attributes { get; set; }
+}
+
+/// <summary>
+/// Footnote in Djot.
+/// </summary>
+public sealed class Footnote
+{
+    /// <summary>
+    /// Footnote label.
+    /// </summary>
+    [JsonPropertyName("label")]
+    public string Label { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Footnote content blocks.
+    /// </summary>
+    [JsonPropertyName("content")]
+    public List<FormattedBlock> Content { get; set; } = new();
 }

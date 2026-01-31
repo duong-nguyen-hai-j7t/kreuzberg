@@ -75,6 +75,22 @@ namespace Kreuzberg;
 [JsonSerializable(typeof(ElementMetadata))]
 [JsonSerializable(typeof(BoundingBox))]
 [JsonSerializable(typeof(List<Element>))]
+[JsonSerializable(typeof(DjotContent))]
+[JsonSerializable(typeof(FormattedBlock))]
+[JsonSerializable(typeof(InlineElement))]
+[JsonSerializable(typeof(DjotAttributes))]
+[JsonSerializable(typeof(DjotImage))]
+[JsonSerializable(typeof(DjotLink))]
+[JsonSerializable(typeof(Footnote))]
+[JsonSerializable(typeof(List<FormattedBlock>))]
+[JsonSerializable(typeof(List<InlineElement>))]
+[JsonSerializable(typeof(List<DjotImage>))]
+[JsonSerializable(typeof(List<DjotLink>))]
+[JsonSerializable(typeof(List<Footnote>))]
+[JsonSerializable(typeof(HierarchicalBlock))]
+[JsonSerializable(typeof(PageHierarchy))]
+[JsonSerializable(typeof(EmbeddingPreset))]
+
 internal partial class KreuzbergJsonContext : JsonSerializerContext
 {
     /// <summary>

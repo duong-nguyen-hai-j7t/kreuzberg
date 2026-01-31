@@ -1208,7 +1208,7 @@ public static class KreuzbergClient
             {
                 Content = InteropUtilities.ReadUtf8(cRes.Content) ?? string.Empty,
                 MimeType = InteropUtilities.ReadUtf8(cRes.MimeType) ?? string.Empty,
-                Success = cRes.Success,
+
             };
 
             result.Tables = DeserializeField<List<Table>>(cRes.TablesJson) ?? new List<Table>();
@@ -1227,10 +1227,7 @@ public static class KreuzbergClient
             {
                 result.Metadata.Language = InteropUtilities.ReadUtf8(cRes.Language);
             }
-            if (result.Metadata.Date == null && cRes.Date != IntPtr.Zero)
-            {
-                result.Metadata.Date = InteropUtilities.ReadUtf8(cRes.Date);
-            }
+
             if (result.Metadata.Subject == null && cRes.Subject != IntPtr.Zero)
             {
                 result.Metadata.Subject = InteropUtilities.ReadUtf8(cRes.Subject);
@@ -1262,7 +1259,7 @@ public static class KreuzbergClient
             var results = new List<ExtractionResult>(count);
             foreach (var ptr in resultPtrs)
             {
-                results.Add(ptr == IntPtr.Zero ? new ExtractionResult { Success = false } : ConvertResult(ptr, free: false));
+                results.Add(ptr == IntPtr.Zero ? new ExtractionResult() : ConvertResult(ptr, free: false));
             }
             return results;
         }

@@ -854,18 +854,39 @@ internal class MetadataConverter : JsonConverter<Metadata>
                 case "language":
                     metadata.Language = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
                     break;
-                case "date":
-                    metadata.Date = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                case "title":
+                    metadata.Title = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "authors":
+                    if (reader.TokenType != JsonTokenType.Null)
+                    {
+                        metadata.Authors = JsonSerializer.Deserialize<List<string>>(ref reader, options);
+                    }
+                    break;
+                case "created_at":
+                    metadata.CreatedAt = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "modified_at":
+                    metadata.ModifiedAt = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "created_by":
+                    metadata.CreatedBy = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+                    break;
+                case "modified_by":
+                    metadata.ModifiedBy = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
                     break;
                 case "subject":
                     metadata.Subject = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
                     break;
                 case "format_type":
-                    var formatStr = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
-                    if (!string.IsNullOrEmpty(formatStr))
+                    // format_type is handled as part of the flattened FormatMetadata
+                    if (reader.TokenType != JsonTokenType.Null)
                     {
-                        metadata.FormatType = Serialization.ParseFormatType(formatStr);
-                        metadata.Format.Type = metadata.FormatType;
+                        var formatStr = reader.GetString();
+                        if (!string.IsNullOrEmpty(formatStr))
+                        {
+                            formatFields["format_type"] = formatStr;
+                        }
                     }
                     break;
                 case "image_preprocessing":
@@ -894,32 +915,9 @@ internal class MetadataConverter : JsonConverter<Metadata>
                     }
                     break;
                 case "keywords":
-                    // Handle keywords - could be extracted keywords (objects) or format keywords (strings)
                     if (reader.TokenType == JsonTokenType.StartArray)
                     {
-                        using var keywordsDoc = JsonDocument.ParseValue(ref reader);
-                        var keywordsNode = JsonNode.Parse(keywordsDoc.RootElement.GetRawText());
-
-                        // Check if this is extracted keywords (array of objects with "text" property)
-                        if (keywordsNode is JsonArray keywordsArray && keywordsArray.Count > 0)
-                        {
-                            var firstItem = keywordsArray[0];
-                            if (firstItem is JsonObject firstObj && firstObj.ContainsKey("text"))
-                            {
-                                // It's extracted keywords - deserialize as List<ExtractedKeyword>
-                                var extractedKeywords = JsonSerializer.Deserialize<List<ExtractedKeyword>>(
-                                    keywordsDoc.RootElement.GetRawText(), Serialization.Options);
-                                if (extractedKeywords != null && extractedKeywords.Count > 0)
-                                {
-                                    metadata.Keywords = extractedKeywords;
-                                }
-                            }
-                            else
-                            {
-                                // It's format-specific keywords (strings) - store for format metadata
-                                formatFields[propertyName!] = keywordsNode;
-                            }
-                        }
+                        metadata.Keywords = JsonSerializer.Deserialize<List<string>>(ref reader, options);
                     }
                     break;
                 default:
@@ -956,26 +954,59 @@ internal class MetadataConverter : JsonConverter<Metadata>
     {
         writer.WriteStartObject();
 
-        if (!string.IsNullOrWhiteSpace(value.Language))
+        if (!string.IsNullOrWhiteSpace(value.Title))
         {
-            writer.WritePropertyName(options.PropertyNamingPolicy?.ConvertName("Language") ?? "Language");
-            writer.WriteStringValue(value.Language);
-        }
-
-        if (!string.IsNullOrWhiteSpace(value.Date))
-        {
-            writer.WritePropertyName(options.PropertyNamingPolicy?.ConvertName("Date") ?? "Date");
-            writer.WriteStringValue(value.Date);
+            writer.WritePropertyName("title");
+            writer.WriteStringValue(value.Title);
         }
 
         if (!string.IsNullOrWhiteSpace(value.Subject))
         {
-            writer.WritePropertyName(options.PropertyNamingPolicy?.ConvertName("Subject") ?? "Subject");
+            writer.WritePropertyName("subject");
             writer.WriteStringValue(value.Subject);
         }
 
-        writer.WritePropertyName(options.PropertyNamingPolicy?.ConvertName("FormatType") ?? "FormatType");
-        writer.WriteStringValue(Serialization.FormatTypeToString(value.FormatType));
+        if (value.Authors != null)
+        {
+            writer.WritePropertyName("authors");
+            JsonSerializer.Serialize(writer, value.Authors, options);
+        }
+
+        if (value.Keywords != null)
+        {
+            writer.WritePropertyName("keywords");
+            JsonSerializer.Serialize(writer, value.Keywords, options);
+        }
+
+        if (!string.IsNullOrWhiteSpace(value.Language))
+        {
+            writer.WritePropertyName("language");
+            writer.WriteStringValue(value.Language);
+        }
+
+        if (!string.IsNullOrWhiteSpace(value.CreatedAt))
+        {
+            writer.WritePropertyName("created_at");
+            writer.WriteStringValue(value.CreatedAt);
+        }
+
+        if (!string.IsNullOrWhiteSpace(value.ModifiedAt))
+        {
+            writer.WritePropertyName("modified_at");
+            writer.WriteStringValue(value.ModifiedAt);
+        }
+
+        if (!string.IsNullOrWhiteSpace(value.CreatedBy))
+        {
+            writer.WritePropertyName("created_by");
+            writer.WriteStringValue(value.CreatedBy);
+        }
+
+        if (!string.IsNullOrWhiteSpace(value.ModifiedBy))
+        {
+            writer.WritePropertyName("modified_by");
+            writer.WriteStringValue(value.ModifiedBy);
+        }
 
         if (value.ImagePreprocessing != null)
         {
@@ -1001,12 +1032,7 @@ internal class MetadataConverter : JsonConverter<Metadata>
             JsonSerializer.Serialize(writer, value.Pages, options);
         }
 
-        // Write extracted keywords (from YAKE/RAKE algorithms)
-        if (value.Keywords != null && value.Keywords.Count > 0)
-        {
-            writer.WritePropertyName(options.PropertyNamingPolicy?.ConvertName("Keywords") ?? "keywords");
-            JsonSerializer.Serialize(writer, value.Keywords, options);
-        }
+
 
         // Write format-specific fields
         WriteFormatFields(writer, value, options);
@@ -1043,7 +1069,8 @@ internal class MetadataConverter : JsonConverter<Metadata>
             }
         }
 
-        switch (metadata.FormatType)
+        if (metadata.Format == null) return;
+        switch (metadata.Format.Type)
         {
             case FormatType.Pdf:
                 SerializeFormatField(metadata.Format.Pdf);
@@ -1085,7 +1112,8 @@ internal class MetadataConverter : JsonConverter<Metadata>
             return;
         }
 
-        switch (metadata.FormatType)
+        if (metadata.Format == null) return;
+        switch (metadata.Format.Type)
         {
             case FormatType.Pdf:
                 metadata.Format.Pdf = DeserializeFromNode<PdfMetadata>(formatFields);
@@ -1322,7 +1350,7 @@ internal static class Serialization
         { FormatType.Pdf, new[] { "title", "subject", "author", "keywords", "creator", "producer", "creation_date", "modification_date", "page_count" } },
         { FormatType.Excel, new[] { "sheet_count", "sheet_names" } },
         { FormatType.Email, new[] { "from_email", "from_name", "to_emails", "cc_emails", "bcc_emails", "message_id", "attachments" } },
-        { FormatType.Pptx, new[] { "title", "author", "description", "summary", "fonts" } },
+        { FormatType.Pptx, new[] { "slide_count", "slide_names" } },
         { FormatType.Archive, new[] { "format", "file_count", "file_list", "total_size", "compressed_size" } },
         { FormatType.Image, new[] { "width", "height", "format", "exif" } },
         { FormatType.Xml, new[] { "element_count", "unique_elements" } },
@@ -1333,9 +1361,15 @@ internal static class Serialization
 
     private static readonly FrozenSet<string> CoreMetadataKeys = new HashSet<string>
     {
-        "language",
-        "date",
+        "title",
         "subject",
+        "authors",
+        "keywords",
+        "language",
+        "created_at",
+        "modified_at",
+        "created_by",
+        "modified_by",
         "format_type",
         "image_preprocessing",
         "json_schema",
@@ -1350,7 +1384,6 @@ internal static class Serialization
             ["content"] = result.Content,
             ["mime_type"] = result.MimeType,
             ["metadata"] = BuildMetadataNode(result.Metadata),
-            ["success"] = result.Success,
             ["tables"] = JsonSerializer.SerializeToNode(result.Tables, Options),
         };
 
@@ -1374,6 +1407,16 @@ internal static class Serialization
             root["pages"] = JsonSerializer.SerializeToNode(result.Pages, Options);
         }
 
+        if (result.Elements != null)
+        {
+            root["elements"] = JsonSerializer.SerializeToNode(result.Elements, Options);
+        }
+
+        if (result.DjotContent != null)
+        {
+            root["djot_content"] = JsonSerializer.SerializeToNode(result.DjotContent, Options);
+        }
+
         return root.ToJsonString(Options);
     }
 
@@ -1391,7 +1434,6 @@ internal static class Serialization
         {
             Content = root.GetPropertyOrDefault("content", string.Empty),
             MimeType = root.GetPropertyOrDefault("mime_type", string.Empty),
-            Success = root.GetPropertyOrDefault("success", true),
         };
 
         if (root.TryGetProperty("tables", out var tables))
@@ -1417,6 +1459,16 @@ internal static class Serialization
         if (root.TryGetProperty("pages", out var pages))
         {
             result.Pages = DeserializeElement<List<PageContent>>(pages);
+        }
+
+        if (root.TryGetProperty("elements", out var elements))
+        {
+            result.Elements = DeserializeElement<List<Element>>(elements);
+        }
+
+        if (root.TryGetProperty("djot_content", out var djotContent))
+        {
+            result.DjotContent = DeserializeElement<DjotContent>(djotContent);
         }
 
         if (root.TryGetProperty("metadata", out var metadata))
@@ -1452,19 +1504,49 @@ internal static class Serialization
         var metadata = new Metadata();
         var recognized = new HashSet<string>(CoreMetadataKeys, StringComparer.OrdinalIgnoreCase);
 
-        if (root.TryGetProperty("language", out var language))
+        if (root.TryGetProperty("title", out var title))
         {
-            metadata.Language = language.GetString();
-        }
-
-        if (root.TryGetProperty("date", out var date))
-        {
-            metadata.Date = date.GetString();
+            metadata.Title = title.GetString();
         }
 
         if (root.TryGetProperty("subject", out var subject))
         {
             metadata.Subject = subject.GetString();
+        }
+
+        if (root.TryGetProperty("authors", out var authors))
+        {
+            metadata.Authors = DeserializeElement<List<string>>(authors);
+        }
+
+        if (root.TryGetProperty("keywords", out var metaKeywords) && metaKeywords.ValueKind == JsonValueKind.Array)
+        {
+            metadata.Keywords = DeserializeElement<List<string>>(metaKeywords);
+        }
+
+        if (root.TryGetProperty("language", out var language))
+        {
+            metadata.Language = language.GetString();
+        }
+
+        if (root.TryGetProperty("created_at", out var createdAt))
+        {
+            metadata.CreatedAt = createdAt.GetString();
+        }
+
+        if (root.TryGetProperty("modified_at", out var modifiedAt))
+        {
+            metadata.ModifiedAt = modifiedAt.GetString();
+        }
+
+        if (root.TryGetProperty("created_by", out var createdBy))
+        {
+            metadata.CreatedBy = createdBy.GetString();
+        }
+
+        if (root.TryGetProperty("modified_by", out var modifiedBy))
+        {
+            metadata.ModifiedBy = modifiedBy.GetString();
         }
 
         if (root.TryGetProperty("image_preprocessing", out var imagePre))
@@ -1487,25 +1569,17 @@ internal static class Serialization
             metadata.Pages = DeserializeElement<PageStructure>(pages);
         }
 
+        FormatType detectedFormat = FormatType.Unknown;
         if (root.TryGetProperty("format_type", out var formatType))
         {
-            metadata.FormatType = ParseFormatType(formatType.GetString());
-            metadata.Format.Type = metadata.FormatType;
-            recognized.UnionWith(FormatFields.GetValueOrDefault(metadata.FormatType, Array.Empty<string>()));
+            detectedFormat = ParseFormatType(formatType.GetString());
+            recognized.UnionWith(FormatFields.GetValueOrDefault(detectedFormat, Array.Empty<string>()));
         }
 
-        // Handle extracted keywords (from YAKE/RAKE algorithms) at the root level
-        // These are distinct from format-specific keywords (like HTML meta keywords)
-        if (root.TryGetProperty("keywords", out var keywordsElement) && keywordsElement.ValueKind == JsonValueKind.Array)
-        {
-            var extractedKeywords = TryDeserializeExtractedKeywords(keywordsElement);
-            if (extractedKeywords != null && extractedKeywords.Count > 0)
-            {
-                metadata.Keywords = extractedKeywords;
-                recognized.Add("keywords"); // Mark as recognized so it doesn't go to Additional
-            }
-        }
+        recognized.Add("keywords"); // Mark as recognized
 
+        // Create Format object with detected format type
+        metadata.Format = new FormatMetadata { Type = detectedFormat };
         ApplyFormatMetadata(root, metadata);
         var additional = new JsonObject();
         foreach (var property in root.EnumerateObject())
@@ -1531,7 +1605,8 @@ internal static class Serialization
 
     private static void ApplyFormatMetadata(JsonElement root, Metadata metadata)
     {
-        switch (metadata.FormatType)
+        if (metadata.Format == null) return;
+        switch (metadata.Format.Type)
         {
             case FormatType.Pdf:
                 metadata.Format.Pdf = DeserializeElement<PdfMetadata>(root);
@@ -1742,22 +1817,47 @@ internal static class Serialization
 
     public static JsonNode BuildMetadataNode(Metadata metadata)
     {
-        var node = new JsonObject
-        {
-            ["format_type"] = FormatTypeToString(metadata.FormatType),
-        };
+        var node = new JsonObject();
 
-        if (!string.IsNullOrWhiteSpace(metadata.Language))
+        if (!string.IsNullOrWhiteSpace(metadata.Title))
         {
-            node["language"] = metadata.Language;
-        }
-        if (!string.IsNullOrWhiteSpace(metadata.Date))
-        {
-            node["date"] = metadata.Date;
+            node["title"] = metadata.Title;
         }
         if (!string.IsNullOrWhiteSpace(metadata.Subject))
         {
             node["subject"] = metadata.Subject;
+        }
+        if (metadata.Authors != null)
+        {
+            node["authors"] = JsonSerializer.SerializeToNode(metadata.Authors, Options);
+        }
+        if (metadata.Keywords != null)
+        {
+            node["keywords"] = JsonSerializer.SerializeToNode(metadata.Keywords, Options);
+        }
+        if (!string.IsNullOrWhiteSpace(metadata.Language))
+        {
+            node["language"] = metadata.Language;
+        }
+        if (!string.IsNullOrWhiteSpace(metadata.CreatedAt))
+        {
+            node["created_at"] = metadata.CreatedAt;
+        }
+        if (!string.IsNullOrWhiteSpace(metadata.ModifiedAt))
+        {
+            node["modified_at"] = metadata.ModifiedAt;
+        }
+        if (!string.IsNullOrWhiteSpace(metadata.CreatedBy))
+        {
+            node["created_by"] = metadata.CreatedBy;
+        }
+        if (!string.IsNullOrWhiteSpace(metadata.ModifiedBy))
+        {
+            node["modified_by"] = metadata.ModifiedBy;
+        }
+        if (metadata.Format != null)
+        {
+            node["format_type"] = FormatTypeToString(metadata.Format.Type);
         }
         if (metadata.ImagePreprocessing != null)
         {
@@ -1808,7 +1908,8 @@ internal static class Serialization
             }
         }
 
-        switch (metadata.FormatType)
+        if (metadata.Format == null) return;
+        switch (metadata.Format.Type)
         {
             case FormatType.Pdf:
                 Merge(metadata.Format.Pdf);
