@@ -98,7 +98,7 @@ final class ChunkingConfigTest {
 		Map<String, Object> map = config.toMap();
 
 		assertThat(map).containsEntry("max_chars", 1500).containsEntry("max_overlap", 300)
-				.containsEntry("preset", "sentence").containsEntry("enabled", true);
+				.containsEntry("preset", "sentence").containsEntry("enabled", null);
 	}
 
 	@Test

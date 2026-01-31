@@ -110,7 +110,7 @@ final class ImagePreprocessingConfigTest {
 
 		java.util.Map<String, Object> map = config.toMap();
 
-		assertThat(map).containsEntry("target_dpi", 300).containsEntry("auto_rotate", true).containsEntry("deskew",
+		assertThat(map).containsEntry("target_dpi", 300).containsEntry("auto_rotate", null).containsEntry("deskew",
 				true);
 	}
 

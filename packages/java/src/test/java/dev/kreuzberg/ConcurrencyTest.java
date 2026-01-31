@@ -270,7 +270,7 @@ class ConcurrencyTest {
 			for (int i = 0; i < 10; i++) {
 				futures.add(executor.submit(() -> {
 					try {
-						return Kreuzberg.detectMimeType(path, false);
+						return Kreuzberg.detectMimeType(path, true);
 					} catch (KreuzbergException e) {
 						return null;
 					}

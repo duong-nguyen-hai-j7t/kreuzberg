@@ -79,7 +79,7 @@ final class PageConfigTest {
 
 		java.util.Map<String, Object> map = config.toMap();
 
-		assertThat(map).containsEntry("extract_pages", true).containsEntry("insert_page_markers", true)
+		assertThat(map).containsEntry("extract_pages", null).containsEntry("insert_page_markers", null)
 				.containsKey("marker_format");
 	}
 

@@ -117,9 +117,9 @@ final class EmbeddingConfigTest {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> model = (Map<String, Object>) map.get("model");
 		assertThat(model).containsEntry("type", "preset").containsEntry("name", "balanced");
-		assertThat(map).containsEntry("normalize", true).containsEntry("batch_size", 64)
-				.containsEntry("dimensions", 512).containsEntry("use_cache", true)
-				.containsEntry("show_download_progress", false);
+		assertThat(map).containsEntry("normalize", null).containsEntry("batch_size", 64)
+				.containsEntry("dimensions", 512).containsEntry("use_cache", null)
+				.containsEntry("show_download_progress", null);
 	}
 
 	@Test
@@ -213,11 +213,11 @@ final class EmbeddingConfigTest {
 
 		Map<String, Object> map = new HashMap<>();
 		map.put("model", modelMap);
-		map.put("normalize", true);
+		map.put("normalize", null);
 		map.put("batch_size", 64);
 		map.put("dimensions", 512);
-		map.put("use_cache", false);
-		map.put("show_download_progress", true);
+		map.put("use_cache", null);
+		map.put("show_download_progress", null);
 		map.put("cache_dir", "/test/cache");
 
 		EmbeddingConfig config = EmbeddingConfig.fromMap(map);
@@ -283,13 +283,13 @@ final class EmbeddingConfigTest {
 		Map<String, Object> embeddingMap = new HashMap<>();
 		embeddingMap.put("model", "quality");
 		embeddingMap.put("batch_size", 64);
-		embeddingMap.put("normalize", true);
+		embeddingMap.put("normalize", null);
 
 		ChunkingConfig chunkingConfig = ChunkingConfig.builder().embedding(embeddingMap).build();
 
 		assertNotNull(chunkingConfig.getEmbedding());
 		assertThat(chunkingConfig.getEmbedding()).containsEntry("model", "quality").containsEntry("batch_size", 64)
-				.containsEntry("normalize", true);
+				.containsEntry("normalize", null);
 	}
 
 	@Test

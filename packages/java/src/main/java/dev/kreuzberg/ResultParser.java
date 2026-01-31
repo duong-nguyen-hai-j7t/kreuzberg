@@ -32,13 +32,15 @@ final class ResultParser {
 	};
 	private static final TypeReference<PageStructure> PAGE_STRUCTURE = new TypeReference<>() {
 	};
+	private static final TypeReference<DjotContent> DJOT_CONTENT = new TypeReference<>() {
+	};
 
 	private ResultParser() {
 	}
 
 	static ExtractionResult parse(String content, String mimeType, String tablesJson, String detectedLanguagesJson,
 			String metadataJson, String chunksJson, String imagesJson, String pagesJson, String pageStructureJson,
-			String elementsJson, boolean success) throws KreuzbergException {
+			String elementsJson, String djotContentJson) throws KreuzbergException {
 		try {
 			Map<String, Object> metadata = decode(metadataJson, METADATA_MAP, Collections.emptyMap());
 			List<Table> tables = decode(tablesJson, TABLE_LIST, List.of());
@@ -48,9 +50,10 @@ final class ResultParser {
 			List<PageContent> pages = decode(pagesJson, PAGE_CONTENT_LIST, List.of());
 			PageStructure pageStructure = decode(pageStructureJson, PAGE_STRUCTURE, null);
 			List<Element> elements = decode(elementsJson, ELEMENT_LIST, List.of());
+			DjotContent djotContent = decode(djotContentJson, DJOT_CONTENT, null);
 
 			return new ExtractionResult(content != null ? content : "", mimeType != null ? mimeType : "", metadata,
-					tables, detectedLanguages, chunks, images, pages, pageStructure, elements, success);
+					tables, detectedLanguages, chunks, images, pages, pageStructure, elements, djotContent);
 		} catch (Exception e) {
 			throw new KreuzbergException("Failed to parse extraction result", e);
 		}
@@ -87,7 +90,7 @@ final class ResultParser {
 					wire.detectedLanguages != null ? wire.detectedLanguages : List.of(),
 					wire.chunks != null ? wire.chunks : List.of(), wire.images != null ? wire.images : List.of(),
 					wire.pages != null ? wire.pages : List.of(), wire.pageStructure,
-					wire.elements != null ? wire.elements : List.of(), wire.success == null || wire.success);
+					wire.elements != null ? wire.elements : List.of(), wire.djotContent);
 		} catch (Exception e) {
 			throw new KreuzbergException("Failed to parse result JSON", e);
 		}
@@ -97,7 +100,7 @@ final class ResultParser {
 		WireExtractionResult wire = new WireExtractionResult(result.getContent(), result.getMimeType(),
 				result.getMetadata(), result.getTables(), result.getDetectedLanguages(), result.getChunks(),
 				result.getImages(), result.getPages(), result.getPageStructure().orElse(null), result.getElements(),
-				result.isSuccess());
+				result.getDjotContent().orElse(null));
 		return MAPPER.writeValueAsString(wire);
 	}
 
@@ -120,7 +123,7 @@ final class ResultParser {
 		private final List<PageContent> pages;
 		private final PageStructure pageStructure;
 		private final List<Element> elements;
-		private final Boolean success;
+		private final DjotContent djotContent;
 
 		WireExtractionResult(@JsonProperty("content") String content, @JsonProperty("mime_type") String mimeType,
 				@JsonProperty("metadata") Map<String, Object> metadata, @JsonProperty("tables") List<Table> tables,
@@ -128,7 +131,8 @@ final class ResultParser {
 				@JsonProperty("chunks") List<Chunk> chunks, @JsonProperty("images") List<ExtractedImage> images,
 				@JsonProperty("pages") List<PageContent> pages,
 				@JsonProperty("page_structure") PageStructure pageStructure,
-				@JsonProperty("elements") List<Element> elements, @JsonProperty("success") Boolean success) {
+				@JsonProperty("elements") List<Element> elements,
+				@JsonProperty("djot_content") DjotContent djotContent) {
 			this.content = content;
 			this.mimeType = mimeType;
 			this.metadata = metadata;
@@ -139,7 +143,7 @@ final class ResultParser {
 			this.pages = pages;
 			this.pageStructure = pageStructure;
 			this.elements = elements;
-			this.success = success;
+			this.djotContent = djotContent;
 		}
 	}
 }

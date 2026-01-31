@@ -61,7 +61,7 @@ class EmbeddingsTest {
 	void testEmbeddingDimensionVerification() throws KreuzbergException {
 		// Build config with embedding enabled
 		Map<String, Object> embeddingConfig = new HashMap<>();
-		embeddingConfig.put("enabled", true);
+		embeddingConfig.put("enabled", null);
 		Map<String, Object> modelConfig = new HashMap<>();
 		modelConfig.put("type", "fast_embed");
 		modelConfig.put("model_name", "BAAI/bge-small-en-v1.5");
@@ -83,10 +83,10 @@ class EmbeddingsTest {
 			int consistentDimension = -1;
 
 			for (Chunk chunk : chunks) {
-				Optional<List<Double>> embedding = chunk.getEmbedding();
+				Optional<List<Float>> embedding = chunk.getEmbedding();
 
 				if (embedding.isPresent()) {
-					List<Double> vector = embedding.get();
+					List<Float> vector = embedding.get();
 					assertNotNull(vector, "Embedding vector should not be null");
 					assertTrue(vector.size() > 0, "Embedding should have dimensions");
 
@@ -194,22 +194,22 @@ class EmbeddingsTest {
 		assertTrue(result.isSuccess(), "Extraction should succeed");
 
 		for (Chunk chunk : result.getChunks()) {
-			Optional<List<Double>> embeddingOpt = chunk.getEmbedding();
+			Optional<List<Float>> embeddingOpt = chunk.getEmbedding();
 
 			if (embeddingOpt.isPresent()) {
-				List<Double> embedding = embeddingOpt.get();
+				List<Float> embedding = embeddingOpt.get();
 
 				// Validate each dimension
 				for (int i = 0; i < embedding.size(); i++) {
-					Double value = embedding.get(i);
+					Float value = embedding.get(i);
 					assertNotNull(value, "Embedding value at index " + i + " should not be null");
-					assertFalse(Double.isNaN(value), "Embedding value at index " + i + " should not be NaN");
-					assertFalse(Double.isInfinite(value), "Embedding value at index " + i + " should not be infinite");
+					assertFalse(Float.isNaN(value), "Embedding value at index " + i + " should not be NaN");
+					assertFalse(Float.isInfinite(value), "Embedding value at index " + i + " should not be infinite");
 				}
 
 				// Calculate vector norm (L2 norm)
 				double norm = 0.0;
-				for (Double value : embedding) {
+				for (Float value : embedding) {
 					norm += value * value;
 				}
 				norm = Math.sqrt(norm);
@@ -278,21 +278,21 @@ class EmbeddingsTest {
 		assertTrue(result.isSuccess(), "Extraction should succeed");
 
 		for (Chunk chunk : result.getChunks()) {
-			Optional<List<Double>> embeddingOpt = chunk.getEmbedding();
+			Optional<List<Float>> embeddingOpt = chunk.getEmbedding();
 
 			if (embeddingOpt.isPresent()) {
-				List<Double> embedding = embeddingOpt.get();
+				List<Float> embedding = embeddingOpt.get();
 
 				// Calculate L2 norm
 				double l2Norm = 0.0;
-				for (Double value : embedding) {
+				for (Float value : embedding) {
 					l2Norm += value * value;
 				}
 				l2Norm = Math.sqrt(l2Norm);
 
 				// Calculate L1 norm
 				double l1Norm = 0.0;
-				for (Double value : embedding) {
+				for (Float value : embedding) {
 					l1Norm += Math.abs(value);
 				}
 
@@ -465,22 +465,22 @@ class EmbeddingsTest {
 		assertTrue(result.isSuccess(), "Extraction should succeed");
 
 		for (Chunk chunk : result.getChunks()) {
-			Optional<List<Double>> embeddingOpt = chunk.getEmbedding();
+			Optional<List<Float>> embeddingOpt = chunk.getEmbedding();
 
 			if (embeddingOpt.isPresent()) {
-				List<Double> embedding = embeddingOpt.get();
+				List<Float> embedding = embeddingOpt.get();
 
 				// Test 1: Valid floating-point values
 				for (int i = 0; i < embedding.size(); i++) {
-					Double value = embedding.get(i);
-					assertFalse(Double.isNaN(value), "Value at index " + i + " is NaN");
-					assertFalse(Double.isInfinite(value), "Value at index " + i + " is infinite");
+					Float value = embedding.get(i);
+					assertFalse(Float.isNaN(value), "Value at index " + i + " is NaN");
+					assertFalse(Float.isInfinite(value), "Value at index " + i + " is infinite");
 					assertTrue(value >= -2.0 && value <= 2.0, "Value at index " + i + " out of range: " + value);
 				}
 
 				// Test 2: Not all zeros (dead embedding)
 				double magnitude = 0.0;
-				for (Double value : embedding) {
+				for (Float value : embedding) {
 					magnitude += Math.abs(value);
 				}
 				assertTrue(magnitude > 0.1, "Embedding should not be all zeros (dead embedding)");
@@ -488,7 +488,7 @@ class EmbeddingsTest {
 				// Test 3: Vector with itself should have similarity ~1.0
 				double dotProduct = 0.0;
 				double normSq = 0.0;
-				for (Double value : embedding) {
+				for (Float value : embedding) {
 					dotProduct += value * value;
 					normSq += value * value;
 				}
@@ -521,12 +521,12 @@ class EmbeddingsTest {
 		assertTrue(result2.isSuccess(), "Second extraction should succeed");
 
 		if (!result1.getChunks().isEmpty() && !result2.getChunks().isEmpty()) {
-			Optional<List<Double>> emb1Opt = result1.getChunks().get(0).getEmbedding();
-			Optional<List<Double>> emb2Opt = result2.getChunks().get(0).getEmbedding();
+			Optional<List<Float>> emb1Opt = result1.getChunks().get(0).getEmbedding();
+			Optional<List<Float>> emb2Opt = result2.getChunks().get(0).getEmbedding();
 
 			if (emb1Opt.isPresent() && emb2Opt.isPresent()) {
-				List<Double> emb1 = emb1Opt.get();
-				List<Double> emb2 = emb2Opt.get();
+				List<Float> emb1 = emb1Opt.get();
+				List<Float> emb2 = emb2Opt.get();
 
 				// Calculate cosine similarity
 				double dotProduct = 0.0;

@@ -1,5 +1,6 @@
 package dev.kreuzberg;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.Optional;
  *
  * <p>
  * Includes extracted content, tables, metadata, detected languages, text
- * chunks, images, page structure information, and success flag.
+ * chunks, images, page structure information, and Djot content.
  */
 public final class ExtractionResult {
 	private final String content;
@@ -24,14 +25,12 @@ public final class ExtractionResult {
 	private final List<PageContent> pages;
 	private final PageStructure pageStructure;
 	private final List<Element> elements;
-	private final boolean success;
-	private final Optional<String> language;
-	private final Optional<String> date;
-	private final Optional<String> subject;
+	@JsonProperty("djot_content")
+	private final DjotContent djotContent;
 
 	ExtractionResult(String content, String mimeType, Map<String, Object> metadata, List<Table> tables,
 			List<String> detectedLanguages, List<Chunk> chunks, List<ExtractedImage> images, List<PageContent> pages,
-			PageStructure pageStructure, List<Element> elements, boolean success) {
+			PageStructure pageStructure, List<Element> elements, DjotContent djotContent) {
 		this.content = Objects.requireNonNull(content, "content must not be null");
 		this.mimeType = Objects.requireNonNull(mimeType, "mimeType must not be null");
 		this.metadata = Collections.unmodifiableMap(metadata != null ? metadata : Collections.emptyMap());
@@ -46,10 +45,7 @@ public final class ExtractionResult {
 		this.pages = Collections.unmodifiableList(pages != null ? pages : List.of());
 		this.pageStructure = pageStructure;
 		this.elements = Collections.unmodifiableList(elements != null ? elements : List.of());
-		this.success = success;
-		this.language = Optional.ofNullable((String) this.metadata.get("language"));
-		this.date = Optional.ofNullable((String) this.metadata.get("date"));
-		this.subject = Optional.ofNullable((String) this.metadata.get("subject"));
+		this.djotContent = djotContent;
 	}
 
 	public String getContent() {
@@ -117,20 +113,74 @@ public final class ExtractionResult {
 		return Optional.ofNullable(pageStructure);
 	}
 
+	public Optional<DjotContent> getDjotContent() {
+		return Optional.ofNullable(djotContent);
+	}
+
+	/**
+	 * Check if the extraction was successful.
+	 *
+	 * <p>
+	 * This method always returns true for a valid ExtractionResult. If extraction
+	 * fails, an exception is thrown instead of returning an unsuccessful result.
+	 *
+	 * @return true (always, since invalid results throw exceptions)
+	 * @deprecated This method is deprecated as extraction failures now throw
+	 *             exceptions. All ExtractionResult instances represent successful
+	 *             extractions.
+	 */
+	@Deprecated(since = "0.8.0", forRemoval = true)
 	public boolean isSuccess() {
-		return success;
+		return true;
 	}
 
+	/**
+	 * Get the detected language from metadata.
+	 *
+	 * <p>
+	 * Use {@link #getDetectedLanguage()} instead, which retrieves the primary
+	 * detected language from either metadata or the detectedLanguages list.
+	 *
+	 * @return the language code from metadata, or empty if not available
+	 * @deprecated Use {@link #getDetectedLanguage()} instead. This method only
+	 *             retrieves language from metadata and doesn't check
+	 *             detectedLanguages.
+	 */
+	@Deprecated(since = "0.8.0", forRemoval = true)
 	public Optional<String> getLanguage() {
-		return language;
+		if (this.metadata != null) {
+			return Optional.ofNullable((String) this.metadata.get("language"));
+		}
+		return Optional.empty();
 	}
 
+	/**
+	 * Get the document creation date from metadata.
+	 *
+	 * @return the creation date from metadata, or empty if not available
+	 * @deprecated Use {@link #getMetadataField(String)} with "created" or
+	 *             "modified" instead for more precise date field access.
+	 */
+	@Deprecated(since = "0.8.0", forRemoval = true)
 	public Optional<String> getDate() {
-		return date;
+		if (this.metadata != null) {
+			return Optional.ofNullable((String) this.metadata.get("date"));
+		}
+		return Optional.empty();
 	}
 
+	/**
+	 * Get the document subject from metadata.
+	 *
+	 * @return the subject from metadata, or empty if not available
+	 * @deprecated Use {@link #getMetadataField(String)} with "subject" instead.
+	 */
+	@Deprecated(since = "0.8.0", forRemoval = true)
 	public Optional<String> getSubject() {
-		return subject;
+		if (this.metadata != null) {
+			return Optional.ofNullable((String) this.metadata.get("subject"));
+		}
+		return Optional.empty();
 	}
 
 	/**
@@ -253,6 +303,6 @@ public final class ExtractionResult {
 		return "ExtractionResult{" + "contentLength=" + content.length() + ", mimeType='" + mimeType + '\''
 				+ ", tables=" + tables.size() + ", detectedLanguages=" + detectedLanguages + ", chunks=" + chunks.size()
 				+ ", images=" + images.size() + ", pages=" + pages.size() + ", elements=" + elements.size()
-				+ ", success=" + success + '}';
+				+ ", hasDjotContent=" + (djotContent != null) + '}';
 	}
 }

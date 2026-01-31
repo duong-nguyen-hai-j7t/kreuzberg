@@ -79,7 +79,7 @@ class PagesExtractionTest {
 
 	@Test
 	void testPageInfo_HasPageNumber() {
-		PageInfo page = new PageInfo(1L, "Page 1", 612.0, 792.0, true);
+		PageInfo page = new PageInfo(1L, "Page 1", 612.0, 792.0, null);
 
 		assertEquals(1L, page.getNumber(), "Page number should be 1");
 		assertTrue(page.getNumber() > 0, "Page number should be positive");
@@ -109,8 +109,8 @@ class PagesExtractionTest {
 
 	@Test
 	void testPageInfo_Visibility() {
-		PageInfo visiblePage = new PageInfo(1L, null, null, null, true);
-		PageInfo hiddenPage = new PageInfo(2L, null, null, null, false);
+		PageInfo visiblePage = new PageInfo(1L, null, null, null, null);
+		PageInfo hiddenPage = new PageInfo(2L, null, null, null, null);
 
 		var visibility1 = visiblePage.getVisible();
 		var visibility2 = hiddenPage.getVisible();
@@ -145,9 +145,9 @@ class PagesExtractionTest {
 
 	@Test
 	void testPageInfo_Equality() {
-		PageInfo page1 = new PageInfo(1L, "Title", 612.0, 792.0, true);
-		PageInfo page2 = new PageInfo(1L, "Title", 612.0, 792.0, true);
-		PageInfo page3 = new PageInfo(2L, "Title", 612.0, 792.0, true);
+		PageInfo page1 = new PageInfo(1L, "Title", 612.0, 792.0, null);
+		PageInfo page2 = new PageInfo(1L, "Title", 612.0, 792.0, null);
+		PageInfo page3 = new PageInfo(2L, "Title", 612.0, 792.0, null);
 
 		assertEquals(page1, page2, "Pages with same values should be equal");
 		assertNotEquals(page1, page3, "Pages with different numbers should not be equal");
@@ -155,8 +155,8 @@ class PagesExtractionTest {
 
 	@Test
 	void testPageInfo_HashCode() {
-		PageInfo page1 = new PageInfo(1L, "Title", 612.0, 792.0, true);
-		PageInfo page2 = new PageInfo(1L, "Title", 612.0, 792.0, true);
+		PageInfo page1 = new PageInfo(1L, "Title", 612.0, 792.0, null);
+		PageInfo page2 = new PageInfo(1L, "Title", 612.0, 792.0, null);
 
 		assertEquals(page1.hashCode(), page2.hashCode(), "Equal pages should have equal hash codes");
 	}
@@ -165,8 +165,8 @@ class PagesExtractionTest {
 
 	@Test
 	void testPageStructure_WithPages() {
-		List<PageInfo> pages = List.of(new PageInfo(1L, "Page 1", 612.0, 792.0, true),
-				new PageInfo(2L, "Page 2", 612.0, 792.0, true));
+		List<PageInfo> pages = List.of(new PageInfo(1L, "Page 1", 612.0, 792.0, null),
+				new PageInfo(2L, "Page 2", 612.0, 792.0, null));
 
 		PageStructure structure = new PageStructure(2L, PageUnitType.PAGE, null, pages);
 

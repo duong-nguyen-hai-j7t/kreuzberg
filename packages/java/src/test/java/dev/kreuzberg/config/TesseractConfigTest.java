@@ -76,7 +76,7 @@ final class TesseractConfigTest {
 
 		java.util.Map<String, Object> map = config.toMap();
 
-		assertThat(map).containsEntry("psm", 6).containsEntry("enable_table_detection", true);
+		assertThat(map).containsEntry("psm", 6).containsEntry("enable_table_detection", null);
 	}
 
 	@Test

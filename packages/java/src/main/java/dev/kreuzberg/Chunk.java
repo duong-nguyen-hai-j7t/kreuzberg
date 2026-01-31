@@ -14,11 +14,11 @@ import java.util.Optional;
  */
 public final class Chunk {
 	private final String content;
-	private final List<Double> embedding;
+	private final List<Float> embedding;
 	private final ChunkMetadata metadata;
 
 	@JsonCreator
-	public Chunk(@JsonProperty("content") String content, @JsonProperty("embedding") List<Double> embedding,
+	public Chunk(@JsonProperty("content") String content, @JsonProperty("embedding") List<Float> embedding,
 			@JsonProperty("metadata") ChunkMetadata metadata) {
 		this.content = Objects.requireNonNull(content, "content must not be null");
 		this.metadata = Objects.requireNonNull(metadata, "metadata must not be null");
@@ -33,7 +33,7 @@ public final class Chunk {
 		return content;
 	}
 
-	public Optional<List<Double>> getEmbedding() {
+	public Optional<List<Float>> getEmbedding() {
 		return embedding == null ? Optional.empty() : Optional.of(embedding);
 	}
 
