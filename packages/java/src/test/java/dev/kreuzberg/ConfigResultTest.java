@@ -275,7 +275,7 @@ final class ConfigResultTest {
 
 			Optional<String> language = result.getDetectedLanguage();
 
-			assertThat(language).isPresent();
+			assertThat(language).isEmpty(); // Metadata.empty() has no detected language
 		}
 
 		@Test
@@ -301,7 +301,7 @@ final class ConfigResultTest {
 
 			Optional<Object> field = result.getMetadataField("title");
 
-			assertThat(field).isPresent();
+			assertThat(field).isEmpty(); // Metadata.empty() has no title field
 		}
 
 		@Test

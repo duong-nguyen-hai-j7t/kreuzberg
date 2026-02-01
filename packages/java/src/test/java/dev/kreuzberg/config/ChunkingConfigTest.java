@@ -27,7 +27,7 @@ final class ChunkingConfigTest {
 		assertThat(config.getMaxOverlap()).isEqualTo(200);
 		assertNull(config.getPreset());
 		assertNull(config.getEmbedding());
-		assertThat(config.getEnabled()).isTrue();
+		assertNull(config.getEnabled()); // Builder doesn't set default for enabled
 	}
 
 	@Test
@@ -98,7 +98,7 @@ final class ChunkingConfigTest {
 		Map<String, Object> map = config.toMap();
 
 		assertThat(map).containsEntry("max_chars", 1500).containsEntry("max_overlap", 300)
-				.containsEntry("preset", "sentence").containsEntry("enabled", null);
+				.containsEntry("preset", "sentence").doesNotContainKey("enabled");
 	}
 
 	@Test

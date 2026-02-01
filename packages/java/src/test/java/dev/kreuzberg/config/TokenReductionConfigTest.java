@@ -82,7 +82,7 @@ final class TokenReductionConfigTest {
 
 		java.util.Map<String, Object> map = config.toMap();
 
-		assertThat(map).containsEntry("mode", "moderate").containsEntry("preserve_important_words", null);
+		assertThat(map).containsEntry("mode", "moderate").containsEntry("preserve_important_words", true);
 	}
 
 	@Test

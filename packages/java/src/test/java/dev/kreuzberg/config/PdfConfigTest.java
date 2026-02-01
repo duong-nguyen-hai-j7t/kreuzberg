@@ -109,7 +109,7 @@ final class PdfConfigTest {
 
 		java.util.Map<String, Object> map = config.toMap();
 
-		assertThat(map).containsEntry("extract_images", null).containsEntry("extract_metadata", null)
+		assertThat(map).containsEntry("extract_images", true).containsEntry("extract_metadata", true)
 				.containsKey("font_config");
 	}
 

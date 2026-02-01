@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
@@ -481,6 +482,7 @@ class ErrorHandlingTest {
 	class TimeoutBehaviorTests {
 
 		@Test
+		@Timeout(30)
 		@DisplayName("should propagate errors in async extraction")
 		void testAsyncExtractNonexistentFile() {
 			Path nonexistent = Path.of("/nonexistent/file.txt");
@@ -488,17 +490,18 @@ class ErrorHandlingTest {
 			var future = Kreuzberg.extractFileAsync(nonexistent, null);
 
 			assertThrows(Exception.class, () -> {
-				future.get();
+				future.get(10, java.util.concurrent.TimeUnit.SECONDS);
 			}, "Async extraction should propagate errors");
 		}
 
 		@Test
+		@Timeout(30)
 		@DisplayName("should propagate errors in async batch extraction")
 		void testAsyncBatchExtractNullPaths() {
 			var future = Kreuzberg.batchExtractFilesAsync(null, null);
 
 			assertThrows(Exception.class, () -> {
-				future.get();
+				future.get(10, java.util.concurrent.TimeUnit.SECONDS);
 			}, "Async batch extraction should propagate errors");
 		}
 

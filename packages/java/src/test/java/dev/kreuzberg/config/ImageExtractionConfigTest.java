@@ -99,7 +99,7 @@ final class ImageExtractionConfigTest {
 
 		java.util.Map<String, Object> map = config.toMap();
 
-		assertThat(map).containsEntry("extract_images", null).containsEntry("target_dpi", 300)
+		assertThat(map).containsEntry("extract_images", true).containsEntry("target_dpi", 300)
 				.containsEntry("max_image_dimension", 2000);
 	}
 

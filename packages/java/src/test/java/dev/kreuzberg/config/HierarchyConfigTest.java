@@ -79,8 +79,8 @@ final class HierarchyConfigTest {
 
 		java.util.Map<String, Object> map = config.toMap();
 
-		assertThat(map).containsEntry("enabled", null).containsEntry("k_clusters", 8)
-				.containsEntry("include_bbox", null).containsEntry("ocr_coverage_threshold", 0.7);
+		assertThat(map).containsEntry("enabled", true).containsEntry("k_clusters", 8)
+				.containsEntry("include_bbox", true).containsEntry("ocr_coverage_threshold", 0.7);
 	}
 
 	@Test

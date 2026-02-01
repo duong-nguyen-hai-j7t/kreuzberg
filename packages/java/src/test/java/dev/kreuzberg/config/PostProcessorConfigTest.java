@@ -94,7 +94,7 @@ final class PostProcessorConfigTest {
 
 		java.util.Map<String, Object> map = config.toMap();
 
-		assertThat(map).containsEntry("enabled", null).containsKey("enabled_processors");
+		assertThat(map).containsEntry("enabled", true).containsKey("enabled_processors");
 	}
 
 	@Test

@@ -25,11 +25,11 @@ final class EmbeddingConfigTest {
 
 		Map<String, Object> model = config.getModel();
 		assertThat(model).containsEntry("type", "preset").containsEntry("name", "balanced");
-		assertThat(config.getNormalize()).isTrue();
-		assertThat(config.getBatchSize()).isEqualTo(32);
+		assertNull(config.getNormalize()); // Builder doesn't set default
+		assertThat(config.getBatchSize()).isEqualTo(32); // Builder has batchSize = 32 default
 		assertNull(config.getDimensions());
-		assertThat(config.getUseCache()).isTrue();
-		assertThat(config.getShowDownloadProgress()).isFalse();
+		assertNull(config.getUseCache()); // Builder doesn't set default
+		assertNull(config.getShowDownloadProgress()); // Builder doesn't set default
 		assertNull(config.getCacheDir());
 	}
 
@@ -117,9 +117,9 @@ final class EmbeddingConfigTest {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> model = (Map<String, Object>) map.get("model");
 		assertThat(model).containsEntry("type", "preset").containsEntry("name", "balanced");
-		assertThat(map).containsEntry("normalize", null).containsEntry("batch_size", 64)
-				.containsEntry("dimensions", 512).containsEntry("use_cache", null)
-				.containsEntry("show_download_progress", null);
+		assertThat(map).containsEntry("normalize", true).containsEntry("batch_size", 64)
+				.containsEntry("dimensions", 512).doesNotContainKey("use_cache")
+				.doesNotContainKey("show_download_progress");
 	}
 
 	@Test
@@ -213,21 +213,21 @@ final class EmbeddingConfigTest {
 
 		Map<String, Object> map = new HashMap<>();
 		map.put("model", modelMap);
-		map.put("normalize", null);
+		map.put("normalize", null); // fromMap converts null to true
 		map.put("batch_size", 64);
 		map.put("dimensions", 512);
-		map.put("use_cache", null);
-		map.put("show_download_progress", null);
+		map.put("use_cache", null); // fromMap converts null to false
+		map.put("show_download_progress", null); // fromMap converts null to true
 		map.put("cache_dir", "/test/cache");
 
 		EmbeddingConfig config = EmbeddingConfig.fromMap(map);
 
 		assertThat(config.getModel()).containsEntry("type", "preset").containsEntry("name", "fast");
-		assertThat(config.getNormalize()).isTrue();
+		assertThat(config.getNormalize()).isTrue(); // fromMap(null) -> true
 		assertThat(config.getBatchSize()).isEqualTo(64);
 		assertThat(config.getDimensions()).isEqualTo(512);
-		assertThat(config.getUseCache()).isFalse();
-		assertThat(config.getShowDownloadProgress()).isTrue();
+		assertThat(config.getUseCache()).isFalse(); // fromMap(null) -> false
+		assertThat(config.getShowDownloadProgress()).isTrue(); // fromMap(null) -> true
 		assertThat(config.getCacheDir()).isEqualTo("/test/cache");
 	}
 
@@ -242,7 +242,7 @@ final class EmbeddingConfigTest {
 
 		assertThat(config.getModel()).containsEntry("type", "preset").containsEntry("name", "balanced");
 		assertThat(config.getBatchSize()).isEqualTo(32);
-		assertThat(config.getNormalize()).isTrue(); // default value
+		assertNull(config.getNormalize()); // fromMap doesn't set default when key is missing
 	}
 
 	@Test
@@ -262,8 +262,8 @@ final class EmbeddingConfigTest {
 		EmbeddingConfig config = EmbeddingConfig.fromMap(map);
 
 		assertThat(config.getModel()).containsEntry("type", "preset").containsEntry("name", "fast");
-		assertThat(config.getNormalize()).isTrue();
-		assertThat(config.getBatchSize()).isEqualTo(32);
+		assertNull(config.getNormalize()); // fromMap doesn't set default when key is missing
+		assertThat(config.getBatchSize()).isEqualTo(32); // Builder has batchSize = 32 default
 	}
 
 	@Test
@@ -273,8 +273,10 @@ final class EmbeddingConfigTest {
 
 		Map<String, Object> map = config.toMap();
 
-		assertThat(map).containsKey("model").containsKey("normalize").containsKey("batch_size").containsKey("use_cache")
-				.containsKey("show_download_progress").doesNotContainKey("dimensions").doesNotContainKey("cache_dir");
+		assertThat(map).containsKey("model").containsKey("normalize").containsKey("batch_size")
+				.doesNotContainKey("use_cache") // not set, so not in map
+				.doesNotContainKey("show_download_progress") // not set, so not in map
+				.doesNotContainKey("dimensions").doesNotContainKey("cache_dir");
 	}
 
 	@Test

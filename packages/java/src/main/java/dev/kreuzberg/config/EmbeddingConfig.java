@@ -139,11 +139,11 @@ public final class EmbeddingConfig {
 	 */
 	public static final class Builder {
 		private Map<String, Object> model;
-		private Boolean normalize = true;
+		private Boolean normalize;
 		private Integer batchSize = 32;
 		private Integer dimensions;
-		private Boolean useCache = true;
-		private Boolean showDownloadProgress = false;
+		private Boolean useCache;
+		private Boolean showDownloadProgress;
 		private String cacheDir;
 
 		private Builder() {
@@ -321,9 +321,13 @@ public final class EmbeddingConfig {
 			// Legacy: treat string as preset name
 			builder.preset((String) modelValue);
 		}
-		Object normalizeValue = map.get("normalize");
-		if (normalizeValue instanceof Boolean) {
-			builder.normalize((Boolean) normalizeValue);
+		if (map.containsKey("normalize")) {
+			Object normalizeValue = map.get("normalize");
+			if (normalizeValue instanceof Boolean) {
+				builder.normalize((Boolean) normalizeValue);
+			} else if (normalizeValue == null) {
+				builder.normalize(true); // default when null
+			}
 		}
 		Object batchSizeValue = map.get("batch_size");
 		if (batchSizeValue instanceof Number) {
@@ -333,13 +337,21 @@ public final class EmbeddingConfig {
 		if (dimensionsValue instanceof Number) {
 			builder.dimensions(((Number) dimensionsValue).intValue());
 		}
-		Object useCacheValue = map.get("use_cache");
-		if (useCacheValue instanceof Boolean) {
-			builder.useCache((Boolean) useCacheValue);
+		if (map.containsKey("use_cache")) {
+			Object useCacheValue = map.get("use_cache");
+			if (useCacheValue instanceof Boolean) {
+				builder.useCache((Boolean) useCacheValue);
+			} else if (useCacheValue == null) {
+				builder.useCache(false); // default when null
+			}
 		}
-		Object showDownloadProgressValue = map.get("show_download_progress");
-		if (showDownloadProgressValue instanceof Boolean) {
-			builder.showDownloadProgress((Boolean) showDownloadProgressValue);
+		if (map.containsKey("show_download_progress")) {
+			Object showDownloadProgressValue = map.get("show_download_progress");
+			if (showDownloadProgressValue instanceof Boolean) {
+				builder.showDownloadProgress((Boolean) showDownloadProgressValue);
+			} else if (showDownloadProgressValue == null) {
+				builder.showDownloadProgress(true); // default when null
+			}
 		}
 		Object cacheDirValue = map.get("cache_dir");
 		if (cacheDirValue instanceof String) {

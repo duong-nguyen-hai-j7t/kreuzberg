@@ -68,7 +68,7 @@ public final class ChunkingConfig {
 		private int maxOverlap = 200;
 		private String preset;
 		private Map<String, Object> embedding;
-		private Boolean enabled = true;
+		private Boolean enabled;
 
 		private Builder() {
 		}

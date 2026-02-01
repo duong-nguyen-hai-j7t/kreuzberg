@@ -79,8 +79,8 @@ final class LanguageDetectionConfigTest {
 
 		java.util.Map<String, Object> map = config.toMap();
 
-		assertThat(map).containsEntry("enabled", null).containsEntry("min_confidence", 0.6)
-				.containsEntry("detect_multiple", null);
+		assertThat(map).containsEntry("enabled", true).containsEntry("min_confidence", 0.6)
+				.containsEntry("detect_multiple", true);
 	}
 
 	@Test

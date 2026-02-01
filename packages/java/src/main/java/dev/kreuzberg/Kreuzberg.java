@@ -310,7 +310,7 @@ public final class Kreuzberg {
 			try {
 				ExtractionResult result = extractFile(path, config);
 				future.complete(result);
-			} catch (IOException | KreuzbergException e) {
+			} catch (Throwable e) {
 				future.completeExceptionally(e);
 			}
 		});
@@ -339,7 +339,7 @@ public final class Kreuzberg {
 			try {
 				ExtractionResult result = extractBytes(data, mimeType, config);
 				future.complete(result);
-			} catch (KreuzbergException e) {
+			} catch (Throwable e) {
 				future.completeExceptionally(e);
 			}
 		});
@@ -367,7 +367,7 @@ public final class Kreuzberg {
 			try {
 				List<ExtractionResult> results = batchExtractFiles(paths, config);
 				future.complete(results);
-			} catch (KreuzbergException e) {
+			} catch (Throwable e) {
 				future.completeExceptionally(e);
 			}
 		});
@@ -395,7 +395,7 @@ public final class Kreuzberg {
 			try {
 				List<ExtractionResult> results = batchExtractBytes(items, config);
 				future.complete(results);
-			} catch (KreuzbergException e) {
+			} catch (Throwable e) {
 				future.completeExceptionally(e);
 			}
 		});
