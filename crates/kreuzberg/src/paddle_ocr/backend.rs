@@ -12,8 +12,10 @@ use std::sync::{Arc, Mutex, MutexGuard};
 
 use crate::Result;
 use crate::core::config::OcrConfig;
+use crate::ocr::conversion::{elements_to_hocr_words, text_block_to_element};
+use crate::ocr::table::{reconstruct_table, table_to_markdown};
 use crate::plugins::{OcrBackend, OcrBackendType, Plugin};
-use crate::types::{ExtractionResult, FormatMetadata, Metadata, OcrMetadata};
+use crate::types::{ExtractionResult, FormatMetadata, Metadata, OcrElement, OcrMetadata, Table};
 
 use super::config::PaddleOcrConfig;
 use super::model_manager::{ModelManager, ModelPaths};
@@ -80,7 +82,10 @@ impl PaddleOcrBackend {
     ///
     /// Uses `tokio::task::spawn_blocking` to run the CPU-intensive OCR operation
     /// without blocking the async runtime.
-    async fn do_ocr(&self, image_bytes: &[u8], _language: &str) -> Result<String> {
+    ///
+    /// Returns a tuple of (text_content, ocr_elements) where elements preserve
+    /// full spatial and confidence information from PaddleOCR.
+    async fn do_ocr(&self, image_bytes: &[u8], _language: &str) -> Result<(String, Vec<OcrElement>)> {
         // Ensure models are loaded - drop the guard before await
         {
             let models = self.get_or_init_models()?;
@@ -95,7 +100,7 @@ impl PaddleOcrBackend {
         let image_bytes_owned = image_bytes.to_vec();
 
         // Run OCR in blocking task to avoid blocking the async runtime
-        let result = tokio::task::spawn_blocking(move || {
+        let text_blocks = tokio::task::spawn_blocking(move || {
             // Use catch_unwind to handle potential panics from ONNX Runtime
             catch_unwind(std::panic::AssertUnwindSafe(|| Self::perform_ocr(&image_bytes_owned))).map_err(|_| {
                 crate::KreuzbergError::Plugin {
@@ -110,7 +115,20 @@ impl PaddleOcrBackend {
             plugin_name: "paddle-ocr".to_string(),
         })??;
 
-        Ok(result)
+        // Convert TextBlocks to unified OcrElements, preserving all spatial data
+        let ocr_elements: Vec<OcrElement> = text_blocks
+            .iter()
+            .map(|block| text_block_to_element(block, 1)) // page_number = 1 for single images
+            .collect();
+
+        // Collect text from all blocks
+        let text = text_blocks
+            .iter()
+            .map(|block| block.text.as_str())
+            .collect::<Vec<_>>()
+            .join("\n");
+
+        Ok((text, ocr_elements))
     }
 
     /// Perform actual OCR inference (runs in blocking context).
@@ -119,8 +137,8 @@ impl PaddleOcrBackend {
     /// When paddle-ocr-rs becomes available, this would:
     /// 1. Decode image bytes to RGB8 using the `image` crate
     /// 2. Call the OcrLite engine to perform text detection and recognition
-    /// 3. Format results into a single text string
-    fn perform_ocr(_image_bytes: &[u8]) -> Result<String> {
+    /// 3. Return TextBlocks with full spatial and confidence information
+    fn perform_ocr(_image_bytes: &[u8]) -> Result<Vec<kreuzberg_paddle_ocr::TextBlock>> {
         // TODO: Implement when paddle-ocr-rs is available
         // 1. Decode image:
         //    let img = image::load_from_memory(image_bytes)
@@ -131,12 +149,8 @@ impl PaddleOcrBackend {
         //    let results = OCR_ENGINE.ocr(&img, ...)
         //        .map_err(|e| KreuzbergError::Ocr { ... })?;
         //
-        // 3. Collect text:
-        //    let text = results.iter()
-        //        .flat_map(|line| line.iter())
-        //        .map(|word| &word.text)
-        //        .collect::<Vec<_>>()
-        //        .join("\n");
+        // 3. Return text blocks with full metadata:
+        //    Ok(results)
 
         Err(crate::KreuzbergError::Ocr {
             message: "PaddleOCR inference not yet implemented. \
@@ -181,8 +195,41 @@ impl OcrBackend for PaddleOcrBackend {
         // Map language code to PaddleOCR language identifier
         let paddle_lang = map_language_code(&config.language).unwrap_or("en");
 
-        // Perform OCR
-        let text = self.do_ocr(image_bytes, paddle_lang).await?;
+        // Perform OCR - returns both text and structured elements
+        let (text, ocr_elements) = self.do_ocr(image_bytes, paddle_lang).await?;
+
+        // Attempt table detection if enabled and we have elements
+        let mut tables: Vec<Table> = vec![];
+        let mut table_count = 0;
+        let mut table_rows: Option<usize> = None;
+        let mut table_cols: Option<usize> = None;
+
+        if self.config.enable_table_detection && !ocr_elements.is_empty() {
+            // Convert OCR elements to HocrWords for table reconstruction
+            // Using 0.3 as minimum confidence threshold (matches typical Tesseract defaults)
+            let words = elements_to_hocr_words(&ocr_elements, 0.3);
+
+            if !words.is_empty() {
+                // Reconstruct table using default thresholds
+                // column_threshold: 20 pixels, row_threshold_ratio: 0.5
+                let cells = reconstruct_table(&words, 20, 0.5);
+
+                if !cells.is_empty() {
+                    table_count = 1;
+                    table_rows = Some(cells.len());
+                    table_cols = cells.first().map(|row| row.len());
+
+                    // Convert to markdown format
+                    let table_markdown = table_to_markdown(&cells);
+
+                    tables.push(Table {
+                        cells,
+                        markdown: table_markdown,
+                        page_number: 1, // Single image = page 1
+                    });
+                }
+            }
+        }
 
         // Build metadata
         let mut additional = AHashMap::new();
@@ -193,25 +240,33 @@ impl OcrBackend for PaddleOcrBackend {
                 language: config.language.clone(),
                 psm: 3, // PSM_AUTO (default)
                 output_format: "text".to_string(),
-                table_count: 0,
-                table_rows: None,
-                table_cols: None,
+                table_count,
+                table_rows,
+                table_cols,
             })),
             additional,
             ..Default::default()
+        };
+
+        // Preserve OCR elements if any were extracted
+        let ocr_elements_opt = if ocr_elements.is_empty() {
+            None
+        } else {
+            Some(ocr_elements)
         };
 
         Ok(ExtractionResult {
             content: text,
             mime_type: Cow::Borrowed("text/plain"),
             metadata,
-            tables: vec![],
+            tables,
             detected_languages: Some(vec![config.language.clone()]),
             chunks: None,
             images: None,
             djot_content: None,
             pages: None,
             elements: None,
+            ocr_elements: ocr_elements_opt,
         })
     }
 
@@ -236,9 +291,9 @@ impl OcrBackend for PaddleOcrBackend {
     }
 
     fn supports_table_detection(&self) -> bool {
-        // PaddleOCR can be configured for table detection,
-        // but current implementation is text-only
-        false
+        // Table detection is enabled via config when OCR elements
+        // can be converted to HocrWords for table reconstruction
+        self.config.enable_table_detection
     }
 }
 
@@ -336,10 +391,18 @@ mod tests {
     }
 
     #[test]
-    fn test_paddle_ocr_table_detection() {
+    fn test_paddle_ocr_table_detection_disabled_by_default() {
         let backend = PaddleOcrBackend::new().unwrap();
-        // Current implementation doesn't support table detection
+        // Table detection is disabled by default in PaddleOcrConfig
         assert!(!backend.supports_table_detection());
+    }
+
+    #[test]
+    fn test_paddle_ocr_table_detection_enabled() {
+        let config = PaddleOcrConfig::default().with_table_detection(true);
+        let backend = PaddleOcrBackend::with_config(config).unwrap();
+        // Table detection is enabled when configured
+        assert!(backend.supports_table_detection());
     }
 
     #[test]

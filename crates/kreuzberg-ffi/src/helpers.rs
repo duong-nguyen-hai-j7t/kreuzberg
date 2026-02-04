@@ -68,6 +68,7 @@ pub fn to_c_extraction_result(result: ExtractionResult) -> std::result::Result<*
         pages,
         djot_content: _,
         elements,
+        ocr_elements: _,
     } = result;
 
     let sanitized_content = if content.contains('\0') {
@@ -362,6 +363,7 @@ mod tests {
             pages: None,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         };
 
         let c_result = to_c_extraction_result(result);
@@ -401,6 +403,7 @@ mod tests {
             pages: None,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         };
 
         let c_result = to_c_extraction_result(result);
@@ -450,6 +453,7 @@ mod tests {
             pages: None,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         };
 
         let c_result = to_c_extraction_result(result);
@@ -529,6 +533,7 @@ mod tests {
             pages: None,
             djot_content: None,
             elements: None,
+            ocr_elements: None,
         };
 
         let c_result = to_c_extraction_result(result);

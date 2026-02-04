@@ -387,6 +387,7 @@ async fn test_concurrent_pipeline_processing() {
                 images: None,
                 pages: None,
                 elements: None,
+                ocr_elements: None,
                 djot_content: None,
             };
 

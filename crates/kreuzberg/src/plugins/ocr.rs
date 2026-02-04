@@ -488,6 +488,7 @@ mod tests {
                 djot_content: None,
                 pages: None,
                 elements: None,
+                ocr_elements: None,
             })
         }
 

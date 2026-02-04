@@ -297,6 +297,7 @@ impl ExtractionConfig {
             kreuzberg::core::config::formats::OutputFormat::Markdown => "markdown".to_string(),
             kreuzberg::core::config::formats::OutputFormat::Djot => "djot".to_string(),
             kreuzberg::core::config::formats::OutputFormat::Html => "html".to_string(),
+            kreuzberg::core::config::formats::OutputFormat::Structured => "structured".to_string(),
         }
     }
 
@@ -307,6 +308,7 @@ impl ExtractionConfig {
             "markdown" => kreuzberg::core::config::formats::OutputFormat::Markdown,
             "djot" => kreuzberg::core::config::formats::OutputFormat::Djot,
             "html" => kreuzberg::core::config::formats::OutputFormat::Html,
+            "structured" | "json" => kreuzberg::core::config::formats::OutputFormat::Structured,
             _ => kreuzberg::core::config::formats::OutputFormat::Plain, // Default on invalid
         };
     }

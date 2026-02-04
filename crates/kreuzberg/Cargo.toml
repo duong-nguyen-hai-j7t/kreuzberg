@@ -63,7 +63,15 @@ ocr = [
     "html",
 ]
 # PaddleOCR via ONNX Runtime (independent feature, NOT in 'full')
-paddle-ocr = ["dep:kreuzberg-paddle-ocr", "dep:sha2", "dep:image", "html", "tokio-runtime"]
+paddle-ocr = [
+    "dep:kreuzberg-paddle-ocr",
+    "dep:sha2",
+    "dep:image",
+    "dep:reqwest",
+    "dep:tar",
+    "html",
+    "tokio-runtime",
+]
 language-detection = ["dep:whatlang"]
 chunking = ["dep:text-splitter"]
 embeddings = ["dep:fastembed", "dep:reqwest", "chunking", "tokio-runtime"]
