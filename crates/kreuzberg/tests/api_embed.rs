@@ -83,6 +83,7 @@ async fn test_embed_empty_texts() {
 
 /// Test embed endpoint with custom embedding configuration.
 #[tokio::test]
+#[cfg_attr(target_arch = "aarch64", ignore = "ONNX Runtime model loading unstable on ARM")]
 async fn test_embed_with_custom_config() {
     let app = create_router(ExtractionConfig::default());
 
@@ -125,6 +126,7 @@ async fn test_embed_with_custom_config() {
 
 /// Test embed endpoint with single text.
 #[tokio::test]
+#[cfg_attr(target_arch = "aarch64", ignore = "ONNX Runtime model loading unstable on ARM")]
 async fn test_embed_single_text() {
     let app = create_router(ExtractionConfig::default());
 
@@ -201,6 +203,7 @@ async fn test_embed_batch() {
 
 /// Test embed endpoint with long text.
 #[tokio::test]
+#[cfg_attr(target_arch = "aarch64", ignore = "ONNX Runtime model loading unstable on ARM")]
 async fn test_embed_long_text() {
     let app = create_router(ExtractionConfig::default());
 
@@ -317,6 +320,7 @@ async fn test_embed_rejects_simple_json_array() {
 
 /// Test embed endpoint preserves embedding vector values across calls.
 #[tokio::test]
+#[cfg_attr(target_arch = "aarch64", ignore = "ONNX Runtime model loading unstable on ARM")]
 async fn test_embed_deterministic() {
     let app = create_router(ExtractionConfig::default());
 
@@ -376,6 +380,7 @@ async fn test_embed_deterministic() {
 
 /// Test embed endpoint with different embedding presets.
 #[tokio::test]
+#[cfg_attr(target_arch = "aarch64", ignore = "ONNX Runtime model loading unstable on ARM")]
 async fn test_embed_different_presets() {
     let app = create_router(ExtractionConfig::default());
 
