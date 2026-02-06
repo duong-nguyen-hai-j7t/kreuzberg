@@ -108,6 +108,7 @@ fn test_extract_with_chunking() {
             "extract",
             test_file.as_str(),
             "--chunk",
+            "true",
             "--chunk-size",
             "100",
             "--chunk-overlap",
