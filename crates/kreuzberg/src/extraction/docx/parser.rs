@@ -155,20 +155,18 @@ impl Paragraph {
         Self::default()
     }
 
-    /// Join text runs with a space separator.
+    /// Concatenate text runs to produce paragraph text.
     ///
-    /// In DOCX, separate `<w:r>` elements within the same paragraph represent
-    /// distinct text runs (e.g. due to formatting changes). These runs need a
-    /// space between them to produce readable text.
-    ///
-    /// Empty runs are filtered out to avoid double spaces.
+    /// In DOCX, whitespace between words is stored inside `<w:t>` elements
+    /// (e.g. `<w:t>Hello </w:t><w:t>World</w:t>`), so runs are joined
+    /// directly without adding extra separators. The parser must use
+    /// `trim_text(false)` to preserve this whitespace.
     pub fn to_text(&self) -> String {
-        self.runs
-            .iter()
-            .map(|run| run.text.as_str())
-            .filter(|s| !s.is_empty())
-            .collect::<Vec<_>>()
-            .join(" ")
+        let mut text = String::new();
+        for run in &self.runs {
+            text.push_str(&run.text);
+        }
+        text
     }
 
     pub fn add_run(&mut self, run: Run) {
@@ -271,7 +269,7 @@ impl<R: Read + Seek> DocxParser<R> {
 
     fn parse_document_xml(&self, xml: &str, document: &mut Document) -> Result<(), DocxParseError> {
         let mut reader = Reader::from_str(xml);
-        reader.config_mut().trim_text(true);
+        reader.config_mut().trim_text(false);
 
         let mut buf = Vec::new();
         let mut current_paragraph: Option<Paragraph> = None;
@@ -403,7 +401,7 @@ impl<R: Read + Seek> DocxParser<R> {
     fn parse_numbering(&self, xml: &str) -> Result<HashMap<i64, ListType>, DocxParseError> {
         let mut numbering_defs = HashMap::new();
         let mut reader = Reader::from_str(xml);
-        reader.config_mut().trim_text(true);
+        reader.config_mut().trim_text(false);
 
         let mut buf = Vec::new();
         let mut current_num_id: Option<i64> = None;
@@ -477,7 +475,7 @@ impl<R: Read + Seek> DocxParser<R> {
 
     fn parse_header_footer_content(&self, xml: &str, header_footer: &mut HeaderFooter) -> Result<(), DocxParseError> {
         let mut reader = Reader::from_str(xml);
-        reader.config_mut().trim_text(true);
+        reader.config_mut().trim_text(false);
 
         let mut buf = Vec::new();
         let mut current_paragraph: Option<Paragraph> = None;
@@ -527,7 +525,7 @@ impl<R: Read + Seek> DocxParser<R> {
 
     fn parse_notes(&self, xml: &str, notes: &mut Vec<Note>, note_type: NoteType) -> Result<(), DocxParseError> {
         let mut reader = Reader::from_str(xml);
-        reader.config_mut().trim_text(true);
+        reader.config_mut().trim_text(false);
 
         let mut buf = Vec::new();
         let mut current_note: Option<Note> = None;
@@ -645,13 +643,22 @@ pub fn extract_text_from_bytes(bytes: &[u8]) -> crate::error::Result<String> {
 mod tests {
     use super::*;
 
-    /// Regression test for #359: DOCX list items missing whitespace between text runs.
+    /// Runs are concatenated directly; whitespace comes from the XML text content.
     #[test]
-    fn test_paragraph_to_text_joins_runs_with_space() {
+    fn test_paragraph_to_text_concatenates_runs() {
         let mut para = Paragraph::new();
-        para.add_run(Run::new("Hello".to_string()));
+        para.add_run(Run::new("Hello ".to_string()));
         para.add_run(Run::new("World".to_string()));
         assert_eq!(para.to_text(), "Hello World");
+    }
+
+    /// Mid-word run splits (e.g. drop caps) must not insert extra spaces.
+    #[test]
+    fn test_paragraph_to_text_mid_word_split() {
+        let mut para = Paragraph::new();
+        para.add_run(Run::new("S".to_string()));
+        para.add_run(Run::new("ermocination".to_string()));
+        assert_eq!(para.to_text(), "Sermocination");
     }
 
     #[test]
@@ -662,25 +669,17 @@ mod tests {
     }
 
     #[test]
-    fn test_paragraph_to_text_empty_runs_filtered() {
-        let mut para = Paragraph::new();
-        para.add_run(Run::new("Hello".to_string()));
-        para.add_run(Run::new(String::new()));
-        para.add_run(Run::new("World".to_string()));
-        assert_eq!(para.to_text(), "Hello World");
-    }
-
-    #[test]
     fn test_paragraph_to_text_no_runs() {
         let para = Paragraph::new();
         assert_eq!(para.to_text(), "");
     }
 
+    /// Whitespace between words is stored in the run text, not added by join.
     #[test]
-    fn test_paragraph_to_text_three_runs() {
+    fn test_paragraph_to_text_whitespace_in_runs() {
         let mut para = Paragraph::new();
-        para.add_run(Run::new("The".to_string()));
-        para.add_run(Run::new("quick".to_string()));
+        para.add_run(Run::new("The ".to_string()));
+        para.add_run(Run::new("quick ".to_string()));
         para.add_run(Run::new("fox".to_string()));
         assert_eq!(para.to_text(), "The quick fox");
     }

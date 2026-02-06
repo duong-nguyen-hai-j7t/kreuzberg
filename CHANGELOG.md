@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 #### DOCX Extraction
-- **DOCX list items missing whitespace between text runs**: Fixed separate text runs (`<w:r>` elements) within the same paragraph being concatenated without spaces, causing words to merge together. Vendored the `docx-lite` parser into kreuzberg and fixed `Paragraph::to_text()` to join runs with a space separator. Empty runs are now filtered to prevent double spaces. (#359)
+- **DOCX list items missing whitespace between text runs**: Fixed separate text runs (`<w:r>` elements) within the same paragraph being concatenated without spaces, causing words to merge together. Root cause: the XML parser used `trim_text(true)` which stripped whitespace from `<w:t>` text elements. Vendored the `docx-lite` parser into kreuzberg and fixed the parser to use `trim_text(false)`, preserving the original whitespace from the DOCX XML. (#359)
 
 ---
 
