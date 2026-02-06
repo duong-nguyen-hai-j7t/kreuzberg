@@ -17,6 +17,25 @@ pub enum OcrStatus {
     Unknown,
 }
 
+/// Categorizes the source of a benchmark error.
+///
+/// This distinction is critical: framework errors are the framework's fault
+/// (e.g. pdfplumber can't parse a malformed PDF), while harness errors are
+/// our fault (e.g. timeout, process crash, invalid output format).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum ErrorKind {
+    /// The framework itself reported an extraction error (returned `{"error": "..."}`)
+    /// This is NOT our fault - the framework couldn't handle this file.
+    FrameworkError,
+    /// A harness-level error: timeout, process crash, invalid JSON output, etc.
+    /// This IS potentially our fault or an infrastructure issue.
+    HarnessError,
+    /// No error occurred
+    #[default]
+    None,
+}
+
 /// Complete benchmark result for a single file extraction
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BenchmarkResult {
@@ -34,6 +53,10 @@ pub struct BenchmarkResult {
 
     /// Error message if extraction failed
     pub error_message: Option<String>,
+
+    /// Categorizes the error source (framework vs harness)
+    #[serde(default)]
+    pub error_kind: ErrorKind,
 
     /// Total wall-clock duration (process spawn + extraction)
     /// For single iteration: the actual duration

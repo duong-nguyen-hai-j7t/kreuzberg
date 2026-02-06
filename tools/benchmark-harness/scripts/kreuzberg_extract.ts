@@ -22,7 +22,7 @@ interface ExtractionOutput {
 function createConfig(ocrEnabled: boolean): ExtractionConfig {
 	return {
 		useCache: false,
-		...(ocrEnabled && { ocr: { enabled: true } }),
+		...(ocrEnabled && { ocr: { backend: "tesseract", language: "eng" } }),
 	};
 }
 

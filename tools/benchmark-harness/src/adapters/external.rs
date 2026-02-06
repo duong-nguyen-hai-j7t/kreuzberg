@@ -309,7 +309,7 @@ fn get_tika_jar_path() -> Result<PathBuf> {
     }
 
     Err(crate::Error::Config(
-        "Tika JAR not found. Download: curl -LO https://repo1.maven.org/maven2/org/apache/tika/tika-app/2.9.2/tika-app-2.9.2.jar && mv tika-app-2.9.2.jar tools/benchmark-harness/libs/".to_string()
+        "Tika JAR not found. Download: curl -LO https://repo1.maven.org/maven2/org/apache/tika/tika-app/3.2.3/tika-app-3.2.3.jar && mv tika-app-3.2.3.jar tools/benchmark-harness/libs/".to_string()
     ))
 }
 
@@ -323,6 +323,10 @@ pub fn create_tika_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
     let command = find_java()?;
 
     let args = vec![
+        "-server".to_string(),
+        "-Xms512m".to_string(),
+        "-Xmx2g".to_string(),
+        "-XX:+UseG1GC".to_string(),
         "-cp".to_string(),
         jar_path.to_string_lossy().to_string(),
         script_path.to_string_lossy().to_string(),

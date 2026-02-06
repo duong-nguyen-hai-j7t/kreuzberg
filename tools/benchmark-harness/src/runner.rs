@@ -447,6 +447,7 @@ impl BenchmarkRunner {
             file_size: first_result.file_size,
             success: true,
             error_message: None,
+            error_kind: first_result.error_kind,
             duration: statistics.mean,
             extraction_duration: avg_extraction_duration,
             subprocess_overhead,
@@ -561,6 +562,7 @@ impl BenchmarkRunner {
                 file_size: first_result.file_size,
                 success: true,
                 error_message: None,
+                error_kind: first_result.error_kind,
                 duration: statistics.mean,
                 extraction_duration: avg_extraction_duration,
                 subprocess_overhead,
@@ -814,6 +816,7 @@ impl BenchmarkRunner {
 mod tests {
     use super::*;
     use crate::adapters::NativeAdapter;
+    use crate::types::ErrorKind;
 
     #[tokio::test]
     async fn test_benchmark_runner_creation() {
@@ -914,6 +917,7 @@ mod tests {
             file_size: 1024,
             success: true,
             error_message: None,
+            error_kind: ErrorKind::None,
             duration: Duration::from_millis(100),
             extraction_duration: None,
             subprocess_overhead: None,
@@ -936,6 +940,7 @@ mod tests {
             file_size: 1024,
             success: true,
             error_message: None,
+            error_kind: ErrorKind::None,
             duration: Duration::from_millis(100),
             extraction_duration: None,
             subprocess_overhead: None,
@@ -958,6 +963,7 @@ mod tests {
             file_size: 1024,
             success: true,
             error_message: None,
+            error_kind: ErrorKind::None,
             duration: Duration::from_millis(100),
             extraction_duration: None,
             subprocess_overhead: None,

@@ -60,7 +60,7 @@ def extract_sync(file_path, config = {})
   start_wall = Time.now
   debug_log "Timing start (monotonic): #{start_monotonic.round(6)}, wall: #{start_wall.iso8601(6)}"
 
-  result = Kreuzberg.extract_file(file_path, config: config)
+  result = Kreuzberg.extract_file(path: file_path, config: config)
 
   end_monotonic = Process.clock_gettime(Process::CLOCK_MONOTONIC)
   end_wall = Time.now
@@ -152,7 +152,7 @@ def extract_server(ocr_enabled)
       config[:ocr] = { enabled: true } if ocr_enabled
 
       start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-      result = Kreuzberg.extract_file(file_path, config: config)
+      result = Kreuzberg.extract_file(path: file_path, config: config)
       duration_ms = (Process.clock_gettime(Process::CLOCK_MONOTONIC) - start) * 1000.0
 
       payload = {

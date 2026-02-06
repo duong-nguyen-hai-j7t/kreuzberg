@@ -2,6 +2,7 @@
 # requires-python = ">=3.10"
 # dependencies = [
 #     "pymupdf4llm>=0.0.17",
+#     "pymupdf-layout>=0.0.1",
 # ]
 # ///
 """PyMuPDF4LLM extraction wrapper for benchmark harness."""
@@ -12,7 +13,16 @@ import json
 import sys
 import time
 
+# Import pymupdf.layout BEFORE pymupdf4llm to enable improved layout analysis
+# and suppress the "Consider using the pymupdf_layout package" info message.
+import pymupdf.layout  # noqa: F401
 import pymupdf4llm
+
+# Suppress MuPDF C-level error/warning messages that can corrupt the
+# persistent server's line-based JSON protocol on stdout.
+# See: https://github.com/pymupdf/PyMuPDF/issues/606
+import pymupdf
+pymupdf.TOOLS.mupdf_display_errors(False)
 
 
 def extract_sync(file_path: str) -> dict:

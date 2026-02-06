@@ -1,7 +1,7 @@
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
-#     "unstructured>=0.18.21",
+#     "unstructured[all-docs]>=0.18.21",
 # ]
 # ///
 """Unstructured extraction wrapper for benchmark harness."""

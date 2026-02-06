@@ -2,6 +2,7 @@
 # requires-python = ">=3.10"
 # dependencies = [
 #     "mineru>=2.6.7",
+#     "onnxruntime",
 # ]
 # ///
 """MinerU extraction wrapper for benchmark harness.
@@ -16,6 +17,11 @@ Falls back to CLI subprocess if the Python API is not available.
 """
 
 from __future__ import annotations
+
+import os
+
+# Force CPU-only ONNX runtime to avoid GPU discovery errors in CI
+os.environ.setdefault("CUDA_VISIBLE_DEVICES", "")
 
 import json
 import subprocess

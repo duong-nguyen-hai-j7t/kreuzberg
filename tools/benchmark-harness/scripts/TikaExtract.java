@@ -167,6 +167,17 @@ public final class TikaExtract {
     }
 
     private static void processServerMode(boolean ocrEnabled, boolean debug) throws Exception {
+        // Pre-create shared parser and OCR config to avoid per-file construction overhead.
+        // AutoDetectParser is thread-safe and reusable. Only BodyContentHandler and Metadata
+        // need to be recreated per extraction since they accumulate state.
+        AutoDetectParser sharedParser = new AutoDetectParser();
+        TesseractOCRConfig sharedOcrConfig = new TesseractOCRConfig();
+        if (!ocrEnabled) {
+            sharedOcrConfig.setSkipOcr(true);
+        } else {
+            sharedOcrConfig.setLanguage("eng");
+        }
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String line;
         while ((line = reader.readLine()) != null) {
@@ -177,7 +188,7 @@ public final class TikaExtract {
             try {
                 Path path = Path.of(filePath);
                 long start = System.nanoTime();
-                ExtractionData data = extractFile(path.toFile(), ocrEnabled, debug);
+                ExtractionData data = extractFileWithParser(path.toFile(), sharedParser, sharedOcrConfig, debug);
                 double elapsedMs = (System.nanoTime() - start) / NANOS_IN_MILLISECOND;
                 String json = toJson(data, elapsedMs);
                 System.out.println(json);
@@ -188,6 +199,31 @@ public final class TikaExtract {
                 System.out.flush();
             }
         }
+    }
+
+    private static ExtractionData extractFileWithParser(
+            File file, AutoDetectParser parser, TesseractOCRConfig ocrConfig, boolean debug) throws Exception {
+        if (!file.exists()) {
+            throw new IllegalArgumentException("File does not exist: " + file.getAbsolutePath());
+        }
+
+        BodyContentHandler handler = new BodyContentHandler(-1);
+        Metadata metadata = new Metadata();
+        ParseContext context = new ParseContext();
+        context.set(TesseractOCRConfig.class, ocrConfig);
+
+        try (InputStream stream = new FileInputStream(file)) {
+            parser.parse(stream, handler, metadata, context);
+        }
+
+        String content = handler.toString();
+        String mimeType = metadata.get(Metadata.CONTENT_TYPE);
+
+        if (mimeType == null) {
+            mimeType = "application/octet-stream";
+        }
+
+        return new ExtractionData(content, mimeType);
     }
 
     private static ExtractionData extractFile(File file, boolean ocrEnabled, boolean debug) throws Exception {
@@ -203,6 +239,10 @@ public final class TikaExtract {
         if (!ocrEnabled) {
             TesseractOCRConfig ocrConfig = new TesseractOCRConfig();
             ocrConfig.setSkipOcr(true);
+            context.set(TesseractOCRConfig.class, ocrConfig);
+        } else {
+            TesseractOCRConfig ocrConfig = new TesseractOCRConfig();
+            ocrConfig.setLanguage("eng");
             context.set(TesseractOCRConfig.class, ocrConfig);
         }
 

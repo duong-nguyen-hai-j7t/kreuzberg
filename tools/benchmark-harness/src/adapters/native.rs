@@ -5,7 +5,7 @@
 
 use crate::adapter::FrameworkAdapter;
 use crate::monitoring::ResourceMonitor;
-use crate::types::{BenchmarkResult, FrameworkCapabilities, OcrStatus, PerformanceMetrics};
+use crate::types::{BenchmarkResult, ErrorKind, FrameworkCapabilities, OcrStatus, PerformanceMetrics};
 use crate::{Error, Result};
 use async_trait::async_trait;
 use kreuzberg::{ExtractionConfig, ExtractionResult, FormatMetadata, batch_extract_file, extract_file};
@@ -162,6 +162,7 @@ impl FrameworkAdapter for NativeAdapter {
                 file_size,
                 success: false,
                 error_message: Some(e.to_string()),
+                error_kind: ErrorKind::HarnessError,
                 duration,
                 extraction_duration: Some(extraction_duration),
                 subprocess_overhead: Some(Duration::ZERO), // No subprocess for native Rust
@@ -207,6 +208,7 @@ impl FrameworkAdapter for NativeAdapter {
             file_size,
             success: true,
             error_message: None,
+            error_kind: ErrorKind::None,
             duration,
             extraction_duration: Some(extraction_duration),
             subprocess_overhead: Some(Duration::ZERO), // No subprocess for native Rust
@@ -280,6 +282,7 @@ impl FrameworkAdapter for NativeAdapter {
                         file_size,
                         success: false,
                         error_message: Some(e.to_string()),
+                        error_kind: ErrorKind::HarnessError,
                         duration: avg_duration_per_file,
                         extraction_duration: Some(avg_duration_per_file), // For native, extraction = total
                         subprocess_overhead: Some(Duration::ZERO),        // No subprocess for native Rust
@@ -362,6 +365,11 @@ impl FrameworkAdapter for NativeAdapter {
                     file_size,
                     success,
                     error_message,
+                    error_kind: if success {
+                        ErrorKind::None
+                    } else {
+                        ErrorKind::HarnessError
+                    },
                     duration: extraction_duration,
                     extraction_duration: Some(extraction_duration),
                     subprocess_overhead: Some(Duration::ZERO), // No subprocess for native Rust

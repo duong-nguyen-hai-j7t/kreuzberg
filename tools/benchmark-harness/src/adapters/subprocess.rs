@@ -6,7 +6,7 @@
 
 use crate::adapter::FrameworkAdapter;
 use crate::monitoring::ResourceMonitor;
-use crate::types::{BenchmarkResult, FrameworkCapabilities, OcrStatus, PerformanceMetrics};
+use crate::types::{BenchmarkResult, ErrorKind, FrameworkCapabilities, OcrStatus, PerformanceMetrics};
 use crate::{Error, Result};
 use async_trait::async_trait;
 use std::path::{Path, PathBuf};
@@ -407,7 +407,9 @@ impl SubprocessAdapter {
     fn parse_output(&self, stdout: &str) -> Result<serde_json::Value> {
         if is_debug_enabled() {
             let preview = if stdout.len() > 300 {
-                format!("{}...[{} bytes total]", &stdout[..300], stdout.len())
+                // Find a valid UTF-8 char boundary at or before byte 300
+                let end = (0..=300).rev().find(|&i| stdout.is_char_boundary(i)).unwrap_or(0);
+                format!("{}...[{} bytes total]", &stdout[..end], stdout.len())
             } else {
                 stdout.to_string()
             };
@@ -422,11 +424,19 @@ impl SubprocessAdapter {
         let parsed: serde_json::Value = serde_json::from_str(stdout)
             .map_err(|e| Error::Benchmark(format!("Failed to parse subprocess output as JSON: {}", e)))?;
 
-        // Validate that content field exists and is a string
+        // Validate that output is a JSON object
         if !parsed.is_object() {
             return Err(Error::Benchmark(
                 "Subprocess output must be a JSON object with 'content' field".to_string(),
             ));
+        }
+
+        // Check if the framework reported an error
+        if let Some(error_val) = parsed.get("error") {
+            let error_msg = error_val.as_str().unwrap_or("unknown error");
+            if !error_msg.is_empty() {
+                return Err(Error::FrameworkError(error_msg.to_string()));
+            }
         }
 
         if !parsed.get("content").is_some_and(|v| v.is_string()) {
@@ -487,6 +497,7 @@ impl FrameworkAdapter for SubprocessAdapter {
                         file_size,
                         success: false,
                         error_message: Some(e.to_string()),
+                        error_kind: ErrorKind::HarnessError,
                         duration: actual_duration,
                         extraction_duration: None,
                         subprocess_overhead: None,
@@ -541,6 +552,7 @@ impl FrameworkAdapter for SubprocessAdapter {
                         file_size,
                         success: false,
                         error_message: Some(e.to_string()),
+                        error_kind: ErrorKind::HarnessError,
                         duration: actual_duration,
                         extraction_duration: None,
                         subprocess_overhead: None,
@@ -596,12 +608,19 @@ impl FrameworkAdapter for SubprocessAdapter {
                     ..Default::default()
                 };
 
+                let error_kind = if matches!(e, Error::FrameworkError(_)) {
+                    ErrorKind::FrameworkError
+                } else {
+                    ErrorKind::HarnessError
+                };
+
                 return Ok(BenchmarkResult {
                     framework: self.name.clone(),
                     file_path: file_path.to_path_buf(),
                     file_size,
                     success: false,
                     error_message: Some(e.to_string()),
+                    error_kind,
                     duration,
                     extraction_duration: None,
                     subprocess_overhead: None,
@@ -700,6 +719,7 @@ impl FrameworkAdapter for SubprocessAdapter {
             file_size,
             success: true,
             error_message: None,
+            error_kind: ErrorKind::None,
             duration,
             extraction_duration,
             subprocess_overhead,
@@ -795,6 +815,7 @@ impl FrameworkAdapter for SubprocessAdapter {
                             file_size,
                             success: false,
                             error_message: Some(e.to_string()),
+                            error_kind: ErrorKind::HarnessError,
                             duration: avg_duration_per_file,
                             extraction_duration: None,
                             subprocess_overhead: None,
@@ -924,6 +945,7 @@ impl FrameworkAdapter for SubprocessAdapter {
                     file_size,
                     success: true,
                     error_message: None,
+                    error_kind: ErrorKind::None,
                     duration: avg_duration_per_file,
                     extraction_duration,
                     subprocess_overhead,

@@ -45,6 +45,11 @@ pub enum Error {
     #[error("Benchmark error: {0}")]
     Benchmark(String),
 
+    /// Framework-reported extraction error (the framework returned {"error": "..."})
+    /// This is distinct from Benchmark - the framework ran but couldn't extract.
+    #[error("{0}")]
+    FrameworkError(String),
+
     /// Timeout error
     #[error("Timeout: {0}")]
     Timeout(String),

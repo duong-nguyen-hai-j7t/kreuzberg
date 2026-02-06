@@ -679,7 +679,7 @@ fn calculate_percentile_value(sorted_values: &[f64], percentile: f64) -> f64 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{FrameworkCapabilities, OcrStatus, PerformanceMetrics};
+    use crate::types::{ErrorKind, FrameworkCapabilities, OcrStatus, PerformanceMetrics};
     use std::path::PathBuf;
     use std::time::Duration;
 
@@ -697,6 +697,7 @@ mod tests {
             file_size: 1024,
             success: true,
             error_message: None,
+            error_kind: ErrorKind::None,
             duration: Duration::from_millis(duration_ms),
             extraction_duration: None,
             subprocess_overhead: None,
@@ -832,6 +833,7 @@ mod tests {
             file_size: 1024,
             success: true,
             error_message: None,
+            error_kind: ErrorKind::None,
             duration: Duration::from_millis(100),
             extraction_duration: None,
             subprocess_overhead: None,
@@ -873,6 +875,7 @@ mod tests {
                 file_size: 1024,
                 success: true,
                 error_message: None,
+                error_kind: ErrorKind::None,
                 duration: Duration::from_millis(100),
                 extraction_duration: None,
                 subprocess_overhead: None,
@@ -900,6 +903,7 @@ mod tests {
                 file_size: 2048,
                 success: false, // Failed result
                 error_message: Some("Test error".to_string()),
+                error_kind: ErrorKind::HarnessError,
                 duration: Duration::from_secs(0),
                 extraction_duration: None,
                 subprocess_overhead: None,
@@ -1184,6 +1188,7 @@ mod tests {
             file_size: 1024,
             success: false,
             error_message: Some("Error".to_string()),
+            error_kind: ErrorKind::HarnessError,
             duration: Duration::from_millis(0),
             extraction_duration: None,
             subprocess_overhead: None,

@@ -4,7 +4,7 @@
 //! in JSON format.
 
 use crate::stats::percentile_r7;
-use crate::types::BenchmarkResult;
+use crate::types::{BenchmarkResult, ErrorKind};
 use crate::{Error, Result};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -73,6 +73,13 @@ pub struct FrameworkExtensionStats {
     pub count: usize,
     /// Number of successful extractions
     pub successful: usize,
+    /// Number of framework-side extraction errors (not our fault)
+    pub framework_errors: usize,
+    /// Number of harness-side errors (potentially our fault)
+    pub harness_errors: usize,
+    /// Unique framework error messages with occurrence counts
+    #[serde(skip_serializing_if = "HashMap::is_empty")]
+    pub error_details: HashMap<String, usize>,
     /// Success rate (0.0-1.0)
     pub success_rate: f64,
     /// Average wall-clock duration in milliseconds (includes subprocess overhead)
@@ -169,6 +176,22 @@ fn calculate_framework_stats(results: &[&BenchmarkResult]) -> FrameworkExtension
         0.0
     };
 
+    let framework_errors = results
+        .iter()
+        .filter(|r| r.error_kind == ErrorKind::FrameworkError)
+        .count();
+    let harness_errors = results
+        .iter()
+        .filter(|r| r.error_kind == ErrorKind::HarnessError)
+        .count();
+
+    let mut error_details: HashMap<String, usize> = HashMap::new();
+    for result in results.iter().filter(|r| !r.success) {
+        if let Some(msg) = &result.error_message {
+            *error_details.entry(msg.clone()).or_insert(0) += 1;
+        }
+    }
+
     let successful_results: Vec<&&BenchmarkResult> = results.iter().filter(|r| r.success).collect();
 
     let avg_duration_ms = if !successful_results.is_empty() {
@@ -248,6 +271,9 @@ fn calculate_framework_stats(results: &[&BenchmarkResult]) -> FrameworkExtension
     FrameworkExtensionStats {
         count,
         successful,
+        framework_errors,
+        harness_errors,
+        error_details,
         success_rate,
         avg_duration_ms,
         median_duration_ms,
@@ -302,6 +328,11 @@ mod tests {
             file_size: 1024,
             success,
             error_message: if success { None } else { Some("Test error".to_string()) },
+            error_kind: if success {
+                ErrorKind::None
+            } else {
+                ErrorKind::HarnessError
+            },
             duration: Duration::from_millis(duration_ms),
             extraction_duration: extraction_duration_ms.map(Duration::from_millis),
             subprocess_overhead: extraction_duration_ms.map(|ed| Duration::from_millis(duration_ms.saturating_sub(ed))),
@@ -336,6 +367,7 @@ mod tests {
             file_size: 1024,
             success: true,
             error_message: None,
+            error_kind: ErrorKind::None,
             duration: Duration::from_secs(1),
             extraction_duration: None,
             subprocess_overhead: None,

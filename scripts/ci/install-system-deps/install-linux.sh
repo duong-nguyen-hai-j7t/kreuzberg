@@ -29,6 +29,7 @@ packages=(
   pkg-config
   build-essential
   cmake
+  libmagic-dev
   php-cli
   php-dev
 )

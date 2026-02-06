@@ -55,30 +55,21 @@ const FRAMEWORKS: &[(&str, &str, &str)] = &[
 
 /// Measure framework sizes
 /// Returns sizes for all frameworks that can be measured.
-/// Frameworks that are not installed are skipped with a warning printed to stderr.
+/// Frameworks that are not installed are silently skipped.
 pub fn measure_framework_sizes() -> Result<FrameworkSizes> {
     let mut sizes = HashMap::new();
 
     for (name, method, description) in FRAMEWORKS {
-        match measure_framework(name, method) {
-            Ok(Some(size)) => {
-                sizes.insert(
-                    name.to_string(),
-                    FrameworkSize {
-                        size_bytes: size,
-                        method: method.to_string(),
-                        description: description.to_string(),
-                        estimated: false,
-                    },
-                );
-            }
-            Ok(None) => {
-                // This shouldn't happen anymore since measure_framework converts None to Err
-                eprintln!("Warning: {} could not be measured (not installed?)", name);
-            }
-            Err(e) => {
-                eprintln!("Warning: {} could not be measured: {}", name, e);
-            }
+        if let Ok(Some(size)) = measure_framework(name, method) {
+            sizes.insert(
+                name.to_string(),
+                FrameworkSize {
+                    size_bytes: size,
+                    method: method.to_string(),
+                    description: description.to_string(),
+                    estimated: false,
+                },
+            );
         }
     }
 

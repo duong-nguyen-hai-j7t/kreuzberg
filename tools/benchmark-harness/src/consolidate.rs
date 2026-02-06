@@ -805,7 +805,7 @@ fn calculate_extension_stats(results: &[&BenchmarkResult]) -> HashMap<String, Ex
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{FrameworkCapabilities, OcrStatus, PerformanceMetrics};
+    use crate::types::{ErrorKind, FrameworkCapabilities, OcrStatus, PerformanceMetrics};
     use std::path::PathBuf;
     use std::time::Duration;
 
@@ -816,6 +816,11 @@ mod tests {
             file_size: 1024,
             success,
             error_message: None,
+            error_kind: if success {
+                ErrorKind::None
+            } else {
+                ErrorKind::HarnessError
+            },
             duration: Duration::from_millis(duration_ms),
             extraction_duration: None,
             subprocess_overhead: None,

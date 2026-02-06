@@ -58,6 +58,15 @@ else
   echo "✓ Tesseract language packs already installed"
 fi
 
+if ! brew list libmagic &>/dev/null; then
+  echo "Installing libmagic..."
+  retry_with_backoff brew install libmagic || {
+    echo "::warning::Failed to install libmagic after retries"
+  }
+else
+  echo "✓ libmagic already installed"
+fi
+
 if ! brew list php &>/dev/null; then
   echo "Installing PHP..."
   retry_with_backoff brew install php || {
