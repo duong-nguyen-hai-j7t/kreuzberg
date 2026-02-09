@@ -56,7 +56,7 @@ pub fn table_from_arrow_to_markdown(arrow_bytes: &[u8]) -> Result<String> {
 
 /// Convert a Polars DataFrame to markdown table format
 fn dataframe_to_markdown(df: &DataFrame) -> Result<String> {
-    if df.is_empty() {
+    if df.height() == 0 {
         return Ok(String::new());
     }
 
@@ -78,7 +78,7 @@ fn dataframe_to_markdown(df: &DataFrame) -> Result<String> {
 
     for row_idx in 0..df.height() {
         markdown.push_str("| ");
-        for col in df.get_columns() {
+        for col in df.columns() {
             let series = col.as_materialized_series();
             let value = format_cell_value(series, row_idx)?;
             markdown.push_str(&value);
@@ -206,9 +206,11 @@ mod tests {
 
     #[test]
     fn test_dataframe_with_nulls() {
-        let s1 = Series::new("name".into(), &["Alice", "Bob", "Charlie"]);
-        let s2 = Series::new("value".into(), &[Some(1), None, Some(3)]);
-        let df = DataFrame::new(vec![s1.into(), s2.into()]).unwrap();
+        let df = df!(
+            "name" => &["Alice", "Bob", "Charlie"],
+            "value" => &[Some(1), None, Some(3)]
+        )
+        .unwrap();
 
         let markdown = dataframe_to_markdown(&df).unwrap();
 
