@@ -13,7 +13,7 @@ public final class KreuzbergExtractJava {
     private static final double NANOS_IN_MILLISECOND = 1_000_000.0;
     private static final int WARMUP_ITERATIONS = 10;
     private static final ExtractionConfig BENCH_CONFIG =
-            new ExtractionConfig.Builder().useCache(false).build();
+            ExtractionConfig.builder().useCache(false).build();
 
     private KreuzbergExtractJava() { }
 
@@ -226,9 +226,9 @@ public final class KreuzbergExtractJava {
         builder.append("\"content\":").append(quote(result.getContent())).append(',');
         builder.append("\"metadata\":{");
         builder.append("\"mimeType\":").append(quote(result.getMimeType())).append(',');
-        builder.append("\"language\":").append(optionalToJson(result.getLanguage())).append(',');
-        builder.append("\"date\":").append(optionalToJson(result.getDate())).append(',');
-        builder.append("\"subject\":").append(optionalToJson(result.getSubject()));
+        builder.append("\"language\":").append(optionalToJson(result.getMetadata().getLanguage())).append(',');
+        builder.append("\"date\":").append(optionalToJson(result.getMetadata().getModifiedAt())).append(',');
+        builder.append("\"subject\":").append(optionalToJson(result.getMetadata().getSubject()));
         builder.append("},\"_extraction_time_ms\":").append(String.format("%.3f", elapsedMs));
         builder.append('}');
         return builder.toString();
