@@ -162,15 +162,24 @@ fn extract_package_name(framework: &str) -> &str {
 /// Returns an error if the package cannot be found or measured.
 ///
 /// For kreuzberg: measures the single package directory (includes native .so).
-/// For third-party frameworks (docling, unstructured, mineru, etc.): measures
-/// the entire venv site-packages to capture transitive dependencies like
-/// torch/transformers that dominate the actual installation footprint.
+/// For third-party frameworks (docling, unstructured, mineru, etc.): uses
+/// `pip-weigh` to measure the package + full transitive dependency tree in an
+/// isolated venv, capturing deps like torch/transformers that dominate the
+/// actual installation footprint.
 fn measure_pip_package(package: &str) -> Result<Option<u64>> {
     // For native packages (e.g. kreuzberg installed via maturin develop),
     // use Python to find the actual package directory which includes the native .so.
     // This is more reliable than parsing pip show output for editable installs.
     if let Some(size) = measure_pip_package_via_python(package) {
         return Ok(Some(size));
+    }
+
+    // For third-party packages, use pip-weigh to get accurate total size
+    // including all transitive dependencies in an isolated environment.
+    if package != "kreuzberg" {
+        if let Some(size) = measure_pip_weigh(package) {
+            return Ok(Some(size));
+        }
     }
 
     let output = Command::new("uv")
@@ -182,40 +191,24 @@ fn measure_pip_package(package: &str) -> Result<Option<u64>> {
         return Ok(None);
     }
 
-    // For third-party packages, measure the full venv site-packages to capture
-    // transitive deps (e.g. torch, transformers) that dominate the footprint.
-    if package != "kreuzberg" {
-        if let Some(size) = measure_venv_site_packages() {
-            return Ok(Some(size));
-        }
-    }
-
     let stdout = String::from_utf8_lossy(&output.stdout);
     Ok(parse_pip_show_size(&stdout, package))
 }
 
-/// Measure the total size of `.venv/lib/python*/site-packages/`.
-/// Returns None if no .venv is found or the path doesn't exist.
-fn measure_venv_site_packages() -> Option<u64> {
-    let venv_lib = Path::new(".venv/lib");
-    if !venv_lib.exists() {
+/// Use `pip-weigh --json <package>` to measure a package's total installation
+/// footprint including all transitive dependencies. pip-weigh creates an
+/// isolated venv, installs the package, and measures via .dist-info/RECORD.
+/// Returns None if pip-weigh is not installed or the command fails.
+fn measure_pip_weigh(package: &str) -> Option<u64> {
+    let output = Command::new("pip-weigh").args(["--json", package]).output().ok()?;
+
+    if !output.status.success() {
         return None;
     }
 
-    // Find the python* subdirectory (e.g. python3.12)
-    let entries = fs::read_dir(venv_lib).ok()?;
-    for entry in entries.flatten() {
-        let name = entry.file_name();
-        let name_str = name.to_string_lossy();
-        if name_str.starts_with("python") {
-            let site_packages = entry.path().join("site-packages");
-            if site_packages.exists() {
-                return Some(dir_size(&site_packages));
-            }
-        }
-    }
-
-    None
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let json: serde_json::Value = serde_json::from_str(&stdout).ok()?;
+    json.get("results")?.get(0)?.get("total_size_bytes")?.as_u64()
 }
 
 /// Parse pip show -f output to extract package size
