@@ -6,15 +6,7 @@ namespace E2EPhp;
 
 use Kreuzberg\Kreuzberg;
 use Kreuzberg\Config\ExtractionConfig;
-use Kreuzberg\Config\OcrConfig;
-use Kreuzberg\Config\ChunkingConfig;
-use Kreuzberg\Config\ImageExtractionConfig;
-use Kreuzberg\Config\KeywordConfig;
-use Kreuzberg\Config\LanguageDetectionConfig;
-use Kreuzberg\Config\PdfConfig;
-use Kreuzberg\Config\PostProcessorConfig;
-use Kreuzberg\Config\TokenReductionConfig;
-use Kreuzberg\ExtractionResult;
+use Kreuzberg\Types\ExtractionResult;
 use PHPUnit\Framework\Assert;
 
 class Helpers
@@ -49,64 +41,7 @@ class Helpers
             return null;
         }
 
-        $params = [];
-
-        // Handle nested config objects
-        if (isset($config['ocr']) && is_array($config['ocr'])) {
-            $ocrParams = [];
-            if (isset($config['ocr']['backend'])) {
-                $ocrParams['backend'] = $config['ocr']['backend'];
-            }
-            if (isset($config['ocr']['language'])) {
-                $ocrParams['language'] = $config['ocr']['language'];
-            }
-            if (!empty($ocrParams)) {
-                $params['ocr'] = new OcrConfig(...$ocrParams);
-            }
-        }
-        if (isset($config['chunking']) && is_array($config['chunking'])) {
-            $params['chunking'] = new ChunkingConfig(...$config['chunking']);
-        }
-        if (isset($config['images']) && is_array($config['images'])) {
-            $params['imageExtraction'] = new ImageExtractionConfig(...$config['images']);
-        }
-        if (isset($config['pdf_options']) && is_array($config['pdf_options'])) {
-            $params['pdf'] = new PdfConfig(...$config['pdf_options']);
-        }
-        if (isset($config['language_detection']) && is_array($config['language_detection'])) {
-            $params['languageDetection'] = new LanguageDetectionConfig(...$config['language_detection']);
-        }
-        if (isset($config['keywords']) && is_array($config['keywords'])) {
-            $params['keywords'] = new KeywordConfig(...$config['keywords']);
-        }
-        if (isset($config['postprocessor']) && is_array($config['postprocessor'])) {
-            $params['postprocessor'] = new PostProcessorConfig(...$config['postprocessor']);
-        }
-        if (isset($config['token_reduction']) && is_array($config['token_reduction'])) {
-            $params['tokenReduction'] = new TokenReductionConfig(...$config['token_reduction']);
-        }
-
-        // Handle scalar config options
-        if (isset($config['use_cache'])) {
-            $params['useCache'] = (bool)$config['use_cache'];
-        }
-        if (isset($config['force_ocr'])) {
-            $params['forceOcr'] = (bool)$config['force_ocr'];
-        }
-        if (isset($config['enable_quality_processing'])) {
-            $params['enableQualityProcessing'] = (bool)$config['enable_quality_processing'];
-        }
-        if (isset($config['include_document_structure'])) {
-            $params['includeDocumentStructure'] = (bool)$config['include_document_structure'];
-        }
-        if (isset($config['output_format'])) {
-            $params['outputFormat'] = $config['output_format'];
-        }
-        if (isset($config['result_format'])) {
-            $params['resultFormat'] = $config['result_format'];
-        }
-
-        return new ExtractionConfig(...$params);
+        return ExtractionConfig::fromArray($config);
     }
 
     public static function assertExpectedMime(ExtractionResult $result, array $expected): void
@@ -244,8 +179,9 @@ class Helpers
             sprintf("Expected languages %s, missing %s", json_encode($expected), json_encode($missing))
         );
 
-        if ($minConfidence !== null && isset($result->metadata['confidence'])) {
-            $confidence = $result->metadata['confidence'];
+        $metaArr = self::metadataToArray($result->metadata);
+        if ($minConfidence !== null && isset($metaArr['confidence'])) {
+            $confidence = $metaArr['confidence'];
             Assert::assertGreaterThanOrEqual(
                 $minConfidence,
                 $confidence,
@@ -489,45 +425,30 @@ class Helpers
             return $metadata;
         }
 
-        // Convert Metadata object to array
+        // Use to_array() if available (extension Metadata object)
+        if (method_exists($metadata, 'to_array')) {
+            return $metadata->to_array();
+        }
+
+        // Fallback: Convert Metadata object to array using snake_case properties
         $result = [];
-        if (isset($metadata->language)) {
-            $result['language'] = $metadata->language;
+        $fields = [
+            'language', 'subject', 'format_type', 'title', 'authors',
+            'keywords', 'created_at', 'modified_at', 'created_by',
+            'modified_by', 'page_count', 'sheet_count', 'format',
+        ];
+        foreach ($fields as $field) {
+            if (isset($metadata->$field)) {
+                $result[$field] = $metadata->$field;
+            }
         }
-        if (isset($metadata->date)) {
-            $result['date'] = $metadata->date;
-        }
-        if (isset($metadata->subject)) {
-            $result['subject'] = $metadata->subject;
-        }
-        if (isset($metadata->formatType)) {
-            $result['format_type'] = $metadata->formatType;
-        }
-        if (isset($metadata->title)) {
-            $result['title'] = $metadata->title;
-        }
-        if (isset($metadata->authors)) {
-            $result['authors'] = $metadata->authors;
-        }
-        if (isset($metadata->keywords)) {
-            $result['keywords'] = $metadata->keywords;
-        }
-        if (isset($metadata->createdAt)) {
-            $result['created_at'] = $metadata->createdAt;
-        }
-        if (isset($metadata->modifiedAt)) {
-            $result['modified_at'] = $metadata->modifiedAt;
-        }
-        if (isset($metadata->createdBy)) {
-            $result['created_by'] = $metadata->createdBy;
-        }
-        if (isset($metadata->producer)) {
-            $result['producer'] = $metadata->producer;
-        }
-        if (isset($metadata->pageCount)) {
-            $result['page_count'] = $metadata->pageCount;
-        }
-        if (isset($metadata->custom) && is_array($metadata->custom)) {
+
+        // Include custom/additional fields
+        if (method_exists($metadata, 'get_additional')) {
+            foreach ($metadata->get_additional() as $key => $value) {
+                $result[$key] = $value;
+            }
+        } elseif (isset($metadata->custom) && is_array($metadata->custom)) {
             foreach ($metadata->custom as $key => $value) {
                 $result[$key] = $value;
             }
