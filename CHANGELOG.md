@@ -39,6 +39,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.3.4] - 2026-02-16
+
+### Fixed
+
+- **Node.js keyword extraction fields missing**: The TypeScript `convertResult()` type converter was silently dropping `extractedKeywords`, `qualityScore`, and `processingWarnings` from NAPI results because it only copied explicitly listed fields. Added the missing field conversions. Also renamed the mismatched `keywords` property to `extractedKeywords` in the TypeScript types to match the NAPI binding definition.
+- **Windows PHP CI build failure (`crc::Table` not found)**: Downgraded `lzma-rust2` from 0.16.1 to 0.15.7 to avoid pulling `crc` 3.4.0, which removed the `Table` type used by downstream dependencies.
+- **CLI installer resolving benchmark tags as latest release**: The `install.sh` script used GitHub's `/releases/latest` API which returned benchmark run releases instead of actual versioned releases. Changed to filter for `v`-prefixed tags. Also marked benchmark releases as prerelease in the workflow so they no longer interfere.
+
+---
+
 ## [4.3.3] - 2026-02-14
 
 ### Added
