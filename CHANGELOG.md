@@ -57,7 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **HTTP URLs preserved as text**: Non-data URIs (HTTP/HTTPS) are kept as `[Image: url]` text markers without attempting network access or filesystem traversal.
 
 #### PaddleOCR Multi-Language Support (#388)
-- **106+ language support via 11 script families**: PaddleOCR recognition models now cover english, chinese (simplified+traditional+japanese), latin, korean, east slavic (cyrillic), thai, greek, arabic, devanagari, tamil, and telugu script families.
+- **80+ language support via 11 script families**: PaddleOCR recognition models now cover english, chinese (simplified+traditional+japanese), latin, korean, east slavic (cyrillic), thai, greek, arabic, devanagari, tamil, and telugu script families.
 - **Per-family recognition model architecture**: Shared detection/classification models with per-family recognition models and dictionaries, downloaded on demand from HuggingFace (`Kreuzberg/paddleocr-onnx-models`).
 - **Engine pool for concurrent multi-language OCR**: Replaced single-engine architecture with a per-family engine pool (`HashMap<String, Arc<Mutex<OcrLite>>>`), enabling concurrent OCR across different languages.
 - **Backend-agnostic `--ocr-language` CLI flag**: Works with all OCR backends (tesseract, paddle-ocr, easyocr). Tesseract expects ISO 639-3 codes (eng, fra, deu); PaddleOCR accepts flexible codes (en, ch, french, korean) via `map_language_code()`.
@@ -67,7 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### PaddleOCR Engine Internals
 - **CrnnNet recognition height**: Changed to 32 pixels (later found to be incorrect for PP-OCRv4/v5 models; fixed in next release).
-- **Model manager split**: `MODELS` constant replaced with `SHARED_MODELS` (det+cls) and `REC_MODELS` (11 families), with new cache layout `rec/{family}/model.onnx`.
+- **Model manager split**: `MODELS` constant replaced with `SHARED_MODELS` (det+cls) and `REC_MODELS` (11 families) with new cache layout `rec/{family}/model.onnx`.
 - **Language code mapping expanded**: `map_language_code()` now handles Thai, Greek, East Slavic, and additional Latin-script languages.
 
 #### DOCX Full Extraction Pipeline (#387)
