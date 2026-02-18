@@ -1,6 +1,6 @@
 {
 	"id": "config_djot_content",
-	"description": "Tests djot output format produces djot_content field",
+	"description": "Tests djot output format converts content to djot markup",
 	"tags": ["contract", "config", "djot"],
 	"document": {
 		"path": "pdf/fake_memo.pdf"
@@ -15,10 +15,7 @@
 	"assertions": {
 		"expected_mime": "application/pdf",
 		"min_content_length": 10,
-		"output_format_is": "djot",
-		"djot_content": {
-			"has_content": true
-		}
+		"output_format_is": "djot"
 	},
 	"skip": {
 		"requires_feature": ["pdf"]

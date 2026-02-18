@@ -704,8 +704,15 @@ impl DocumentExtractor for DocxExtractor {
                     let page_num = boundary.page_number;
                     // Extract text slice for this page
                     let page_text = if boundary.byte_start < text.len() {
-                        let end = boundary.byte_end.min(text.len());
-                        text[boundary.byte_start..end].trim().to_string()
+                        let mut start = boundary.byte_start.min(text.len());
+                        while start < text.len() && !text.is_char_boundary(start) {
+                            start += 1;
+                        }
+                        let mut end = boundary.byte_end.min(text.len());
+                        while end > start && !text.is_char_boundary(end) {
+                            end -= 1;
+                        }
+                        text[start..end].trim().to_string()
                     } else {
                         String::new()
                     };

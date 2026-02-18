@@ -162,6 +162,8 @@ pub struct JsExtractionResult {
     pub elements: Option<Vec<JsElement>>,
     #[napi(ts_type = "DocumentStructure | null")]
     pub document: Option<serde_json::Value>,
+    #[napi(ts_type = "DjotContent | null", js_name = "djotContent")]
+    pub djot_content: Option<serde_json::Value>,
     #[napi(ts_type = "OcrElement[] | null")]
     pub ocr_elements: Option<serde_json::Value>,
     #[napi(js_name = "extractedKeywords")]
@@ -359,6 +361,18 @@ impl TryFrom<RustExtractionResult> for JsExtractionResult {
                 )
             })?;
 
+        let djot_content = val
+            .djot_content
+            .as_ref()
+            .map(serde_json::to_value)
+            .transpose()
+            .map_err(|e| {
+                Error::new(
+                    Status::GenericFailure,
+                    format!("Failed to serialize djot_content: {}", e),
+                )
+            })?;
+
         let ocr_elements = val
             .ocr_elements
             .map(|elems| serde_json::to_value(&elems))
@@ -448,6 +462,7 @@ impl TryFrom<RustExtractionResult> for JsExtractionResult {
             pages,
             elements,
             document,
+            djot_content,
             ocr_elements,
             extracted_keywords,
             quality_score: val.quality_score,
@@ -676,7 +691,7 @@ impl TryFrom<JsExtractionResult> for RustExtractionResult {
                     .collect()
             }),
             document,
-            djot_content: None,
+            djot_content: val.djot_content.and_then(|v| serde_json::from_value(v).ok()),
             ocr_elements: val.ocr_elements.and_then(|v| serde_json::from_value(v).ok()),
             extracted_keywords: val.extracted_keywords.map(|keywords| {
                 keywords

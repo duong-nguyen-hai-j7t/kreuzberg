@@ -146,14 +146,15 @@ pub fn tsv_row_to_element(row: &TsvRow) -> OcrElement {
     let confidence = OcrConfidence::from_tesseract(row.conf);
     let level = OcrElementLevel::from_tesseract_level(row.level);
 
-    // Generate a hierarchical parent ID for word-level elements
-    let parent_id = if row.level == 4 {
+    // Generate a hierarchical parent ID
+    // Tesseract levels: 1=Page, 2=Block, 3=Paragraph, 4=Line, 5=Word
+    let parent_id = if row.level == 5 {
         // Word-level: parent is the line
         Some(format!(
             "p{}_b{}_par{}_l{}",
             row.page_num, row.block_num, row.par_num, row.line_num
         ))
-    } else if row.level == 3 {
+    } else if row.level == 4 {
         // Line-level: parent is the paragraph
         Some(format!("p{}_b{}_par{}", row.page_num, row.block_num, row.par_num))
     } else {

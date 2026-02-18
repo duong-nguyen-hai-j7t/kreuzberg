@@ -195,14 +195,14 @@ pub enum OcrElementLevel {
 impl OcrElementLevel {
     /// Convert from Tesseract's numeric level (1-5).
     ///
-    /// Tesseract levels: 1=Block, 2=Para, 3=Line, 4=Word, 5=Symbol
+    /// Tesseract levels: 1=Page, 2=Block, 3=Paragraph, 4=Line, 5=Word
     pub fn from_tesseract_level(level: i32) -> Self {
         match level {
-            1 => Self::Block,
-            2 => Self::Block, // Para treated as Block
-            3 => Self::Line,
-            4 => Self::Word,
-            5 => Self::Word, // Symbol treated as Word
+            1 => Self::Page,
+            2 => Self::Block,
+            3 => Self::Block, // Paragraph treated as Block
+            4 => Self::Line,
+            5 => Self::Word,
             _ => Self::Line,
         }
     }
@@ -398,9 +398,11 @@ mod tests {
 
     #[test]
     fn test_element_level_from_tesseract() {
-        assert_eq!(OcrElementLevel::from_tesseract_level(1), OcrElementLevel::Block);
-        assert_eq!(OcrElementLevel::from_tesseract_level(3), OcrElementLevel::Line);
-        assert_eq!(OcrElementLevel::from_tesseract_level(4), OcrElementLevel::Word);
+        assert_eq!(OcrElementLevel::from_tesseract_level(1), OcrElementLevel::Page);
+        assert_eq!(OcrElementLevel::from_tesseract_level(2), OcrElementLevel::Block);
+        assert_eq!(OcrElementLevel::from_tesseract_level(3), OcrElementLevel::Block);
+        assert_eq!(OcrElementLevel::from_tesseract_level(4), OcrElementLevel::Line);
+        assert_eq!(OcrElementLevel::from_tesseract_level(5), OcrElementLevel::Word);
     }
 
     #[test]

@@ -64,8 +64,9 @@ fn parse_tsv_to_elements(tsv_data: &str, min_confidence: f64) -> Vec<OcrElement>
             continue;
         }
 
-        // Only include word-level (4) and line-level (3) entries
-        if level != 3 && level != 4 {
+        // Only include word-level (5) and line-level (4) entries
+        // Tesseract TSV levels: 1=page, 2=block, 3=paragraph, 4=line, 5=word
+        if level != 4 && level != 5 {
             continue;
         }
 

@@ -60,7 +60,7 @@ pub async fn process_images_with_ocr(
                     djot_content: None,
                     pages: None,
                     elements: None,
-                    ocr_elements: None,
+                    ocr_elements: ocr_extraction.ocr_elements,
                     document: None,
                     #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
                     extracted_keywords: None,

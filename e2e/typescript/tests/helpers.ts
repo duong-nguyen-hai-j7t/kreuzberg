@@ -187,6 +187,73 @@ function mapPostProcessorConfig(raw: PlainRecord): PostProcessorConfig {
 	return config;
 }
 
+function mapPageConfig(raw: PlainRecord): PlainRecord {
+	const config: PlainRecord = {};
+	assignBooleanField(config, raw, "extract_pages", "extractPages");
+	assignBooleanField(config, raw, "insert_page_markers", "insertPageMarkers");
+	if (typeof raw.marker_format === "string") {
+		config.markerFormat = raw.marker_format;
+	}
+	return config;
+}
+
+function mapHtmlOptions(raw: PlainRecord): PlainRecord {
+	const config: PlainRecord = {};
+	if (typeof raw.heading_style === "string") {
+		config.headingStyle = raw.heading_style;
+	}
+	if (typeof raw.list_indent_type === "string") {
+		config.listIndentType = raw.list_indent_type;
+	}
+	assignNumberField(config, raw, "list_indent_width", "listIndentWidth");
+	if (typeof raw.bullets === "string") {
+		config.bullets = raw.bullets;
+	}
+	if (typeof raw.strong_em_symbol === "string") {
+		config.strongEmSymbol = raw.strong_em_symbol;
+	}
+	assignBooleanField(config, raw, "escape_asterisks", "escapeAsterisks");
+	assignBooleanField(config, raw, "escape_underscores", "escapeUnderscores");
+	assignBooleanField(config, raw, "escape_misc", "escapeMisc");
+	assignBooleanField(config, raw, "escape_ascii", "escapeAscii");
+	if (typeof raw.code_language === "string") {
+		config.codeLanguage = raw.code_language;
+	}
+	assignBooleanField(config, raw, "autolinks", "autolinks");
+	assignBooleanField(config, raw, "default_title", "defaultTitle");
+	assignBooleanField(config, raw, "br_in_tables", "brInTables");
+	assignBooleanField(config, raw, "hocr_spatial_tables", "hocrSpatialTables");
+	if (typeof raw.highlight_style === "string") {
+		config.highlightStyle = raw.highlight_style;
+	}
+	assignBooleanField(config, raw, "extract_metadata", "extractMetadata");
+	if (typeof raw.whitespace_mode === "string") {
+		config.whitespaceMode = raw.whitespace_mode;
+	}
+	assignBooleanField(config, raw, "strip_newlines", "stripNewlines");
+	assignBooleanField(config, raw, "wrap", "wrap");
+	assignNumberField(config, raw, "wrap_width", "wrapWidth");
+	assignBooleanField(config, raw, "convert_as_inline", "convertAsInline");
+	if (typeof raw.sub_symbol === "string") {
+		config.subSymbol = raw.sub_symbol;
+	}
+	if (typeof raw.sup_symbol === "string") {
+		config.supSymbol = raw.sup_symbol;
+	}
+	if (typeof raw.newline_style === "string") {
+		config.newlineStyle = raw.newline_style;
+	}
+	if (typeof raw.code_block_style === "string") {
+		config.codeBlockStyle = raw.code_block_style;
+	}
+	if (typeof raw.encoding === "string") {
+		config.encoding = raw.encoding;
+	}
+	assignBooleanField(config, raw, "debug", "debug");
+	assignBooleanField(config, raw, "include_links", "includeLinks");
+	return config;
+}
+
 function mapKeywordConfig(raw: PlainRecord): KeywordConfig {
 	const config: KeywordConfig = {};
 	const target = config as PlainRecord;
@@ -263,6 +330,14 @@ export function buildConfig(raw: unknown): ExtractionConfig {
 
 	if (isPlainRecord(source.keywords)) {
 		result.keywords = mapKeywordConfig(source.keywords as PlainRecord);
+	}
+
+	if (isPlainRecord(source.pages)) {
+		target.pages = mapPageConfig(source.pages as PlainRecord);
+	}
+
+	if (isPlainRecord(source.html_options)) {
+		target.htmlOptions = mapHtmlOptions(source.html_options as PlainRecord);
 	}
 
 	if (typeof source.output_format === "string") {

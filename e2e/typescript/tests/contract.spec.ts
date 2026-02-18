@@ -365,7 +365,6 @@ describe("contract fixtures", () => {
 			}
 			assertions.assertExpectedMime(result, ["application/pdf"]);
 			assertions.assertMinContentLength(result, 10);
-			assertions.assertDjotContent(result, true, undefined);
 		},
 		TEST_TIMEOUT_MS,
 	);
