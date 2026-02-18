@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Pdfium `PdfParagraph` object-based extraction**: New markdown extraction path using pdfium's `PdfParagraph::from_objects()` for spatial text grouping, replacing raw page-object iteration. Provides accurate per-line baseline positions via `into_lines()` and styled text fragments with bold/italic/monospace detection.
+- **Structure tree and content marks API in pdfium-render**: New `ExtractedBlock`, `ContentRole`, and `PdfParagraph` types for tagged PDF semantic extraction. Structure tree headings are validated against font size and word count to prevent broken structure trees from misclassifying body text.
+- **Modular markdown pipeline**: Refactored PDF markdown rendering into focused modules — `bridge.rs` (pdfium API bridge), `lines.rs` (baseline grouping), `paragraphs.rs` (paragraph detection), `classify.rs` (heading/code classification), `render.rs` (inline markup), `assembly.rs` (table/image interleaving), `pipeline.rs` (orchestration).
+- **Text encoding normalization**: `normalize_text_encoding()` in bridge.rs converts trailing soft hyphens (`\u{00AD}`) to regular hyphens for word-rejoining, strips mid-word soft hyphens, and removes stray C0 control characters from PDF text.
+
 ### Fixed
 
 - **UTF-8 panic in PDF list detection (#398)**: `detect_list_items()` assumed all newlines are 1 byte, causing panics on multi-byte UTF-8 content with CRLF line endings. Fixed with proper CRLF-aware newline advancement and char boundary guards in `process_content()`.
@@ -23,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **E2e generator missing `mapPageConfig` and `mapHtmlOptions`**: TypeScript e2e test generator did not map page extraction or HTML formatting options from fixture configs, causing tests with those options to use defaults.
 - **Pipeline test race conditions**: Replaced manual `REGISTRY_TEST_GUARD` mutex with `#[serial]` from `serial_test`, fixing flaky failures in `test_pipeline_with_quality_processing`, `test_pipeline_with_all_features`, and `test_postprocessor_runs_before_validator` caused by global registry state pollution between parallel tests.
 - **`test_pipeline_with_keyword_extraction` permanently ignored**: Test was marked `#[ignore]` due to test isolation issues. Fixed the underlying problem — `Lazy` static prevented re-registration after `shutdown_all()` — by clearing the processor cache after re-registration.
+- **OCR cache deserialization failure**: Added `#[serde(default)]` to `OcrConfidence.detection` field so cached OCR data from before the field was added can still deserialize.
+- **CI validate, Rust e2e, Java e2e, and C# e2e failures**: Fixed `ChunkerType` serde casing, populated `djot_content` in pipeline for Djot output format, fixed Java/C# e2e test helper APIs.
 
 ---
 

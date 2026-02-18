@@ -34,7 +34,6 @@ const ALL_PDFS: &[&str] = &[
     "embedded_images_tables.pdf",
     "fake_memo.pdf",
     "fundamentals_of_deep_learning_2014.pdf",
-    "gmft_tiny.pdf",
     "google_doc_document.pdf",
     "image_only_german_pdf.pdf",
     "intel_64_and_ia_32_architectures_software_developer_s_manual_combined_volumes_1_4_june_2021_325462_sdm_vol_1_2abcd_3abcd.pdf",

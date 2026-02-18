@@ -12,7 +12,7 @@ use crate::ocr::cache::OcrCache;
 use crate::ocr::conversion::{TsvRow, tsv_row_to_element};
 use crate::ocr::error::OcrError;
 use crate::ocr::hocr::convert_hocr_to_markdown;
-use crate::ocr::table::{extract_words_from_tsv, reconstruct_table, table_to_markdown};
+use crate::ocr::table::{extract_words_from_tsv, post_process_table, reconstruct_table, table_to_markdown};
 use crate::ocr::types::{BatchItemResult, TesseractConfig};
 use crate::types::{OcrExtractionResult, OcrTable};
 use kreuzberg_tesseract::{TessPageSegMode, TesseractAPI};
@@ -351,29 +351,32 @@ pub(super) fn perform_ocr(
 
         let words = extract_words_from_tsv(tsv_data, config.table_min_confidence)?;
 
-        if !words.is_empty() {
+        if words.len() >= 6 {
             let table = reconstruct_table(&words, config.table_column_threshold, config.table_row_threshold_ratio);
-            if !table.is_empty() {
-                metadata.insert("table_count".to_string(), serde_json::Value::String("1".to_string()));
-                metadata.insert(
-                    "tables_detected".to_string(),
-                    serde_json::Value::String("1".to_string()),
-                );
-                metadata.insert(
-                    "table_rows".to_string(),
-                    serde_json::Value::String(table.len().to_string()),
-                );
-                metadata.insert(
-                    "table_cols".to_string(),
-                    serde_json::Value::String(table[0].len().to_string()),
-                );
+            if !table.is_empty() && !table[0].is_empty() {
+                // Apply full post-processing validation to reject false positives.
+                if let Some(cleaned) = post_process_table(table) {
+                    metadata.insert("table_count".to_string(), serde_json::Value::String("1".to_string()));
+                    metadata.insert(
+                        "tables_detected".to_string(),
+                        serde_json::Value::String("1".to_string()),
+                    );
+                    metadata.insert(
+                        "table_rows".to_string(),
+                        serde_json::Value::String(cleaned.len().to_string()),
+                    );
+                    metadata.insert(
+                        "table_cols".to_string(),
+                        serde_json::Value::String(cleaned[0].len().to_string()),
+                    );
 
-                let markdown_table = table_to_markdown(&table);
-                tables.push(OcrTable {
-                    cells: table,
-                    markdown: markdown_table,
-                    page_number: 0,
-                });
+                    let markdown_table = table_to_markdown(&cleaned);
+                    tables.push(OcrTable {
+                        cells: cleaned,
+                        markdown: markdown_table,
+                        page_number: 0,
+                    });
+                }
             }
         }
     }

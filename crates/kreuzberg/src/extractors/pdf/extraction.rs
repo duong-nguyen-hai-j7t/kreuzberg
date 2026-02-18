@@ -101,7 +101,7 @@ fn extract_tables_from_document(
     document: &PdfDocument,
     _metadata: &crate::pdf::metadata::PdfExtractionMetadata,
 ) -> Result<Vec<Table>> {
-    use crate::ocr::table::{reconstruct_table, table_to_markdown};
+    use crate::ocr::table::{post_process_table, reconstruct_table, table_to_markdown};
     use crate::pdf::table::extract_words_from_page;
 
     let mut all_tables = Vec::new();
@@ -109,7 +109,8 @@ fn extract_tables_from_document(
     for (page_index, page) in document.pages().iter().enumerate() {
         let words = extract_words_from_page(&page, 0.0)?;
 
-        if words.is_empty() {
+        // Need at least 6 words for a meaningful table
+        if words.len() < 6 {
             continue;
         }
 
@@ -118,14 +119,16 @@ fn extract_tables_from_document(
 
         let table_cells = reconstruct_table(&words, column_threshold, row_threshold_ratio);
 
-        // Validate table: reject false positives.
-        // A real table must have at least 2 rows AND 2 columns.
-        // Single-column or single-row "tables" are almost always regular text lines.
-        let min_rows = 2;
-        let min_cols = table_cells.iter().map(|r| r.len()).min().unwrap_or(0);
-        if table_cells.len() < min_rows || min_cols < 2 {
+        if table_cells.is_empty() || table_cells[0].is_empty() {
             continue;
         }
+
+        // Apply full post-processing validation: empty row removal, long cell rejection,
+        // header detection, column merging, dimension checks, and cell normalization.
+        let table_cells = match post_process_table(table_cells) {
+            Some(cleaned) => cleaned,
+            None => continue,
+        };
 
         let markdown = table_to_markdown(&table_cells);
 
