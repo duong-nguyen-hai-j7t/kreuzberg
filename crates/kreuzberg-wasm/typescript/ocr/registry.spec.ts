@@ -215,8 +215,8 @@ describe("OCR Registry", () => {
 			expect(getOcrBackend("test")).toBeUndefined();
 		});
 
-		it("should throw if backend not found", async () => {
-			await expect(unregisterOcrBackend("nonexistent")).rejects.toThrow('OCR backend "nonexistent" is not registered');
+		it("should silently succeed if backend not found", async () => {
+			await unregisterOcrBackend("nonexistent");
 		});
 
 		it("should call shutdown method if available", async () => {
@@ -258,22 +258,18 @@ describe("OCR Registry", () => {
 			const backend = createMockBackend("Test");
 			registerOcrBackend(backend);
 
-			await expect(unregisterOcrBackend("test")).rejects.toThrow("is not registered");
+			await unregisterOcrBackend("test");
 
 			expect(getOcrBackend("Test")).toBe(backend);
 		});
 
-		it("should throw error that lists available backends", async () => {
+		it("should silently succeed when unregistering nonexistent with others registered", async () => {
 			const backend = createMockBackend("available");
 			registerOcrBackend(backend);
 
-			try {
-				await unregisterOcrBackend("nonexistent");
-			} catch (error) {
-				if (error instanceof Error) {
-					expect(error.message).toContain("available");
-				}
-			}
+			await unregisterOcrBackend("nonexistent");
+
+			expect(getOcrBackend("available")).toBe(backend);
 		});
 	});
 

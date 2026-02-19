@@ -318,6 +318,15 @@ export interface PdfConfig {
 
 	/** Hierarchy extraction configuration. */
 	hierarchy?: HierarchyConfig;
+
+	/** Extract annotations from PDF pages. Default: false. */
+	extractAnnotations?: boolean;
+
+	/** Top margin fraction (0.0-0.5) for filtering header content. */
+	topMarginFraction?: number;
+
+	/** Bottom margin fraction (0.0-0.5) for filtering footer content. */
+	bottomMarginFraction?: number;
 }
 
 /**

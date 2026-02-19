@@ -138,6 +138,9 @@ export interface PdfConfig {
 	passwords?: string[];
 	extractMetadata?: boolean;
 	hierarchy?: HierarchyConfig;
+	extractAnnotations?: boolean;
+	topMarginFraction?: number;
+	bottomMarginFraction?: number;
 }
 
 export interface ImageExtractionConfig {

@@ -125,9 +125,7 @@ export async function unregisterOcrBackend(name: string): Promise<void> {
 	const backend = ocrBackendRegistry.get(name);
 
 	if (!backend) {
-		throw new Error(
-			`OCR backend "${name}" is not registered. Available backends: ${Array.from(ocrBackendRegistry.keys()).join(", ")}`,
-		);
+		return;
 	}
 
 	if (typeof backend.shutdown === "function") {

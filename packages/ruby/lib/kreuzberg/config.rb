@@ -391,14 +391,18 @@ module Kreuzberg
     #   pdf = PDF.new(extract_images: true, hierarchy: hierarchy)
     #
     class PDF
-      attr_reader :extract_images, :passwords, :extract_metadata, :font_config, :hierarchy
+      attr_reader :extract_images, :passwords, :extract_metadata, :font_config, :hierarchy,
+                  :extract_annotations, :top_margin_fraction, :bottom_margin_fraction
 
       def initialize(
         extract_images: false,
         passwords: nil,
         extract_metadata: true,
         font_config: nil,
-        hierarchy: nil
+        hierarchy: nil,
+        extract_annotations: false,
+        top_margin_fraction: nil,
+        bottom_margin_fraction: nil
       )
         @extract_images = extract_images ? true : false
         @passwords = if passwords.is_a?(Array)
@@ -409,6 +413,9 @@ module Kreuzberg
         @extract_metadata = extract_metadata ? true : false
         @font_config = normalize_font_config(font_config)
         @hierarchy = normalize_hierarchy(hierarchy)
+        @extract_annotations = extract_annotations ? true : false
+        @top_margin_fraction = top_margin_fraction&.to_f
+        @bottom_margin_fraction = bottom_margin_fraction&.to_f
       end
 
       def to_h
@@ -417,7 +424,10 @@ module Kreuzberg
           passwords: @passwords,
           extract_metadata: @extract_metadata,
           font_config: @font_config&.to_h,
-          hierarchy: @hierarchy&.to_h
+          hierarchy: @hierarchy&.to_h,
+          extract_annotations: @extract_annotations,
+          top_margin_fraction: @top_margin_fraction,
+          bottom_margin_fraction: @bottom_margin_fraction
         }.compact
       end
 

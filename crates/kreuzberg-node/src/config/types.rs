@@ -322,6 +322,9 @@ pub struct JsPdfConfig {
     pub passwords: Option<Vec<String>>,
     pub extract_metadata: Option<bool>,
     pub hierarchy: Option<JsHierarchyConfig>,
+    pub extract_annotations: Option<bool>,
+    pub top_margin_fraction: Option<f64>,
+    pub bottom_margin_fraction: Option<f64>,
 }
 
 impl From<JsPdfConfig> for RustPdfConfig {
@@ -331,9 +334,9 @@ impl From<JsPdfConfig> for RustPdfConfig {
             passwords: val.passwords,
             extract_metadata: val.extract_metadata.unwrap_or(true),
             hierarchy: val.hierarchy.map(|h| h.into()),
-            extract_annotations: false,
-            top_margin_fraction: None,
-            bottom_margin_fraction: None,
+            extract_annotations: val.extract_annotations.unwrap_or(false),
+            top_margin_fraction: val.top_margin_fraction.map(|v| v as f32),
+            bottom_margin_fraction: val.bottom_margin_fraction.map(|v| v as f32),
         }
     }
 }
@@ -1128,6 +1131,9 @@ impl TryFrom<ExtractionConfig> for JsExtractionConfig {
                     include_bbox: Some(h.include_bbox),
                     ocr_coverage_threshold: h.ocr_coverage_threshold.map(|v| v as f64),
                 }),
+                extract_annotations: Some(pdf.extract_annotations),
+                top_margin_fraction: pdf.top_margin_fraction.map(|v| v as f64),
+                bottom_margin_fraction: pdf.bottom_margin_fraction.map(|v| v as f64),
             }),
             token_reduction: val.token_reduction.map(|tr| JsTokenReductionConfig {
                 mode: Some(tr.mode),

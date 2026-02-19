@@ -13,12 +13,15 @@ import {
 	clearValidators,
 	detectMimeFromBytes,
 	getExtensionsForMime,
+	initWasm,
 	listOcrBackends,
 	listPostProcessors,
 	listValidators,
 	unregisterOcrBackend,
 } from "npm:@kreuzberg/wasm@^4.0.0";
 import { assertEquals } from "@std/assert";
+
+await initWasm();
 
 // Configuration
 

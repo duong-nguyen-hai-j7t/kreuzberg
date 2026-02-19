@@ -878,12 +878,15 @@ pub struct PdfConfig {
 #[pymethods]
 impl PdfConfig {
     #[new]
-    #[pyo3(signature = (extract_images=None, passwords=None, extract_metadata=None, hierarchy=None))]
+    #[pyo3(signature = (extract_images=None, passwords=None, extract_metadata=None, hierarchy=None, extract_annotations=None, top_margin_fraction=None, bottom_margin_fraction=None))]
     fn new(
         extract_images: Option<bool>,
         passwords: Option<Vec<String>>,
         extract_metadata: Option<bool>,
         hierarchy: Option<HierarchyConfig>,
+        extract_annotations: Option<bool>,
+        top_margin_fraction: Option<f32>,
+        bottom_margin_fraction: Option<f32>,
     ) -> Self {
         Self {
             inner: kreuzberg::PdfConfig {
@@ -891,9 +894,9 @@ impl PdfConfig {
                 passwords,
                 extract_metadata: extract_metadata.unwrap_or(true),
                 hierarchy: hierarchy.map(|h| h.inner),
-                extract_annotations: false,
-                top_margin_fraction: None,
-                bottom_margin_fraction: None,
+                extract_annotations: extract_annotations.unwrap_or(false),
+                top_margin_fraction,
+                bottom_margin_fraction,
             },
         }
     }
@@ -936,6 +939,36 @@ impl PdfConfig {
     #[setter]
     fn set_hierarchy(&mut self, value: Option<HierarchyConfig>) {
         self.inner.hierarchy = value.map(|h| h.inner);
+    }
+
+    #[getter]
+    fn extract_annotations(&self) -> bool {
+        self.inner.extract_annotations
+    }
+
+    #[setter]
+    fn set_extract_annotations(&mut self, value: bool) {
+        self.inner.extract_annotations = value;
+    }
+
+    #[getter]
+    fn top_margin_fraction(&self) -> Option<f32> {
+        self.inner.top_margin_fraction
+    }
+
+    #[setter]
+    fn set_top_margin_fraction(&mut self, value: Option<f32>) {
+        self.inner.top_margin_fraction = value;
+    }
+
+    #[getter]
+    fn bottom_margin_fraction(&self) -> Option<f32> {
+        self.inner.bottom_margin_fraction
+    }
+
+    #[setter]
+    fn set_bottom_margin_fraction(&mut self, value: Option<f32>) {
+        self.inner.bottom_margin_fraction = value;
     }
 
     fn __repr__(&self) -> String {

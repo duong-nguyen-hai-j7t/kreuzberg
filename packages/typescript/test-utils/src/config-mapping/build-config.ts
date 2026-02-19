@@ -35,6 +35,9 @@ export interface PdfConfig {
 	extractImages?: boolean;
 	passwords?: string[];
 	extractMetadata?: boolean;
+	extractAnnotations?: boolean;
+	topMarginFraction?: number;
+	bottomMarginFraction?: number;
 }
 
 export interface TokenReductionConfig {
@@ -130,6 +133,9 @@ function mapPdfConfig(raw: PlainRecord): PdfConfig {
 	assignBooleanField(config as PlainRecord, raw, "extract_images", "extractImages");
 	assignStringArrayField(config as PlainRecord, raw, "passwords", "passwords");
 	assignBooleanField(config as PlainRecord, raw, "extract_metadata", "extractMetadata");
+	assignBooleanField(config as PlainRecord, raw, "extract_annotations", "extractAnnotations");
+	assignNumberField(config as PlainRecord, raw, "top_margin_fraction", "topMarginFraction");
+	assignNumberField(config as PlainRecord, raw, "bottom_margin_fraction", "bottomMarginFraction");
 	return config;
 }
 

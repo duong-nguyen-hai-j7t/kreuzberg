@@ -411,4 +411,24 @@ module Kreuzberg
 
     const :nodes, T::Array[DocumentNode]
   end
+
+  # Bounding box for a PDF annotation.
+  class PdfAnnotationBoundingBox < T::Struct
+    extend T::Sig
+
+    const :left, T.nilable(Float)
+    const :top, T.nilable(Float)
+    const :right, T.nilable(Float)
+    const :bottom, T.nilable(Float)
+  end
+
+  # A PDF annotation extracted from a document page.
+  class PdfAnnotation < T::Struct
+    extend T::Sig
+
+    const :annotation_type, String
+    const :content, T.nilable(String)
+    const :page_number, T.nilable(Integer)
+    const :bounding_box, T.nilable(PdfAnnotationBoundingBox)
+  end
 end

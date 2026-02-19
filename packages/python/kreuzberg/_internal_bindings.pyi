@@ -776,6 +776,9 @@ class PdfConfig:
     passwords: list[str] | None
     extract_metadata: bool
     hierarchy: HierarchyConfig | None
+    extract_annotations: bool
+    top_margin_fraction: float | None
+    bottom_margin_fraction: float | None
 
     def __init__(
         self,
@@ -784,6 +787,9 @@ class PdfConfig:
         passwords: list[str] | None = None,
         extract_metadata: bool | None = None,
         hierarchy: HierarchyConfig | None = None,
+        extract_annotations: bool | None = None,
+        top_margin_fraction: float | None = None,
+        bottom_margin_fraction: float | None = None,
     ) -> None: ...
 
 class HierarchyConfig:

@@ -14,7 +14,7 @@ module Kreuzberg
   class Result
     attr_reader :content, :mime_type, :metadata, :metadata_json, :tables,
                 :detected_languages, :chunks, :images, :pages, :elements, :ocr_elements, :djot_content,
-                :document, :extracted_keywords, :quality_score, :processing_warnings
+                :document, :extracted_keywords, :quality_score, :processing_warnings, :annotations
 
     # @!attribute [r] cells
     #   @return [Array<Array<String>>] Table cells (2D array)
@@ -339,6 +339,7 @@ module Kreuzberg
       @extracted_keywords = parse_extracted_keywords(get_value(hash, 'extracted_keywords'))
       @quality_score = get_value(hash, 'quality_score')
       @processing_warnings = parse_processing_warnings(get_value(hash, 'processing_warnings'))
+      @annotations = parse_annotations(get_value(hash, 'annotations'))
     end
     # rubocop:enable Metrics/AbcSize
 
@@ -346,6 +347,7 @@ module Kreuzberg
     #
     # @return [Hash] Hash representation
     #
+    # rubocop:disable Metrics/CyclomaticComplexity
     def to_h
       {
         content: @content,
@@ -362,9 +364,11 @@ module Kreuzberg
         document: @document&.to_h,
         extracted_keywords: @extracted_keywords&.map(&:to_h),
         quality_score: @quality_score,
-        processing_warnings: @processing_warnings.map(&:to_h)
+        processing_warnings: @processing_warnings.map(&:to_h),
+        annotations: @annotations&.map(&:to_h)
       }
     end
+    # rubocop:enable Metrics/CyclomaticComplexity
 
     # Convert to JSON
     #
@@ -706,6 +710,32 @@ module Kreuzberg
           message: w_hash['message'] || ''
         )
       end
+    end
+
+    def parse_annotations(annotations_data)
+      return nil if annotations_data.nil?
+
+      annotations_data.map { |a_hash| build_annotation(a_hash) }
+    end
+
+    def build_annotation(a_hash)
+      PdfAnnotation.new(
+        annotation_type: a_hash['annotation_type'] || '',
+        content: a_hash['content'],
+        page_number: a_hash['page_number']&.to_i,
+        bounding_box: build_annotation_bbox(a_hash['bounding_box'])
+      )
+    end
+
+    def build_annotation_bbox(bbox_data)
+      return nil if bbox_data.nil?
+
+      PdfAnnotationBoundingBox.new(
+        left: bbox_data['left']&.to_f,
+        top: bbox_data['top']&.to_f,
+        right: bbox_data['right']&.to_f,
+        bottom: bbox_data['bottom']&.to_f
+      )
     end
   end
   # rubocop:enable Metrics/ClassLength

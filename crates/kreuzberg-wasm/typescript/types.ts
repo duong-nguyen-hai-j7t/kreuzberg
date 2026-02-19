@@ -302,6 +302,12 @@ export interface PdfConfig {
 	passwords?: string[];
 	/** Whether to extract metadata */
 	extractMetadata?: boolean;
+	/** Whether to extract annotations from PDF */
+	extractAnnotations?: boolean;
+	/** Top margin fraction (0.0-0.5) for filtering header content */
+	topMarginFraction?: number;
+	/** Bottom margin fraction (0.0-0.5) for filtering footer content */
+	bottomMarginFraction?: number;
 }
 
 /**

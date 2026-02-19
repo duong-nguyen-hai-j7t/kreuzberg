@@ -2485,6 +2485,24 @@ public sealed class PdfConfig
     /// </summary>
     [JsonPropertyName("hierarchy")]
     public HierarchyConfig? Hierarchy { get; init; }
+
+    /// <summary>
+    /// Whether to extract annotations from PDF documents.
+    /// </summary>
+    [JsonPropertyName("extract_annotations")]
+    public bool? ExtractAnnotations { get; init; }
+
+    /// <summary>
+    /// Top margin fraction (0.0-0.5) for filtering header content.
+    /// </summary>
+    [JsonPropertyName("top_margin_fraction")]
+    public float? TopMarginFraction { get; init; }
+
+    /// <summary>
+    /// Bottom margin fraction (0.0-0.5) for filtering footer content.
+    /// </summary>
+    [JsonPropertyName("bottom_margin_fraction")]
+    public float? BottomMarginFraction { get; init; }
 }
 
 /// <summary>

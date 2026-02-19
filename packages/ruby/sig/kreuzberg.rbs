@@ -323,8 +323,11 @@ module Kreuzberg
       attr_reader extract_metadata: bool
       attr_reader font_config: FontConfig?
       attr_reader hierarchy: Hierarchy?
+      attr_reader extract_annotations: bool
+      attr_reader top_margin_fraction: Float?
+      attr_reader bottom_margin_fraction: Float?
 
-      def initialize: (?extract_images: bool, ?passwords: (Array[String] | String)?, ?extract_metadata: bool, ?font_config: (FontConfig | Hash[Symbol, untyped])?, ?hierarchy: (Hierarchy | Hash[Symbol, untyped])?) -> void
+      def initialize: (?extract_images: bool, ?passwords: (Array[String] | String)?, ?extract_metadata: bool, ?font_config: (FontConfig | Hash[Symbol, untyped])?, ?hierarchy: (Hierarchy | Hash[Symbol, untyped])?, ?extract_annotations: bool, ?top_margin_fraction: Float?, ?bottom_margin_fraction: Float?) -> void
       def to_h: () -> Hash[Symbol, untyped]
     end
 

@@ -1342,6 +1342,7 @@ fn generate_plugin_api_tests(fixtures: &[&Fixture], output_dir: &Utf8Path) -> Re
     // Collect WASM imports from available fixtures
     let mut imports: BTreeSet<String> = BTreeSet::new();
     imports.insert("assertEquals".to_string());
+    imports.insert("initWasm".to_string());
     for fixture in fixtures {
         if !is_wasm_available(fixture) {
             continue;
@@ -1381,6 +1382,9 @@ fn generate_plugin_api_tests(fixtures: &[&Fixture], output_dir: &Utf8Path) -> Re
         )?;
     }
     writeln!(buffer)?;
+
+    // Initialize WASM module once at module load time
+    writeln!(buffer, "await initWasm();\n")?;
 
     let mut grouped = fixtures
         .iter()

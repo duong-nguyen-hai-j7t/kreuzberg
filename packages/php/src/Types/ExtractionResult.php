@@ -58,6 +58,8 @@ readonly class ExtractionResult
         public ?array $extractedKeywords = null,
         public ?float $qualityScore = null,
         public ?array $processingWarnings = null,
+        /** @var array<PdfAnnotation>|null */
+        public ?array $annotations = null,
     ) {
     }
 
@@ -195,6 +197,17 @@ readonly class ExtractionResult
             );
         }
 
+        $annotations = null;
+        if (isset($data['annotations'])) {
+            /** @var array<array<string, mixed>> $annotationsData */
+            $annotationsData = $data['annotations'];
+            $annotations = array_map(
+                /** @param array<string, mixed> $annotation */
+                static fn (array $annotation): PdfAnnotation => PdfAnnotation::fromArray($annotation),
+                $annotationsData,
+            );
+        }
+
         return new self(
             content: $content,
             mimeType: $mimeType,
@@ -216,6 +229,7 @@ readonly class ExtractionResult
             extractedKeywords: $extractedKeywords,
             qualityScore: $qualityScore,
             processingWarnings: $processingWarnings,
+            annotations: $annotations,
         );
     }
 }

@@ -17,6 +17,9 @@ public final class PdfConfig {
 	private final boolean extractMetadata;
 	private final FontConfig fontConfig;
 	private final HierarchyConfig hierarchyConfig;
+	private final boolean extractAnnotations;
+	private final Double topMarginFraction;
+	private final Double bottomMarginFraction;
 
 	private PdfConfig(Builder builder) {
 		this.extractImages = builder.extractImages;
@@ -26,6 +29,9 @@ public final class PdfConfig {
 		this.extractMetadata = builder.extractMetadata;
 		this.fontConfig = builder.fontConfig;
 		this.hierarchyConfig = builder.hierarchyConfig;
+		this.extractAnnotations = builder.extractAnnotations;
+		this.topMarginFraction = builder.topMarginFraction;
+		this.bottomMarginFraction = builder.bottomMarginFraction;
 	}
 
 	public static Builder builder() {
@@ -52,6 +58,18 @@ public final class PdfConfig {
 		return hierarchyConfig;
 	}
 
+	public boolean isExtractAnnotations() {
+		return extractAnnotations;
+	}
+
+	public Double getTopMarginFraction() {
+		return topMarginFraction;
+	}
+
+	public Double getBottomMarginFraction() {
+		return bottomMarginFraction;
+	}
+
 	public Map<String, Object> toMap() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("extract_images", extractImages);
@@ -59,11 +77,18 @@ public final class PdfConfig {
 			map.put("passwords", passwords);
 		}
 		map.put("extract_metadata", extractMetadata);
+		map.put("extract_annotations", extractAnnotations);
 		if (fontConfig != null) {
 			map.put("font_config", fontConfig.toMap());
 		}
 		if (hierarchyConfig != null) {
 			map.put("hierarchy", hierarchyConfig.toMap());
+		}
+		if (topMarginFraction != null) {
+			map.put("top_margin_fraction", topMarginFraction);
+		}
+		if (bottomMarginFraction != null) {
+			map.put("bottom_margin_fraction", bottomMarginFraction);
 		}
 		return map;
 	}
@@ -74,6 +99,9 @@ public final class PdfConfig {
 		private boolean extractMetadata = true;
 		private FontConfig fontConfig;
 		private HierarchyConfig hierarchyConfig;
+		private boolean extractAnnotations = false;
+		private Double topMarginFraction;
+		private Double bottomMarginFraction;
 
 		private Builder() {
 		}
@@ -111,6 +139,21 @@ public final class PdfConfig {
 			return this;
 		}
 
+		public Builder extractAnnotations(boolean extractAnnotations) {
+			this.extractAnnotations = extractAnnotations;
+			return this;
+		}
+
+		public Builder topMarginFraction(Double topMarginFraction) {
+			this.topMarginFraction = topMarginFraction;
+			return this;
+		}
+
+		public Builder bottomMarginFraction(Double bottomMarginFraction) {
+			this.bottomMarginFraction = bottomMarginFraction;
+			return this;
+		}
+
 		public PdfConfig build() {
 			return new PdfConfig(this);
 		}
@@ -140,6 +183,18 @@ public final class PdfConfig {
 		Object extractMetadataValue = map.get("extract_metadata");
 		if (extractMetadataValue instanceof Boolean) {
 			builder.extractMetadata((Boolean) extractMetadataValue);
+		}
+		Object extractAnnotationsValue = map.get("extract_annotations");
+		if (extractAnnotationsValue instanceof Boolean) {
+			builder.extractAnnotations((Boolean) extractAnnotationsValue);
+		}
+		Object topMarginValue = map.get("top_margin_fraction");
+		if (topMarginValue instanceof Number) {
+			builder.topMarginFraction(((Number) topMarginValue).doubleValue());
+		}
+		Object bottomMarginValue = map.get("bottom_margin_fraction");
+		if (bottomMarginValue instanceof Number) {
+			builder.bottomMarginFraction(((Number) bottomMarginValue).doubleValue());
 		}
 		@SuppressWarnings("unchecked")
 		Map<String, Object> fontConfigMap = map.get("font_config") instanceof Map
