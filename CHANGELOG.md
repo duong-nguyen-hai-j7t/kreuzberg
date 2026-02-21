@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **MDX format support** (`mdx` feature): Extract text from `.mdx` files, stripping JSX/import/export syntax while preserving markdown content, frontmatter, tables, and code fences
 - **List supported formats API** (#404): Query all supported file extensions and MIME types via `list_supported_formats()` in Rust, `GET /formats` REST endpoint, `list_formats` MCP tool, or `kreuzberg formats` CLI subcommand
 
+### Fixed
+
+- **PDF ligature corruption in CM/Type1 fonts**: Added contextual ligature repair for PDFs with broken ToUnicode CMaps where pdfium doesn't flag encoding errors. Fixes corrupted text like `di!erent` → `different`, `o"ces` → `offices`, `#nancial` → `financial` in LaTeX-generated PDFs. Uses vowel/consonant heuristic to disambiguate ambiguous ligature mappings. Applied to both structure tree and heuristic extraction paths.
+
 ---
 
 ## [4.3.7]
