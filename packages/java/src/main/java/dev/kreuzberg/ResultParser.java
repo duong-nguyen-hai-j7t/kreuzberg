@@ -135,10 +135,8 @@ final class ResultParser {
 		String createdBy = getStringFromMap(metadataMap, "created_by");
 		String modifiedBy = getStringFromMap(metadataMap, "modified_by");
 
-		@SuppressWarnings("unchecked")
-		List<String> authors = (List<String>) metadataMap.get("authors");
-		@SuppressWarnings("unchecked")
-		List<String> keywords = (List<String>) metadataMap.get("keywords");
+		List<String> authors = getStringListFromMap(metadataMap, "authors");
+		List<String> keywords = getStringListFromMap(metadataMap, "keywords");
 		// Convert the raw map to PageStructure using Jackson (cannot direct cast from
 		// LinkedHashMap)
 		PageStructure pages = convertValue(metadataMap.get("pages"), PageStructure.class);
@@ -150,8 +148,7 @@ final class ResultParser {
 		Map<String, Object> error = (Map<String, Object>) metadataMap.get("error");
 
 		String category = getStringFromMap(metadataMap, "category");
-		@SuppressWarnings("unchecked")
-		List<String> tags = (List<String>) metadataMap.get("tags");
+		List<String> tags = getStringListFromMap(metadataMap, "tags");
 		String documentVersion = getStringFromMap(metadataMap, "document_version");
 		String abstractText = getStringFromMap(metadataMap, "abstract_text");
 		String outputFormat = getStringFromMap(metadataMap, "output_format");
@@ -193,6 +190,19 @@ final class ResultParser {
 	private static String getStringFromMap(Map<String, Object> map, String key) {
 		Object value = map.get(key);
 		return value instanceof String ? (String) value : null;
+	}
+
+	@SuppressWarnings({"unchecked", "PMD.ReturnEmptyCollectionRatherThanNull"})
+	private static List<String> getStringListFromMap(Map<String, Object> map, String key) {
+		Object value = map.get(key);
+		if (value instanceof List) {
+			return (List<String>) value;
+		}
+		if (value instanceof String) {
+			return List.of((String) value);
+		}
+		// null signals "field absent" → mapped to Optional.empty() by caller
+		return null;
 	}
 
 	private static <T> T convertValue(Object value, Class<T> targetType) {
