@@ -30,6 +30,7 @@ pub fn render_document_as_markdown_with_tables(
 ) -> Result<String> {
     let pages = document.pages();
     let page_count = pages.len();
+    tracing::debug!(page_count, "PDF markdown pipeline: starting render");
 
     // Stage 0: Try structure tree extraction for each page.
     let mut struct_tree_results: Vec<Option<Vec<PdfParagraph>>> = Vec::with_capacity(page_count as usize);
@@ -42,6 +43,25 @@ pub fn render_document_as_markdown_with_tables(
 
         match extract_page_content(&page) {
             Ok(extraction) if extraction.method == ExtractionMethod::StructureTree && !extraction.blocks.is_empty() => {
+                tracing::trace!(
+                    page = i,
+                    method = ?extraction.method,
+                    block_count = extraction.blocks.len(),
+                    "PDF markdown pipeline: page extracted via structure tree"
+                );
+                // Log the roles of the first few blocks for debugging
+                for (bi, block) in extraction.blocks.iter().take(10).enumerate() {
+                    tracing::trace!(
+                        page = i,
+                        block_index = bi,
+                        role = ?block.role,
+                        text_preview = &block.text[..block.text.len().min(60)],
+                        font_size = ?block.font_size,
+                        is_bold = block.is_bold,
+                        child_count = block.children.len(),
+                        "PDF markdown pipeline: structure tree block"
+                    );
+                }
                 let page_width = page.width().value;
                 let filtered_blocks = filter_sidebar_blocks(&extraction.blocks, page_width);
                 let mut paragraphs = extracted_blocks_to_paragraphs(&filtered_blocks);
@@ -84,8 +104,30 @@ pub fn render_document_as_markdown_with_tables(
                 // Dehyphenate: structure tree path has no positional data,
                 // so only rejoin explicit trailing hyphens.
                 dehyphenate_paragraphs(&mut paragraphs, false);
+                let heading_count = paragraphs.iter().filter(|p| p.heading_level.is_some()).count();
+                let bold_count = paragraphs.iter().filter(|p| p.is_bold).count();
+                let has_font_variation = has_font_size_variation(&paragraphs);
+                tracing::trace!(
+                    page = i,
+                    paragraph_count = paragraphs.len(),
+                    heading_count,
+                    bold_count,
+                    has_font_variation,
+                    "PDF markdown pipeline: structure tree paragraphs after conversion"
+                );
                 if paragraphs.is_empty() {
                     struct_tree_results.push(None);
+                    heuristic_pages.push(i as usize);
+                } else if heading_count == 0 && has_font_variation {
+                    // Structure tree has text with font size variation but no
+                    // heading tags. Add to heuristic extraction for font-size
+                    // clustering data; heading classification will be applied
+                    // to these paragraphs in Stage 3.
+                    tracing::debug!(
+                        page = i,
+                        "PDF markdown pipeline: structure tree has font variation but no headings, will classify via font-size clustering"
+                    );
+                    struct_tree_results.push(Some(paragraphs));
                     heuristic_pages.push(i as usize);
                 } else {
                     struct_tree_results.push(Some(paragraphs));
@@ -175,7 +217,26 @@ pub fn render_document_as_markdown_with_tables(
         all_image_positions.extend(image_positions);
     }
 
-    // Stage 2: Global font-size clustering (only for heuristic pages).
+    // Identify structure tree pages that have font size variation but no
+    // heading signals — these need font-size-based heading classification.
+    // Pages with no font variation are left as plain paragraphs (classify
+    // would incorrectly assign headings based on unrelated pages' font data).
+    let struct_tree_needs_classify: std::collections::HashSet<usize> = struct_tree_results
+        .iter()
+        .enumerate()
+        .filter_map(|(i, result)| {
+            result.as_ref().and_then(|paragraphs| {
+                let has_headings = paragraphs.iter().any(|p| p.heading_level.is_some());
+                if !has_headings && has_font_size_variation(paragraphs) {
+                    Some(i)
+                } else {
+                    None
+                }
+            })
+        })
+        .collect();
+
+    // Stage 2: Global font-size clustering (heuristic pages + struct tree pages needing classification).
     let mut all_blocks: Vec<TextBlock> = Vec::new();
     let empty_bbox = BoundingBox {
         left: 0.0,
@@ -195,6 +256,18 @@ pub fn render_document_as_markdown_with_tables(
             });
         }
     }
+    // Include font sizes from struct tree pages that need classification.
+    for &i in &struct_tree_needs_classify {
+        if let Some(paragraphs) = &struct_tree_results[i] {
+            for para in paragraphs {
+                all_blocks.push(TextBlock {
+                    text: String::new(),
+                    bbox: empty_bbox,
+                    font_size: para.dominant_font_size,
+                });
+            }
+        }
+    }
 
     let heading_map = if all_blocks.is_empty() {
         Vec::new()
@@ -206,7 +279,17 @@ pub fn render_document_as_markdown_with_tables(
     // Stage 3: Per-page structured extraction.
     let mut all_page_paragraphs: Vec<Vec<PdfParagraph>> = Vec::with_capacity(page_count as usize);
     for i in 0..page_count as usize {
-        if let Some(paragraphs) = struct_tree_results[i].take() {
+        if let Some(mut paragraphs) = struct_tree_results[i].take() {
+            // Apply heading classification to struct tree pages that have
+            // font size variation but no structure-tree-level headings.
+            if struct_tree_needs_classify.contains(&i) {
+                tracing::debug!(
+                    page = i,
+                    "PDF markdown pipeline: classifying struct tree page via font-size clustering"
+                );
+                classify_paragraphs(&mut paragraphs, &heading_map);
+                merge_continuation_paragraphs(&mut paragraphs);
+            }
             all_page_paragraphs.push(paragraphs);
         } else {
             let lines = segments_to_lines(std::mem::take(&mut all_page_segments[i]));
@@ -245,8 +328,21 @@ pub fn render_document_as_markdown_with_tables(
     // demote numbered section headings when a title H1 is detected.
     refine_heading_hierarchy(&mut all_page_paragraphs);
 
+    let total_paragraphs: usize = all_page_paragraphs.iter().map(|p| p.len()).sum();
+    tracing::debug!(
+        heuristic_page_count = heuristic_pages.len(),
+        total_paragraphs,
+        heading_map_len = heading_map.len(),
+        "PDF markdown pipeline: stage 3 complete, assembling markdown"
+    );
+
     // Stage 4: Assemble markdown with tables interleaved
     let markdown = assemble_markdown_with_tables(all_page_paragraphs, tables, page_marker_format);
+    tracing::debug!(
+        markdown_len = markdown.len(),
+        has_headings = markdown.contains("# "),
+        "PDF markdown pipeline: assembly complete"
+    );
 
     // Stage 5: Inject image placeholders from positions collected during object extraction
     if all_image_positions.is_empty() {
@@ -495,6 +591,26 @@ fn apply_dehyphenation_join(
     }
 }
 
+/// Check if paragraphs have meaningful font size variation.
+///
+/// Returns true if there are at least 2 distinct non-zero font sizes,
+/// indicating that font-size clustering could identify heading candidates.
+fn has_font_size_variation(paragraphs: &[PdfParagraph]) -> bool {
+    let mut first_size: Option<f32> = None;
+    for para in paragraphs {
+        let size = para.dominant_font_size;
+        if size <= 0.0 {
+            continue;
+        }
+        match first_size {
+            None => first_size = Some(size),
+            Some(fs) if (size - fs).abs() > 0.5 => return true,
+            _ => {}
+        }
+    }
+    false
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -694,5 +810,48 @@ mod tests {
         dehyphenate_paragraph_lines(&mut p);
         assert_eq!(p.lines[0].segments[1].text, "software");
         assert_eq!(p.lines[1].segments[0].text, "next words");
+    }
+
+    // ── has_font_size_variation tests ──
+
+    fn para_with_font_size(font_size: f32) -> PdfParagraph {
+        PdfParagraph {
+            lines: vec![line(vec![seg("text", 0.0, 100.0)])],
+            dominant_font_size: font_size,
+            heading_level: None,
+            is_bold: false,
+            is_list_item: false,
+            is_code_block: false,
+        }
+    }
+
+    #[test]
+    fn test_has_font_size_variation_empty() {
+        assert!(!has_font_size_variation(&[]));
+    }
+
+    #[test]
+    fn test_has_font_size_variation_single_size() {
+        let paragraphs = vec![para_with_font_size(12.0), para_with_font_size(12.0)];
+        assert!(!has_font_size_variation(&paragraphs));
+    }
+
+    #[test]
+    fn test_has_font_size_variation_different_sizes() {
+        let paragraphs = vec![para_with_font_size(12.0), para_with_font_size(18.0)];
+        assert!(has_font_size_variation(&paragraphs));
+    }
+
+    #[test]
+    fn test_has_font_size_variation_small_difference_ignored() {
+        // 0.3pt difference is within 0.5pt tolerance
+        let paragraphs = vec![para_with_font_size(12.0), para_with_font_size(12.3)];
+        assert!(!has_font_size_variation(&paragraphs));
+    }
+
+    #[test]
+    fn test_has_font_size_variation_zero_sizes_ignored() {
+        let paragraphs = vec![para_with_font_size(0.0), para_with_font_size(0.0)];
+        assert!(!has_font_size_variation(&paragraphs));
     }
 }

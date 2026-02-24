@@ -317,7 +317,8 @@ impl<'a> PdfPageTextChar<'a> {
     pub fn font_info(&self) -> (String, bool, bool) {
         let (name, flags) = self.font();
         let name = name.unwrap_or_default();
-        let is_bold = flags.contains(FpdfFontDescriptorFlags::FORCE_BOLD_BIT_19);
+        let is_bold =
+            flags.contains(FpdfFontDescriptorFlags::FORCE_BOLD_BIT_19) || name.to_ascii_lowercase().contains("bold");
         let is_italic = flags.contains(FpdfFontDescriptorFlags::ITALIC_BIT_7);
         (name, is_bold, is_italic)
     }

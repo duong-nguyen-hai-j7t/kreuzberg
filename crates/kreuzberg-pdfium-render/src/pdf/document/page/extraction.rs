@@ -193,7 +193,8 @@ fn build_mcid_style_map(page: &PdfPage<'_>) -> Result<HashMap<i32, TextStyle>, P
                     w,
                     PdfFontWeight::Weight700Bold | PdfFontWeight::Weight800 | PdfFontWeight::Weight900
                 )
-            }) || font.is_bold_reenforced();
+            }) || font.is_bold_reenforced()
+                || font.name().to_ascii_lowercase().contains("bold");
             let is_italic = font.is_italic();
             let font_size = text_obj.scaled_font_size().value;
 
@@ -400,7 +401,8 @@ fn extract_via_heuristics(page: &PdfPage<'_>) -> Result<PageExtraction, PdfiumEr
                     w,
                     PdfFontWeight::Weight700Bold | PdfFontWeight::Weight800 | PdfFontWeight::Weight900
                 )
-            }) || font.is_bold_reenforced();
+            }) || font.is_bold_reenforced()
+                || font.name().to_ascii_lowercase().contains("bold");
             let is_italic = font.is_italic();
 
             let bounds = object.bounds().ok().map(|qp| qp.to_rect());

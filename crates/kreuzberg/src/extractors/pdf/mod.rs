@@ -272,6 +272,13 @@ impl DocumentExtractor for PdfExtractor {
         // so that we can inject image placeholders into it before finalizing the text.
         #[cfg(feature = "pdf")]
         let use_pdf_markdown = !used_ocr && pre_rendered_markdown.is_some();
+        tracing::debug!(
+            used_ocr,
+            has_pre_rendered = pre_rendered_markdown.is_some(),
+            use_pdf_markdown,
+            pre_rendered_len = pre_rendered_markdown.as_ref().map(|m| m.len()).unwrap_or(0),
+            "PDF extractor: deciding whether to use pre-rendered markdown"
+        );
 
         #[cfg(not(feature = "pdf"))]
         let use_pdf_markdown = false;
@@ -393,8 +400,14 @@ impl DocumentExtractor for PdfExtractor {
         // content but still need apply_output_format() for format-specific conversion.
         #[cfg(feature = "pdf")]
         let pre_formatted_output = if used_pdf_markdown && config.output_format == OutputFormat::Markdown {
+            tracing::trace!("PDF extractor: signaling pre-formatted markdown to pipeline");
             Some("markdown".to_string())
         } else {
+            tracing::trace!(
+                used_pdf_markdown,
+                output_format = ?config.output_format,
+                "PDF extractor: NOT signaling pre-formatted markdown"
+            );
             None
         };
         #[cfg(not(feature = "pdf"))]

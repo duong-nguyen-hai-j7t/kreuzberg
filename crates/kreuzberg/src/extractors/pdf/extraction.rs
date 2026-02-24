@@ -65,6 +65,12 @@ pub(crate) fn extract_all_from_document(
         config.output_format,
         OutputFormat::Markdown | OutputFormat::Djot | OutputFormat::Html
     );
+    tracing::debug!(
+        output_format = ?config.output_format,
+        needs_structured,
+        force_ocr = config.force_ocr,
+        "PDF markdown path: evaluating whether to render structured markdown"
+    );
     let pre_rendered_markdown = if needs_structured && !config.force_ocr {
         let k = config
             .pdf_options
@@ -85,6 +91,10 @@ pub(crate) fn extract_all_from_document(
             .filter(|p| p.insert_page_markers)
             .map(|p| p.marker_format.as_str());
 
+        tracing::debug!(
+            k_clusters = k,
+            "PDF markdown path: calling render_document_as_markdown_with_tables"
+        );
         match crate::pdf::markdown::render_document_as_markdown_with_tables(
             document,
             k,
@@ -93,7 +103,15 @@ pub(crate) fn extract_all_from_document(
             bottom_margin,
             page_marker_format,
         ) {
-            Ok(md) if !md.trim().is_empty() => Some(md),
+            Ok(md) if !md.trim().is_empty() => {
+                tracing::debug!(
+                    md_len = md.len(),
+                    has_headings = md.contains("# "),
+                    has_bold = md.contains("**"),
+                    "PDF markdown path: render succeeded with content"
+                );
+                Some(md)
+            }
             Ok(_) => {
                 tracing::warn!("Markdown rendering produced empty output, will fall back to plain text");
                 None

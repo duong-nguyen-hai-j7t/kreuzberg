@@ -109,3 +109,69 @@ fn test_pdf_markdown_vs_plain_has_more_structure() {
         "Markdown output should differ from plain text output"
     );
 }
+
+/// Regression test for GitHub discussion #391: PDFs with flat structure trees
+/// (all paragraphs, no heading tags) should still produce headings via
+/// font-size clustering fallback when the document has varying font sizes.
+#[test]
+fn test_pdf_markdown_produces_headings_via_font_size_clustering() {
+    if skip_if_missing("pdf/google_doc_document.pdf") {
+        return;
+    }
+
+    let path = get_test_file_path("pdf/google_doc_document.pdf");
+
+    let config = ExtractionConfig {
+        output_format: OutputFormat::Markdown,
+        ..Default::default()
+    };
+
+    let result = extract_file_sync(&path, None, &config).expect("Should extract PDF as markdown");
+
+    let heading_lines: Vec<&str> = result.content.lines().filter(|l| l.trim().starts_with('#')).collect();
+
+    println!("=== Heading detection test ===");
+    println!("Total headings found: {}", heading_lines.len());
+    for h in &heading_lines {
+        println!("  {}", h);
+    }
+
+    // The markdown pipeline should detect headings either from the structure
+    // tree or via font-size clustering fallback.
+    assert!(
+        !heading_lines.is_empty(),
+        "Markdown extraction should produce at least one heading via structure tree or font-size clustering"
+    );
+}
+
+/// Test that markdown extraction preserves paragraph breaks even when
+/// the structure tree fallback to heuristic is triggered.
+#[test]
+fn test_pdf_markdown_heuristic_fallback_preserves_paragraphs() {
+    if skip_if_missing("pdf/google_doc_document.pdf") {
+        return;
+    }
+
+    let path = get_test_file_path("pdf/google_doc_document.pdf");
+
+    let config = ExtractionConfig {
+        output_format: OutputFormat::Markdown,
+        ..Default::default()
+    };
+
+    let result = extract_file_sync(&path, None, &config).expect("Should extract PDF");
+
+    let normalized = result.content.replace("\r\n", "\n");
+    let para_breaks = normalized.matches("\n\n").count();
+    let heading_count = result.content.lines().filter(|l| l.trim().starts_with('#')).count();
+
+    println!("=== Heuristic fallback test ===");
+    println!("Paragraphs: {}, Headings: {}", para_breaks, heading_count);
+    println!("First 500 chars: {}", &result.content[..result.content.len().min(500)]);
+
+    assert!(
+        para_breaks >= 2,
+        "Should preserve paragraph breaks after heuristic fallback, got {}",
+        para_breaks
+    );
+}
