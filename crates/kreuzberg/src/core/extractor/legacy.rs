@@ -35,7 +35,11 @@ pub(super) fn extract_bytes_sync_impl(
     let cfg = config.cloned().unwrap_or_default();
 
     let validated_mime = if let Some(mime) = mime_type {
-        mime::validate_mime_type(mime)?
+        if mime == "application/octet-stream" {
+            mime::detect_mime_type_from_bytes(content)?
+        } else {
+            mime::validate_mime_type(mime)?
+        }
     } else {
         return Err(KreuzbergError::Validation {
             message: "MIME type is required for synchronous extraction".to_string(),

@@ -65,7 +65,11 @@ pub async fn extract_bytes(content: &[u8], mime_type: &str, config: &ExtractionC
     use crate::core::mime;
 
     let result = async {
-        let validated_mime = mime::validate_mime_type(mime_type)?;
+        let validated_mime = if mime_type == "application/octet-stream" {
+            mime::detect_mime_type_from_bytes(content)?
+        } else {
+            mime::validate_mime_type(mime_type)?
+        };
 
         // Native DOC/PPT extractors are registered in the plugin registry.
         // When the office feature is disabled, these MIME types are unsupported.
