@@ -38,7 +38,7 @@ Encoding: UTF-8
 const R_LINTR_TEMPLATE: &str = r#"linters: linters_with_defaults(
     line_length_linter(120),
     object_name_linter = NULL,
-    cyclocomp_linter = NULL
+    commented_code_linter = NULL
   )
 exclusions: list(
     "tests/testthat/helper-kreuzberg.R"
