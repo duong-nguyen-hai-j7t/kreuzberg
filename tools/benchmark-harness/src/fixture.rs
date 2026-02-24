@@ -127,6 +127,8 @@ impl Fixture {
                     | "antiword"
                     | "libreoffice"
                     | "odfpy"
+                    | "ebooklib"
+                    | "striprtf"
             ) {
                 return Err(Error::InvalidFixture {
                     path: fixture_path.to_path_buf(),
