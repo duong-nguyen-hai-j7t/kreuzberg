@@ -11,9 +11,23 @@ from __future__ import annotations
 
 import asyncio
 import json
+import platform
+import resource
 import sys
 import time
 from typing import Any
+
+
+def _get_peak_memory_bytes() -> int:
+    """Get peak RSS memory in bytes for the current process.
+
+    Uses resource.getrusage(RUSAGE_SELF). On Linux ru_maxrss is in KB,
+    on macOS/BSD it is in bytes.
+    """
+    usage = resource.getrusage(resource.RUSAGE_SELF)
+    if platform.system() == "Linux":
+        return usage.ru_maxrss * 1024
+    return usage.ru_maxrss
 
 from kreuzberg import (
     ExtractionConfig,
@@ -55,6 +69,7 @@ def extract_sync(file_path: str, ocr_enabled: bool) -> dict[str, Any]:
         "metadata": metadata,
         "_extraction_time_ms": duration_ms,
         "_ocr_used": _determine_ocr_used(metadata, ocr_enabled),
+        "_peak_memory_bytes": _get_peak_memory_bytes(),
     }
 
 
@@ -75,6 +90,7 @@ async def extract_async(file_path: str, ocr_enabled: bool) -> dict[str, Any]:
         "metadata": metadata,
         "_extraction_time_ms": duration_ms,
         "_ocr_used": _determine_ocr_used(metadata, ocr_enabled),
+        "_peak_memory_bytes": _get_peak_memory_bytes(),
     }
 
 

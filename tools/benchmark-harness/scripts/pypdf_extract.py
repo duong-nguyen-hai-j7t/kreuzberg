@@ -11,11 +11,21 @@ from __future__ import annotations
 import json
 import multiprocessing as _mp
 import os
+import platform
+import resource
 import sys
 import time
 from typing import Any
 
 from pypdf import PdfReader
+
+
+def _get_peak_memory_bytes() -> int:
+    """Get peak memory usage in bytes using resource module."""
+    usage = resource.getrusage(resource.RUSAGE_SELF)
+    if platform.system() == "Linux":
+        return usage.ru_maxrss * 1024
+    return usage.ru_maxrss
 
 
 def extract_sync(file_path: str) -> dict[str, Any]:
@@ -37,6 +47,7 @@ def extract_sync(file_path: str) -> dict[str, Any]:
         "content": markdown,
         "metadata": {"framework": "pypdf"},
         "_extraction_time_ms": duration_ms,
+        "_peak_memory_bytes": _get_peak_memory_bytes(),
     }
 
 
@@ -71,9 +82,11 @@ def extract_batch(file_paths: list[str]) -> list[dict[str, Any]]:
     total_duration_ms = (time.perf_counter() - start) * 1000.0
     per_file_duration_ms = total_duration_ms / len(file_paths) if file_paths else 0
 
+    peak_memory = _get_peak_memory_bytes()
     for result in results:
         result["_extraction_time_ms"] = per_file_duration_ms
         result["_batch_total_ms"] = total_duration_ms
+        result["_peak_memory_bytes"] = peak_memory
 
     return results
 

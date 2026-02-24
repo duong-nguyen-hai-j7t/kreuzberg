@@ -111,7 +111,7 @@ impl Fixture {
                 "pdf_text_layer"
                     | "markdown_file"
                     | "manual"
-                    | "pdftotext"
+                    | "vision"
                     | "python-docx"
                     | "python-pptx"
                     | "openpyxl"

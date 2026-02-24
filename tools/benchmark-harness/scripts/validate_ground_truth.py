@@ -80,21 +80,20 @@ def validate_ground_truth_structure(repo_root: Path) -> list[str]:
         if not subdir_path.exists():
             errors.append(f"Expected ground truth subdirectory missing: {subdir}")
 
-    # Validate that .txt files have corresponding _meta.json files (optional check)
+    # Validate ground truth files (.txt and .md)
     txt_files = list(ground_truth_dir.rglob("*.txt"))
+    md_files = list(ground_truth_dir.rglob("*.md"))
 
-    for txt_file in txt_files:
-        # Skip if it's a _meta file
-        if txt_file.stem.endswith("_meta"):
+    for gt_file in txt_files + md_files:
+        # Skip meta files
+        if gt_file.stem.endswith("_meta"):
             continue
 
-        # Check for corresponding meta file (optional)
-        meta_file = txt_file.with_name(f"{txt_file.stem}_meta.json")
-        if not meta_file.exists():
-            # This is just informational, not an error
-            pass
+        # Warn on very small files (likely placeholders)
+        if gt_file.stat().st_size < 10:
+            errors.append(f"Ground truth file suspiciously small ({gt_file.stat().st_size} bytes): {gt_file.relative_to(repo_root)}")
 
-    print(f"Found {len(txt_files)} ground truth text files")
+    print(f"Found {len(txt_files)} .txt and {len(md_files)} .md ground truth files")
 
     return errors
 

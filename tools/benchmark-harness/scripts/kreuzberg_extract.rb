@@ -11,6 +11,17 @@ def debug_log(message)
   warn "[DEBUG] #{Time.now.iso8601(3)} - #{message}"
 end
 
+def peak_memory_bytes
+  if File.exist?('/proc/self/status')
+    match = File.read('/proc/self/status').match(/VmRSS:\s+(\d+)/)
+    (match[1].to_i * 1024) if match
+  else
+    `ps -o rss= -p #{Process.pid}`.strip.to_i * 1024
+  end
+rescue StandardError
+  0
+end
+
 debug_log "=== Gem Initialization Debug Info ==="
 debug_log "RUBY_PLATFORM: #{RUBY_PLATFORM}"
 debug_log "RUBY_VERSION: #{RUBY_VERSION}"
@@ -93,7 +104,8 @@ def extract_sync(file_path, config = {})
     content: result.content,
     metadata: metadata,
     _extraction_time_ms: duration_ms,
-    _ocr_used: determine_ocr_used(metadata, ocr_enabled)
+    _ocr_used: determine_ocr_used(metadata, ocr_enabled),
+    _peak_memory_bytes: peak_memory_bytes
   }
 
   debug_log "Output JSON size: #{JSON.generate(payload).bytesize} bytes"
@@ -133,6 +145,7 @@ def extract_batch(file_paths, config = {})
   debug_log "Per-file average duration (milliseconds): #{per_file_duration_ms.round(3)}"
 
   ocr_enabled = config.dig(:ocr, :enabled) || false
+  peak_mem = peak_memory_bytes
   results_with_timing = results.map.with_index do |result, idx|
     debug_log "  Result[#{idx}] - content length: #{result.content&.length || 'nil'}, has metadata: #{!result.metadata.nil?}"
     metadata = result.metadata || {}
@@ -141,7 +154,8 @@ def extract_batch(file_paths, config = {})
       metadata: metadata,
       _extraction_time_ms: per_file_duration_ms,
       _batch_total_ms: total_duration_ms,
-      _ocr_used: determine_ocr_used(metadata, ocr_enabled)
+      _ocr_used: determine_ocr_used(metadata, ocr_enabled),
+      _peak_memory_bytes: peak_mem
     }
   end
 
@@ -181,7 +195,8 @@ def extract_server(ocr_enabled)
         content: result.content,
         metadata: metadata,
         _extraction_time_ms: duration_ms,
-        _ocr_used: determine_ocr_used(metadata, ocr_enabled)
+        _ocr_used: determine_ocr_used(metadata, ocr_enabled),
+        _peak_memory_bytes: peak_memory_bytes
       }
 
       puts JSON.generate(payload)

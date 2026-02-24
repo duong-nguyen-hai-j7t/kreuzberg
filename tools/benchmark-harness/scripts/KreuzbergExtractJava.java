@@ -2,6 +2,7 @@ import dev.kreuzberg.ExtractionResult;
 import dev.kreuzberg.Kreuzberg;
 import dev.kreuzberg.KreuzbergException;
 import dev.kreuzberg.config.ExtractionConfig;
+import dev.kreuzberg.config.OcrConfig;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -12,10 +13,16 @@ import java.util.List;
 public final class KreuzbergExtractJava {
     private static final double NANOS_IN_MILLISECOND = 1_000_000.0;
     private static final int WARMUP_ITERATIONS = 10;
-    private static final ExtractionConfig BENCH_CONFIG =
-            ExtractionConfig.builder().useCache(false).build();
 
     private KreuzbergExtractJava() { }
+
+    private static ExtractionConfig buildBenchmarkConfig(boolean ocrEnabled) {
+        ExtractionConfig.Builder builder = ExtractionConfig.builder().useCache(false);
+        if (ocrEnabled) {
+            builder.ocr(OcrConfig.builder().build());
+        }
+        return builder.build();
+    }
 
     public static void main(String[] args) throws Exception {
         boolean ocrEnabled = false;
@@ -72,9 +79,10 @@ public final class KreuzbergExtractJava {
         }
 
         Path path = Path.of(positionalArgs.get(1));
+        ExtractionConfig benchConfig = buildBenchmarkConfig(ocrEnabled);
         try {
             for (int i = 0; i < WARMUP_ITERATIONS; i++) {
-                Kreuzberg.extractFile(path, BENCH_CONFIG);
+                Kreuzberg.extractFile(path, benchConfig);
                 if (debug && i % 2 == 0) {
                     debugLog("Warmup iteration", String.valueOf(i + 1));
                 }
@@ -101,6 +109,7 @@ public final class KreuzbergExtractJava {
         System.out.println("READY");
         System.out.flush();
 
+        ExtractionConfig benchConfig = buildBenchmarkConfig(ocrEnabled);
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String line;
         while ((line = reader.readLine()) != null) {
@@ -111,7 +120,7 @@ public final class KreuzbergExtractJava {
             long start = System.nanoTime();
             try {
                 Path path = Path.of(filePath);
-                ExtractionResult result = Kreuzberg.extractFile(path, BENCH_CONFIG);
+                ExtractionResult result = Kreuzberg.extractFile(path, benchConfig);
                 double elapsedMs = (System.nanoTime() - start) / NANOS_IN_MILLISECOND;
                 String json = toJson(result, elapsedMs, ocrEnabled);
                 System.out.println(json);
@@ -141,11 +150,12 @@ public final class KreuzbergExtractJava {
             paths.add(Path.of(positionalArgs.get(i)));
         }
 
+        ExtractionConfig benchConfig = buildBenchmarkConfig(ocrEnabled);
         long start = System.nanoTime();
         try {
             List<ExtractionResult> results = new ArrayList<>();
             for (Path path : paths) {
-                results.add(Kreuzberg.extractFile(path, BENCH_CONFIG));
+                results.add(Kreuzberg.extractFile(path, benchConfig));
             }
             double totalMs = (System.nanoTime() - start) / NANOS_IN_MILLISECOND;
 
@@ -195,12 +205,13 @@ public final class KreuzbergExtractJava {
 
         Path path = Path.of(positionalArgs.get(1));
         ExtractionResult result;
+        ExtractionConfig benchConfig = buildBenchmarkConfig(ocrEnabled);
         long start = System.nanoTime();
         try {
             if (debug) {
                 debugLog("Starting extraction", "");
             }
-            result = Kreuzberg.extractFile(path, BENCH_CONFIG);
+            result = Kreuzberg.extractFile(path, benchConfig);
             if (debug) {
                 debugLog("Extraction completed", "");
             }

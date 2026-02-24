@@ -20,7 +20,7 @@
 		"category": "academic"
 	},
 	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/pdf/pdf_medium.txt",
-		"source": "pdftotext"
+		"text_file": "../../../test_documents/ground_truth/pdf/pdf_medium.md",
+		"source": "vision"
 	}
 }

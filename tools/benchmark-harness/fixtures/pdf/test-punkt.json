@@ -22,6 +22,6 @@
 	},
 	"ground_truth": {
 		"text_file": "../../../../test_documents/ground_truth/pdf/test-punkt.txt",
-		"source": "pdftotext"
+		"source": "vision"
 	}
 }

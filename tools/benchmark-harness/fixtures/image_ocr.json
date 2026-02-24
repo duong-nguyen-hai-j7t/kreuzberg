@@ -6,5 +6,9 @@
 	"metadata": {
 		"description": "Image requiring OCR - Hello World test image",
 		"category": "ocr"
+	},
+	"ground_truth": {
+		"text_file": "../../../test_documents/ground_truth/jpg/image_ocr.md",
+		"source": "vision"
 	}
 }

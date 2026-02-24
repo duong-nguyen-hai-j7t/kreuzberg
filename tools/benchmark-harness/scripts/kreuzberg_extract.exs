@@ -44,6 +44,7 @@ defmodule KreuzbergExtract do
   @doc """
   Sanitize a binary to valid UTF-8 and strip control characters
   that can break JSON encoding or the harness's UTF-8 line reader.
+  Also removes lone Unicode surrogates (U+D800-U+DFFF) that are invalid in JSON.
   """
   def sanitize_content(nil), do: ""
   def sanitize_content(content) when is_binary(content) do
@@ -55,7 +56,11 @@ defmodule KreuzbergExtract do
     end
 
     # Strip control characters except \n, \r, \t (which Jason escapes properly)
-    String.replace(valid_utf8, ~r/[\x00-\x08\x0b\x0c\x0e-\x1f]/, "")
+    no_control = String.replace(valid_utf8, ~r/[\x00-\x08\x0b\x0c\x0e-\x1f]/, "")
+
+    # Strip lone Unicode surrogates (U+D800-U+DFFF) which are invalid in JSON
+    # These appear as byte sequences in UTF-8: ED A0 80-ED AF BF (high) and ED B0 80-ED BF BF (low)
+    String.replace(no_control, ~r/\uD800-\uDFFF/u, "")
   end
 
   @doc """
@@ -216,9 +221,14 @@ defmodule KreuzbergExtract do
       try do
         case extract_sync(file_path, config, ocr_enabled) do
           {:ok, payload} ->
-            json = Jason.encode!(payload)
-            IO.write(json)
-            IO.write("\n")
+            try do
+              json = Jason.encode!(payload)
+              IO.puts(json)
+            rescue
+              e in [Jason.EncodeError, Protocol.UndefinedError] ->
+                error_json = Jason.encode!(%{"content" => "", "error" => "JSON encode failed: #{inspect(e)}", "_extraction_time_ms" => 0, "_ocr_used" => false})
+                IO.puts(error_json)
+            end
 
           {:error, reason} ->
             error_payload = %{
@@ -227,9 +237,14 @@ defmodule KreuzbergExtract do
               "_ocr_used" => false
             }
 
-            json = Jason.encode!(error_payload)
-            IO.write(json)
-            IO.write("\n")
+            try do
+              json = Jason.encode!(error_payload)
+              IO.puts(json)
+            rescue
+              e in [Jason.EncodeError, Protocol.UndefinedError] ->
+                error_json = Jason.encode!(%{"content" => "", "error" => "JSON encode failed: #{inspect(e)}", "_extraction_time_ms" => 0, "_ocr_used" => false})
+                IO.puts(error_json)
+            end
         end
       rescue
         e ->
@@ -239,9 +254,14 @@ defmodule KreuzbergExtract do
             "_ocr_used" => false
           }
 
-          json = Jason.encode!(error_payload)
-          IO.write(json)
-          IO.write("\n")
+          try do
+            json = Jason.encode!(error_payload)
+            IO.puts(json)
+          rescue
+            encode_error in [Jason.EncodeError, Protocol.UndefinedError] ->
+              error_json = Jason.encode!(%{"content" => "", "error" => "JSON encode failed: #{inspect(encode_error)}", "_extraction_time_ms" => 0, "_ocr_used" => false})
+              IO.puts(error_json)
+          end
       end
     end)
     |> Stream.run()
@@ -301,9 +321,17 @@ defmodule KreuzbergExtract do
 
             case extract_sync(hd(file_paths), config, ocr_enabled) do
               {:ok, payload} ->
-                json = Jason.encode!(payload)
-                debug_log("Output JSON: #{json}")
-                IO.write(json)
+                try do
+                  json = Jason.encode!(payload)
+                  debug_log("Output JSON: #{json}")
+                  IO.puts(json)
+                rescue
+                  e in [Jason.EncodeError, Protocol.UndefinedError] ->
+                    error_json = Jason.encode!(%{"content" => "", "error" => "JSON encode failed: #{inspect(e)}", "_extraction_time_ms" => 0, "_ocr_used" => false})
+                    IO.puts(:stderr, "Error encoding JSON: #{inspect(e)}")
+                    IO.puts(error_json)
+                    System.halt(1)
+                end
 
               {:error, reason} ->
                 IO.puts(:stderr, "Error extracting with Kreuzberg: #{inspect(reason)}")
@@ -320,15 +348,23 @@ defmodule KreuzbergExtract do
 
             case extract_batch(file_paths, config, ocr_enabled) do
               {:ok, results} ->
-                json =
-                  if length(file_paths) == 1 do
-                    Jason.encode!(hd(results))
-                  else
-                    Jason.encode!(results)
-                  end
+                try do
+                  json =
+                    if length(file_paths) == 1 do
+                      Jason.encode!(hd(results))
+                    else
+                      Jason.encode!(results)
+                    end
 
-                debug_log("Output JSON: #{String.slice(json, 0..200)}...")
-                IO.write(json)
+                  debug_log("Output JSON: #{String.slice(json, 0..200)}...")
+                  IO.puts(json)
+                rescue
+                  e in [Jason.EncodeError, Protocol.UndefinedError] ->
+                    error_json = Jason.encode!(%{"content" => "", "error" => "JSON encode failed: #{inspect(e)}", "_extraction_time_ms" => 0, "_ocr_used" => false})
+                    IO.puts(:stderr, "Error encoding JSON: #{inspect(e)}")
+                    IO.puts(error_json)
+                    System.halt(1)
+                end
 
               {:error, reason} ->
                 IO.puts(:stderr, "Error extracting with Kreuzberg: #{inspect(reason)}")

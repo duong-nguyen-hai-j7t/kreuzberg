@@ -242,6 +242,20 @@ impl ResourceMonitor {
         }
     }
 
+    /// Create a resource monitor targeting a specific process ID.
+    ///
+    /// Use this for persistent-mode subprocesses where the extraction server's PID
+    /// is known. Monitoring a specific PID captures that process tree's actual memory
+    /// rather than the harness process memory.
+    pub fn new_for_pid(pid: u32) -> Self {
+        Self {
+            samples: Arc::new(Mutex::new(Vec::new())),
+            snapshots: Arc::new(Mutex::new(Vec::new())),
+            running: Arc::new(AtomicBool::new(false)),
+            pid: Pid::from_u32(pid),
+        }
+    }
+
     /// Capture heap allocation statistics from jemalloc
     ///
     /// Only available when "memory-profiling" feature is enabled.

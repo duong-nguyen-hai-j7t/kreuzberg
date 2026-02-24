@@ -36,6 +36,14 @@ use Kreuzberg\Exceptions\KreuzbergException;
 define('DEBUG', getenv('KREUZBERG_BENCHMARK_DEBUG') === 'true');
 
 /**
+ * Get peak memory usage in bytes
+ */
+function get_peak_memory_bytes(): int
+{
+    return memory_get_peak_usage(true);
+}
+
+/**
  * Determine if OCR was actually used based on extraction result metadata.
  * Mirrors the native Rust adapter logic: OCR is used when format_type is "ocr",
  * or when format_type is "image" and OCR was enabled in config.
@@ -102,6 +110,7 @@ function extract_sync(string $filePath, ?ExtractionConfig $config = null, bool $
         'metadata' => $metadata,
         '_extraction_time_ms' => $durationMs,
         '_ocr_used' => determine_ocr_used($metadata, $ocrEnabled),
+        '_peak_memory_bytes' => get_peak_memory_bytes(),
     ];
 
     debug_log("Output JSON size: " . strlen(json_encode($payload)) . " bytes");
@@ -144,6 +153,7 @@ function extract_batch(array $filePaths, ?ExtractionConfig $config = null, bool 
     $perFileDurationMs = count($filePaths) > 0 ? $totalDurationMs / count($filePaths) : 0;
     debug_log("Per-file average duration (milliseconds): {$perFileDurationMs}");
 
+    $peakMemory = get_peak_memory_bytes();
     $resultsWithTiming = [];
     foreach ($results as $idx => $result) {
         debug_log("  Result[{$idx}] - content length: " . strlen($result->content) . ", has metadata: " . ($result->metadata !== null ? 'true' : 'false'));
@@ -154,6 +164,7 @@ function extract_batch(array $filePaths, ?ExtractionConfig $config = null, bool 
             '_extraction_time_ms' => $perFileDurationMs,
             '_batch_total_ms' => $totalDurationMs,
             '_ocr_used' => determine_ocr_used($metadata, $ocrEnabled),
+            '_peak_memory_bytes' => $peakMemory,
         ];
     }
 
@@ -197,6 +208,7 @@ function run_server(?ExtractionConfig $config = null, bool $ocrEnabled = false):
                 'metadata' => $metadata,
                 '_extraction_time_ms' => $durationMs,
                 '_ocr_used' => determine_ocr_used($metadata, $ocrEnabled),
+                '_peak_memory_bytes' => get_peak_memory_bytes(),
             ];
 
             echo json_encode($payload, JSON_THROW_ON_ERROR) . "\n";

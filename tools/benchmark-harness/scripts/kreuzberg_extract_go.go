@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	kz "github.com/kreuzberg-dev/kreuzberg/packages/go/v4"
@@ -25,6 +26,13 @@ type payload struct {
 	ExtractionTimeMs float64        `json:"_extraction_time_ms"`
 	BatchTotalTimeMs float64        `json:"_batch_total_ms,omitempty"`
 	OcrUsed          bool           `json:"_ocr_used"`
+	PeakMemoryBytes  uint64         `json:"_peak_memory_bytes"`
+}
+
+func peakMemoryBytes() uint64 {
+	var m runtime.MemStats
+	runtime.ReadMemStats(&m)
+	return m.Sys
 }
 
 func main() {
@@ -169,6 +177,7 @@ func runServer(ocrEnabled bool) {
 			Metadata:         meta,
 			ExtractionTimeMs: elapsed,
 			OcrUsed:          determineOcrUsed(meta, ocrEnabled),
+			PeakMemoryBytes:  peakMemoryBytes(),
 		}
 		mustEncodeNoNewline(p)
 		fmt.Println()
@@ -209,6 +218,7 @@ func extractSync(path string, ocrEnabled bool) (*payload, error) {
 		Metadata:         meta,
 		ExtractionTimeMs: elapsed,
 		OcrUsed:          determineOcrUsed(meta, ocrEnabled),
+		PeakMemoryBytes:  peakMemoryBytes(),
 	}, nil
 }
 
@@ -246,6 +256,7 @@ func extractBatch(paths []string, ocrEnabled bool) (any, error) {
 			ExtractionTimeMs: totalMs,
 			BatchTotalTimeMs: totalMs,
 			OcrUsed:          determineOcrUsed(meta, ocrEnabled),
+			PeakMemoryBytes:  peakMemoryBytes(),
 		}, nil
 	}
 
@@ -265,6 +276,7 @@ func extractBatch(paths []string, ocrEnabled bool) (any, error) {
 			ExtractionTimeMs: perMs,
 			BatchTotalTimeMs: totalMs,
 			OcrUsed:          determineOcrUsed(meta, ocrEnabled),
+			PeakMemoryBytes:  peakMemoryBytes(),
 		})
 	}
 	return out, nil

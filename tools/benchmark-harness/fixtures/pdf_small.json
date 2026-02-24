@@ -20,7 +20,7 @@
 		"category": "technical"
 	},
 	"ground_truth": {
-		"text_file": "../../../test_documents/ground_truth/pdf/pdf_small.txt",
-		"source": "pdftotext"
+		"text_file": "../../../test_documents/ground_truth/pdf/pdf_small.md",
+		"source": "vision"
 	}
 }

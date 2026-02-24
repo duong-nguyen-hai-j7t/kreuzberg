@@ -488,16 +488,13 @@ pub fn create_node_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter>
 
 /// Get supported formats for Kreuzberg WASM bindings.
 ///
-/// The WASM build uses the `wasm-target` feature which enables: pdf, html, xml, email,
-/// language-detection, chunking, quality, office. It does NOT include: excel, archives,
-/// ocr/images. PDF uses PDFium (WASM build). Office formats (DOCX, PPTX, ODT, DOC, PPT) use
-/// native Rust parsers: DOCX/PPTX/ODT via zip-based parsing, DOC/PPT via native OLE/CFB
-/// extraction (no tokio required in non-batch mode).
+/// The WASM build now has full feature parity with native bindings: pdf, html, xml, email,
+/// office, excel, ocr/images, archives. PDF uses PDFium (WASM build). Office formats use
+/// native Rust parsers. OCR uses Tesseract WASM.
 fn get_kreuzberg_wasm_supported_formats() -> Vec<String> {
     vec![
-        // Documents (office feature, in-memory parsers only — no external tools on wasm)
-        // NOTE: "pdf" excluded — PDFium WASM module requires separate initialization
-        // that the benchmark harness does not provide.
+        // Documents
+        "pdf",
         "docx",
         "doc",
         "odt",
@@ -508,27 +505,42 @@ fn get_kreuzberg_wasm_supported_formats() -> Vec<String> {
         "rtf",
         "rst",
         "org",
-        // Text formats (always available, no feature gate)
+        // Spreadsheets (excel-wasm feature)
+        "xlsx",
+        "xlsm",
+        "xls",
+        "ods",
+        // Text formats
         "txt",
         "md",
         "markdown",
         "commonmark",
-        // HTML (html feature)
+        // HTML
         "html",
         "htm",
-        // XML (xml feature)
+        // XML
         "xml",
-        // Data formats (always available)
+        // Data formats
         "json",
         "toml",
         "csv",
         "tsv",
         "yaml",
         "yml",
-        // Email (email feature)
+        // Email
         "eml",
         "msg",
-        // Academic/Publishing (office feature)
+        // Images (OCR via Tesseract WASM)
+        "bmp",
+        "gif",
+        "jpg",
+        "jpeg",
+        "png",
+        "tiff",
+        "tif",
+        "webp",
+        "jp2",
+        // Academic/Publishing
         "epub",
         "bib",
         "ipynb",

@@ -10,5 +10,9 @@
 		"requires_ocr": true,
 		"languages": ["ja"],
 		"text_orientation": "vertical"
+	},
+	"ground_truth": {
+		"text_file": "../../../test_documents/ground_truth/jpeg/image_text.md",
+		"source": "vision"
 	}
 }

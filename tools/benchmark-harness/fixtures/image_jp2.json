@@ -6,5 +6,9 @@
 	"metadata": {
 		"description": "JPEG 2000 image with text for OCR testing",
 		"category": "image"
+	},
+	"ground_truth": {
+		"text_file": "../../../test_documents/ground_truth/jp2/image_jp2.md",
+		"source": "vision"
 	}
 }

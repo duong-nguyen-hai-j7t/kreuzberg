@@ -5,10 +5,20 @@ from __future__ import annotations
 import json
 import multiprocessing as _mp
 import os
+import platform
+import resource
 import sys
 import time
 
 from markitdown import MarkItDown
+
+
+def _get_peak_memory_bytes() -> int:
+    """Get peak memory usage in bytes using resource module."""
+    usage = resource.getrusage(resource.RUSAGE_SELF)
+    if platform.system() == "Linux":
+        return usage.ru_maxrss * 1024
+    return usage.ru_maxrss
 
 
 def extract_sync(file_path: str) -> dict:
@@ -22,6 +32,7 @@ def extract_sync(file_path: str) -> dict:
         "content": result.text_content or "",
         "metadata": {"framework": "markitdown"},
         "_extraction_time_ms": duration_ms,
+        "_peak_memory_bytes": _get_peak_memory_bytes(),
     }
 
 

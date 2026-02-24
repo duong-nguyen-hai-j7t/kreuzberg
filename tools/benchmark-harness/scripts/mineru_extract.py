@@ -20,6 +20,8 @@ os.environ.setdefault("MINERU_DEVICE_MODE", "cpu")
 
 import json
 import multiprocessing as _mp
+import platform
+import resource
 import subprocess
 import sys
 import tempfile
@@ -34,6 +36,14 @@ try:
     HAS_PYTHON_API = True
 except ImportError:
     HAS_PYTHON_API = False
+
+
+def _get_peak_memory_bytes() -> int:
+    """Get peak memory usage in bytes using resource module."""
+    usage = resource.getrusage(resource.RUSAGE_SELF)
+    if platform.system() == "Linux":
+        return usage.ru_maxrss * 1024
+    return usage.ru_maxrss
 
 
 def _extract_via_cli(file_path: str, ocr_enabled: bool) -> str:
@@ -105,6 +115,7 @@ def extract_sync(file_path: str, ocr_enabled: bool) -> dict[str, Any]:
         "content": markdown,
         "metadata": {"framework": "mineru"},
         "_extraction_time_ms": duration_ms,
+        "_peak_memory_bytes": _get_peak_memory_bytes(),
     }
 
 
@@ -130,10 +141,12 @@ def extract_batch(file_paths: list[str], ocr_enabled: bool) -> list[dict[str, An
 
     total_duration_ms = (time.perf_counter() - start) * 1000.0
     per_file_duration_ms = total_duration_ms / len(file_paths) if file_paths else 0
+    peak_memory = _get_peak_memory_bytes()
 
     for result in results:
         result["_extraction_time_ms"] = per_file_duration_ms
         result["_batch_total_ms"] = total_duration_ms
+        result["_peak_memory_bytes"] = peak_memory
 
     return results
 

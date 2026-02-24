@@ -41,6 +41,8 @@ struct PersistentProcess {
     stdin: BufWriter<tokio::process::ChildStdin>,
     stdout: BufReader<tokio::process::ChildStdout>,
     child: tokio::process::Child,
+    /// PID of the child process, captured at spawn time for memory monitoring
+    child_pid: u32,
 }
 
 /// Base adapter for subprocess-based extraction
@@ -250,10 +252,11 @@ impl SubprocessAdapter {
             .spawn()
             .map_err(|e| Error::Benchmark(format!("Failed to spawn persistent process: {}", e)))?;
 
+        let child_pid = child.id().unwrap_or(0);
         let stdin = BufWriter::new(child.stdin.take().unwrap());
         let stdout = BufReader::new(child.stdout.take().unwrap());
 
-        Ok(PersistentProcess { stdin, stdout, child })
+        Ok(PersistentProcess { stdin, stdout, child, child_pid })
     }
 
     /// Execute the extraction subprocess
@@ -594,7 +597,21 @@ impl FrameworkAdapter for SubprocessAdapter {
         let file_size = std::fs::metadata(file_path).map_err(Error::Io)?.len();
 
         let start_time = std::time::Instant::now();
-        let monitor = ResourceMonitor::new();
+        // For persistent mode, monitor the child process tree (extraction server) instead
+        // of the harness process. This captures actual extraction memory, not the lightweight
+        // harness overhead.
+        let monitor = if self.persistent {
+            let guard = self.process.lock().await;
+            let child_pid = guard.as_ref().map(|p| p.child_pid).unwrap_or(0);
+            drop(guard);
+            if child_pid > 0 {
+                ResourceMonitor::new_for_pid(child_pid)
+            } else {
+                ResourceMonitor::new()
+            }
+        } else {
+            ResourceMonitor::new()
+        };
         let sampling_ms = crate::monitoring::adaptive_sampling_interval_ms(file_size);
         monitor.start(Duration::from_millis(sampling_ms)).await;
 
@@ -803,13 +820,32 @@ impl FrameworkAdapter for SubprocessAdapter {
             0.0 // Below minimum threshold - will be filtered in aggregation
         };
 
-        let metrics = PerformanceMetrics {
-            peak_memory_bytes: resource_stats.peak_memory_bytes,
-            avg_cpu_percent: resource_stats.avg_cpu_percent,
-            throughput_bytes_per_sec: throughput,
-            p50_memory_bytes: resource_stats.p50_memory_bytes,
-            p95_memory_bytes: resource_stats.p95_memory_bytes,
-            p99_memory_bytes: resource_stats.p99_memory_bytes,
+        // Prefer self-reported memory from the extraction script over external monitoring.
+        // External monitoring via ResourceMonitor often misses subprocess memory for fast
+        // extractions (<10ms) because the subprocess exits before the sampler captures it.
+        // Scripts report _peak_memory_bytes via resource.getrusage or equivalent.
+        let self_reported_memory = parsed
+            .get("_peak_memory_bytes")
+            .and_then(|v| v.as_u64());
+
+        let metrics = if let Some(reported_mem) = self_reported_memory {
+            PerformanceMetrics {
+                peak_memory_bytes: reported_mem,
+                avg_cpu_percent: resource_stats.avg_cpu_percent,
+                throughput_bytes_per_sec: throughput,
+                p50_memory_bytes: reported_mem,
+                p95_memory_bytes: reported_mem,
+                p99_memory_bytes: reported_mem,
+            }
+        } else {
+            PerformanceMetrics {
+                peak_memory_bytes: resource_stats.peak_memory_bytes,
+                avg_cpu_percent: resource_stats.avg_cpu_percent,
+                throughput_bytes_per_sec: throughput,
+                p50_memory_bytes: resource_stats.p50_memory_bytes,
+                p95_memory_bytes: resource_stats.p95_memory_bytes,
+                p99_memory_bytes: resource_stats.p99_memory_bytes,
+            }
         };
 
         // Check if subprocess reported OCR usage

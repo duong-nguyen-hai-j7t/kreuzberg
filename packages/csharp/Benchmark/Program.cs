@@ -2,7 +2,6 @@ using System.Text;
 using System.Text.Json;
 using Kreuzberg;
 
-var benchConfig = new ExtractionConfig { UseCache = false };
 var debug = Environment.GetEnvironmentVariable("KREUZBERG_BENCHMARK_DEBUG") == "true";
 var argsSpan = args.AsSpan();
 
@@ -42,6 +41,10 @@ if (modeIndex < 0)
 }
 
 var mode = argsSpan[modeIndex].ToString();
+
+var benchConfig = ocrEnabled
+    ? new ExtractionConfig { UseCache = false, Ocr = new OcrConfig { } }
+    : new ExtractionConfig { UseCache = false };
 
 if (debug)
 {
@@ -88,10 +91,12 @@ try
         var result = KreuzbergClient.ExtractBytesSync(content, mimeType, benchConfig);
         sw.Stop();
 
+        var ocrUsed = result.Metadata?.Format?.Type == FormatType.Ocr;
         var output = new
         {
             content = result.Content,
-            _extraction_time_ms = sw.Elapsed.TotalMilliseconds
+            _extraction_time_ms = sw.Elapsed.TotalMilliseconds,
+            _ocr_used = ocrUsed
         };
 
         var json = JsonSerializer.Serialize(output);
@@ -146,10 +151,12 @@ try
                 var result = KreuzbergClient.ExtractBytesSync(content, mimeType, benchConfig);
                 sw.Stop();
 
+                var ocrUsed = result.Metadata?.Format?.Type == FormatType.Ocr;
                 var output = new
                 {
                     content = result.Content,
-                    _extraction_time_ms = sw.Elapsed.TotalMilliseconds
+                    _extraction_time_ms = sw.Elapsed.TotalMilliseconds,
+                    _ocr_used = ocrUsed
                 };
 
                 var json = JsonSerializer.Serialize(output);

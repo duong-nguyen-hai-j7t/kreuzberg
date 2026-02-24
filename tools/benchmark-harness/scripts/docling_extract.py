@@ -11,11 +11,21 @@ from __future__ import annotations
 import json
 import multiprocessing as _mp
 import os
+import platform
+import resource
 import sys
 import time
 from typing import Any
 
 from docling.document_converter import DocumentConverter
+
+
+def _get_peak_memory_bytes() -> int:
+    """Get peak memory usage in bytes using resource module."""
+    usage = resource.getrusage(resource.RUSAGE_SELF)
+    if platform.system() == "Linux":
+        return usage.ru_maxrss * 1024
+    return usage.ru_maxrss
 
 
 def create_converter(ocr_enabled: bool) -> DocumentConverter:
@@ -42,6 +52,7 @@ def extract_sync(file_path: str, converter: DocumentConverter) -> dict[str, Any]
         "content": markdown,
         "metadata": {"framework": "docling"},
         "_extraction_time_ms": duration_ms,
+        "_peak_memory_bytes": _get_peak_memory_bytes(),
     }
 
 
@@ -63,6 +74,7 @@ def extract_batch(file_paths: list[str], converter: DocumentConverter) -> list[d
                     "metadata": {"framework": "docling"},
                     "_extraction_time_ms": per_file_duration_ms,
                     "_batch_total_ms": total_duration_ms,
+                    "_peak_memory_bytes": _get_peak_memory_bytes(),
                 }
             )
         else:
@@ -76,6 +88,7 @@ def extract_batch(file_paths: list[str], converter: DocumentConverter) -> list[d
                     },
                     "_extraction_time_ms": per_file_duration_ms,
                     "_batch_total_ms": total_duration_ms,
+                    "_peak_memory_bytes": _get_peak_memory_bytes(),
                 }
             )
 

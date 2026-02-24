@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 import multiprocessing as _mp
 import os
+import platform
+import resource
 import sys
 import time
 
@@ -20,6 +22,14 @@ import pymupdf
 pymupdf.TOOLS.mupdf_display_errors(False)
 
 
+def _get_peak_memory_bytes() -> int:
+    """Get peak memory usage in bytes using resource module."""
+    usage = resource.getrusage(resource.RUSAGE_SELF)
+    if platform.system() == "Linux":
+        return usage.ru_maxrss * 1024
+    return usage.ru_maxrss
+
+
 def extract_sync(file_path: str) -> dict:
     """Extract using PyMuPDF4LLM."""
     start = time.perf_counter()
@@ -30,6 +40,7 @@ def extract_sync(file_path: str) -> dict:
         "content": markdown,
         "metadata": {"framework": "pymupdf4llm"},
         "_extraction_time_ms": duration_ms,
+        "_peak_memory_bytes": _get_peak_memory_bytes(),
     }
 
 

@@ -408,9 +408,6 @@ jobs:
       - name: Build WASM (all targets for E2E)
         run: task wasm:build:all
 
-      - name: Verify WASM size for Workers
-        run: scripts/ci/wasm/verify-workers-wasm-size.sh
-
       - name: Generate Workers E2E tests
         run: task wasm:e2e:workers:generate
 

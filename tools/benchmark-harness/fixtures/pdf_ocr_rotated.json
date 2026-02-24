@@ -21,5 +21,9 @@
 		"size_class": "small",
 		"requires_ocr": true,
 		"special_handling": "rotated_pages"
+	},
+	"ground_truth": {
+		"text_file": "../../../test_documents/ground_truth/pdf/pdf_ocr_rotated_180.md",
+		"source": "vision"
 	}
 }

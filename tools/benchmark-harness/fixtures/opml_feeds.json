@@ -2,13 +2,15 @@
 	"document": "../../../test_documents/opml/feeds.opml",
 	"file_type": "opml",
 	"file_size": 1634,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": [
+		"kreuzberg"
+	],
 	"metadata": {
 		"description": "OPML feed subscription list",
 		"category": "structured_data"
 	},
 	"ground_truth": {
 		"text_file": "../../../test_documents/ground_truth/opml/opml_feeds.txt",
-		"source": "pandoc"
+		"source": "raw_source"
 	}
 }

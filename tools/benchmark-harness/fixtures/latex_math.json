@@ -2,13 +2,17 @@
 	"document": "../../../test_documents/latex/math.tex",
 	"file_type": "tex",
 	"file_size": 501,
-	"expected_frameworks": ["kreuzberg", "pandoc", "tika"],
+	"expected_frameworks": [
+		"kreuzberg",
+		"pandoc",
+		"tika"
+	],
 	"metadata": {
 		"description": "LaTeX document with mathematical formulas using amsmath package",
 		"category": "academic"
 	},
 	"ground_truth": {
 		"text_file": "../../../test_documents/ground_truth/tex/latex_math.txt",
-		"source": "pandoc"
+		"source": "raw_source"
 	}
 }

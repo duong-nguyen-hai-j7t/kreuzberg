@@ -2,7 +2,9 @@
 	"document": "../../../test_documents/typst/simple.typ",
 	"file_type": "typ",
 	"file_size": 690,
-	"expected_frameworks": ["kreuzberg"],
+	"expected_frameworks": [
+		"kreuzberg"
+	],
 	"metadata": {
 		"description": "Simple Typst document with basic formatting, headings, lists, tables, and links - 690 bytes",
 		"category": "typst-simple",
@@ -10,6 +12,6 @@
 	},
 	"ground_truth": {
 		"text_file": "../../../test_documents/ground_truth/typ/typst_simple.txt",
-		"source": "pandoc"
+		"source": "raw_source"
 	}
 }

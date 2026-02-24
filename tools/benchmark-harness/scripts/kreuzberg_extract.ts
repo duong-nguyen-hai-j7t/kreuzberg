@@ -18,6 +18,7 @@ interface ExtractionOutput {
 	_extraction_time_ms: number;
 	_batch_total_ms?: number;
 	_ocr_used: boolean;
+	_peak_memory_bytes?: number;
 }
 
 /**
@@ -51,6 +52,7 @@ async function extractAsync(filePath: string, ocrEnabled: boolean): Promise<Extr
 		metadata,
 		_extraction_time_ms: durationMs,
 		_ocr_used: determineOcrUsed(metadata as Record<string, unknown>, ocrEnabled),
+		_peak_memory_bytes: process.memoryUsage().rss,
 	};
 }
 
@@ -62,6 +64,7 @@ async function extractBatch(filePaths: string[], ocrEnabled: boolean): Promise<E
 
 	const perFileDurationMs = filePaths.length > 0 ? totalDurationMs / filePaths.length : 0;
 
+	const peakMemory = process.memoryUsage().rss;
 	return results.map((result) => {
 		const metadata = result.metadata || {};
 		return {
@@ -70,6 +73,7 @@ async function extractBatch(filePaths: string[], ocrEnabled: boolean): Promise<E
 			_extraction_time_ms: perFileDurationMs,
 			_batch_total_ms: totalDurationMs,
 			_ocr_used: determineOcrUsed(metadata as Record<string, unknown>, ocrEnabled),
+			_peak_memory_bytes: peakMemory,
 		};
 	});
 }
@@ -80,9 +84,11 @@ async function extractAsyncBatch(filePaths: string[], ocrEnabled: boolean): Prom
 	const results = await Promise.all(promises);
 	const totalDurationMs = performance.now() - start;
 
+	const peakMemory = process.memoryUsage().rss;
 	return results.map((result) => ({
 		...result,
 		_batch_total_ms: totalDurationMs,
+		_peak_memory_bytes: peakMemory,
 	}));
 }
 
@@ -108,7 +114,7 @@ async function runServer(ocrEnabled: boolean): Promise<void> {
 		} catch (err) {
 			const durationMs = performance.now() - start;
 			const error = err as Error;
-			console.log(JSON.stringify({ error: error.message, _extraction_time_ms: durationMs, _ocr_used: false }));
+			console.log(JSON.stringify({ error: error.message, _extraction_time_ms: durationMs, _ocr_used: false, _peak_memory_bytes: process.memoryUsage().rss }));
 		}
 	}
 }
