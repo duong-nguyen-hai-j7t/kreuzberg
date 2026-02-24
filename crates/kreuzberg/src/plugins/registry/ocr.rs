@@ -149,10 +149,18 @@ impl OcrBackendRegistry {
     ///
     /// The backend if found, or an error if not registered.
     pub fn get(&self, name: &str) -> Result<Arc<dyn OcrBackend>> {
-        self.backends.get(name).cloned().ok_or_else(|| KreuzbergError::Plugin {
-            message: format!("OCR backend '{}' not registered", name),
-            plugin_name: name.to_string(),
-        })
+        // Normalize common aliases: "paddleocr" → "paddle-ocr"
+        let canonical = match name {
+            "paddleocr" => "paddle-ocr",
+            _ => name,
+        };
+        self.backends
+            .get(canonical)
+            .cloned()
+            .ok_or_else(|| KreuzbergError::Plugin {
+                message: format!("OCR backend '{}' not registered", name),
+                plugin_name: name.to_string(),
+            })
     }
 
     /// Get an OCR backend that supports a specific language.
@@ -476,5 +484,45 @@ mod tests {
         registry.register(backend2).unwrap();
 
         assert_eq!(registry.list().len(), 2);
+    }
+
+    #[test]
+    fn test_ocr_backend_paddleocr_alias_resolves() {
+        let mut registry = OcrBackendRegistry::new_empty();
+
+        let backend = Arc::new(MockOcrBackend {
+            name: "paddle-ocr".to_string(),
+            languages: vec!["en".to_string()],
+        });
+
+        registry.register(backend).unwrap();
+
+        // "paddleocr" (without hyphen) should resolve to "paddle-ocr"
+        let retrieved = registry.get("paddleocr").unwrap();
+        assert_eq!(retrieved.name(), "paddle-ocr");
+
+        // "paddle-ocr" (canonical) should also work
+        let retrieved = registry.get("paddle-ocr").unwrap();
+        assert_eq!(retrieved.name(), "paddle-ocr");
+    }
+
+    #[test]
+    fn test_ocr_backend_paddleocr_alias_resolves_to_paddle_ocr() {
+        let mut registry = OcrBackendRegistry::new_empty();
+
+        let backend = Arc::new(MockOcrBackend {
+            name: "paddle-ocr".to_string(),
+            languages: vec!["en".to_string()],
+        });
+
+        registry.register(backend).unwrap();
+
+        // Canonical name works
+        let retrieved = registry.get("paddle-ocr").unwrap();
+        assert_eq!(retrieved.name(), "paddle-ocr");
+
+        // Alias without hyphen also works
+        let aliased = registry.get("paddleocr").unwrap();
+        assert_eq!(aliased.name(), "paddle-ocr");
     }
 }
