@@ -922,13 +922,14 @@ pub fn create_elixir_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
     if elixir_pkg_path.exists() {
         env.push(("MIX_EXTS".to_string(), elixir_pkg_path.to_string_lossy().to_string()));
 
-        // Set ERL_LIBS to include both _build/dev and _build/prod
+        // Set ERL_LIBS to include _build/prod or _build/dev lib path.
+        // Verify the .app manifest exists to avoid using incomplete builds.
         let dev_path = elixir_pkg_path.join("_build/dev/lib");
         let prod_path = elixir_pkg_path.join("_build/prod/lib");
 
-        let erl_libs = if prod_path.exists() {
+        let erl_libs = if prod_path.join("kreuzberg/ebin/kreuzberg.app").exists() {
             prod_path.to_string_lossy().to_string()
-        } else if dev_path.exists() {
+        } else if dev_path.join("kreuzberg/ebin/kreuzberg.app").exists() {
             dev_path.to_string_lossy().to_string()
         } else {
             String::new()
@@ -967,13 +968,14 @@ pub fn create_elixir_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapte
     if elixir_pkg_path.exists() {
         env.push(("MIX_EXTS".to_string(), elixir_pkg_path.to_string_lossy().to_string()));
 
-        // Set ERL_LIBS to include both _build/dev and _build/prod
+        // Set ERL_LIBS to include _build/prod or _build/dev lib path.
+        // Verify the .app manifest exists to avoid using incomplete builds.
         let dev_path = elixir_pkg_path.join("_build/dev/lib");
         let prod_path = elixir_pkg_path.join("_build/prod/lib");
 
-        let erl_libs = if prod_path.exists() {
+        let erl_libs = if prod_path.join("kreuzberg/ebin/kreuzberg.app").exists() {
             prod_path.to_string_lossy().to_string()
-        } else if dev_path.exists() {
+        } else if dev_path.join("kreuzberg/ebin/kreuzberg.app").exists() {
             dev_path.to_string_lossy().to_string()
         } else {
             String::new()

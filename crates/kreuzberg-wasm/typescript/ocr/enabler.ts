@@ -14,8 +14,8 @@ import { TesseractWasmBackend } from "../ocr/tesseract-wasm-backend.js";
 import { isBrowser } from "../runtime.js";
 import type { OcrBackendProtocol } from "../types.js";
 
-/** Default CDN URL for tessdata files */
-const TESSDATA_CDN_BASE = "https://cdn.jsdelivr.net/npm/tesseract-wasm@0.11.0/dist";
+/** Default CDN URL for tessdata files (Tesseract fast models) */
+const TESSDATA_CDN_BASE = "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/main";
 
 /**
  * Native WASM OCR backend using kreuzberg-tesseract compiled into the WASM binary.
@@ -219,6 +219,7 @@ export async function enableOcr(): Promise<void> {
 			const backend = new NativeWasmOcrBackend();
 			await backend.initialize();
 			registerOcrBackend(backend);
+			registerBackendInRustRegistry(wasm, backend);
 			return;
 		}
 
@@ -227,6 +228,7 @@ export async function enableOcr(): Promise<void> {
 			const backend = new TesseractWasmBackend();
 			await backend.initialize();
 			registerOcrBackend(backend);
+			registerBackendInRustRegistry(wasm, backend);
 			return;
 		}
 
@@ -238,5 +240,39 @@ export async function enableOcr(): Promise<void> {
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
 		throw new Error(`Failed to enable OCR: ${message}`);
+	}
+}
+
+/**
+ * Register an OCR backend in the Rust-side plugin registry.
+ *
+ * The Rust extraction pipeline looks up OCR backends from its own registry
+ * (not the JS-side Map). This creates a thin adapter that bridges the
+ * OcrBackendProtocol interface to what the Rust wasm-bindgen bridge expects:
+ * - name() returns "tesseract" (matching the default OcrConfig.backend value)
+ * - processImage() returns a JSON string (not an object)
+ */
+function registerBackendInRustRegistry(
+	wasm: ReturnType<typeof getWasmModule>,
+	backend: OcrBackendProtocol,
+): void {
+	const registerFn = wasm?.register_ocr_backend;
+	if (!registerFn) {
+		return;
+	}
+
+	const rustAdapter = {
+		name: () => "tesseract",
+		supportedLanguages: () => backend.supportedLanguages?.() ?? ["eng"],
+		processImage: async (imageBase64: string, language: string): Promise<string> => {
+			const result = await backend.processImage(imageBase64, language);
+			return typeof result === "string" ? result : JSON.stringify(result);
+		},
+	};
+
+	try {
+		registerFn(rustAdapter);
+	} catch {
+		// Registration may fail if already registered; non-fatal
 	}
 }

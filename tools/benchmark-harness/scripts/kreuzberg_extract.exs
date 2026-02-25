@@ -92,10 +92,8 @@ defmodule KreuzbergExtract do
     end
   end
 
-  @doc """
-  Parse a request line as either plain path or JSON request.
-  Returns {path, force_ocr} tuple.
-  """
+  # Parse a request line as either plain path or JSON request.
+  # Returns {path, force_ocr} tuple.
   defp parse_request(line) do
     trimmed = String.trim(line)
     if String.starts_with?(trimmed, "{") do
