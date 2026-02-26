@@ -1084,7 +1084,7 @@ fn compile_c_extraction_binary(source: &Path) -> Result<PathBuf> {
 
 /// Create C adapter (persistent server mode)
 pub fn create_c_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
-    let source_path = get_script_path("kreuzberg_extract_c.c")?;
+    let source_path = get_script_path("c/kreuzberg_extract_c.c")?;
     let binary_path = compile_c_extraction_binary(&source_path)?;
 
     let args = vec![ocr_flag(ocr_enabled), "server".to_string()];
@@ -1106,7 +1106,7 @@ pub fn create_c_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
 
 /// Create C batch adapter
 pub fn create_c_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
-    let source_path = get_script_path("kreuzberg_extract_c.c")?;
+    let source_path = get_script_path("c/kreuzberg_extract_c.c")?;
     let binary_path = compile_c_extraction_binary(&source_path)?;
 
     let args = vec![ocr_flag(ocr_enabled), "batch".to_string()];

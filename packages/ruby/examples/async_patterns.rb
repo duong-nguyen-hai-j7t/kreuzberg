@@ -215,18 +215,17 @@ end
 # ============================================================================
 
 # Example OCR backend implementation for custom processing.
-class CustomOcrBackend
-  def process_image(image_bytes, language)
-    "Extracted text from #{image_bytes.length} bytes using #{language}"
-  end
-
-  def supports_language?(lang)
-    %w[eng deu fra].include?(lang)
-  end
-end
-
 def register_ocr_backend
-  backend = CustomOcrBackend.new
+  backend = Class.new do
+    def process_image(image_bytes, language)
+      "Extracted text from #{image_bytes.length} bytes using #{language}"
+    end
+
+    def supports_language?(lang)
+      %w[eng deu fra].include?(lang)
+    end
+  end.new
+
   Kreuzberg.register_ocr_backend('custom', backend)
 
   config = {
