@@ -200,7 +200,7 @@ func runServer(ocrEnabled bool) {
 		}
 		mustEncodeNoNewline(p)
 		fmt.Println()
-		os.Stdout.Sync() //nolint:errcheck
+		os.Stdout.Sync() //nolint:errcheck,gosec
 	}
 
 	if err := scanner.Err(); err != nil {

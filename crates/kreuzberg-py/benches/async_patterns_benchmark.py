@@ -9,12 +9,13 @@ Expected improvement: ~25-30x speedup based on spikard benchmarks.
 
 import asyncio
 import time
+from typing import Any, Union
 
 
 class SyncOcrBackend:
     """Simulates current sync Python OCR backend."""
 
-    def process_image(self, image_bytes: bytes, language: str) -> dict:
+    def process_image(self, image_bytes: bytes, language: str) -> dict[str, Any]:
         time.sleep(0.05)
         return {
             "content": f"Extracted text from {len(image_bytes)} bytes",
@@ -25,7 +26,7 @@ class SyncOcrBackend:
 class AsyncOcrBackend:
     """Simulates async Python OCR backend (e.g., using httpx for cloud OCR)."""
 
-    async def process_image(self, image_bytes: bytes, language: str) -> dict:
+    async def process_image(self, image_bytes: bytes, language: str) -> dict[str, Any]:
         await asyncio.sleep(0.05)
         return {
             "content": f"Extracted text from {len(image_bytes)} bytes",
@@ -33,7 +34,7 @@ class AsyncOcrBackend:
         }
 
 
-async def benchmark_pattern(backend, num_iterations: int, pattern_name: str) -> float:
+async def benchmark_pattern(backend: Union[SyncOcrBackend, AsyncOcrBackend], num_iterations: int, pattern_name: str) -> float:
     """Benchmark a specific pattern."""
     test_image = b"fake_image_data" * 100
 

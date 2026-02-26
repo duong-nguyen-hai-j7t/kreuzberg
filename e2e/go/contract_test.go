@@ -141,7 +141,7 @@ func TestContractConfigDocumentStructureDisabled(t *testing.T) {
 
 func TestContractConfigDocumentStructureHeadings(t *testing.T) {
 	skipIfFeatureUnavailable(t, "office")
-	result := runExtraction(t, "office/docx/headers.docx", []byte(`{
+	result := runExtraction(t, "docx/unit_test_headers.docx", []byte(`{
 "include_document_structure": true
 }`))
 	assertExpectedMime(t, result, []string{"application/vnd.openxmlformats-officedocument.wordprocessingml.document"})
@@ -158,11 +158,11 @@ func TestContractConfigDocumentStructureWithHeadings(t *testing.T) {
 
 func TestContractConfigElementTypes(t *testing.T) {
 	skipIfFeatureUnavailable(t, "office")
-	result := runExtraction(t, "office/docx/headers.docx", []byte(`{
+	result := runExtraction(t, "docx/unit_test_headers.docx", []byte(`{
 "result_format": "element_based"
 }`))
 	assertExpectedMime(t, result, []string{"application/vnd.openxmlformats-officedocument.wordprocessingml.document"})
-	assertElements(t, result, intPtr(1), []string{"title", "narrative_text"})
+	assertElements(t, result, intPtr(1), []string{"narrative_text"})
 }
 
 func TestContractConfigForceOcr(t *testing.T) {

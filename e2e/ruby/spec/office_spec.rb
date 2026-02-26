@@ -5,7 +5,6 @@
 #
 # Tests for office fixtures.
 
-# rubocop:disable Metrics/BlockLength
 require_relative 'spec_helper'
 
 RSpec.describe 'office fixtures' do
@@ -720,4 +719,3 @@ RSpec.describe 'office fixtures' do
     end
   end
 end
-# rubocop:enable Metrics/BlockLength

@@ -147,12 +147,13 @@ tasks:
       - uv pip list --outdated || true
 
   e2e:generate:
-    desc: Generate Python E2E tests from fixtures
+    desc: Generate and format Python E2E tests from fixtures
     cmds:
       - cmd: bash scripts/task/e2e-generate.sh python
         platforms: [linux, darwin]
       - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
         platforms: [windows]
+      - task: e2e:lint
 
   e2e:lint:
     desc: Lint Python E2E test code

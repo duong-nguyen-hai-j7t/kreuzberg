@@ -68,10 +68,7 @@ func shouldSkipMissingDependency(err error) bool {
 		return r
 	}, strings.ToLower(err.Error()))
 
-	if strings.Contains(message, "missing dependency") {
-		return true
-	}
-	return false
+	return strings.Contains(message, "missing dependency")
 }
 
 func runExtraction(t *testing.T, relativePath string, configJSON []byte) *kreuzberg.ExtractionResult {
@@ -193,45 +190,6 @@ func assertDetectedLanguages(t *testing.T, result *kreuzberg.ExtractionResult, e
 	}
 }
 
-func assertMetadataExpectation(t *testing.T, result *kreuzberg.ExtractionResult, path string, expectation []byte) {
-	t.Helper()
-	if len(expectation) == 0 {
-		return
-	}
-
-	metadata := metadataAsMap(t, result.Metadata)
-	value := lookupMetadataValue(metadata, path)
-	if value == nil {
-		t.Fatalf("metadata path %q missing", path)
-	}
-
-	var spec map[string]any
-	if err := json.Unmarshal(expectation, &spec); err != nil {
-		t.Fatalf("failed to decode metadata expectation for %s: %v", path, err)
-	}
-
-	if expected, ok := spec["eq"]; ok {
-		if !valuesEqual(value, expected) {
-			t.Fatalf("expected metadata %q == %v, got %v", path, expected, value)
-		}
-	}
-	if gte, ok := spec["gte"]; ok {
-		if !compareFloat(value, gte, true) {
-			t.Fatalf("expected metadata %q >= %v, got %v", path, gte, value)
-		}
-	}
-	if lte, ok := spec["lte"]; ok {
-		if !compareFloat(value, lte, false) {
-			t.Fatalf("expected metadata %q <= %v, got %v", path, lte, value)
-		}
-	}
-	if contains, ok := spec["contains"]; ok {
-		if !valueContains(value, contains) {
-			t.Fatalf("expected metadata %q to contain %v, got %v", path, contains, value)
-		}
-	}
-}
-
 func metadataAsMap(t *testing.T, metadata kreuzberg.Metadata) map[string]any {
 	t.Helper()
 	bytes, err := json.Marshal(metadata)
@@ -269,95 +227,6 @@ func lookupMetadataPath(metadata map[string]any, path string) any {
 		current = value
 	}
 	return current
-}
-
-func valuesEqual(a, b any) bool {
-	switch av := a.(type) {
-	case string:
-		if bv, ok := b.(string); ok {
-			return av == bv
-		}
-	case float64:
-		if bv, ok := b.(float64); ok {
-			return av == bv
-		}
-	case bool:
-		if bv, ok := b.(bool); ok {
-			return av == bv
-		}
-	case []any:
-		bv, ok := b.([]any)
-		if !ok || len(av) != len(bv) {
-			return false
-		}
-		for i := range av {
-			if !valuesEqual(av[i], bv[i]) {
-				return false
-			}
-		}
-		return true
-	}
-	return false
-}
-
-func compareFloat(actual any, expected any, gte bool) bool {
-	actualFloat, ok := toFloat(actual)
-	if !ok {
-		return false
-	}
-	expectedFloat, ok := toFloat(expected)
-	if !ok {
-		return false
-	}
-	if gte {
-		return actualFloat >= expectedFloat
-	}
-	return actualFloat <= expectedFloat
-}
-
-func toFloat(value any) (float64, bool) {
-	switch v := value.(type) {
-	case float64:
-		return v, true
-	case int:
-		return float64(v), true
-	case int64:
-		return float64(v), true
-	case json.Number:
-		f, err := v.Float64()
-		if err != nil {
-			return 0, false
-		}
-		return f, true
-	default:
-		return 0, false
-	}
-}
-
-func valueContains(value any, expectation any) bool {
-	switch v := value.(type) {
-	case string:
-		if needle, ok := expectation.(string); ok {
-			return strings.Contains(strings.ToLower(v), strings.ToLower(needle))
-		}
-	case []any:
-		switch needle := expectation.(type) {
-		case []any:
-			for _, candidate := range needle {
-				if !valueContains(v, candidate) {
-					return false
-				}
-			}
-			return true
-		default:
-			for _, item := range v {
-				if valuesEqual(item, needle) {
-					return true
-				}
-			}
-		}
-	}
-	return false
 }
 
 func intPtr(value int) *int {
@@ -481,11 +350,6 @@ func assertOcrElements(t *testing.T, result *kreuzberg.ExtractionResult, hasElem
 	}
 }
 
-func skipIfPaddleOcrUnavailable(t *testing.T) {
-	t.Helper()
-	skipIfFeatureUnavailable(t, "paddle-ocr")
-}
-
 func skipIfFeatureUnavailable(t *testing.T, feature string) {
 	t.Helper()
 	envVar := "KREUZBERG_" + strings.ToUpper(strings.ReplaceAll(feature, "-", "_")) + "_AVAILABLE"
@@ -534,10 +398,8 @@ func assertDocument(t *testing.T, result *kreuzberg.ExtractionResult, hasDocumen
 				t.Fatalf("Expected hasGroups=%v but got %v", *hasGroups, hasGroupNodes)
 			}
 		}
-	} else {
-		if doc != nil {
-			t.Fatal("Expected document to be nil but got a document")
-		}
+	} else if doc != nil {
+		t.Fatal("Expected document to be nil but got a document")
 	}
 }
 
@@ -642,11 +504,11 @@ func assertKeywords(t *testing.T, result *kreuzberg.ExtractionResult, hasKeyword
 	t.Helper()
 	if hasKeywords != nil {
 		if *hasKeywords {
-			if result.ExtractedKeywords == nil || len(result.ExtractedKeywords) == 0 {
+			if len(result.ExtractedKeywords) == 0 {
 				t.Fatalf("expected keywords in result but ExtractedKeywords field is nil or empty")
 			}
 		} else {
-			if result.ExtractedKeywords != nil && len(result.ExtractedKeywords) > 0 {
+			if len(result.ExtractedKeywords) > 0 {
 				t.Fatalf("expected no keywords but found %d", len(result.ExtractedKeywords))
 			}
 		}
@@ -676,6 +538,7 @@ func assertTableBoundingBoxes(t *testing.T, result *kreuzberg.ExtractionResult) 
 	}
 }
 
+//nolint:unused // referenced by generated tests when fixtures use table content assertions
 func assertTableContentContainsAny(t *testing.T, result *kreuzberg.ExtractionResult, snippets []string) {
 	t.Helper()
 	if len(snippets) == 0 {
@@ -693,6 +556,7 @@ func assertTableContentContainsAny(t *testing.T, result *kreuzberg.ExtractionRes
 	t.Fatalf("expected table content to contain any of %v", snippets)
 }
 
+//nolint:unused // referenced by generated tests when fixtures use image bounding box assertions
 func assertImageBoundingBoxes(t *testing.T, result *kreuzberg.ExtractionResult) {
 	t.Helper()
 	for i, img := range result.Images {
@@ -721,6 +585,7 @@ func assertQualityScore(t *testing.T, result *kreuzberg.ExtractionResult, hasSco
 	}
 }
 
+//nolint:unused // referenced by generated tests when fixtures use processing warning assertions
 func assertProcessingWarnings(t *testing.T, result *kreuzberg.ExtractionResult, maxCount *int, isEmpty *bool) {
 	t.Helper()
 	warnings := result.ProcessingWarnings
@@ -734,6 +599,7 @@ func assertProcessingWarnings(t *testing.T, result *kreuzberg.ExtractionResult, 
 	}
 }
 
+//nolint:unused // referenced by generated tests when fixtures use djot content assertions
 func assertDjotContent(t *testing.T, result *kreuzberg.ExtractionResult, hasContent *bool, minBlocks *int) {
 	t.Helper()
 	if hasContent != nil && *hasContent {
@@ -752,11 +618,11 @@ func assertDjotContent(t *testing.T, result *kreuzberg.ExtractionResult, hasCont
 func assertAnnotations(t *testing.T, result *kreuzberg.ExtractionResult, hasAnnotations bool, minCount *int) {
 	t.Helper()
 	if hasAnnotations {
-		if result.Annotations == nil || len(result.Annotations) == 0 {
+		if len(result.Annotations) == 0 {
 			t.Fatalf("expected annotations to be present and non-empty")
 		}
 	}
-	if result.Annotations != nil && minCount != nil {
+	if minCount != nil {
 		if len(result.Annotations) < *minCount {
 			t.Fatalf("expected at least %d annotations, got %d", *minCount, len(result.Annotations))
 		}

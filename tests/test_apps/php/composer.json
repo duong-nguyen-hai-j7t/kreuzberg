@@ -1,0 +1,12 @@
+{
+	"name": "kreuzberg/test-app",
+	"description": "Comprehensive test application for Kreuzberg PHP bindings",
+	"type": "project",
+	"license": "MIT",
+	"require": {
+		"php": "^8.4"
+	},
+	"config": {
+		"sort-packages": true
+	}
+}

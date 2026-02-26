@@ -229,9 +229,7 @@ module E2ERuby
       return unless expectation.key?(:contains)
 
       contains = expectation[:contains]
-      if value.is_a?(String) && contains.is_a?(String)
-        expect(value.include?(contains)).to be(true)
-      elsif value.is_a?(Array) && contains.is_a?(String)
+      if (value.is_a?(String) || value.is_a?(Array)) && contains.is_a?(String)
         expect(value.include?(contains)).to be(true)
       elsif value.is_a?(Array) && contains.is_a?(Array)
         expect(contains.all? { |item| value.include?(item) }).to be(true)
@@ -296,7 +294,7 @@ module E2ERuby
       if elements_have_geometry
         ocr_elements.each do |el|
           expect(el.geometry).not_to be_nil
-          expect(%w[rectangle quadrilateral]).to include(el.geometry&.type)
+          expect(el.geometry&.type).to eq("rectangle").or eq("quadrilateral")
         end
       end
       return unless elements_have_confidence
@@ -1180,6 +1178,8 @@ fn generate_plugin_api_tests(fixtures: &[&Fixture], spec_dir: &Utf8Path) -> Resu
     writeln!(buffer, "require 'fileutils'")?;
     writeln!(buffer)?;
 
+    writeln!(buffer, "RSpec.describe 'Plugin APIs' do")?;
+
     let mut grouped_map: std::collections::HashMap<String, Vec<&Fixture>> = std::collections::HashMap::new();
     for fixture in fixtures.iter() {
         let category = fixture
@@ -1196,16 +1196,18 @@ fn generate_plugin_api_tests(fixtures: &[&Fixture], spec_dir: &Utf8Path) -> Resu
     for (category, mut fixtures) in grouped {
         fixtures.sort_by(|a, b| a.id.cmp(&b.id));
         let category_title = to_title_case(&category);
-        writeln!(buffer, "RSpec.describe '{}' do", category_title)?;
+        writeln!(buffer, "  describe '{}' do", category_title)?;
 
         for fixture in fixtures {
-            buffer.push_str(&render_plugin_test(fixture)?);
+            buffer.push_str(&render_plugin_test_nested(fixture)?);
         }
 
-        writeln!(buffer, "end")?;
+        writeln!(buffer, "  end")?;
         writeln!(buffer)?;
     }
 
+    writeln!(buffer, "end")?;
+    writeln!(buffer)?;
     writeln!(buffer, "# rubocop:enable Metrics/BlockLength")?;
 
     let path = spec_dir.join("plugin_apis_spec.rb");
@@ -1214,7 +1216,7 @@ fn generate_plugin_api_tests(fixtures: &[&Fixture], spec_dir: &Utf8Path) -> Resu
     Ok(())
 }
 
-fn render_plugin_test(fixture: &Fixture) -> Result<String> {
+fn render_plugin_test_nested(fixture: &Fixture) -> Result<String> {
     let mut buffer = String::new();
     let test_spec = fixture
         .test_spec
@@ -1222,7 +1224,7 @@ fn render_plugin_test(fixture: &Fixture) -> Result<String> {
         .with_context(|| format!("Fixture '{}' missing test_spec", fixture.id))?;
 
     let test_name = &fixture.description;
-    writeln!(buffer, "  it '{}' do", escape_ruby_string_content(test_name))?;
+    writeln!(buffer, "    it '{}' do", escape_ruby_string_content(test_name))?;
 
     match test_spec.pattern.as_str() {
         "simple_list" => render_simple_list_test(&mut buffer, fixture)?,
@@ -1238,7 +1240,7 @@ fn render_plugin_test(fixture: &Fixture) -> Result<String> {
         }
     }
 
-    writeln!(buffer, "  end")?;
+    writeln!(buffer, "    end")?;
     writeln!(buffer)?;
 
     Ok(buffer)

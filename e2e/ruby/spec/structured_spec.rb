@@ -5,7 +5,6 @@
 #
 # Tests for structured fixtures.
 
-# rubocop:disable Metrics/BlockLength
 require_relative 'spec_helper'
 
 RSpec.describe 'structured fixtures' do
@@ -113,4 +112,3 @@ RSpec.describe 'structured fixtures' do
     end
   end
 end
-# rubocop:enable Metrics/BlockLength

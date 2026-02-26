@@ -232,7 +232,10 @@ const instantiatePatterns = [
 let memRefInjected = false;
 for (const pattern of instantiatePatterns) {
 	if (pattern.test(content)) {
-		content = content.replace(pattern, "$1\n// Populate WASI memory reference for stubs that write output values\n__wasi_mem_ref.memory = wasm.memory || (typeof instance !== 'undefined' && instance.exports.memory);");
+		content = content.replace(
+			pattern,
+			"$1\n// Populate WASI memory reference for stubs that write output values\n__wasi_mem_ref.memory = wasm.memory || (typeof instance !== 'undefined' && instance.exports.memory);",
+		);
 		memRefInjected = true;
 		break;
 	}

@@ -119,12 +119,19 @@ tasks:
       - R CMD INSTALL --no-multiarch --with-keep.source .
 
   e2e:generate:
-    desc: Generate R E2E tests from fixtures
+    desc: Generate and format R E2E tests from fixtures
     cmds:
       - cmd: bash scripts/task/e2e-generate.sh r
         platforms: [linux, darwin]
       - cmd: echo "E2E generation not yet supported on Windows"
         platforms: [windows]
+      - task: e2e:format
+
+  e2e:format:
+    desc: Format R E2E code
+    dir: e2e/r
+    cmds:
+      - Rscript -e "styler::style_dir('tests')"
 
   e2e:test:
     desc: Run R E2E tests

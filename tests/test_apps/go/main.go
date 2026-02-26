@@ -118,9 +118,7 @@ func (tr *TestRunner) StartSection(name string) {
 func (tr *TestRunner) Test(description string, fn func() error) {
 	if err := fn(); err != nil {
 		fmt.Printf("  ✗ %s\n", description)
-		if err != nil {
-			fmt.Printf("    Error: %v\n", err)
-		}
+		fmt.Printf("    Error: %v\n", err)
 		tr.failed++
 	} else {
 		fmt.Printf("  ✓ %s\n", description)
@@ -165,12 +163,12 @@ func (tr *TestRunner) Summary() int {
 }
 
 // testConfigurationStructs tests all configuration struct initialization.
+//
+//nolint:gocyclo // test function with many validation branches
 func testConfigurationStructs(tr *TestRunner) {
 	tr.Test("ExtractionConfig default construction", func() error {
 		cfg := &kb.ExtractionConfig{}
-		if cfg == nil {
-			return errors.New("config is nil")
-		}
+		_ = cfg // verify construction compiles
 		return nil
 	})
 
@@ -196,7 +194,7 @@ func testConfigurationStructs(tr *TestRunner) {
 
 	tr.Test("OCRConfig with Language", func() error {
 		cfg := &kb.OCRConfig{
-			Backend:  "tesseract",
+			Backend:  "tesseract", //nolint:govet // testing struct field assignment
 			Language: kb.StringPtr("eng"),
 		}
 		if cfg.Language == nil || *cfg.Language != "eng" {
@@ -217,7 +215,7 @@ func testConfigurationStructs(tr *TestRunner) {
 
 	tr.Test("TesseractConfig with PSM", func() error {
 		cfg := &kb.TesseractConfig{
-			Language: "eng",
+			Language: "eng", //nolint:govet // testing struct field assignment
 			PSM:      kb.IntPtr(6),
 		}
 		if cfg.PSM == nil || *cfg.PSM != 6 {
@@ -281,7 +279,7 @@ func testConfigurationStructs(tr *TestRunner) {
 			Enabled: kb.BoolPtr(true),
 		}
 		if cfg.Enabled == nil || !*cfg.Enabled {
-			return errors.New("Enabled not set")
+			return errors.New("enabled not set")
 		}
 		return nil
 	})
@@ -321,7 +319,7 @@ func testConfigurationStructs(tr *TestRunner) {
 			Enabled: kb.BoolPtr(true),
 		}
 		if cfg.Enabled == nil || !*cfg.Enabled {
-			return errors.New("Enabled not set")
+			return errors.New("enabled not set")
 		}
 		return nil
 	})
@@ -351,7 +349,7 @@ func testConfigurationStructs(tr *TestRunner) {
 			Normalize: kb.BoolPtr(true),
 		}
 		if cfg.Normalize == nil || !*cfg.Normalize {
-			return errors.New("Normalize not set")
+			return errors.New("normalize not set")
 		}
 		return nil
 	})
@@ -361,7 +359,7 @@ func testConfigurationStructs(tr *TestRunner) {
 			Type: "sentence-transformers",
 		}
 		if cfg.Type != "sentence-transformers" {
-			return errors.New("Type not set")
+			return errors.New("type not set")
 		}
 		return nil
 	})
@@ -371,7 +369,7 @@ func testConfigurationStructs(tr *TestRunner) {
 func testPointerHelpers(tr *TestRunner) {
 	tr.Test("BoolPtr creates pointer to bool", func() error {
 		ptr := kb.BoolPtr(true)
-		if ptr == nil || *ptr != true {
+		if ptr == nil || !*ptr {
 			return errors.New("BoolPtr failed")
 		}
 		return nil
@@ -624,37 +622,44 @@ func testValidationFunctions(tr *TestRunner) {
 func testErrorTypes(tr *TestRunner) {
 	tr.TestBool("ValidationError is KreuzbergError", func() bool {
 		var err kb.KreuzbergError = &kb.ValidationError{}
-		return err != nil
+		_ = err // verify assignment compiles
+		return true
 	})
 
 	tr.TestBool("ParsingError is KreuzbergError", func() bool {
 		var err kb.KreuzbergError = &kb.ParsingError{}
-		return err != nil
+		_ = err // verify assignment compiles
+		return true
 	})
 
 	tr.TestBool("OCRError is KreuzbergError", func() bool {
 		var err kb.KreuzbergError = &kb.OCRError{}
-		return err != nil
+		_ = err // verify assignment compiles
+		return true
 	})
 
 	tr.TestBool("MissingDependencyError is KreuzbergError", func() bool {
 		var err kb.KreuzbergError = &kb.MissingDependencyError{}
-		return err != nil
+		_ = err // verify assignment compiles
+		return true
 	})
 
 	tr.TestBool("PluginError is KreuzbergError", func() bool {
 		var err kb.KreuzbergError = &kb.PluginError{}
-		return err != nil
+		_ = err // verify assignment compiles
+		return true
 	})
 
 	tr.TestBool("IOError is KreuzbergError", func() bool {
 		var err kb.KreuzbergError = &kb.IOError{}
-		return err != nil
+		_ = err // verify assignment compiles
+		return true
 	})
 
 	tr.TestBool("RuntimeError is KreuzbergError", func() bool {
 		var err kb.KreuzbergError = &kb.RuntimeError{}
-		return err != nil
+		_ = err // verify assignment compiles
+		return true
 	})
 
 	tr.Test("Error.Kind() returns ErrorKind", func() error {
@@ -717,7 +722,7 @@ func testExtractionSync(tr *TestRunner) {
 	pdfPath, err := getTestDocumentPathForMain("", "tiny.pdf")
 	if err != nil {
 		tr.Test("ExtractFileSync with valid PDF", func() error {
-			return fmt.Errorf("Could not find test document: %w", err)
+			return fmt.Errorf("could not find test document: %w", err)
 		})
 		return
 	}
@@ -903,7 +908,7 @@ func testResultTypes(tr *TestRunner) {
 			Content: "test",
 		}
 		if result.Content != "test" {
-			return errors.New("Content field not set")
+			return errors.New("content field not set")
 		}
 		return nil
 	})
@@ -943,17 +948,17 @@ func testResultTypes(tr *TestRunner) {
 	tr.Test("Table struct construction", func() error {
 		table := &kb.Table{
 			Cells:      [][]string{{"a", "b"}},
-			Markdown:   "| a | b |",
-			PageNumber: 1,
+			Markdown:   "| a | b |", //nolint:govet // testing struct field assignment
+			PageNumber: 1,           //nolint:govet // testing struct field assignment
 		}
 		if len(table.Cells) != 1 {
-			return errors.New("Cells not set")
+			return errors.New("cells not set")
 		}
 		return nil
 	})
 
 	tr.Test("Chunk struct construction", func() error {
-		chunk := &kb.Chunk{
+		chunk := &kb.Chunk{ //nolint:govet // testing struct field assignment
 			Content: "test chunk",
 			Metadata: kb.ChunkMetadata{
 				ByteStart: 0,
@@ -961,7 +966,7 @@ func testResultTypes(tr *TestRunner) {
 			},
 		}
 		if chunk.Content != "test chunk" {
-			return errors.New("Content not set")
+			return errors.New("content not set")
 		}
 		return nil
 	})
@@ -969,11 +974,11 @@ func testResultTypes(tr *TestRunner) {
 	tr.Test("ExtractedImage struct construction", func() error {
 		img := &kb.ExtractedImage{
 			Data:       []byte("fake image"),
-			Format:     "jpeg",
-			ImageIndex: 0,
+			Format:     "jpeg", //nolint:govet // testing struct field assignment
+			ImageIndex: 0,      //nolint:govet // testing struct field assignment
 		}
 		if len(img.Data) == 0 {
-			return errors.New("Data not set")
+			return errors.New("data not set")
 		}
 		return nil
 	})
@@ -1215,10 +1220,10 @@ func testBatchExtractionContext(tr *TestRunner) {
 	pdfPath, err := getTestDocumentPathForMain("", "tiny.pdf")
 	if err != nil {
 		tr.Test("BatchExtractFilesWithContext (unable to find test file)", func() error {
-			return fmt.Errorf("Could not find test document: %w", err)
+			return fmt.Errorf("could not find test document: %w", err)
 		})
 		tr.Test("BatchExtractBytesWithContext (unable to find test file)", func() error {
-			return fmt.Errorf("Could not find test document: %w", err)
+			return fmt.Errorf("could not find test document: %w", err)
 		})
 		return
 	}
@@ -1507,7 +1512,7 @@ func testResultAccessors(tr *TestRunner) {
 	tr.Test("ExtractionResult.GetPageCount returns count", func() error {
 		result := &kb.ExtractionResult{
 			Metadata: kb.Metadata{
-				PageStructure: &kb.PageStructure{
+				Pages: &kb.PageStructure{
 					TotalCount: 2,
 				},
 			},
@@ -1730,5 +1735,5 @@ func getTestPDFBytesForMain() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return os.ReadFile(pdfPath)
+	return os.ReadFile(pdfPath) //nolint:gosec // test file path is controlled
 }

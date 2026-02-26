@@ -95,44 +95,28 @@ tasks:
         platforms: [windows]
 
   lint:
-    desc: Lint Java code for code quality issues (checkstyle + PMD static analysis)
-    dir: packages/java
+    desc: Lint all Java code with auto-fix (spotless + checkstyle + PMD)
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.1-tem && sdk use maven 3.9.11; fi && mvn checkstyle:check && mvn pmd:check pmd:cpd-check'
+      - cmd: bash scripts/task/java-lint.sh fix
         platforms: [linux, darwin]
-      - cmd: |
-          mvn checkstyle:check
-          mvn pmd:check pmd:cpd-check
-        platforms: [windows]
 
   lint:check:
-    desc: Check Java code quality without modifications (checkstyle + PMD analysis)
-    dir: packages/java
+    desc: Check all Java code linting without modifications
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.1-tem && sdk use maven 3.9.11; fi && mvn checkstyle:check && mvn pmd:check pmd:cpd-check'
+      - cmd: bash scripts/task/java-lint.sh check
         platforms: [linux, darwin]
-      - cmd: |
-          mvn checkstyle:check
-          mvn pmd:check pmd:cpd-check
-        platforms: [windows]
 
   format:
-    desc: Format Java code with automatic style corrections (spotless)
-    dir: packages/java
+    desc: Format all Java code (spotless)
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.1-tem && sdk use maven 3.9.11; fi && mvn spotless:apply'
+      - cmd: bash scripts/task/java-lint.sh fix
         platforms: [linux, darwin]
-      - cmd: mvn spotless:apply
-        platforms: [windows]
 
   format:check:
-    desc: Check Java code formatting without modifications (spotless)
-    dir: packages/java
+    desc: Check all Java code formatting (spotless)
     cmds:
-      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.1-tem && sdk use maven 3.9.11; fi && mvn spotless:check'
+      - cmd: bash scripts/task/java-lint.sh check
         platforms: [linux, darwin]
-      - cmd: mvn spotless:check
-        platforms: [windows]
 
   clean:
     desc: Clean Java build artifacts
@@ -161,12 +145,20 @@ tasks:
         platforms: [windows]
 
   e2e:generate:
-    desc: Generate Java E2E tests from fixtures
+    desc: Generate and format Java E2E tests from fixtures
     cmds:
       - cmd: bash scripts/task/e2e-generate.sh java
         platforms: [linux, darwin]
       - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
         platforms: [windows]
+      - task: e2e:format
+
+  e2e:format:
+    desc: Format Java E2E code
+    dir: e2e/java
+    cmds:
+      - cmd: bash -c 'if [ -f ~/.sdkman/bin/sdkman-init.sh ]; then source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25.0.1-tem && sdk use maven 3.9.11; fi && if grep -q spotless-maven-plugin pom.xml; then mvn -q spotless:apply; fi'
+        platforms: [linux, darwin]
 
   e2e:lint:
     desc: Lint Java E2E code

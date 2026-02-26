@@ -27,8 +27,8 @@ use Kreuzberg\Config\EmbeddingConfig;
 use Kreuzberg\Config\ExtractionConfig;
 use Kreuzberg\Exceptions\KreuzbergException;
 use Kreuzberg\Kreuzberg;
-use function Kreuzberg\extract_file;
 
+use function Kreuzberg\extract_file;
 
 echo "=== Example 1: Basic Embedding Generation ===\n\n";
 

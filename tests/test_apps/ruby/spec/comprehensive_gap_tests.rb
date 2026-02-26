@@ -15,8 +15,8 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
         hash = config.to_h
 
         expect(hash).to be_a(Hash)
-        expect(hash[:force_ocr]).to eq(true)
-        expect(hash[:use_cache]).to eq(false)
+        expect(hash[:force_ocr]).to be(true)
+        expect(hash[:use_cache]).to be(false)
         expect(hash[:output_format]).to eq('markdown')
         expect(hash[:result_format]).to eq('unified')
       end
@@ -89,7 +89,7 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
       it 'to_h with PostProcessor config' do
         postproc = Kreuzberg::Config::PostProcessor.new(
           enabled: true,
-          enabled_processors: ['cleaner', 'formatter']
+          enabled_processors: %w[cleaner formatter]
         )
         config = Kreuzberg::Config::Extraction.new(postprocessor: postproc)
         hash = config.to_h
@@ -135,8 +135,8 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
 
         expect(hash).to be_a(Hash)
         expect(hash.keys).to include(:ocr, :chunking, :language_detection, :pdf_options,
-                                      :image_extraction, :image_preprocessing, :postprocessor,
-                                      :keywords, :pages)
+                                     :image_extraction, :image_preprocessing, :postprocessor,
+                                     :keywords, :pages)
       end
     end
 
@@ -211,14 +211,14 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
     describe 'Result nested types serialization' do
       it 'Result::Table#to_h' do
         table = Kreuzberg::Result::Table.new(
-          cells: [['a', 'b'], ['c', 'd']],
+          cells: [%w[a b], %w[c d]],
           markdown: '| a | b |\n| c | d |',
           page_number: 1
         )
         hash = table.to_h
 
         expect(hash).to be_a(Hash)
-        expect(hash[:cells]).to eq([['a', 'b'], ['c', 'd']])
+        expect(hash[:cells]).to eq([%w[a b], %w[c d]])
         expect(hash[:markdown]).to include('|')
         expect(hash[:page_number]).to eq(1)
       end
@@ -346,7 +346,7 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
         results = Kreuzberg.batch_extract_files_sync(paths: paths, config: config)
 
         expect(results.length).to eq(2)
-        expect(results.all? { |r| r.is_a?(Kreuzberg::Result) }).to be true
+        expect(results.all?(Kreuzberg::Result)).to be true
       end
     end
   end
@@ -354,14 +354,14 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
   describe 'Plugin System - Comprehensive Coverage' do
     describe 'Validator registration and lifecycle' do
       it 'register_validator returns true' do
-        validator = lambda { |result| result[:content].is_a?(String) }
+        validator = ->(result) { result[:content].is_a?(String) }
         result = Kreuzberg.register_validator('test_validator', validator)
         expect(result).to be true
         Kreuzberg.unregister_validator('test_validator')
       end
 
       it 'list_validators includes registered validator' do
-        validator = lambda { |result| true }
+        validator = ->(_result) { true }
         Kreuzberg.register_validator('lifecycle_test', validator)
         validators = Kreuzberg.list_validators
 
@@ -370,7 +370,7 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
       end
 
       it 'unregister_validator returns true' do
-        validator = lambda { |result| true }
+        validator = ->(_result) { true }
         Kreuzberg.register_validator('temp_validator', validator)
         result = Kreuzberg.unregister_validator('temp_validator')
 
@@ -378,15 +378,15 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
       end
 
       it 'clear_validators removes all validators' do
-        Kreuzberg.register_validator('v1', ->(r) { true })
-        Kreuzberg.register_validator('v2', ->(r) { true })
+        Kreuzberg.register_validator('v1', ->(_r) { true })
+        Kreuzberg.register_validator('v2', ->(_r) { true })
         result = Kreuzberg.clear_validators
 
         expect(result).to be true
       end
 
       it 'register_validator with priority parameter' do
-        validator = lambda { |result| result[:content]&.length&.positive? || false }
+        validator = ->(result) { result[:content]&.length&.positive? || false }
         # Priority parameter may or may not be supported
         begin
           result = Kreuzberg.register_validator('priority_test', validator, priority: 10)
@@ -401,14 +401,14 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
 
     describe 'Post-processor registration and lifecycle' do
       it 'register_post_processor returns true' do
-        processor = lambda { |result| result }
+        processor = ->(result) { result }
         result = Kreuzberg.register_post_processor('test_processor', processor)
         expect(result).to be true
         Kreuzberg.unregister_post_processor('test_processor')
       end
 
       it 'list_post_processors includes registered processor' do
-        processor = lambda { |result| result }
+        processor = ->(result) { result }
         Kreuzberg.register_post_processor('lifecycle_processor', processor)
         processors = Kreuzberg.list_post_processors
 
@@ -417,7 +417,7 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
       end
 
       it 'unregister_post_processor returns true' do
-        processor = lambda { |result| result }
+        processor = ->(result) { result }
         Kreuzberg.register_post_processor('temp_processor', processor)
         result = Kreuzberg.unregister_post_processor('temp_processor')
 
@@ -433,7 +433,7 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
       end
 
       it 'register_post_processor with stage parameter' do
-        processor = lambda { |result| result }
+        processor = ->(result) { result }
         begin
           result = Kreuzberg.register_post_processor('stage_processor', processor, stage: :post_extraction)
           expect(result).to be true
@@ -501,7 +501,7 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
           line: 123,
           function: 'parse_pdf',
           message: 'invalid PDF',
-          timestamp_secs: 1234567890
+          timestamp_secs: 1_234_567_890
         )
         error = Kreuzberg::Errors::Error.new('Panic error', panic_context: panic)
 
@@ -516,14 +516,14 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
           line: 456,
           function: 'extract',
           message: 'unexpected error',
-          timestamp_secs: 1609459200
+          timestamp_secs: 1_609_459_200
         )
 
         expect(panic.file).to eq('lib.rs')
         expect(panic.line).to eq(456)
         expect(panic.function).to eq('extract')
         expect(panic.message).to eq('unexpected error')
-        expect(panic.timestamp_secs).to eq(1609459200)
+        expect(panic.timestamp_secs).to eq(1_609_459_200)
       end
 
       it 'PanicContext#to_h' do
@@ -532,7 +532,7 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
           line: 789,
           function: 'handle_error',
           message: 'critical error',
-          timestamp_secs: 1609459201
+          timestamp_secs: 1_609_459_201
         )
         hash = panic.to_h
 
@@ -547,7 +547,7 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
           line: 100,
           function: 'test_func',
           message: 'test panic',
-          timestamp_secs: 1609459202
+          timestamp_secs: 1_609_459_202
         )
         string = panic.to_s
 
@@ -713,7 +713,8 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
       end
 
       it 'get_extensions_for_mime returns array for DOCX' do
-        extensions = Kreuzberg.get_extensions_for_mime('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        extensions = Kreuzberg.get_extensions_for_mime(mime)
         expect(extensions).to be_an(Array)
         expect(extensions).to include('docx')
       end
@@ -738,11 +739,9 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
     end
 
     it 'get_embedding_preset for common preset' do
-      ['bert', 'nomic', 'mxbai'].each do |preset_name|
+      %w[bert nomic mxbai].each do |preset_name|
         preset = Kreuzberg.get_embedding_preset(preset_name)
-        if preset
-          expect(preset.is_a?(Hash) || preset.respond_to?(:[]) || preset.is_a?(Object)).to be true
-        end
+        expect(preset.is_a?(Hash) || preset.respond_to?(:[]) || preset.is_a?(Object)).to be true if preset
       end
     end
 
@@ -758,25 +757,21 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
     end
 
     it 'cache_stats returns hash-like structure' do
-      begin
-        stats = Kreuzberg.cache_stats
-        expect(stats.is_a?(Hash) || stats.respond_to?(:[]) || stats.respond_to?(:keys)).to be true
-      rescue StandardError
-        skip 'cache_stats not fully implemented'
-      end
+      stats = Kreuzberg.cache_stats
+      expect(stats.is_a?(Hash) || stats.respond_to?(:[]) || stats.respond_to?(:keys)).to be true
+    rescue StandardError
+      skip 'cache_stats not fully implemented'
     end
 
     it 'cache_stats contains integer values' do
-      begin
-        stats = Kreuzberg.cache_stats
-        if stats.is_a?(Hash)
-          stats.each_value do |value|
-            expect(value.is_a?(Integer) || value.is_a?(String)).to be true
-          end
+      stats = Kreuzberg.cache_stats
+      if stats.is_a?(Hash)
+        stats.each_value do |value|
+          expect(value.is_a?(Integer) || value.is_a?(String)).to be true
         end
-      rescue StandardError
-        skip 'cache_stats not fully implemented'
       end
+    rescue StandardError
+      skip 'cache_stats not fully implemented'
     end
   end
 
@@ -818,7 +813,7 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
       end
 
       it 'PDF passwords as array' do
-        pdf = Kreuzberg::Config::PDF.new(passwords: ['pass1', 'pass2'])
+        pdf = Kreuzberg::Config::PDF.new(passwords: %w[pass1 pass2])
         expect(pdf.passwords).to be_an(Array)
       end
 
@@ -831,7 +826,7 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
     describe 'Config::FontConfig accessors' do
       it 'FontConfig enabled is settable' do
         font = Kreuzberg::Config::FontConfig.new(enabled: true)
-        expect(font.enabled).to eq(true)
+        expect(font.enabled).to be(true)
       end
 
       it 'FontConfig custom_font_dirs is settable' do
@@ -862,19 +857,19 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
 
       it 'TokenReduction preserves important words' do
         reduction = Kreuzberg::Config::TokenReduction.new(preserve_important_words: true)
-        expect(reduction.preserve_important_words).to eq(true)
+        expect(reduction.preserve_important_words).to be(true)
       end
     end
 
     describe 'Config::PageConfig options' do
       it 'PageConfig with page extraction' do
         pages = Kreuzberg::Config::PageConfig.new(extract_pages: true)
-        expect(pages.extract_pages).to eq(true)
+        expect(pages.extract_pages).to be(true)
       end
 
       it 'PageConfig with page markers' do
         pages = Kreuzberg::Config::PageConfig.new(insert_page_markers: true, marker_format: '---PAGE %d---')
-        expect(pages.insert_page_markers).to eq(true)
+        expect(pages.insert_page_markers).to be(true)
         expect(pages.marker_format).to eq('---PAGE %d---')
       end
     end
@@ -898,7 +893,7 @@ RSpec.describe 'Kreuzberg Comprehensive Gap Coverage Tests' do
             height: 100, colorspace: 'RGB', bits_per_component: 8, is_mask: false,
             description: 'test', ocr_result: nil }
         ],
-        detected_languages: ['en', 'fr'],
+        detected_languages: %w[en fr],
         elements: []
       )
 

@@ -189,12 +189,13 @@ tasks:
       - pnpm up --latest
 
   e2e:deno:generate:
-    desc: Generate Deno WASM E2E tests from fixtures
+    desc: Generate and format Deno WASM E2E tests from fixtures
     cmds:
       - cmd: bash scripts/task/e2e-generate.sh wasm-deno
         platforms: [linux, darwin]
       - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
         platforms: [windows]
+      - task: e2e:deno:lint
 
   e2e:deno:lint:
     desc: Lint Deno WASM E2E code
@@ -216,12 +217,13 @@ tasks:
       - task: e2e:deno:test
 
   e2e:workers:generate:
-    desc: Generate Cloudflare Workers WASM E2E tests from fixtures
+    desc: Generate and format Cloudflare Workers WASM E2E tests from fixtures
     cmds:
       - cmd: bash scripts/task/e2e-generate.sh wasm-workers
         platforms: [linux, darwin]
       - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
         platforms: [windows]
+      - task: e2e:workers:lint
 
   e2e:workers:lint:
     desc: Lint Cloudflare Workers WASM E2E code

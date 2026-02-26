@@ -606,8 +606,14 @@ async fn test_opml_extraction_statistics() {
     println!("║ Total files processed: {:44} ║", total_files);
     println!("║ Total content bytes:   {:44} ║", total_content_bytes);
     println!("║ Total metadata fields: {:44} ║", total_metadata_fields);
-    println!("║ Average content size:  {:44} ║", total_content_bytes.checked_div(total_files).unwrap_or(0));
-    println!("║ Average metadata/file: {:44} ║", total_metadata_fields.checked_div(total_files).unwrap_or(0));
+    println!(
+        "║ Average content size:  {:44} ║",
+        total_content_bytes.checked_div(total_files).unwrap_or(0)
+    );
+    println!(
+        "║ Average metadata/file: {:44} ║",
+        total_metadata_fields.checked_div(total_files).unwrap_or(0)
+    );
     println!("╚════════════════════════════════════════════════════════════╝\n");
 
     println!("✅ OPML extraction statistics generated successfully!");

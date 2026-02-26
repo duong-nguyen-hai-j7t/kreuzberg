@@ -32,8 +32,8 @@ use Kreuzberg\Config\OcrConfig;
 use Kreuzberg\Config\PageConfig;
 use Kreuzberg\Exceptions\KreuzbergException;
 use Kreuzberg\Kreuzberg;
-use function Kreuzberg\extract_file;
 
+use function Kreuzberg\extract_file;
 
 echo "=== Example 1: Basic Metadata Extraction ===\n\n";
 

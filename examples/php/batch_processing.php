@@ -24,9 +24,9 @@ require_once __DIR__ . '/../../packages/php/vendor/autoload.php';
 use Kreuzberg\Config\ExtractionConfig;
 use Kreuzberg\Exceptions\KreuzbergException;
 use Kreuzberg\Kreuzberg;
+
 use function Kreuzberg\batch_extract_bytes;
 use function Kreuzberg\batch_extract_files;
-
 
 echo "=== Example 1: Simple Batch File Processing (OOP API) ===\n\n";
 

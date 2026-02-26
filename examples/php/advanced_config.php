@@ -34,7 +34,6 @@ use Kreuzberg\Config\TesseractConfig;
 use Kreuzberg\Exceptions\KreuzbergException;
 use Kreuzberg\Kreuzberg;
 
-
 echo "=== Example 1: PDF-Specific Configuration ===\n\n";
 
 try {
@@ -235,51 +234,43 @@ try {
                 enableTableDetection: true,
             ),
         ),
-
         pdf: new PdfConfig(
             extractImages: true,
             extractMetadata: true,
             ocrFallback: true,
         ),
-
         chunking: new ChunkingConfig(
             maxChunkSize: 512,
             chunkOverlap: 50,
             respectSentences: true,
             respectParagraphs: true,
         ),
-
         embedding: new EmbeddingConfig(
             model: 'all-MiniLM-L6-v2',
             normalize: true,
             batchSize: 32,
         ),
-
         imageExtraction: new ImageExtractionConfig(
             extractImages: true,
             performOcr: true,
             minWidth: 100,
             minHeight: 100,
         ),
-
         page: new PageConfig(
             extractPages: true,
             insertPageMarkers: true,
             markerFormat: '=== Page {page_number} ===',
         ),
-
         languageDetection: new LanguageDetectionConfig(
             enabled: true,
             maxLanguages: 3,
             confidenceThreshold: 0.8,
         ),
-
         keyword: new KeywordConfig(
             maxKeywords: 10,
             minScore: 0.0,
             language: 'en',
         ),
-
         extractImages: true,
         extractTables: true,
         preserveFormatting: false,

@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-
 require 'kreuzberg'
 
 puts '=' * 80
@@ -24,23 +23,21 @@ class TestRunner
   end
 
   def test(description)
-    begin
-      result = yield
-      if result == false
-        puts "  ✗ #{description}"
-        @failed += 1
-        false
-      else
-        puts "  ✓ #{description}"
-        @passed += 1
-        true
-      end
-    rescue StandardError => e
+    result = yield
+    if result == false
       puts "  ✗ #{description}"
-      puts "    Error: #{e.class}: #{e.message}"
       @failed += 1
       false
+    else
+      puts "  ✓ #{description}"
+      @passed += 1
+      true
     end
+  rescue StandardError => e
+    puts "  ✗ #{description}"
+    puts "    Error: #{e.class}: #{e.message}"
+    @failed += 1
+    false
   end
 
   def skip(description, reason)
@@ -49,36 +46,34 @@ class TestRunner
   end
 
   def async_test(description)
-    begin
-      result = yield
-      if result == false
-        puts "  ✗ #{description}"
-        @failed += 1
-        false
-      else
-        puts "  ✓ #{description}"
-        @passed += 1
-        true
-      end
-    rescue StandardError => e
+    result = yield
+    if result == false
       puts "  ✗ #{description}"
-      puts "    Error: #{e.class}: #{e.message}"
       @failed += 1
       false
+    else
+      puts "  ✓ #{description}"
+      @passed += 1
+      true
     end
+  rescue StandardError => e
+    puts "  ✗ #{description}"
+    puts "    Error: #{e.class}: #{e.message}"
+    @failed += 1
+    false
   end
 
-  def summary
-    puts "\n" + '=' * 80
-    puts "SUMMARY"
-    puts "=" * 80
+  def summary?
+    puts "\n#{'=' * 80}"
+    puts 'SUMMARY'
+    puts '=' * 80
     total = @passed + @failed
     puts "Total: #{total} tests"
     puts "Passed: #{@passed}"
     puts "Failed: #{@failed}"
     puts "Skipped: #{@skipped}"
-    puts "=" * 80
-    @failed == 0
+    puts '=' * 80
+    @failed.zero?
   end
 end
 
@@ -320,7 +315,8 @@ runner.test('get_extensions_for_mime returns array') do
 end
 
 runner.test('get_extensions_for_mime for DOCX') do
-  extensions = Kreuzberg.get_extensions_for_mime('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+  mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  extensions = Kreuzberg.get_extensions_for_mime(mime)
   extensions.is_a?(Array) && extensions.include?('docx')
 end
 
@@ -350,7 +346,7 @@ runner.test('unregister_validator removes validator') do
 end
 
 runner.test('clear_validators clears all validators') do
-  Kreuzberg.register_validator('temp_validator_1', ->(r) { true })
+  Kreuzberg.register_validator('temp_validator_1', ->(_r) { true })
   result = Kreuzberg.clear_validators
   result == true
 end
@@ -406,7 +402,7 @@ runner.test('list_embedding_presets returns array') do
 end
 
 runner.test('get_embedding_preset on built-in preset') do
-  ['bert', 'nomic', 'mxbai'].each do |name|
+  %w[bert nomic mxbai].each do |name|
     preset = Kreuzberg.get_embedding_preset(name)
     if preset
       puts "    Found preset: #{name}"
@@ -423,24 +419,22 @@ runner.test('clear_cache method exists') do
 end
 
 runner.test('cache_stats returns hash-like object') do
-  begin
-    stats = Kreuzberg.cache_stats
-    stats.is_a?(Hash) || stats.respond_to?(:[])
-  rescue StandardError
-    skip('cache_stats not implemented', 'native extension limitation')
-  end
+  stats = Kreuzberg.cache_stats
+  stats.is_a?(Hash) || stats.respond_to?(:[])
+rescue StandardError
+  skip('cache_stats not implemented', 'native extension limitation')
 end
 
 runner.start_section('Result Object Structure')
 
 runner.test('Result class has expected attributes') do
-  attrs = [:content, :mime_type, :metadata, :tables, :chunks, :images, :pages]
+  attrs = %i[content mime_type metadata tables chunks images pages]
   attrs.all? { |attr| Kreuzberg::Result.new({}).respond_to?(attr) }
 end
 
 runner.test('Result.Table has expected fields') do
   table = Kreuzberg::Result::Table.new(
-    cells: [['a', 'b'], ['c', 'd']],
+    cells: [%w[a b], %w[c d]],
     markdown: '| a | b |\n| c | d |',
     page_number: 1
   )
@@ -459,7 +453,7 @@ runner.test('Result.Chunk has expected fields') do
     last_page: 1,
     embedding: nil
   )
-  chunk.content == 'test content' && chunk.byte_start == 0
+  chunk.content == 'test content' && chunk.byte_start.zero?
 end
 
 runner.test('Result.Image has expected fields') do
@@ -502,15 +496,13 @@ runner.test('extract_file_sync method is accessible') do
 end
 
 runner.test('extract_file_sync with non-existent file raises IOError') do
-  begin
-    Kreuzberg.extract_file_sync('/nonexistent/path/to/file.pdf')
-    false
-  rescue Kreuzberg::Errors::IOError
-    true
-  rescue StandardError => e
-    puts "    Got #{e.class} instead of IOError"
-    false
-  end
+  Kreuzberg.extract_file_sync('/nonexistent/path/to/file.pdf')
+  false
+rescue Kreuzberg::Errors::IOError
+  true
+rescue StandardError => e
+  puts "    Got #{e.class} instead of IOError"
+  false
 end
 
 runner.start_section('Extraction Functions - Bytes-based (Sync)')
@@ -520,15 +512,13 @@ runner.test('extract_bytes_sync method is accessible') do
 end
 
 runner.test('extract_bytes_sync with empty PDF raises ParsingError or IOError') do
-  begin
-    Kreuzberg.extract_bytes_sync('', 'application/pdf')
-    false
-  rescue Kreuzberg::Errors::ParsingError, Kreuzberg::Errors::IOError, Kreuzberg::Errors::UnsupportedFormatError
-    true
-  rescue StandardError => e
-    puts "    Got #{e.class}: #{e.message}"
-    false
-  end
+  Kreuzberg.extract_bytes_sync('', 'application/pdf')
+  false
+rescue Kreuzberg::Errors::ParsingError, Kreuzberg::Errors::IOError, Kreuzberg::Errors::UnsupportedFormatError
+  true
+rescue StandardError => e
+  puts "    Got #{e.class}: #{e.message}"
+  false
 end
 
 runner.start_section('Batch Extraction Functions (Sync)')
@@ -577,5 +567,5 @@ runner.test('PanicContext is defined in Errors') do
   defined?(Kreuzberg::Errors::PanicContext) == 'constant'
 end
 
-success = runner.summary
+success = runner.summary?
 exit(success ? 0 : 1)

@@ -26,8 +26,8 @@ use Kreuzberg\Config\ChunkingConfig;
 use Kreuzberg\Config\ExtractionConfig;
 use Kreuzberg\Exceptions\KreuzbergException;
 use Kreuzberg\Kreuzberg;
-use function Kreuzberg\extract_file;
 
+use function Kreuzberg\extract_file;
 
 echo "=== Example 1: Basic Text Chunking ===\n\n";
 

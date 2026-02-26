@@ -69,7 +69,7 @@ int main(void) {
 
     /* Test 5: clone_string with NULL (should return NULL) */
     {
-        char *cloned = kreuzberg_clone_string(NULL);
+        const char *cloned = kreuzberg_clone_string(NULL);
         assert(cloned == NULL);
     }
 
@@ -93,7 +93,7 @@ int main(void) {
     /* Test 8: Trigger an error, then get_error_details_ptr */
     {
         /* Extract a NULL file path to trigger an error */
-        struct CExtractionResult *result = kreuzberg_extract_file_sync(NULL);
+        const struct CExtractionResult *result = kreuzberg_extract_file_sync(NULL);
         assert(result == NULL);
 
         /* Now get error details */
@@ -120,7 +120,7 @@ int main(void) {
     /* Test 9: get_error_details (stack-allocated variant) after error */
     {
         /* Trigger another error */
-        struct CExtractionResult *result =
+        const struct CExtractionResult *result =
             kreuzberg_extract_file_sync("/nonexistent/error_test.pdf");
         assert(result == NULL);
 

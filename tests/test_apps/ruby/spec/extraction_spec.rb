@@ -69,7 +69,8 @@ RSpec.describe 'Kreuzberg Extraction' do
 
     it 'handles file with explicit MIME type' do
       path = test_document_path('documents/fake.docx')
-      result = Kreuzberg.extract_file_sync(path: path, mime_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+      mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      result = Kreuzberg.extract_file_sync(path: path, mime_type: mime)
 
       expect(result.content).not_to be_empty
     end
@@ -95,7 +96,7 @@ RSpec.describe 'Kreuzberg Extraction' do
 
   describe 'Synchronous byte extraction' do
     it 'extracts content from binary DOCX data' do
-      path = test_document_path('documents/fake.docx')
+      test_document_path('documents/fake.docx')
       data = read_test_document('documents/fake.docx')
       result = Kreuzberg.extract_bytes_sync(
         data: data,
@@ -115,7 +116,8 @@ RSpec.describe 'Kreuzberg Extraction' do
 
     it 'requires MIME type for byte extraction' do
       data = read_test_document('documents/fake.docx')
-      result = Kreuzberg.extract_bytes_sync(data: data, mime_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+      mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      result = Kreuzberg.extract_bytes_sync(data: data, mime_type: mime)
       expect(result).to be_a(Kreuzberg::Result)
     end
   end
@@ -150,7 +152,7 @@ RSpec.describe 'Kreuzberg Extraction' do
 
       expect(results).to be_an(Array)
       expect(results.length).to eq(2)
-      expect(results.all? { |r| r.is_a?(Kreuzberg::Result) }).to be true
+      expect(results.all?(Kreuzberg::Result)).to be true
     end
 
     it 'maintains result order for batch extraction' do
@@ -219,7 +221,7 @@ RSpec.describe 'Kreuzberg Extraction' do
 
       expect(results).to be_an(Array)
       expect(results.length).to eq(2)
-      expect(results.all? { |r| r.is_a?(Kreuzberg::Result) }).to be true
+      expect(results.all?(Kreuzberg::Result)).to be true
     end
 
     it 'batch extracts multiple binary documents asynchronously' do
@@ -504,7 +506,7 @@ RSpec.describe 'Kreuzberg Extraction' do
         results = Kreuzberg.batch_extract_files_sync(paths: paths, config: config)
 
         expect(results.length).to eq(2)
-        expect(results.all? { |r| r.is_a?(Kreuzberg::Result) }).to be true
+        expect(results.all?(Kreuzberg::Result)).to be true
       end
     end
 

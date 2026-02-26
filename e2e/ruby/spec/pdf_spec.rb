@@ -5,7 +5,6 @@
 #
 # Tests for pdf fixtures.
 
-# rubocop:disable Metrics/BlockLength
 require_relative 'spec_helper'
 
 RSpec.describe 'pdf fixtures' do
@@ -265,12 +264,13 @@ RSpec.describe 'pdf fixtures' do
   end
 
   it 'pdf_tables_small' do
+    E2ERuby.skip_if_feature_unavailable('ocr')
     E2ERuby.run_fixture(
       'pdf_tables_small',
       'pdf/tiny.pdf',
       nil,
-      requirements: [],
-      notes: nil,
+      requirements: %w[ocr],
+      notes: 'PDF table extraction requires OCR feature',
       skip_if_missing: true
     ) do |result|
       E2ERuby::Assertions.assert_expected_mime(
@@ -304,4 +304,3 @@ RSpec.describe 'pdf fixtures' do
     end
   end
 end
-# rubocop:enable Metrics/BlockLength

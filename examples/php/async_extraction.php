@@ -23,9 +23,9 @@ require_once __DIR__ . '/../../packages/php/vendor/autoload.php';
 
 use Kreuzberg\Exceptions\KreuzbergException;
 use Kreuzberg\Kreuzberg;
+
 use function Kreuzberg\extract_file_async;
 use function Kreuzberg\batch_extract_files_async;
-
 
 echo "=== Example 1: Basic Async Extraction (OOP API) ===\n\n";
 

@@ -86,18 +86,16 @@ tasks:
       - composer exec -- phpunit --coverage-html=coverage
 
   lint:
-    desc: Lint PHP code with auto-fix (php-cs-fixer + phpstan)
-    dir: packages/php
+    desc: Lint all PHP code with auto-fix (php-cs-fixer + phpstan)
     cmds:
-      - composer exec -- php-cs-fixer fix
-      - composer exec -- phpstan analyse --memory-limit=512M
+      - cmd: bash scripts/task/php-lint.sh fix
+        platforms: [linux, darwin]
 
   lint:check:
-    desc: Lint PHP code in check-only mode (php-cs-fixer + phpstan, no fixes)
-    dir: packages/php
+    desc: Lint all PHP code in check-only mode (php-cs-fixer + phpstan, no fixes)
     cmds:
-      - composer exec -- php-cs-fixer fix --dry-run --diff
-      - composer exec -- phpstan analyse --memory-limit=512M
+      - cmd: bash scripts/task/php-lint.sh check
+        platforms: [linux, darwin]
 
   lint:phpstan:
     desc: Run static analysis with PHPStan
@@ -148,13 +146,20 @@ tasks:
       - composer outdated
 
   e2e:generate:
-    desc: Generate PHP E2E tests from fixtures
-    dir: packages/php
+    desc: Generate and format PHP E2E tests from fixtures
     cmds:
       - cmd: bash scripts/task/e2e-generate.sh php
         platforms: [linux, darwin]
       - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
         platforms: [windows]
+      - task: e2e:format
+
+  e2e:format:
+    desc: Format PHP E2E code
+    dir: e2e/php
+    cmds:
+      - cmd: bash -c "../../packages/php/vendor/bin/php-cs-fixer fix --rules='@PSR12,@PHP82Migration' --path-mode=override ."
+        platforms: [linux, darwin]
 
   e2e:lint:
     desc: Lint PHP E2E code

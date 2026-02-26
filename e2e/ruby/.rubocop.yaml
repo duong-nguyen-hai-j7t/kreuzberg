@@ -1,6 +1,6 @@
 inherit_from: ../../packages/ruby/.rubocop.yaml
 
-require:
+plugins:
   - rubocop-rspec
 
 AllCops:

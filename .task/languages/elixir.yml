@@ -67,16 +67,16 @@ tasks:
       - mix test --warnings-as-errors --exclude ocr
 
   lint:
-    desc: Lint Elixir code with Credo
-    dir: packages/elixir
+    desc: Lint all Elixir code with auto-fix (format + credo)
     cmds:
-      - mix credo suggest --all --strict
+      - cmd: bash scripts/task/elixir-lint.sh fix
+        platforms: [linux, darwin]
 
   lint:check:
-    desc: Check Elixir code with Credo (no fixes)
-    dir: packages/elixir
+    desc: Check all Elixir code linting without modifications
     cmds:
-      - mix credo --strict
+      - cmd: bash scripts/task/elixir-lint.sh check
+        platforms: [linux, darwin]
 
   format:
     desc: Format Elixir code
@@ -121,12 +121,20 @@ tasks:
       - mix docs
 
   e2e:generate:
-    desc: Generate Elixir E2E tests from fixtures
+    desc: Generate and format Elixir E2E tests from fixtures
     cmds:
       - cmd: bash scripts/task/e2e-generate.sh elixir
         platforms: [linux, darwin]
       - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
         platforms: [windows]
+      - task: e2e:format
+
+  e2e:format:
+    desc: Format Elixir E2E code
+    dir: e2e/elixir
+    cmds:
+      - mix deps.get --quiet
+      - mix format
 
   e2e:test:
     desc: Run generated Elixir E2E tests

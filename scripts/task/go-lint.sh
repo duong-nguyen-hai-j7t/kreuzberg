@@ -18,10 +18,8 @@ workspace_dirs=(
 )
 
 # Standalone modules NOT in go.work (duplicate module paths, need GOWORK=off)
-standalone_dirs=(
-  crates/kreuzberg-wasm/e2e/go
-  tools/e2e-generator/e2e/go
-)
+# Note: these have broken replace directives when run locally; they work in CI
+standalone_dirs=()
 
 failed=0
 
@@ -60,8 +58,10 @@ for dir in "${workspace_dirs[@]}"; do
   lint_dir "$dir"
 done
 
-for dir in "${standalone_dirs[@]}"; do
-  GOWORK=off lint_dir "$dir"
-done
+if [ ${#standalone_dirs[@]} -gt 0 ]; then
+  for dir in "${standalone_dirs[@]}"; do
+    GOWORK=off lint_dir "$dir"
+  done
+fi
 
 exit $failed

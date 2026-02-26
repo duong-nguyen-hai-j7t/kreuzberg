@@ -149,7 +149,7 @@ tasks:
         platforms: [windows]
 
   e2e:generate:
-    desc: Generate Go E2E tests from fixtures
+    desc: Generate and format Go E2E tests from fixtures
     cmds:
       - cmd: bash scripts/task/e2e-generate.sh go
         platforms: [linux, darwin]
@@ -157,6 +157,7 @@ tasks:
         platforms: [windows]
       - cmd: bash scripts/e2e/go/format.sh
         platforms: [linux, darwin]
+      - task: e2e:lint
 
   e2e:lint:
     desc: Lint Go E2E code

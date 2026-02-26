@@ -87,30 +87,28 @@ tasks:
       - "{{.BUNDLE}} exec rspec --format documentation --color"
 
   lint:
-    desc: Auto-fix Ruby code linting (rubocop + steep)
-    dir: packages/ruby
+    desc: Lint all Ruby code with auto-fix (rubocop + steep across all directories)
     cmds:
-      - "{{.BUNDLE}} exec rubocop --config .rubocop.yml --autocorrect-all"
-      - "{{.BUNDLE}} exec steep check"
+      - cmd: bash scripts/task/ruby-lint.sh fix
+        platforms: [linux, darwin]
 
   lint:check:
-    desc: Check Ruby code linting without modifications (rubocop + steep, no fixes)
-    dir: packages/ruby
+    desc: Check all Ruby code linting without modifications (rubocop + steep)
     cmds:
-      - "{{.BUNDLE}} exec rubocop --config .rubocop.yml"
-      - "{{.BUNDLE}} exec steep check"
+      - cmd: bash scripts/task/ruby-lint.sh check
+        platforms: [linux, darwin]
 
   format:
-    desc: Format Ruby code with modifications (rubocop)
-    dir: packages/ruby
+    desc: Format all Ruby code with modifications (rubocop across all directories)
     cmds:
-      - "{{.BUNDLE}} exec rubocop --config .rubocop.yml --autocorrect-all"
+      - cmd: bash scripts/task/ruby-lint.sh fix
+        platforms: [linux, darwin]
 
   format:check:
-    desc: Check Ruby code formatting without modifications (rubocop)
-    dir: packages/ruby
+    desc: Check all Ruby code formatting without modifications (rubocop)
     cmds:
-      - "{{.BUNDLE}} exec rubocop --config .rubocop.yml"
+      - cmd: bash scripts/task/ruby-lint.sh check
+        platforms: [linux, darwin]
 
   typecheck:
     desc: Run steep type checking
@@ -141,12 +139,13 @@ tasks:
       - "{{.BUNDLE}} outdated || true"
 
   e2e:generate:
-    desc: Generate Ruby E2E tests from fixtures
+    desc: Generate and auto-fix Ruby E2E tests from fixtures
     cmds:
       - cmd: bash scripts/task/e2e-generate.sh ruby
         platforms: [linux, darwin]
       - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
         platforms: [windows]
+      - task: e2e:format
 
   e2e:test:
     desc: Run Ruby E2E tests
@@ -155,11 +154,16 @@ tasks:
       - BUNDLE_GEMFILE="../../packages/ruby/Gemfile" {{.BUNDLE}} exec rspec
 
   e2e:lint:
-    desc: Lint Ruby E2E code
+    desc: Lint Ruby E2E code (check only)
     dir: e2e/ruby
     cmds:
-      - BUNDLE_GEMFILE="../../packages/ruby/Gemfile" {{.BUNDLE}} exec rubocop --config .rubocop.yml
-      - BUNDLE_GEMFILE="../../packages/ruby/Gemfile" {{.BUNDLE}} exec steep check
+      - "{{.BUNDLE}} exec rubocop --config .rubocop.yaml"
+
+  e2e:format:
+    desc: Auto-fix Ruby E2E code formatting
+    dir: e2e/ruby
+    cmds:
+      - "{{.BUNDLE}} exec rubocop --config .rubocop.yaml --autocorrect-all"
 
   e2e:verify:
     desc: Regenerate and validate Ruby E2E suite (generate + lint + test)

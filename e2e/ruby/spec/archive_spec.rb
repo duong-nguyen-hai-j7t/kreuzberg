@@ -5,7 +5,6 @@
 #
 # Tests for archive fixtures.
 
-# rubocop:disable Metrics/BlockLength
 require_relative 'spec_helper'
 
 RSpec.describe 'archive fixtures' do
@@ -60,4 +59,3 @@ RSpec.describe 'archive fixtures' do
     end
   end
 end
-# rubocop:enable Metrics/BlockLength

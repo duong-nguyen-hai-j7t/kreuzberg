@@ -1,39 +1,43 @@
 [build-system]
-requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
+requires = [ "setuptools>=68", "wheel" ]
 
 [project]
 name = "kreuzberg-e2e-tests"
 version = "4.2.0"
 description = "End-to-end tests for Kreuzberg Python bindings config parity"
 requires-python = ">=3.10"
-dependencies = ["kreuzberg"]
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+]
+dependencies = [ "kreuzberg" ]
+optional-dependencies.dev = [ "pytest>=7.4", "pytest-asyncio>=0.23", "pytest-cov>=4.1", "pytest-timeout>=2.1" ]
 
-[tool.uv.sources]
-kreuzberg = { workspace = true }
+[tool.uv]
+sources.kreuzberg = { workspace = true }
 
-[project.optional-dependencies]
-dev = ["pytest>=7.4.0", "pytest-asyncio>=0.23.0", "pytest-cov>=4.1.0", "pytest-timeout>=2.1.0"]
+[tool.pytest]
+ini_options.asyncio_mode = "auto"
+ini_options.testpaths = [ "tests" ]
+ini_options.python_files = "test_*.py"
+ini_options.python_classes = "Test*"
+ini_options.python_functions = "test_*"
+ini_options.addopts = "-v --strict-markers --tb=short"
+ini_options.markers = [ "e2e: end-to-end tests", "slow: slow tests" ]
+ini_options.timeout = 300
 
-[tool.pytest.ini_options]
-asyncio_mode = "auto"
-testpaths = ["tests"]
-python_files = "test_*.py"
-python_classes = "Test*"
-python_functions = "test_*"
-addopts = "-v --strict-markers --tb=short"
-markers = ["e2e: end-to-end tests", "slow: slow tests"]
-timeout = 300
-
-[tool.coverage.run]
-source = ["tests"]
-omit = ["*/__pycache__/*"]
-
-[tool.coverage.report]
-exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "raise AssertionError",
-    "raise NotImplementedError",
-    "if __name__ == .__main__.:",
+[tool.coverage]
+run.omit = [ "*/__pycache__/*" ]
+run.source = [ "tests" ]
+report.exclude_lines = [
+  "def __repr__",
+  "if __name__ == .__main__.:",
+  "pragma: no cover",
+  "raise AssertionError",
+  "raise NotImplementedError",
 ]

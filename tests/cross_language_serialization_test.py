@@ -12,7 +12,7 @@ import re
 import subprocess
 import tempfile
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pytest
 
@@ -168,6 +168,8 @@ class TestFixture:
         self.name = name
         self.expected_fields = expected_fields
         self.config_dict = config_dict
+        self.rust_output: dict[str, Any] | None = None
+        self.python_output: dict[str, Any] | None = None
 
 
 # Test fixtures for ExtractionConfig serialization
@@ -372,7 +374,7 @@ def get_rust_serialization(config_dict: dict[str, Any]) -> dict[str, Any]:
     if result.returncode != 0:
         raise subprocess.CalledProcessError(result.returncode, str(rust_json_tool), stderr=result.stderr)
 
-    return json.loads(result.stdout)
+    return cast("dict[str, Any]", json.loads(result.stdout))
 
 
 def get_python_serialization(config_dict: dict[str, Any]) -> dict[str, Any]:
@@ -441,7 +443,7 @@ def get_typescript_serialization(config_dict: dict[str, Any]) -> dict[str, Any]:
         if result.returncode != 0:
             pytest.skip(f"TypeScript serialization not available: {result.stderr}")
 
-        return json.loads(result.stdout)
+        return cast("dict[str, Any]", json.loads(result.stdout))
     finally:
         Path(script_path).unlink(missing_ok=True)
 
@@ -489,7 +491,7 @@ def get_ruby_serialization(config_dict: dict[str, Any]) -> dict[str, Any]:
         if result.returncode != 0:
             pytest.skip(f"Ruby serialization not available: {result.stderr}")
 
-        return json.loads(result.stdout)
+        return cast("dict[str, Any]", json.loads(result.stdout))
     finally:
         Path(script_path).unlink(missing_ok=True)
 
@@ -545,7 +547,7 @@ def get_go_serialization(config_dict: dict[str, Any]) -> dict[str, Any]:
         if result.returncode != 0:
             pytest.skip(f"Go serialization not available: {result.stderr}")
 
-        return json.loads(result.stdout)
+        return cast("dict[str, Any]", json.loads(result.stdout))
     finally:
         Path(script_path).unlink(missing_ok=True)
 
@@ -854,7 +856,7 @@ def test_serialization_round_trip() -> None:
     except ImportError:
         pytest.skip("kreuzberg Python binding not installed")
 
-    test_configs = [
+    test_configs: list[dict[str, Any]] = [
         {},
         {"use_cache": True},
         {"use_cache": False, "enable_quality_processing": False},

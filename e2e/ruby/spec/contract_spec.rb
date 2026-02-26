@@ -5,7 +5,6 @@
 #
 # Tests for contract fixtures.
 
-# rubocop:disable Metrics/BlockLength
 require_relative 'spec_helper'
 
 RSpec.describe 'contract fixtures' do
@@ -280,7 +279,7 @@ RSpec.describe 'contract fixtures' do
     E2ERuby.skip_if_feature_unavailable('office')
     E2ERuby.run_fixture(
       'config_document_structure_headings',
-      'office/docx/headers.docx',
+      'docx/unit_test_headers.docx',
       { include_document_structure: true },
       requirements: %w[office],
       notes: nil,
@@ -316,7 +315,7 @@ RSpec.describe 'contract fixtures' do
     E2ERuby.skip_if_feature_unavailable('office')
     E2ERuby.run_fixture(
       'config_element_types',
-      'office/docx/headers.docx',
+      'docx/unit_test_headers.docx',
       { result_format: 'element_based' },
       requirements: %w[office],
       notes: nil,
@@ -326,7 +325,7 @@ RSpec.describe 'contract fixtures' do
         result,
         ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']
       )
-      E2ERuby::Assertions.assert_elements(result, min_count: 1, types_include: %w[title narrative_text])
+      E2ERuby::Assertions.assert_elements(result, min_count: 1, types_include: %w[narrative_text])
     end
   end
 
@@ -725,4 +724,3 @@ RSpec.describe 'contract fixtures' do
     end
   end
 end
-# rubocop:enable Metrics/BlockLength

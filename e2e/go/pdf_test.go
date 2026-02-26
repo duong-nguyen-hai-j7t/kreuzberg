@@ -108,6 +108,7 @@ func TestPdfPdfTablesMedium(t *testing.T) {
 }
 
 func TestPdfPdfTablesSmall(t *testing.T) {
+	skipIfFeatureUnavailable(t, "ocr")
 	result := runExtraction(t, "pdf/tiny.pdf", nil)
 	assertExpectedMime(t, result, []string{"application/pdf"})
 	assertMinContentLength(t, result, 50)

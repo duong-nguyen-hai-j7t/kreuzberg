@@ -27,9 +27,9 @@ use Kreuzberg\Config\ExtractionConfig;
 use Kreuzberg\Config\OcrConfig;
 use Kreuzberg\Exceptions\KreuzbergException;
 use Kreuzberg\Kreuzberg;
+
 use function Kreuzberg\extract_bytes;
 use function Kreuzberg\extract_file;
-
 
 echo "=== Example 1: Basic Error Handling ===\n\n";
 

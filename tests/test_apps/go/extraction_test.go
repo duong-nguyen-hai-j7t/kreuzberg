@@ -48,7 +48,6 @@ func TestTypeVerificationExtractionConfig(t *testing.T) {
 func TestTypeVerificationMetadata(t *testing.T) {
 	metadata := kreuzberg.Metadata{
 		Language: kreuzberg.StringPtr("en"),
-		Date:     kreuzberg.StringPtr("2025-12-19"),
 		Subject:  kreuzberg.StringPtr("Test Document"),
 	}
 	assert.NotNil(t, metadata)
@@ -535,7 +534,7 @@ func TestContextCancellation(t *testing.T) {
 
 	result, err := kreuzberg.ExtractFileSync(pdfPath, nil)
 	if err == nil {
-		assert.NotNil(t, result, "should still extract even with cancelled context for sync operations")
+		assert.NotNil(t, result, "should still extract even with canceled context for sync operations")
 	}
 	_ = ctx
 }
@@ -766,7 +765,7 @@ func TestChunkMetadataStructure(t *testing.T) {
 		ByteEnd:     100,
 		ChunkIndex:  0,
 		TotalChunks: 5,
-		TokenCount:  kreuzberg.IntPtr(50),
+		TokenCount:  kreuzberg.Uint64Ptr(50),
 	}
 
 	assert.Equal(t, uint64(0), chunkMeta.ByteStart)
@@ -1611,7 +1610,7 @@ func TestPointerHelpersReturnIndependentValues(t *testing.T) {
 func TestResultGetPageCount(t *testing.T) {
 	result := &kreuzberg.ExtractionResult{
 		Metadata: kreuzberg.Metadata{
-			PageStructure: &kreuzberg.PageStructure{
+			Pages: &kreuzberg.PageStructure{
 				TotalCount: 5,
 			},
 		},
@@ -1771,9 +1770,8 @@ func TestMetadataEmailMetadata(t *testing.T) {
 // TestMetadataPptxMetadata tests PptxMetadata accessor.
 func TestMetadataPptxMetadata(t *testing.T) {
 	pptxMeta := &kreuzberg.PptxMetadata{
-		Title:  kreuzberg.StringPtr("Presentation"),
-		Author: kreuzberg.StringPtr("John Doe"),
-		Fonts:  []string{"Arial", "Times New Roman"},
+		SlideCount: 3,
+		SlideNames: []string{"Slide 1", "Slide 2", "Slide 3"},
 	}
 	metadata := kreuzberg.Metadata{
 		Format: kreuzberg.FormatMetadata{
@@ -1785,9 +1783,8 @@ func TestMetadataPptxMetadata(t *testing.T) {
 	pptx, ok := metadata.PptxMetadata()
 	assert.True(t, ok)
 	assert.NotNil(t, pptx)
-	assert.NotNil(t, pptx.Title)
-	assert.Equal(t, "Presentation", *pptx.Title)
-	assert.Equal(t, 2, len(pptx.Fonts))
+	assert.Equal(t, uint64(3), pptx.SlideCount)
+	assert.Equal(t, 3, len(pptx.SlideNames))
 }
 
 // TestMetadataArchiveMetadata tests ArchiveMetadata accessor.

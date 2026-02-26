@@ -284,12 +284,14 @@ tasks:
       - cargo update --manifest-path tests/test_apps/rust/Cargo.toml
 
   e2e:generate:
-    desc: Generate Rust E2E tests from fixtures
+    desc: Generate and format Rust E2E tests from fixtures
     cmds:
       - cmd: bash scripts/task/e2e-generate.sh rust
         platforms: [linux, darwin]
       - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
         platforms: [windows]
+      - task: e2e:format
+      - task: e2e:lint
 
   e2e:format:
     desc: Format generated Rust E2E sources

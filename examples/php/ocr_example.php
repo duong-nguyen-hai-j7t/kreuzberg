@@ -29,8 +29,8 @@ use Kreuzberg\Config\PdfConfig;
 use Kreuzberg\Config\TesseractConfig;
 use Kreuzberg\Exceptions\KreuzbergException;
 use Kreuzberg\Kreuzberg;
-use function Kreuzberg\extract_file;
 
+use function Kreuzberg\extract_file;
 
 echo "=== Example 1: Basic OCR Extraction (OOP API) ===\n\n";
 

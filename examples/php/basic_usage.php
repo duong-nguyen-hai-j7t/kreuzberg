@@ -23,11 +23,11 @@ require_once __DIR__ . '/../../packages/php/vendor/autoload.php';
 use Kreuzberg\Config\ExtractionConfig;
 use Kreuzberg\Exceptions\KreuzbergException;
 use Kreuzberg\Kreuzberg;
+
 use function Kreuzberg\detect_mime_type;
 use function Kreuzberg\detect_mime_type_from_path;
 use function Kreuzberg\extract_bytes;
 use function Kreuzberg\extract_file;
-
 
 echo "=== Example 1: Simple File Extraction (OOP API) ===\n\n";
 

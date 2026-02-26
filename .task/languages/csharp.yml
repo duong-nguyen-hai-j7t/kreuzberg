@@ -81,17 +81,20 @@ tasks:
       - dotnet test Kreuzberg.Tests/Kreuzberg.Tests.csproj -c Release --verbosity detailed
 
   lint:
-    desc: Lint C# code for style violations with auto-fix (dotnet format)
-    dir: packages/csharp
+    desc: Lint all C# code for style violations with auto-fix (dotnet format)
     cmds:
-      - dotnet format Kreuzberg.slnx
+      - cmd: bash scripts/task/csharp-lint.sh fix
+        platforms: [linux, darwin]
+      - cmd: cd packages/csharp && dotnet format Kreuzberg.slnx
+        platforms: [windows]
 
   lint:check:
-    desc: Check C# code style violations without modifications (dotnet format verify)
-    dir: packages/csharp
+    desc: Check all C# code style violations without modifications (dotnet format verify)
     cmds:
-      - dotnet restore Kreuzberg.slnx
-      - dotnet format Kreuzberg.slnx --verify-no-changes
+      - cmd: bash scripts/task/csharp-lint.sh check
+        platforms: [linux, darwin]
+      - cmd: cd packages/csharp && dotnet restore Kreuzberg.slnx && dotnet format Kreuzberg.slnx --verify-no-changes
+        platforms: [windows]
 
   format:
     desc: Format C# code with automatic style corrections (dotnet format)
@@ -124,9 +127,18 @@ tasks:
       - dotnet list Kreuzberg.slnx package --outdated || true
 
   e2e:generate:
-    desc: Generate C# E2E tests from fixtures
+    desc: Generate and format C# E2E tests from fixtures
     cmds:
       - cargo run -p kreuzberg-e2e-generator -- generate --lang csharp --fixtures fixtures --output e2e
+      - task: e2e:format
+
+  e2e:format:
+    desc: Format C# E2E code
+    cmds:
+      - cmd: bash -c "cd e2e/csharp && dotnet format Kreuzberg.E2E.csproj"
+        platforms: [linux, darwin]
+      - cmd: cd e2e/csharp && dotnet format Kreuzberg.E2E.csproj
+        platforms: [windows]
 
   e2e:lint:
     desc: Lint C# E2E code

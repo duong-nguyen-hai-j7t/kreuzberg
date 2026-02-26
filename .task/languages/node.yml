@@ -112,12 +112,13 @@ tasks:
       - pnpm up --latest
 
   e2e:generate:
-    desc: Generate TypeScript E2E tests
+    desc: Generate and format TypeScript E2E tests
     cmds:
       - cmd: bash scripts/task/e2e-typescript-generate.sh
         platforms: [linux, darwin]
       - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
         platforms: [windows]
+      - task: e2e:lint
 
   e2e:lint:
     desc: Lint TypeScript E2E code
