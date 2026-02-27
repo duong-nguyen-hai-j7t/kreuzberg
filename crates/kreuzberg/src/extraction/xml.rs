@@ -193,6 +193,16 @@ fn parse_xml_inner(xml_bytes: &[u8], preserve_whitespace: bool, svg_mode: bool) 
                 }
             }
             Ok(Event::CData(e)) => {
+                // In SVG mode, only extract CData from SVG text-bearing elements
+                if svg_mode {
+                    let in_text_element = element_stack
+                        .iter()
+                        .any(|name| SVG_TEXT_ELEMENTS.contains(&name.as_str()));
+                    if !in_text_element {
+                        continue;
+                    }
+                }
+
                 let text_cow: Cow<str> = String::from_utf8_lossy(&e);
 
                 // Add element context if we just opened a new element
@@ -530,6 +540,84 @@ mod tests {
         xml.push(0x0A); // trailing odd byte
         let result = parse_xml(&xml, false).unwrap();
         assert!(result.content.contains("X"));
+    }
+
+    #[test]
+    fn test_svg_script_cdata_excluded() {
+        let svg = br#"<svg xmlns="http://www.w3.org/2000/svg">
+            <script><![CDATA[ var x = 1; alert("hello"); ]]></script>
+            <text>Hello</text>
+            <title>My Title</title>
+        </svg>"#;
+        let result = parse_xml_svg(svg, false).unwrap();
+        assert!(
+            !result.content.contains("var x"),
+            "script CDATA should not appear in SVG output"
+        );
+        assert!(
+            !result.content.contains("alert"),
+            "script CDATA should not appear in SVG output"
+        );
+        assert!(
+            result.content.contains("Hello"),
+            "text element content should be included"
+        );
+        assert!(
+            result.content.contains("My Title"),
+            "title element content should be included"
+        );
+    }
+
+    #[test]
+    fn test_svg_style_cdata_excluded() {
+        let svg = br#"<svg xmlns="http://www.w3.org/2000/svg">
+            <style type="text/css"><![CDATA[ .cls { fill: red; } ]]></style>
+            <text>Visible</text>
+        </svg>"#;
+        let result = parse_xml_svg(svg, false).unwrap();
+        assert!(
+            !result.content.contains("fill"),
+            "style CDATA should not appear in SVG output"
+        );
+        assert!(
+            !result.content.contains(".cls"),
+            "style CDATA should not appear in SVG output"
+        );
+        assert!(
+            result.content.contains("Visible"),
+            "text element content should be included"
+        );
+    }
+
+    #[test]
+    fn test_svg_text_elements_included() {
+        let svg = br#"<svg xmlns="http://www.w3.org/2000/svg">
+            <title>Chart Title</title>
+            <desc>A description</desc>
+            <text x="10" y="20">Label</text>
+            <text><tspan>Span text</tspan></text>
+            <rect width="100" height="50"/>
+        </svg>"#;
+        let result = parse_xml_svg(svg, false).unwrap();
+        assert!(result.content.contains("Chart Title"), "title text should be included");
+        assert!(result.content.contains("A description"), "desc text should be included");
+        assert!(
+            result.content.contains("Label"),
+            "text element content should be included"
+        );
+        assert!(result.content.contains("Span text"), "tspan content should be included");
+    }
+
+    #[test]
+    fn test_svg_cdata_in_text_element_included() {
+        let svg = br#"<svg xmlns="http://www.w3.org/2000/svg">
+            <text><![CDATA[CDATA in text]]></text>
+        </svg>"#;
+        let result = parse_xml_svg(svg, false).unwrap();
+        assert!(
+            result.content.contains("CDATA in text"),
+            "CDATA inside text element should be included"
+        );
     }
 
     #[test]
