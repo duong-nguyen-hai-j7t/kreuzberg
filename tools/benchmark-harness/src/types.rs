@@ -152,6 +152,16 @@ pub struct QualityMetrics {
 
     /// Overall text quality score (0.0-1.0)
     pub quality_score: f64,
+
+    /// Tokens in ground truth but missing/under-represented in extraction (recall misses).
+    /// Each entry is (token, deficit_count). Sorted by count descending.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub missing_tokens: Vec<(String, usize)>,
+
+    /// Tokens in extraction but not in ground truth or over-represented (precision misses).
+    /// Each entry is (token, surplus_count). Sorted by count descending.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub extra_tokens: Vec<(String, usize)>,
 }
 
 /// Framework capability metadata

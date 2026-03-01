@@ -748,6 +748,8 @@ fn aggregate_quality_metrics(results: &[&BenchmarkResult]) -> Option<QualityMetr
         f1_score_numeric: f1_numeric,
         f1_score_layout: f1_layout,
         quality_score,
+        missing_tokens: Vec::new(),
+        extra_tokens: Vec::new(),
     })
 }
 

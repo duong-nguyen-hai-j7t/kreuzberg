@@ -34,11 +34,15 @@ pub fn compute_quality(extracted: &str, ground_truth: &str) -> QualityMetrics {
 
     let quality_score = 0.7 * f1_score_text + 0.3 * f1_score_numeric;
 
+    let (missing_tokens, extra_tokens) = compute_token_diff(&extracted_tokens, &truth_tokens);
+
     QualityMetrics {
         f1_score_text,
         f1_score_numeric,
         f1_score_layout,
         quality_score,
+        missing_tokens,
+        extra_tokens,
     }
 }
 
@@ -103,6 +107,48 @@ fn build_counts(tokens: &[String]) -> HashMap<&str, usize> {
         *counts.entry(token.as_str()).or_insert(0) += 1;
     }
     counts
+}
+
+/// Compute token-level diff between extracted and ground truth token bags.
+///
+/// Returns (missing_tokens, extra_tokens) where:
+/// - missing_tokens: tokens in GT with higher count than in extraction (recall misses)
+/// - extra_tokens: tokens in extraction with higher count than in GT (precision misses)
+///
+/// Both are sorted by deficit/surplus count descending.
+fn compute_token_diff(extracted: &[String], truth: &[String]) -> (Vec<(String, usize)>, Vec<(String, usize)>) {
+    let extracted_counts = build_counts(extracted);
+    let truth_counts = build_counts(truth);
+
+    // Tokens in GT but missing/under-represented in extraction
+    let mut missing: Vec<(String, usize)> = truth_counts
+        .iter()
+        .filter_map(|(&token, &gt_count)| {
+            let ext_count = extracted_counts.get(token).copied().unwrap_or(0);
+            if gt_count > ext_count {
+                Some((token.to_string(), gt_count - ext_count))
+            } else {
+                None
+            }
+        })
+        .collect();
+    missing.sort_by(|a, b| b.1.cmp(&a.1));
+
+    // Tokens in extraction but not in GT or over-represented
+    let mut extra: Vec<(String, usize)> = extracted_counts
+        .iter()
+        .filter_map(|(&token, &ext_count)| {
+            let gt_count = truth_counts.get(token).copied().unwrap_or(0);
+            if ext_count > gt_count {
+                Some((token.to_string(), ext_count - gt_count))
+            } else {
+                None
+            }
+        })
+        .collect();
+    extra.sort_by(|a, b| b.1.cmp(&a.1));
+
+    (missing, extra)
 }
 
 #[cfg(test)]
