@@ -301,9 +301,18 @@ type DocxParseResult = (
 );
 
 /// Parse DOCX document content and extract text, tables, page boundaries, drawings, image relationships, and optional document structure.
-fn parse_docx_core(content: &[u8], include_doc_structure: bool) -> crate::error::Result<DocxParseResult> {
+fn parse_docx_core(
+    content: &[u8],
+    include_doc_structure: bool,
+    output_format: crate::core::config::OutputFormat,
+) -> crate::error::Result<DocxParseResult> {
     let doc = crate::extraction::docx::parser::parse_document(content)?;
-    let text = doc.to_markdown();
+    let text = match output_format {
+        crate::core::config::OutputFormat::Markdown
+        | crate::core::config::OutputFormat::Djot
+        | crate::core::config::OutputFormat::Html => doc.to_markdown(),
+        _ => doc.to_plain_text(),
+    };
     let tables: Vec<Table> = doc
         .tables
         .iter()
@@ -409,6 +418,7 @@ impl DocumentExtractor for DocxExtractor {
         config: &ExtractionConfig,
     ) -> Result<ExtractionResult> {
         let include_doc_structure = config.include_document_structure;
+        let output_format = config.output_format;
 
         let (text, tables, page_boundaries, drawings, image_rels, doc_structure) = {
             #[cfg(feature = "tokio-runtime")]
@@ -417,16 +427,16 @@ impl DocumentExtractor for DocxExtractor {
                 let span = tracing::Span::current();
                 tokio::task::spawn_blocking(move || {
                     let _guard = span.entered();
-                    parse_docx_core(&content_owned, include_doc_structure)
+                    parse_docx_core(&content_owned, include_doc_structure, output_format)
                 })
                 .await
                 .map_err(|e| crate::error::KreuzbergError::parsing(format!("DOCX extraction task failed: {}", e)))??
             } else {
-                parse_docx_core(content, include_doc_structure)?
+                parse_docx_core(content, include_doc_structure, output_format)?
             }
 
             #[cfg(not(feature = "tokio-runtime"))]
-            parse_docx_core(content, include_doc_structure)?
+            parse_docx_core(content, include_doc_structure, output_format)?
         };
 
         let mut archive = {
@@ -1001,7 +1011,10 @@ mod tests {
 
         let data = build_test_docx(document_xml);
         let extractor = DocxExtractor::new();
-        let config = ExtractionConfig::default();
+        let config = ExtractionConfig {
+            output_format: crate::core::config::OutputFormat::Markdown,
+            ..Default::default()
+        };
         let result = extractor
             .extract_bytes(
                 &data,
@@ -1048,7 +1061,10 @@ mod tests {
 
         let data = build_test_docx(document_xml);
         let extractor = DocxExtractor::new();
-        let config = ExtractionConfig::default();
+        let config = ExtractionConfig {
+            output_format: crate::core::config::OutputFormat::Markdown,
+            ..Default::default()
+        };
         let result = extractor
             .extract_bytes(
                 &data,
@@ -1088,7 +1104,10 @@ mod tests {
 
         let data = build_test_docx_with_parts(document_xml, None, None, None, Some(header_xml), Some(footer_xml));
         let extractor = DocxExtractor::new();
-        let config = ExtractionConfig::default();
+        let config = ExtractionConfig {
+            output_format: crate::core::config::OutputFormat::Markdown,
+            ..Default::default()
+        };
         let result = extractor
             .extract_bytes(
                 &data,
@@ -1136,7 +1155,10 @@ mod tests {
 
         let data = build_test_docx_with_parts(document_xml, None, Some(footnotes_xml), None, None, None);
         let extractor = DocxExtractor::new();
-        let config = ExtractionConfig::default();
+        let config = ExtractionConfig {
+            output_format: crate::core::config::OutputFormat::Markdown,
+            ..Default::default()
+        };
         let result = extractor
             .extract_bytes(
                 &data,
@@ -1186,7 +1208,10 @@ mod tests {
 
         let data = build_test_docx_with_parts(document_xml, Some(styles_xml), None, None, None, None);
         let extractor = DocxExtractor::new();
-        let config = ExtractionConfig::default();
+        let config = ExtractionConfig {
+            output_format: crate::core::config::OutputFormat::Markdown,
+            ..Default::default()
+        };
         let result = extractor
             .extract_bytes(
                 &data,
@@ -1293,7 +1318,10 @@ mod tests {
 
         let data = build_test_docx(document_xml);
         let extractor = DocxExtractor::new();
-        let config = ExtractionConfig::default();
+        let config = ExtractionConfig {
+            output_format: crate::core::config::OutputFormat::Markdown,
+            ..Default::default()
+        };
         let result = extractor
             .extract_bytes(
                 &data,
@@ -1416,7 +1444,10 @@ mod tests {
 
         let data = build_test_docx_with_parts(document_xml, None, None, Some(endnotes_xml), None, None);
         let extractor = DocxExtractor::new();
-        let config = ExtractionConfig::default();
+        let config = ExtractionConfig {
+            output_format: crate::core::config::OutputFormat::Markdown,
+            ..Default::default()
+        };
         let result = extractor
             .extract_bytes(
                 &data,
@@ -1490,7 +1521,10 @@ mod tests {
         let data = zip.finish().unwrap().into_inner();
 
         let extractor = DocxExtractor::new();
-        let config = ExtractionConfig::default();
+        let config = ExtractionConfig {
+            output_format: crate::core::config::OutputFormat::Markdown,
+            ..Default::default()
+        };
         let result = extractor
             .extract_bytes(
                 &data,
@@ -1651,7 +1685,7 @@ mod tests {
 
         let md = doc.to_markdown();
         assert!(
-            md.contains("![A test image](image_0)"),
+            md.contains("![A test image](image)"),
             "Should have image placeholder: {}",
             md
         );
@@ -1707,7 +1741,10 @@ mod tests {
         let data = zip.finish().unwrap().into_inner();
 
         let extractor = DocxExtractor::new();
-        let config = ExtractionConfig::default();
+        let config = ExtractionConfig {
+            output_format: crate::core::config::OutputFormat::Markdown,
+            ..Default::default()
+        };
         let result = extractor
             .extract_bytes(
                 &data,

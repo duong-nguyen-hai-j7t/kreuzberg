@@ -71,9 +71,10 @@ pub fn extract_pptx_from_path(
     path: &str,
     extract_images: bool,
     page_config: Option<&crate::core::config::PageConfig>,
+    plain: bool,
 ) -> Result<PptxExtractionResult> {
     let container = PptxContainer::open(path)?;
-    extract_pptx_from_container(container, extract_images, page_config)
+    extract_pptx_from_container(container, extract_images, page_config, plain)
 }
 
 /// Extract PPTX content from a byte buffer.
@@ -83,6 +84,7 @@ pub fn extract_pptx_from_path(
 /// * `data` - Raw PPTX file bytes
 /// * `extract_images` - Whether to extract embedded images
 /// * `page_config` - Optional page configuration for boundary tracking
+/// * `plain` - Whether to output plain text (no markdown)
 ///
 /// # Returns
 ///
@@ -91,18 +93,21 @@ pub fn extract_pptx_from_bytes(
     data: &[u8],
     extract_images: bool,
     page_config: Option<&crate::core::config::PageConfig>,
+    plain: bool,
 ) -> Result<PptxExtractionResult> {
     let container = PptxContainer::from_bytes(data)?;
-    extract_pptx_from_container(container, extract_images, page_config)
+    extract_pptx_from_container(container, extract_images, page_config, plain)
 }
 
 fn extract_pptx_from_container<R: std::io::Read + std::io::Seek>(
     mut container: PptxContainer<R>,
     extract_images: bool,
     page_config: Option<&crate::core::config::PageConfig>,
+    plain: bool,
 ) -> Result<PptxExtractionResult> {
     let config = ParserConfig {
         extract_images,
+        plain,
         ..Default::default()
     };
 
@@ -114,7 +119,7 @@ fn extract_pptx_from_container<R: std::io::Read + std::io::Seek>(
     let slide_count = iterator.slide_count();
 
     let estimated_capacity = slide_count.saturating_mul(1000).max(8192);
-    let mut content_builder = ContentBuilder::with_page_config(estimated_capacity, page_config.cloned());
+    let mut content_builder = ContentBuilder::with_page_config(estimated_capacity, page_config.cloned(), plain);
 
     let mut total_image_count = 0;
     let mut total_table_count = 0;
@@ -230,7 +235,7 @@ impl elements::Slide {
     }
 
     fn to_markdown(&self, config: &ParserConfig) -> String {
-        let mut builder = ContentBuilder::new();
+        let mut builder = ContentBuilder::new(config.plain);
 
         if config.include_slide_comment {
             builder.add_slide_header(self.slide_number);
@@ -245,7 +250,11 @@ impl elements::Slide {
         for &idx in &element_indices {
             match &self.elements[idx] {
                 SlideElement::Text(text, _) => {
-                    let text_content: String = text.runs.iter().map(|run| run.render_as_md()).collect();
+                    let text_content: String = if config.plain {
+                        text.runs.iter().map(|run| run.extract()).collect()
+                    } else {
+                        text.runs.iter().map(|run| run.render_as_md()).collect()
+                    };
 
                     let normalized = text_content.replace('\n', " ");
                     let is_title = normalized.len() < 100 && !normalized.trim().is_empty();
@@ -410,7 +419,7 @@ mod tests {
     #[test]
     fn test_extract_pptx_from_bytes_single_slide() {
         let pptx_bytes = create_test_pptx_bytes(vec!["Hello World"]);
-        let result = extract_pptx_from_bytes(&pptx_bytes, false, None).unwrap();
+        let result = extract_pptx_from_bytes(&pptx_bytes, false, None, false).unwrap();
 
         assert_eq!(result.slide_count, 1);
         assert!(
@@ -425,7 +434,7 @@ mod tests {
     #[test]
     fn test_extract_pptx_from_bytes_multiple_slides() {
         let pptx_bytes = create_test_pptx_bytes(vec!["Slide 1", "Slide 2", "Slide 3"]);
-        let result = extract_pptx_from_bytes(&pptx_bytes, false, None).unwrap();
+        let result = extract_pptx_from_bytes(&pptx_bytes, false, None, false).unwrap();
 
         assert_eq!(result.slide_count, 3);
         assert!(result.content.contains("Slide 1"));
@@ -436,7 +445,7 @@ mod tests {
     #[test]
     fn test_extract_pptx_metadata() {
         let pptx_bytes = create_test_pptx_bytes(vec!["Content"]);
-        let result = extract_pptx_from_bytes(&pptx_bytes, false, None).unwrap();
+        let result = extract_pptx_from_bytes(&pptx_bytes, false, None, false).unwrap();
 
         // Metadata should be populated (slide_count should be 1 for the test content)
         assert_eq!(result.metadata.slide_count, 1);
@@ -445,7 +454,7 @@ mod tests {
     #[test]
     fn test_extract_pptx_empty_slides() {
         let pptx_bytes = create_test_pptx_bytes(vec!["", "", ""]);
-        let result = extract_pptx_from_bytes(&pptx_bytes, false, None).unwrap();
+        let result = extract_pptx_from_bytes(&pptx_bytes, false, None, false).unwrap();
 
         assert_eq!(result.slide_count, 3);
     }
@@ -455,7 +464,7 @@ mod tests {
         use crate::error::KreuzbergError;
 
         let invalid_bytes = b"not a valid pptx file";
-        let result = extract_pptx_from_bytes(invalid_bytes, false, None);
+        let result = extract_pptx_from_bytes(invalid_bytes, false, None, false);
 
         assert!(result.is_err());
         if let Err(KreuzbergError::Parsing { message: msg, .. }) = result {
@@ -468,7 +477,7 @@ mod tests {
     #[test]
     fn test_extract_pptx_from_bytes_empty_data() {
         let empty_bytes: &[u8] = &[];
-        let result = extract_pptx_from_bytes(empty_bytes, false, None);
+        let result = extract_pptx_from_bytes(empty_bytes, false, None, false);
 
         assert!(result.is_err());
     }

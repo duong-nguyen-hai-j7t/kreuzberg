@@ -380,6 +380,122 @@ impl Document {
         output
     }
 
+    /// Render the document as plain text (no markdown formatting).
+    pub fn to_plain_text(&self) -> String {
+        let mut output = String::new();
+
+        // Prepend headers (if any non-empty)
+        for header in &self.headers {
+            let header_text: String = header
+                .paragraphs
+                .iter()
+                .map(|p| p.to_text())
+                .filter(|t| !t.is_empty())
+                .collect::<Vec<_>>()
+                .join("\n");
+            if !header_text.is_empty() {
+                output.push_str(&header_text);
+                output.push_str("\n\n");
+            }
+        }
+
+        // Use elements ordering if populated, otherwise fall back to paragraphs-only
+        if !self.elements.is_empty() {
+            for element in &self.elements {
+                match element {
+                    DocumentElement::Paragraph(idx) => {
+                        let Some(paragraph) = self.paragraphs.get(*idx) else {
+                            continue;
+                        };
+                        let text = paragraph.to_text();
+                        if !text.is_empty() {
+                            Self::ensure_blank_line(&mut output);
+                            output.push_str(&text);
+                        }
+                    }
+                    DocumentElement::Table(idx) => {
+                        let Some(table) = self.tables.get(*idx) else { continue };
+                        Self::ensure_blank_line(&mut output);
+                        output.push_str(&table.to_plain_text());
+                    }
+                    DocumentElement::Drawing(_) => {
+                        // Skip drawings/images in plain text output
+                    }
+                }
+            }
+        } else {
+            for paragraph in &self.paragraphs {
+                let text = paragraph.to_text();
+                if !text.is_empty() {
+                    Self::ensure_blank_line(&mut output);
+                    output.push_str(&text);
+                }
+            }
+        }
+
+        // Append footers (if any non-empty)
+        for footer in &self.footers {
+            let footer_text: String = footer
+                .paragraphs
+                .iter()
+                .map(|p| p.to_text())
+                .filter(|t| !t.is_empty())
+                .collect::<Vec<_>>()
+                .join("\n");
+            if !footer_text.is_empty() {
+                Self::ensure_blank_line(&mut output);
+                output.push_str(&footer_text);
+            }
+        }
+
+        // Footnotes
+        if !self.footnotes.is_empty() {
+            output.push_str("\n\n");
+            for note in &self.footnotes {
+                let note_text: String = note
+                    .paragraphs
+                    .iter()
+                    .map(|p| p.to_text())
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                if !note_text.is_empty() {
+                    output.push_str(&note.id);
+                    output.push_str(": ");
+                    output.push_str(&note_text);
+                    output.push('\n');
+                }
+            }
+        }
+
+        // Endnotes
+        if !self.endnotes.is_empty() {
+            output.push_str("\n\n");
+            for note in &self.endnotes {
+                let note_text: String = note
+                    .paragraphs
+                    .iter()
+                    .map(|p| p.to_text())
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                if !note_text.is_empty() {
+                    output.push_str(&note.id);
+                    output.push_str(": ");
+                    output.push_str(&note_text);
+                    output.push('\n');
+                }
+            }
+        }
+
+        // Trim output in-place
+        let trimmed_end = output.trim_end().len();
+        output.truncate(trimmed_end);
+        let trimmed_start = output.len() - output.trim_start().len();
+        if trimmed_start > 0 {
+            output.drain(..trimmed_start);
+        }
+        output
+    }
+
     /// Helper: append a paragraph's markdown to output, managing list transitions.
     fn append_paragraph_markdown(
         &self,
@@ -667,6 +783,45 @@ impl Table {
         }
 
         md.trim_end().to_string()
+    }
+
+    /// Render this table as plain text with tab-separated cells.
+    pub fn to_plain_text(&self) -> String {
+        if self.rows.is_empty() {
+            return String::new();
+        }
+
+        let mut cells: Vec<Vec<String>> = Vec::new();
+        for row in &self.rows {
+            let mut row_cells = Vec::new();
+            for cell in &row.cells {
+                let is_vmerge_continue = cell
+                    .properties
+                    .as_ref()
+                    .is_some_and(|p| matches!(p.v_merge, Some(super::table::VerticalMerge::Continue)));
+
+                let cell_text = if is_vmerge_continue {
+                    String::new()
+                } else {
+                    cell.paragraphs
+                        .iter()
+                        .map(|para| para.to_text())
+                        .collect::<Vec<_>>()
+                        .join(" ")
+                        .trim()
+                        .to_string()
+                };
+                row_cells.push(cell_text);
+
+                let span = cell.properties.as_ref().and_then(|p| p.grid_span).unwrap_or(1);
+                for _ in 1..span {
+                    row_cells.push(String::new());
+                }
+            }
+            cells.push(row_cells);
+        }
+
+        crate::extraction::cells_to_text(&cells)
     }
 }
 

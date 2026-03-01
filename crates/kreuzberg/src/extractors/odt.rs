@@ -152,7 +152,7 @@ fn extract_embedded_formulas(archive: &mut zip::ZipArchive<Cursor<Vec<u8>>>) -> 
 ///
 /// # Returns
 /// * `String` - Extracted text content
-fn extract_content_text(archive: &mut zip::ZipArchive<Cursor<Vec<u8>>>) -> crate::error::Result<String> {
+fn extract_content_text(archive: &mut zip::ZipArchive<Cursor<Vec<u8>>>, plain: bool) -> crate::error::Result<String> {
     let mut xml_content = String::new();
 
     match archive.by_name("content.xml") {
@@ -177,7 +177,7 @@ fn extract_content_text(archive: &mut zip::ZipArchive<Cursor<Vec<u8>>>) -> crate
         if body_child.tag_name().name() == "body" {
             for text_elem in body_child.children() {
                 if text_elem.tag_name().name() == "text" {
-                    process_document_elements(text_elem, &mut text_parts);
+                    process_document_elements(text_elem, &mut text_parts, plain);
                 }
             }
         }
@@ -188,14 +188,18 @@ fn extract_content_text(archive: &mut zip::ZipArchive<Cursor<Vec<u8>>>) -> crate
 
 /// Helper function to process document elements (paragraphs, headings, tables, lists)
 /// Only processes direct children, avoiding nested content like table cells
-fn process_document_elements(parent: roxmltree::Node, text_parts: &mut Vec<String>) {
+fn process_document_elements(parent: roxmltree::Node, text_parts: &mut Vec<String>, plain: bool) {
     for node in parent.children() {
         match node.tag_name().name() {
             "h" => {
                 if let Some(text) = extract_node_text(node)
                     && !text.trim().is_empty()
                 {
-                    text_parts.push(format!("# {}", text.trim()));
+                    if plain {
+                        text_parts.push(text.trim().to_string());
+                    } else {
+                        text_parts.push(format!("# {}", text.trim()));
+                    }
                     text_parts.push(String::new());
                 }
             }
@@ -208,17 +212,17 @@ fn process_document_elements(parent: roxmltree::Node, text_parts: &mut Vec<Strin
                 }
             }
             "table" => {
-                if let Some(table_text) = extract_table_text(node) {
+                if let Some(table_text) = extract_table_text(node, plain) {
                     text_parts.push(table_text);
                     text_parts.push(String::new());
                 }
             }
             "list" => {
-                process_list_elements(node, text_parts, 0);
+                process_list_elements(node, text_parts, 0, plain);
                 text_parts.push(String::new());
             }
             "section" => {
-                process_document_elements(node, text_parts);
+                process_document_elements(node, text_parts, plain);
             }
             _ => {}
         }
@@ -226,7 +230,7 @@ fn process_document_elements(parent: roxmltree::Node, text_parts: &mut Vec<Strin
 }
 
 /// Process list elements recursively, handling nested lists with indentation
-fn process_list_elements(list_node: roxmltree::Node, text_parts: &mut Vec<String>, depth: usize) {
+fn process_list_elements(list_node: roxmltree::Node, text_parts: &mut Vec<String>, depth: usize, plain: bool) {
     let indent = "  ".repeat(depth);
     for item in list_node.children() {
         if item.tag_name().name() == "list-item" {
@@ -236,18 +240,26 @@ fn process_list_elements(list_node: roxmltree::Node, text_parts: &mut Vec<String
                         if let Some(text) = extract_node_text(child)
                             && !text.trim().is_empty()
                         {
-                            text_parts.push(format!("{indent}- {}", text.trim()));
+                            if plain {
+                                text_parts.push(text.trim().to_string());
+                            } else {
+                                text_parts.push(format!("{indent}- {}", text.trim()));
+                            }
                         }
                     }
                     "h" => {
                         if let Some(text) = extract_node_text(child)
                             && !text.trim().is_empty()
                         {
-                            text_parts.push(format!("{indent}- # {}", text.trim()));
+                            if plain {
+                                text_parts.push(text.trim().to_string());
+                            } else {
+                                text_parts.push(format!("{indent}- # {}", text.trim()));
+                            }
                         }
                     }
                     "list" => {
-                        process_list_elements(child, text_parts, depth + 1);
+                        process_list_elements(child, text_parts, depth + 1, plain);
                     }
                     _ => {}
                 }
@@ -301,7 +313,7 @@ fn extract_node_text(node: roxmltree::Node) -> Option<String> {
 ///
 /// # Returns
 /// * `Option<String>` - Markdown formatted table
-fn extract_table_text(table_node: roxmltree::Node) -> Option<String> {
+fn extract_table_text(table_node: roxmltree::Node, plain: bool) -> Option<String> {
     let mut rows = Vec::new();
     let mut max_cols = 0;
 
@@ -333,35 +345,39 @@ fn extract_table_text(table_node: roxmltree::Node) -> Option<String> {
         }
     }
 
-    let mut markdown = String::new();
+    if plain {
+        Some(crate::extraction::cells_to_text(&rows))
+    } else {
+        let mut markdown = String::new();
 
-    if !rows.is_empty() {
-        markdown.push('|');
-        for cell in &rows[0] {
-            markdown.push(' ');
-            markdown.push_str(cell);
-            markdown.push_str(" |");
-        }
-        markdown.push('\n');
-
-        markdown.push('|');
-        for _ in 0..rows[0].len() {
-            markdown.push_str(" --- |");
-        }
-        markdown.push('\n');
-
-        for row in rows.iter().skip(1) {
+        if !rows.is_empty() {
             markdown.push('|');
-            for cell in row {
+            for cell in &rows[0] {
                 markdown.push(' ');
                 markdown.push_str(cell);
                 markdown.push_str(" |");
             }
             markdown.push('\n');
-        }
-    }
 
-    Some(markdown)
+            markdown.push('|');
+            for _ in 0..rows[0].len() {
+                markdown.push_str(" --- |");
+            }
+            markdown.push('\n');
+
+            for row in rows.iter().skip(1) {
+                markdown.push('|');
+                for cell in row {
+                    markdown.push(' ');
+                    markdown.push_str(cell);
+                    markdown.push_str(" |");
+                }
+                markdown.push('\n');
+            }
+        }
+
+        Some(markdown)
+    }
 }
 
 /// Extract tables from ODT content.xml
@@ -466,6 +482,10 @@ impl DocumentExtractor for OdtExtractor {
         _config: &ExtractionConfig,
     ) -> Result<ExtractionResult> {
         let content_owned = content.to_vec();
+        let plain = matches!(
+            _config.output_format,
+            crate::core::config::OutputFormat::Plain | crate::core::config::OutputFormat::Structured
+        );
 
         let (text, tables) = {
             #[cfg(feature = "tokio-runtime")]
@@ -480,7 +500,7 @@ impl DocumentExtractor for OdtExtractor {
                         crate::error::KreuzbergError::parsing(format!("Failed to open ZIP archive: {}", e))
                     })?;
 
-                    let text = extract_content_text(&mut archive)?;
+                    let text = extract_content_text(&mut archive, plain)?;
                     let tables = extract_tables(&mut archive)?;
                     let embedded_formulas = extract_embedded_formulas(&mut archive)?;
 
@@ -503,7 +523,7 @@ impl DocumentExtractor for OdtExtractor {
                 let mut archive = zip::ZipArchive::new(cursor)
                     .map_err(|e| crate::error::KreuzbergError::parsing(format!("Failed to open ZIP archive: {}", e)))?;
 
-                let text = extract_content_text(&mut archive)?;
+                let text = extract_content_text(&mut archive, plain)?;
                 let tables = extract_tables(&mut archive)?;
                 let embedded_formulas = extract_embedded_formulas(&mut archive)?;
 
@@ -526,7 +546,7 @@ impl DocumentExtractor for OdtExtractor {
                 let mut archive = zip::ZipArchive::new(cursor)
                     .map_err(|e| crate::error::KreuzbergError::parsing(format!("Failed to open ZIP archive: {}", e)))?;
 
-                let text = extract_content_text(&mut archive)?;
+                let text = extract_content_text(&mut archive, plain)?;
                 let tables = extract_tables(&mut archive)?;
                 let embedded_formulas = extract_embedded_formulas(&mut archive)?;
 

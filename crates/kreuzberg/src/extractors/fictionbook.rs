@@ -34,9 +34,9 @@ impl FictionBookExtractor {
         Self
     }
 
-    /// Extract paragraph content with markdown formatting preservation.
-    /// Handles inline formatting tags like emphasis (*), strong (**), strikethrough (~~), etc.
-    fn extract_paragraph_content(reader: &mut Reader<&[u8]>) -> Result<String> {
+    /// Extract paragraph content with optional markdown formatting preservation.
+    /// When `plain` is true, skips all inline formatting markers.
+    fn extract_paragraph_content(reader: &mut Reader<&[u8]>, plain: bool) -> Result<String> {
         let mut text = String::new();
         let mut para_depth = 0;
 
@@ -44,27 +44,28 @@ impl FictionBookExtractor {
             match reader.read_event() {
                 Ok(Event::Start(e)) => {
                     let tag = String::from_utf8_lossy(e.name().as_ref()).to_string();
-                    match tag.as_str() {
-                        "emphasis" => {
-                            text.push('*');
+                    if !plain {
+                        match tag.as_str() {
+                            "emphasis" => {
+                                text.push('*');
+                            }
+                            "strong" => {
+                                text.push_str("**");
+                            }
+                            "strikethrough" => {
+                                text.push_str("~~");
+                            }
+                            "code" => {
+                                text.push('`');
+                            }
+                            "sub" => {
+                                text.push('~');
+                            }
+                            "sup" => {
+                                text.push('^');
+                            }
+                            _ => {}
                         }
-                        "strong" => {
-                            text.push_str("**");
-                        }
-                        "strikethrough" => {
-                            text.push_str("~~");
-                        }
-                        "code" => {
-                            text.push('`');
-                        }
-                        "sub" => {
-                            text.push('~');
-                        }
-                        "sup" => {
-                            text.push('^');
-                        }
-                        "a" | "empty-line" => {}
-                        _ => {}
                     }
                     para_depth += 1;
                 }
@@ -74,25 +75,31 @@ impl FictionBookExtractor {
                         "p" if para_depth == 1 => {
                             break;
                         }
-                        "emphasis" => {
-                            text.push('*');
+                        _ => {
+                            if !plain {
+                                match tag.as_str() {
+                                    "emphasis" => {
+                                        text.push('*');
+                                    }
+                                    "strong" => {
+                                        text.push_str("**");
+                                    }
+                                    "strikethrough" => {
+                                        text.push_str("~~");
+                                    }
+                                    "code" => {
+                                        text.push('`');
+                                    }
+                                    "sub" => {
+                                        text.push('~');
+                                    }
+                                    "sup" => {
+                                        text.push('^');
+                                    }
+                                    _ => {}
+                                }
+                            }
                         }
-                        "strong" => {
-                            text.push_str("**");
-                        }
-                        "strikethrough" => {
-                            text.push_str("~~");
-                        }
-                        "code" => {
-                            text.push('`');
-                        }
-                        "sub" => {
-                            text.push('~');
-                        }
-                        "sup" => {
-                            text.push('^');
-                        }
-                        _ => {}
                     }
                     if para_depth > 0 {
                         para_depth -= 1;
@@ -262,7 +269,7 @@ impl FictionBookExtractor {
     }
 
     /// Extract content from FictionBook document body sections.
-    fn extract_body_content(data: &[u8]) -> Result<String> {
+    fn extract_body_content(data: &[u8], plain: bool) -> Result<String> {
         let mut reader = Reader::from_reader(data);
         let mut content = String::new();
         let mut in_body = false;
@@ -289,7 +296,7 @@ impl FictionBookExtractor {
                             in_body = true;
                         }
                     } else if tag == "section" && in_body {
-                        match Self::extract_section_content(&mut reader) {
+                        match Self::extract_section_content(&mut reader, plain) {
                             Ok(section_content) if !section_content.is_empty() => {
                                 content.push_str(&section_content);
                                 content.push('\n');
@@ -297,7 +304,7 @@ impl FictionBookExtractor {
                             _ => {}
                         }
                     } else if tag == "p" && in_body && !skip_notes_body {
-                        match Self::extract_paragraph_content(&mut reader) {
+                        match Self::extract_paragraph_content(&mut reader, plain) {
                             Ok(para) if !para.is_empty() => {
                                 content.push_str(&para);
                                 content.push('\n');
@@ -307,7 +314,11 @@ impl FictionBookExtractor {
                     } else if tag == "title" && in_body {
                         match Self::extract_text_content(&mut reader) {
                             Ok(title_content) if !title_content.is_empty() => {
-                                content.push_str(&format!("# {}\n", title_content));
+                                if plain {
+                                    content.push_str(&format!("{}\n", title_content));
+                                } else {
+                                    content.push_str(&format!("# {}\n", title_content));
+                                }
                             }
                             _ => {}
                         }
@@ -333,7 +344,7 @@ impl FictionBookExtractor {
     }
 
     /// Extract content from a section with proper hierarchy.
-    fn extract_section_content(reader: &mut Reader<&[u8]>) -> Result<String> {
+    fn extract_section_content(reader: &mut Reader<&[u8]>, plain: bool) -> Result<String> {
         let mut content = String::new();
         let mut section_depth = 1;
 
@@ -348,13 +359,17 @@ impl FictionBookExtractor {
                         }
                         "title" => match Self::extract_text_content(reader) {
                             Ok(title_text) if !title_text.is_empty() => {
-                                let heading_level = std::cmp::min(section_depth + 1, 6);
-                                let heading = "#".repeat(heading_level);
-                                content.push_str(&format!("{} {}\n", heading, title_text));
+                                if plain {
+                                    content.push_str(&format!("{}\n", title_text));
+                                } else {
+                                    let heading_level = std::cmp::min(section_depth + 1, 6);
+                                    let heading = "#".repeat(heading_level);
+                                    content.push_str(&format!("{} {}\n", heading, title_text));
+                                }
                             }
                             _ => {}
                         },
-                        "p" => match Self::extract_paragraph_content(reader) {
+                        "p" => match Self::extract_paragraph_content(reader, plain) {
                             Ok(para) if !para.is_empty() => {
                                 content.push_str(&para);
                                 content.push('\n');
@@ -363,7 +378,9 @@ impl FictionBookExtractor {
                         },
                         "cite" => match Self::extract_text_content(reader) {
                             Ok(cite_content) if !cite_content.is_empty() => {
-                                content.push_str("> ");
+                                if !plain {
+                                    content.push_str("> ");
+                                }
                                 content.push_str(&cite_content);
                                 content.push('\n');
                             }
@@ -430,8 +447,12 @@ impl DocumentExtractor for FictionBookExtractor {
         _config: &ExtractionConfig,
     ) -> Result<ExtractionResult> {
         let metadata = Self::extract_metadata(content)?;
+        let plain = matches!(
+            _config.output_format,
+            crate::core::config::OutputFormat::Plain | crate::core::config::OutputFormat::Structured
+        );
 
-        let extracted_content = Self::extract_body_content(content)?;
+        let extracted_content = Self::extract_body_content(content, plain)?;
 
         Ok(ExtractionResult {
             content: extracted_content,

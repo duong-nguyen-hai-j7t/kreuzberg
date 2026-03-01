@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- **Plain text output paths for all extractors**: When `OutputFormat::Plain` or `OutputFormat::Structured` is requested, DOCX, PPTX, ODT, FB2, DocBook, RTF, and Jupyter extractors now produce clean plain text without markdown syntax (`#`, `**`, `|`, `![](image)`, `- `, etc.). Previously these extractors always emitted markdown regardless of the requested output format.
+  - **DOCX**: `Document::to_plain_text()` skips heading prefixes, inline formatting markers, image placeholders, and renders footnotes/endnotes as `id: text` instead of `[^id]: text`.
+  - **PPTX**: `ContentBuilder` respects `plain` mode — skips `# ` title prefix, image markers, list markers, and uses `Notes:` instead of `### Notes:`.
+  - **ODT**: Heading prefixes (`# `), list markers (`- `), and pipe-delimited tables conditionally omitted for plain text.
+  - **FB2/FictionBook**: Inline markers (`*`, `**`, `` ` ``, `~~`), heading prefixes, and cite prefixes skipped for plain text.
+  - **DocBook**: Section title prefixes, code fences, list markers, blockquote prefixes, bold figure captions, and pipe tables all conditionally omitted.
+  - **RTF**: Table output in result string uses tab separation instead of pipe-delimited markdown. Image `![image](...)` markers omitted for plain text.
+  - **Jupyter**: Skips `text/markdown` and `text/html` output types in plain mode, preferring `text/plain`.
+
+- **`cells_to_text()` shared utility**: Tab-separated plain text table formatter alongside existing `cells_to_markdown()`. Used by DOCX, PPTX, ODT, RTF, and DocBook extractors for plain text table rendering.
+
+---
+
 ## [4.4.1]
 
 ### Added
