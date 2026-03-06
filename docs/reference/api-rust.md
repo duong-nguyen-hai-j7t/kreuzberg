@@ -380,28 +380,24 @@ Main configuration struct for extraction operations.
 ```rust title="Rust"
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ExtractionConfig {
-    pub use_cache: bool,
-    pub enable_quality_processing: bool,
-    pub ocr: Option<OcrConfig>,
-    pub force_ocr: bool,
     pub chunking: Option<ChunkingConfig>,
-    pub images: Option<ImageExtractionConfig>,
-    #[cfg(feature = "pdf")]
-    pub pdf_options: Option<PdfConfig>,
-    pub token_reduction: Option<TokenReductionConfig>,
-    pub language_detection: Option<LanguageDetectionConfig>,
-    pub pages: Option<PageConfig>,
-    #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-    pub keywords: Option<KeywordConfig>,
-    pub postprocessor: Option<PostProcessorConfig>,
-    #[cfg(feature = "html")]
+    pub enable_quality_processing: bool,
+    pub force_ocr: bool,
     pub html_options: Option<html_to_markdown_rs::ConversionOptions>,
-    pub max_concurrent_extractions: Option<usize>,
-    pub result_format: crate::types::OutputFormat,  // Unified | ElementBased
-    #[cfg(feature = "archives")]
-    pub security_limits: Option<SecurityLimits>,
-    pub output_format: OutputFormat,                 // Plain | Markdown | Djot | Html | Structured
+    pub images: Option<ImageExtractionConfig>,
     pub include_document_structure: bool,
+    pub keywords: Option<KeywordConfig>,
+    pub language_detection: Option<LanguageDetectionConfig>,
+    pub max_concurrent_extractions: Option<usize>,
+    pub ocr: Option<OcrConfig>,
+    pub output_format: OutputFormat,
+    pub pages: Option<PageConfig>,
+    pub pdf_options: Option<PdfConfig>,
+    pub postprocessor: Option<PostProcessorConfig>,
+    pub result_format: crate::types::OutputFormat,
+    pub security_limits: Option<SecurityLimits>,
+    pub token_reduction: Option<TokenReductionConfig>,
+    pub use_cache: bool,
 }
 ```
 
@@ -409,24 +405,24 @@ pub struct ExtractionConfig {
 
 **Fields:**
 
-- `use_cache` (bool): Enable caching of extraction results. Default: true
-- `enable_quality_processing` (bool): Enable quality post-processing. Default: true
-- `ocr` (Option<OcrConfig>): OCR configuration. Default: None (no OCR)
-- `force_ocr` (bool): Force OCR even for text-based PDFs. Default: false
 - `chunking` (Option<ChunkingConfig>): Text chunking configuration. Default: None
-- `images` (Option<ImageExtractionConfig>): Image extraction from documents. Default: None
-- `pdf_options` (Option<PdfConfig>): PDF-specific configuration (requires `pdf` feature). Default: None
-- `token_reduction` (Option<TokenReductionConfig>): Token reduction configuration. Default: None
-- `language_detection` (Option<LanguageDetectionConfig>): Language detection configuration. Default: None
-- `pages` (Option<PageConfig>): Page extraction and tracking. Default: None
-- `keywords` (Option<KeywordConfig>): Keyword extraction (requires `keywords-yake` or `keywords-rake`). Default: None
-- `postprocessor` (Option<PostProcessorConfig>): Post-processing configuration. Default: None
+- `enable_quality_processing` (bool): Enable quality post-processing. Default: true
+- `force_ocr` (bool): Force OCR even for text-based PDFs. Default: false
 - `html_options` (Option<[ConversionOptions](https://docs.html-to-markdown.kreuzberg.dev/reference/configuration/)>): HTML conversion options from [html-to-markdown](https://docs.html-to-markdown.kreuzberg.dev) (when feature `html`). Default: None
-- `max_concurrent_extractions` (Option<usize>): Max concurrent extractions in batch; None = (num_cpus × 1.5).ceil(). Default: None
-- `result_format` (types::OutputFormat): Result structure: Unified or ElementBased. Default: Unified
-- `output_format` (OutputFormat): Content format: Plain, Markdown, Djot, Html, or Structured. Default: Plain
+- `images` (Option<ImageExtractionConfig>): Image extraction from documents. Default: None
 - `include_document_structure` (bool): Populate `document` field with hierarchical DocumentStructure. Default: false
+- `keywords` (Option<KeywordConfig>): Keyword extraction (requires `keywords-yake` or `keywords-rake`). Default: None
+- `language_detection` (Option<LanguageDetectionConfig>): Language detection configuration. Default: None
+- `max_concurrent_extractions` (Option<usize>): Max concurrent extractions in batch; None = (num_cpus × 1.5).ceil(). Default: None
+- `ocr` (Option<OcrConfig>): OCR configuration. Default: None (no OCR)
+- `output_format` (OutputFormat): Content format: Plain, Markdown, Djot, Html, or Structured. Default: Plain
+- `pages` (Option<PageConfig>): Page extraction and tracking. Default: None
+- `pdf_options` (Option<PdfConfig>): PDF-specific configuration (requires `pdf` feature). Default: None
+- `postprocessor` (Option<PostProcessorConfig>): Post-processing configuration. Default: None
+- `result_format` (types::OutputFormat): Result structure: Unified or ElementBased. Default: Unified
 - `security_limits` (Option<SecurityLimits>): Archive extraction limits (when feature `archives`). See [SecurityLimits](#securitylimits). Default: None
+- `token_reduction` (Option<TokenReductionConfig>): Token reduction configuration. Default: None
+- `use_cache` (bool): Enable caching of extraction results. Default: true
 
 **Methods:**
 
@@ -887,44 +883,43 @@ Result struct returned by all extraction functions.
 ```rust title="Rust"
 #[derive(Debug, Clone)]
 pub struct ExtractionResult {
-    pub content: String,
-    pub mime_type: Cow<'static, str>,   // serializes as String
-    pub metadata: Metadata,
-    pub tables: Vec<Table>,
-    pub detected_languages: Option<Vec<String>>,
-    pub chunks: Option<Vec<Chunk>>,
-    pub images: Option<Vec<ExtractedImage>>,
-    pub pages: Option<Vec<PageContent>>,
-    pub elements: Option<Vec<Element>>,
-    pub djot_content: Option<DjotContent>,
-    pub ocr_elements: Option<Vec<OcrElement>>,
-    pub document: Option<DocumentStructure>,
-    #[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]
-    pub extracted_keywords: Option<Vec<kreuzberg::keywords::Keyword>>,
-    pub quality_score: Option<f64>,
-    pub processing_warnings: Vec<ProcessingWarning>,
     pub annotations: Option<Vec<PdfAnnotation>>,
+    pub chunks: Option<Vec<Chunk>>,
+    pub content: String,
+    pub detected_languages: Option<Vec<String>>,
+    pub djot_content: Option<DjotContent>,
+    pub document: Option<DocumentStructure>,
+    pub elements: Option<Vec<Element>>,
+    pub extracted_keywords: Option<Vec<ExtractedKeyword>>,
+    pub images: Option<Vec<ExtractedImage>>,
+    pub metadata: Metadata,
+    pub mime_type: Cow<'static, str>,
+    pub ocr_elements: Option<Vec<OcrElement>>,
+    pub pages: Option<Vec<PageContent>>,
+    pub processing_warnings: Vec<ProcessingWarning>,
+    pub quality_score: Option<f64>,
+    pub tables: Vec<Table>,
 }
 ```
 
 **Fields:**
 
-- `content` (String): Extracted text content
-- `mime_type` (Cow<'static, str>): MIME type of the processed document (serializes as string)
-- `metadata` (Metadata): Document metadata (format-specific fields)
-- `tables` (Vec<Table>): Vector of extracted tables
-- `detected_languages` (Option<Vec<String>>): Detected language codes when language detection is enabled (e.g. from the `language-detection` feature) using ISO 639-1
+- `annotations` (Option<Vec<PdfAnnotation>>): Extracted PDF annotations and highlights
 - `chunks` (Option<Vec<Chunk>>): Text chunks when chunking is configured
-- `images` (Option<Vec<ExtractedImage>>): Extracted images when image extraction is configured
-- `pages` (Option<Vec<PageContent>>): Per-page content when `ExtractionConfig.pages` has `extract_pages = true`
-- `elements` (Option<Vec<Element>>): Semantic elements when `result_format` is ElementBased
+- `content` (String): Extracted text content
+- `detected_languages` (Option<Vec<String>>): Detected language codes (ISO 639-1)
 - `djot_content` (Option<DjotContent>): Rich Djot structure when extracting Djot documents
-- `ocr_elements` (Option<Vec<OcrElement>>): OCR elements with bounding geometry and confidence (when element extraction enabled)
 - `document` (Option<DocumentStructure>): Hierarchical document tree when `include_document_structure` is true
-- `extracted_keywords` (Option<Vec<kreuzberg::keywords::Keyword>>): Extracted keywords (requires `keywords-yake` or `keywords-rake` feature)
-- `quality_score` (Option<f64>): Document quality score (0.0 to 1.0) indicating text quality
-- `processing_warnings` (Vec<ProcessingWarning>): Non-fatal pipeline warnings
-- `annotations` (Option<Vec<PdfAnnotation>>): PDF annotations (highlights, stamps, text notes)
+- `elements` (Option<Vec<Element>>): Semantic elements (headings, paragraphs, etc.)
+- `extracted_keywords` (Option<Vec<ExtractedKeyword>>): Extracted keywords (RAKE/YAKE)
+- `images` (Option<Vec<ExtractedImage>>): Extracted images when image extraction is configured
+- `metadata` (Metadata): Document metadata (format-specific fields)
+- `mime_type` (Cow<'static, str>): MIME type of the processed document
+- `ocr_elements` (Option<Vec<OcrElement>>): Granular OCR text blocks with bounding boxes
+- `pages` (Option<Vec<PageContent>>): Per-page content when page extraction is enabled
+- `processing_warnings` (Vec<ProcessingWarning>): Non-fatal warnings encountered during extraction
+- `quality_score` (Option<f64>): Document quality estimation score
+- `tables` (Vec<Table>): Vector of extracted tables
 
 **Example:**
 
@@ -992,7 +987,6 @@ pub struct ExtractedImage {
     pub is_mask: bool,
     pub description: Option<String>,
     pub ocr_result: Option<Box<ExtractionResult>>,
-    pub bounding_box: Option<BoundingBox>,
 }
 ```
 
@@ -1008,7 +1002,6 @@ pub struct ExtractedImage {
 - `is_mask` (bool): Whether this image is a mask. Default: false
 - `description` (Option<String>): Optional description
 - `ocr_result` (Option<Box<ExtractionResult>>): Nested OCR result if image was OCRed
-- `bounding_box` (Option<BoundingBox>): Bounding box of the image on the page (from PDF coordinates)
 
 #### pages
 
@@ -1108,31 +1101,31 @@ Document metadata with format-specific fields.
 ```rust title="Rust"
 #[derive(Debug, Clone, Default)]
 pub struct Metadata {
-    // Common fields
-    pub title: Option<String>,
-    pub subject: Option<String>,
-    pub authors: Option<Vec<String>>,
-    pub keywords: Option<Vec<String>>,
-    pub language: Option<String>,
-    pub created_at: Option<String>,
-    pub modified_at: Option<String>,
-    pub created_by: Option<String>,
-    pub modified_by: Option<String>,
-    pub pages: Option<PageStructure>,
-    pub format: Option<FormatMetadata>,
-    pub image_preprocessing: Option<ImagePreprocessingMetadata>,
-    pub json_schema: Option<serde_json::Value>,
-    pub error: Option<ErrorMetadata>,
-    pub extraction_duration_ms: Option<u64>,
-    pub category: Option<String>,
-    pub tags: Option<Vec<String>>,
-    pub document_version: Option<String>,
     pub abstract_text: Option<String>,
-    pub output_format: Option<String>,
 
     /// Deprecated: Prefer using typed fields instead of dynamic access.
     /// This index signature may be removed in a future version.
     pub additional: HashMap<String, serde_json::Value>,
+
+    pub authors: Option<Vec<String>>,
+    pub category: Option<String>,
+    pub created_at: Option<String>,
+    pub created_by: Option<String>,
+    pub document_version: Option<String>,
+    pub error: Option<ErrorMetadata>,
+    pub extraction_duration_ms: Option<u64>,
+    pub format: Option<FormatMetadata>,
+    pub image_preprocessing: Option<ImagePreprocessingMetadata>,
+    pub json_schema: Option<serde_json::Value>,
+    pub keywords: Option<Vec<String>>,
+    pub language: Option<String>,
+    pub modified_at: Option<String>,
+    pub modified_by: Option<String>,
+    pub output_format: Option<String>,
+    pub pages: Option<PageStructure>,
+    pub subject: Option<String>,
+    pub tags: Vec<String>,
+    pub title: Option<String>,
 }
 ```
 
@@ -1161,11 +1154,6 @@ if let Some(title) = &metadata.title {
 - `modified_at`: Document modification date
 - `created_by`: Document creator
 - `modified_by`: Document modifier
-- `category`: Document category (from frontmatter or classification)
-- `tags`: Document tags (from frontmatter)
-- `document_version`: Document version string (from frontmatter)
-- `abstract_text`: Abstract or summary text (from frontmatter)
-- `output_format`: Output format identifier (e.g., "markdown", "html", "text")
 
 See the Types Reference for complete metadata field documentation.
 
