@@ -962,26 +962,31 @@ jobs:
       - name: Free up disk space
         run: scripts/publish/ubuntu/free-disk-space.sh
 
-      - name: Build static CLI binary via Docker
+      - name: Build CLI binary via Docker
         run: |
           docker build -f docker/Dockerfile.musl-build \
             --output type=local,dest=./dist .
 
-      - name: Verify static binary
+      - name: Verify CLI binary
         run: |
           file dist/kreuzberg
-          if readelf -d dist/kreuzberg 2>/dev/null | grep NEEDED; then
-            echo "ERROR: Binary has dynamic dependencies"
-            exit 1
-          fi
-          echo "Binary is fully statically linked"
+          echo "=== Dynamic dependencies ==="
+          readelf -d dist/kreuzberg 2>/dev/null | grep -E "NEEDED|RPATH|RUNPATH" || echo "No dependencies"
+          echo "=== Bundled libraries ==="
+          ls -la dist/lib/ 2>/dev/null || echo "No bundled libraries"
+          # Binary is dynamically linked against musl libc for dlopen support
+          # (required by PDFium bundled strategy). RPATH is set to $ORIGIN/lib
+          # so runtime libraries are found relative to the binary.
+          echo "Binary built successfully"
 
       - name: Package CLI artifact
         run: |
           TARGET="${{ matrix.target }}"
           STAGE="kreuzberg-cli-${TARGET}"
-          mkdir -p "$STAGE"
+          mkdir -p "$STAGE/lib"
           cp dist/kreuzberg "$STAGE/"
+          cp dist/kreuzberg.bin "$STAGE/" 2>/dev/null || true
+          cp dist/lib/* "$STAGE/lib/" 2>/dev/null || true
           cp LICENSE "$STAGE/"
           cp README.md "$STAGE/"
           tar -czf "kreuzberg-cli-${TARGET}.tar.gz" "$STAGE"
