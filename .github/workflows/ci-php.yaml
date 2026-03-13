@@ -74,7 +74,8 @@ jobs:
       fail-fast: true
       matrix:
         # TODO: Re-enable ubuntu-24.04-arm once cargo fingerprint issues on ARM64 are resolved
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        # Windows excluded: ext-php-rs requires nightly Rust for abi_vectorcall feature
+        os: [ubuntu-latest, macos-latest]
         php-version: ["8.4", "8.5"]
     runs-on: ${{ matrix.os }}
     steps:

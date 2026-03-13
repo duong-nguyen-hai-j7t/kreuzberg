@@ -169,6 +169,10 @@ fn convert_blocks(blocks: &[ExtractedBlock], _body_font_size: f32, paragraphs: &
         let font_size = block.font_size.unwrap_or(12.0);
         let word_count = full_text.split_whitespace().count();
 
+        // Extract semantic flags from the structure tree role.
+        let is_code_block = matches!(&block.role, ContentRole::Code);
+        let is_formula = matches!(&block.role, ContentRole::Other(s) if s == "Formula");
+
         // Trust structure tree heading tags — they are author-intent metadata.
         // Only guard against degenerate cases (body text tagged as heading).
         let heading_level = match &block.role {
@@ -182,20 +186,48 @@ fn convert_blocks(blocks: &[ExtractedBlock], _body_font_size: f32, paragraphs: &
             _ => None,
         };
 
-        // Create segments from the block text (one per whitespace-delimited word)
-        let segments: Vec<SegmentData> = full_text
-            .split_whitespace()
-            .map(|w| SegmentData {
-                text: w.to_string(),
-                x: 0.0,
-                y: 0.0,
-                width: 0.0,
-                height: 0.0,
-                font_size,
-                is_bold: block.is_bold,
-                is_italic: block.is_italic,
-                is_monospace: false,
-                baseline_y: 0.0,
+        // Extract positional data from the block's bounding box (if available).
+        // Structure tree blocks carry bounds from pdfium's page objects; using
+        // them enables spatial matching with layout detection hints.
+        let (block_x, block_y, block_width, block_height, block_baseline) = if let Some(ref bounds) = block.bounds {
+            let x = bounds.left().value;
+            let y = bounds.bottom().value;
+            let w = (bounds.right().value - bounds.left().value).max(0.0);
+            let h = (bounds.top().value - bounds.bottom().value).max(0.0);
+            (x, y, w, h, y)
+        } else {
+            (0.0, 0.0, 0.0, 0.0, 0.0)
+        };
+
+        // Create segments from the block text (one per whitespace-delimited word).
+        // Distribute the block's bounding box across words proportionally by
+        // character count so that spatial matching can locate each word.
+        let words: Vec<&str> = full_text.split_whitespace().collect();
+        let total_chars: usize = words.iter().map(|w| w.len()).sum();
+        let mut cursor_x = block_x;
+        let segments: Vec<SegmentData> = words
+            .iter()
+            .map(|w| {
+                let frac = if total_chars > 0 {
+                    w.len() as f32 / total_chars as f32
+                } else {
+                    0.0
+                };
+                let seg_width = block_width * frac;
+                let seg = SegmentData {
+                    text: w.to_string(),
+                    x: cursor_x,
+                    y: block_y,
+                    width: seg_width,
+                    height: block_height,
+                    font_size,
+                    is_bold: block.is_bold,
+                    is_italic: block.is_italic,
+                    is_monospace: is_code_block,
+                    baseline_y: block_baseline,
+                };
+                cursor_x += seg_width;
+                seg
             })
             .collect();
 
@@ -205,10 +237,10 @@ fn convert_blocks(blocks: &[ExtractedBlock], _body_font_size: f32, paragraphs: &
 
         let line = PdfLine {
             segments,
-            baseline_y: 0.0,
+            baseline_y: block_baseline,
             dominant_font_size: font_size,
             is_bold: block.is_bold,
-            is_monospace: false,
+            is_monospace: is_code_block,
         };
 
         paragraphs.push(PdfParagraph {
@@ -217,8 +249,8 @@ fn convert_blocks(blocks: &[ExtractedBlock], _body_font_size: f32, paragraphs: &
             heading_level,
             is_bold: block.is_bold,
             is_list_item,
-            is_code_block: false,
-            is_formula: false,
+            is_code_block,
+            is_formula,
             is_page_furniture: false,
             layout_class: None,
             caption_for: None,

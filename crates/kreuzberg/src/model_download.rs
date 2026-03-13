@@ -67,6 +67,7 @@ pub fn verify_sha256(path: &Path, expected: &str, label: &str) -> Result<(), Str
 /// Resolution order:
 /// 1. `KREUZBERG_CACHE_DIR` env var + `/{module}`
 /// 2. `.kreuzberg/{module}/` in current directory
+#[allow(dead_code)]
 pub fn resolve_cache_dir(module: &str) -> PathBuf {
     if let Ok(env_path) = std::env::var("KREUZBERG_CACHE_DIR") {
         return PathBuf::from(env_path).join(module);

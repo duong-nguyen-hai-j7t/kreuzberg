@@ -273,26 +273,22 @@ pub(super) fn apply_hint_to_paragraph(para: &mut PdfParagraph, hint: &LayoutHint
     let is_sep = is_separator_text(&para_text);
 
     match hint.class {
-        LayoutHintClass::Title => {
-            if !is_sep {
+        LayoutHintClass::Title
+            if !is_sep
                 // Layout model says Title — set heading level 1.
                 // Override font-size classification when layout has high confidence.
-                if para.heading_level.is_none() || hint.confidence >= 0.7 {
+                && (para.heading_level.is_none() || hint.confidence >= 0.7) => {
                     para.heading_level = Some(1);
                 }
-            }
-        }
-        LayoutHintClass::SectionHeader => {
-            if !is_sep {
+        LayoutHintClass::SectionHeader
+            if !is_sep
                 // Layout model says SectionHeader — infer heading level from section
                 // numbering in text (e.g., "3.2 Methods" → H3, unnumbered → H2).
                 // Override font-size classification when layout has high confidence.
-                if para.heading_level.is_none() || hint.confidence >= 0.7 {
+                && (para.heading_level.is_none() || hint.confidence >= 0.7) => {
                     let level = infer_heading_level_from_text(&para_text, hint.class);
                     para.heading_level = Some(level);
                 }
-            }
-        }
         LayoutHintClass::Code => {
             para.is_code_block = true;
             para.heading_level = None;
@@ -307,10 +303,10 @@ pub(super) fn apply_hint_to_paragraph(para: &mut PdfParagraph, hint: &LayoutHint
         LayoutHintClass::PageHeader | LayoutHintClass::PageFooter => {
             para.is_page_furniture = true;
         }
-        LayoutHintClass::Text | LayoutHintClass::Caption | LayoutHintClass::Footnote => {
+        LayoutHintClass::Text | LayoutHintClass::Caption | LayoutHintClass::Footnote
             // Layout model says this is body text, not a heading.
             // Demote font-size-classified headings when layout has high confidence.
-            if para.heading_level.is_some() && hint.confidence >= 0.7 {
+            if para.heading_level.is_some() && hint.confidence >= 0.7 => {
                 tracing::trace!(
                     ?hint.class,
                     hint_confidence = hint.confidence,
@@ -319,7 +315,6 @@ pub(super) fn apply_hint_to_paragraph(para: &mut PdfParagraph, hint: &LayoutHint
                 );
                 para.heading_level = None;
             }
-        }
         _ => {}
     }
 }

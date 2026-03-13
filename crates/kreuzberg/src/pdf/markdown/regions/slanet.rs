@@ -1,7 +1,10 @@
 //! SLANet-based table recognition for native PDF pages.
 
+#[cfg(feature = "layout-detection")]
 use crate::pdf::markdown::render::escape_html_entities;
+#[cfg(feature = "layout-detection")]
 use crate::pdf::markdown::types::{LayoutHint, LayoutHintClass};
+#[cfg(feature = "layout-detection")]
 use crate::types::Table;
 
 /// Compute intersection-over-word-area between an HocrWord and a rectangular region.

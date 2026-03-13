@@ -462,7 +462,7 @@ pub fn generate_embeddings_for_chunks(
             })?
     };
 
-    for (chunk, mut embedding) in chunks.iter_mut().zip(embeddings_result.into_iter()) {
+    for (chunk, mut embedding) in chunks.iter_mut().zip(embeddings_result) {
         if config.normalize {
             let magnitude: f32 = embedding.iter().map(|x| x * x).sum::<f32>().sqrt();
             if magnitude > 0.0 {

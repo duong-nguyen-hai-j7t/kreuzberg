@@ -462,7 +462,7 @@ pub(crate) async fn run_ocr_pipeline(
 
     // Sort stages by priority (highest first)
     let mut stages = pipeline.stages.clone();
-    stages.sort_by(|a, b| b.priority.cmp(&a.priority));
+    stages.sort_by_key(|b| std::cmp::Reverse(b.priority));
 
     // Filter to available backends
     let available_stages: Vec<_> = {
