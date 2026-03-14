@@ -220,15 +220,16 @@ pub(crate) mod utf16le {
             // used in non-WASM builds.
 
             if let Ok(decoder) = TextDecoder::new_with_label("utf-16le")
-                && let Ok(result) = decoder.decode_with_u8_array(&buffer) {
-                    let result = result.trim_end_matches(char::from(0));
+                && let Ok(result) = decoder.decode_with_u8_array(&buffer)
+            {
+                let result = result.trim_end_matches(char::from(0));
 
-                    if !result.is_empty() {
-                        return Some(result.to_owned());
-                    } else {
-                        return None;
-                    }
+                if !result.is_empty() {
+                    return Some(result.to_owned());
+                } else {
+                    return None;
                 }
+            }
         }
 
         if let Ok(string) = WString::<LittleEndian>::from_utf16(buffer) {

@@ -1871,9 +1871,9 @@ impl TesseractAPI {
         let boxa = unsafe {
             TessBaseAPIGetTextlines1(
                 *handle,
-                0,                        // raw_image = FALSE
-                0,                        // raw_padding = 0
-                std::ptr::null_mut(),     // pixa** — not needed
+                0,                    // raw_image = FALSE
+                0,                    // raw_padding = 0
+                std::ptr::null_mut(), // pixa** — not needed
                 &mut blockids_ptr,
                 &mut paraids_ptr,
             )
@@ -1985,7 +1985,7 @@ impl TesseractAPI {
                 *handle,
                 level as c_int,
                 text_only as c_int,
-                std::ptr::null_mut(),    // pixa** — not needed
+                std::ptr::null_mut(), // pixa** — not needed
                 &mut blockids_ptr,
             )
         };

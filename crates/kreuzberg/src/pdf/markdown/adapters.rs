@@ -172,18 +172,9 @@ pub(crate) fn from_ocr_elements(
 
             // Read rich metadata from Tesseract iterator extraction (if available).
             let meta = &e.backend_metadata;
-            let is_bold = meta
-                .get("is_bold")
-                .and_then(|v| v.as_bool())
-                .unwrap_or(false);
-            let is_italic = meta
-                .get("is_italic")
-                .and_then(|v| v.as_bool())
-                .unwrap_or(false);
-            let is_monospace = meta
-                .get("is_monospace")
-                .and_then(|v| v.as_bool())
-                .unwrap_or(false);
+            let is_bold = meta.get("is_bold").and_then(|v| v.as_bool()).unwrap_or(false);
+            let is_italic = meta.get("is_italic").and_then(|v| v.as_bool()).unwrap_or(false);
+            let is_monospace = meta.get("is_monospace").and_then(|v| v.as_bool()).unwrap_or(false);
             let font_size = meta
                 .get("pointsize")
                 .and_then(|v| v.as_f64())
@@ -202,11 +193,7 @@ pub(crate) fn from_ocr_elements(
             });
 
             // Override with list item if paragraph info says so.
-            if meta
-                .get("is_list_item")
-                .and_then(|v| v.as_bool())
-                .unwrap_or(false)
-            {
+            if meta.get("is_list_item").and_then(|v| v.as_bool()).unwrap_or(false) {
                 semantic_role = Some(SemanticRole::ListItem);
             }
 

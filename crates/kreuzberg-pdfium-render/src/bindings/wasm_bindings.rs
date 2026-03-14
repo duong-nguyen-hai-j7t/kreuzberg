@@ -219,12 +219,13 @@ impl PdfiumRenderWasmState {
 
         for index in 1..table.length() {
             if let Ok(function) = table.get(index)
-                && function.length() == 4 {
-                    // We've found a viable patch function candidate.
+                && function.length() == 4
+            {
+                // We've found a viable patch function candidate.
 
-                    self.file_access_callback_function_table_entry = self.file_write_callback_function_table_entry;
-                    self.file_write_callback_function_table_entry = index as usize;
-                }
+                self.file_access_callback_function_table_entry = self.file_write_callback_function_table_entry;
+                self.file_write_callback_function_table_entry = index as usize;
+            }
         }
 
         log::debug!(
@@ -7088,8 +7089,7 @@ impl PdfiumLibraryBindings for WasmPdfiumBindings {
 
         let state = PdfiumRenderWasmState::lock();
 
-        let subtypes_ptr =
-            state.copy_ptr_with_len_to_pdfium(subtypes, count * size_of::<FPDF_ANNOTATION_SUBTYPE>());
+        let subtypes_ptr = state.copy_ptr_with_len_to_pdfium(subtypes, count * size_of::<FPDF_ANNOTATION_SUBTYPE>());
 
         let result = state
             .call(

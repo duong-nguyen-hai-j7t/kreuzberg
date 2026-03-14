@@ -364,9 +364,9 @@ impl Pix {
                 self.ptr,
                 tile_width,
                 tile_height,
-                0,    // smoothx: no smoothing
-                0,    // smoothy: no smoothing
-                0.1,  // scorefract: Leptonica-recommended default
+                0,                    // smoothx: no smoothing
+                0,                    // smoothy: no smoothing
+                0.1,                  // scorefract: Leptonica-recommended default
                 std::ptr::null_mut(), // ppixth: we don't need the threshold map
                 &mut result,
             )
@@ -407,9 +407,9 @@ impl Pix {
             pixBackgroundNormMorph(
                 self.ptr,
                 std::ptr::null_mut(), // pixim: no mask
-                4,   // reduction: 4x subsampling
-                15,  // size: morphological SE half-size
-                200, // bgval: target background value
+                4,                    // reduction: 4x subsampling
+                15,                   // size: morphological SE half-size
+                200,                  // bgval: target background value
             )
         };
         if result.is_null() {
