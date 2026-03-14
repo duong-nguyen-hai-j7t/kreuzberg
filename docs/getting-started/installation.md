@@ -1,16 +1,60 @@
 ---
-description: "Install Kreuzberg in your language of choice — Python, TypeScript, Rust, Go, Ruby, Java, C#, PHP, Elixir, R, C, or via CLI/Docker."
+description: "Install Kreuzberg — pick Python, TypeScript, Rust, Go, CLI/Docker, or any of 12 supported languages."
 ---
 
 # Installation
 
-Kreuzberg has native bindings for 12 languages and a CLI. Pick your stack, run one command, and you're ready to extract.
+Kreuzberg ships native bindings for 12 languages and a standalone CLI. Pick your stack, run one command, and start extracting.
 
-All packages ship **prebuilt binaries** for Linux (x86_64 / aarch64), macOS (Apple Silicon), and Windows — no compilation required.
+Every package includes **prebuilt binaries** for Linux (x86_64 / aarch64), macOS (Apple Silicon), and Windows — no compile step needed.
+
+<div class="cli-hero" markdown>
+
+## :material-console: CLI / Docker { #cli--docker }
+
+The fastest way to try Kreuzberg - no SDK, no code, just your terminal.
+
+=== "Install script"
+
+    ```bash
+    curl -fsSL https://raw.githubusercontent.com/kreuzberg-dev/kreuzberg/main/scripts/install.sh | bash
+    ```
+
+=== "Homebrew"
+
+    ```bash
+    brew install kreuzberg-dev/tap/kreuzberg
+    ```
+
+=== "Cargo"
+
+    ```bash
+    cargo install kreuzberg-cli
+    ```
+
+=== "Docker (CLI image)"
+
+    ```bash
+    docker pull ghcr.io/kreuzberg-dev/kreuzberg-cli:latest
+    docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg-cli:latest extract /data/document.pdf
+    ```
+
+=== "Docker (full image)"
+
+    ```bash
+    docker pull ghcr.io/kreuzberg-dev/kreuzberg:latest
+    ```
+
+[CLI Usage](../cli/usage.md){ .install-btn .install-btn--ghost }
+[API Server Guide](../guides/api-server.md){ .install-btn .install-btn--solid }
+
+</div>
+
+---
 
 ## Choose your language
 
-<div class="grid cards" markdown>
+<div class="grid cards install-cards" markdown>
 
 -   :fontawesome-brands-python:{ .lg .middle } **Python**
 
@@ -20,7 +64,8 @@ All packages ship **prebuilt binaries** for Linux (x86_64 / aarch64), macOS (App
     pip install kreuzberg
     ```
 
-    [Quick Start](quickstart.md) · [API Reference](../reference/api-python.md)
+    [API Reference](../reference/api-python.md){ .install-btn .install-btn--ghost }
+    [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid }
 
 -   :fontawesome-brands-node-js:{ .lg .middle } **TypeScript (Node.js / Bun)**
 
@@ -30,9 +75,8 @@ All packages ship **prebuilt binaries** for Linux (x86_64 / aarch64), macOS (App
     npm install @kreuzberg/node
     ```
 
-    Native NAPI bindings — fastest option for server-side JS.
-
-    [API Reference](../reference/api-typescript.md) · [Details](#typescript)
+    [API Reference](../reference/api-typescript.md){ .install-btn .install-btn--ghost }
+    [:material-lightning-bolt: Quick Start](#typescript){ .install-btn .install-btn--solid }
 
 -   :fontawesome-brands-js:{ .lg .middle } **TypeScript (Browser / Edge)**
 
@@ -42,9 +86,8 @@ All packages ship **prebuilt binaries** for Linux (x86_64 / aarch64), macOS (App
     npm install @kreuzberg/wasm
     ```
 
-    Pure WASM — works in browsers, Deno, Cloudflare Workers.
-
-    [API Reference](../reference/api-wasm.md) · [Details](#typescript)
+    [API Reference](../reference/api-wasm.md){ .install-btn .install-btn--ghost }
+    [:material-lightning-bolt: Quick Start](#typescript){ .install-btn .install-btn--solid }
 
 -   :fontawesome-brands-rust:{ .lg .middle } **Rust**
 
@@ -54,7 +97,8 @@ All packages ship **prebuilt binaries** for Linux (x86_64 / aarch64), macOS (App
     cargo add kreuzberg
     ```
 
-    [API Reference](../reference/api-rust.md)
+    [API Reference](../reference/api-rust.md){ .install-btn .install-btn--ghost }
+    [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid }
 
 -   :fontawesome-brands-golang:{ .lg .middle } **Go**
 
@@ -64,9 +108,8 @@ All packages ship **prebuilt binaries** for Linux (x86_64 / aarch64), macOS (App
     go get github.com/kreuzberg-dev/kreuzberg/packages/go/v4@latest
     ```
 
-    Requires Go 1.26+, cgo, and `libkreuzberg_ffi.a`.
-
-    [API Reference](../reference/api-go.md)
+    [API Reference](../reference/api-go.md){ .install-btn .install-btn--ghost }
+    [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid }
 
 -   :fontawesome-brands-java:{ .lg .middle } **Java**
 
@@ -76,9 +119,8 @@ All packages ship **prebuilt binaries** for Linux (x86_64 / aarch64), macOS (App
     implementation 'dev.kreuzberg:kreuzberg:4.4.2'
     ```
 
-    Requires Java 25+ (FFM API). [Maven Central →](https://central.sonatype.com/artifact/dev.kreuzberg/kreuzberg)
-
-    [API Reference](../reference/api-java.md) · [Details](#java)
+    [API Reference](../reference/api-java.md){ .install-btn .install-btn--ghost }
+    [:material-lightning-bolt: Quick Start](#java){ .install-btn .install-btn--solid }
 
 -   :material-language-ruby:{ .lg .middle } **Ruby**
 
@@ -88,9 +130,8 @@ All packages ship **prebuilt binaries** for Linux (x86_64 / aarch64), macOS (App
     gem install kreuzberg
     ```
 
-    Requires Ruby 3.2+.
-
-    [API Reference](../reference/api-ruby.md)
+    [API Reference](../reference/api-ruby.md){ .install-btn .install-btn--ghost }
+    [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid }
 
 -   :material-language-csharp:{ .lg .middle } **C# / .NET** <span class="version-badge unreleased">Unreleased</span>
 
@@ -100,9 +141,8 @@ All packages ship **prebuilt binaries** for Linux (x86_64 / aarch64), macOS (App
     dotnet add package Kreuzberg
     ```
 
-    Requires .NET 10.0+.
-
-    [API Reference](../reference/api-csharp.md) · [Guide](../guides/csharp.md)
+    [API Reference](../reference/api-csharp.md){ .install-btn .install-btn--ghost }
+    [:material-lightning-bolt: Quick Start](../guides/csharp.md){ .install-btn .install-btn--solid }
 
 -   :fontawesome-brands-php:{ .lg .middle } **PHP** <span class="version-badge unreleased">Unreleased</span>
 
@@ -112,11 +152,10 @@ All packages ship **prebuilt binaries** for Linux (x86_64 / aarch64), macOS (App
     composer require kreuzberg/kreuzberg
     ```
 
-    Requires PHP 8.2+ with `ext-ffi`.
+    [API Reference](../reference/api-php.md){ .install-btn .install-btn--ghost }
+    [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid }
 
-    [API Reference](../reference/api-php.md)
-
--   :material-language-elixir:{ .lg .middle } **Elixir**
+-   :simple-elixir:{ .lg .middle } **Elixir**
 
     ---
 
@@ -124,11 +163,10 @@ All packages ship **prebuilt binaries** for Linux (x86_64 / aarch64), macOS (App
     {:kreuzberg, "~> 4.0"}
     ```
 
-    Add to `mix.exs`, then `mix deps.get`.
+    [API Reference](../reference/api-elixir.md){ .install-btn .install-btn--ghost }
+    [:material-lightning-bolt: Quick Start](#elixir){ .install-btn .install-btn--solid }
 
-    [API Reference](../reference/api-elixir.md) · [Details](#elixir)
-
--   :material-language-r:{ .lg .middle } **R** <span class="version-badge unreleased">Unreleased</span>
+-   :simple-r:{ .lg .middle } **R** <span class="version-badge unreleased">Unreleased</span>
 
     ---
 
@@ -137,38 +175,53 @@ All packages ship **prebuilt binaries** for Linux (x86_64 / aarch64), macOS (App
       repos = "https://kreuzberg-dev.r-universe.dev")
     ```
 
-    Requires R ≥ 4.2, Rust toolchain.
+    [API Reference](../reference/api-r.md){ .install-btn .install-btn--ghost }
+    [:material-lightning-bolt: Quick Start](quickstart.md){ .install-btn .install-btn--solid }
 
-    [API Reference](../reference/api-r.md)
-
--   :material-console:{ .lg .middle } **CLI / Docker**
+-   :simple-cplusplus:{ .lg .middle } **C / C++** <span class="version-badge unreleased">Unreleased</span>
 
     ---
 
     ```bash
-    brew install kreuzberg-dev/tap/kreuzberg
+    cargo build -p kreuzberg-ffi
     ```
 
-    [CLI Usage](../cli/usage.md) · [Details](#cli--docker)
+    [API Reference](../reference/api-c.md){ .install-btn .install-btn--ghost }
+    [:material-lightning-bolt: Quick Start](#c-c-unreleased){ .install-btn .install-btn--solid }
 
 </div>
 
 ---
 
+## System requirements
+
+Most of the time you won't need anything beyond the install command above. The table below only matters if you're building from source or want OCR:
+
+| Dependency | When you need it |
+|---|---|
+| Rust toolchain (`rustup`) | Building any native binding from source |
+| C/C++ compiler | Building native bindings (Xcode CLI tools / `build-essential` / MSVC) |
+| Tesseract OCR | Optional — `brew install tesseract` / `apt install tesseract-ocr` |
+| PDFium | Auto-fetched during builds |
+
+The WASM package (`@kreuzberg/wasm`) has **zero** system dependencies.
+
+---
+
 ## Language-specific notes
 
-Most languages need nothing beyond the install command above. The sections below cover edge cases and alternative install methods only where they matter.
+For most languages the install command above is all you need. The sections below cover edge cases and alternative install methods where they come up.
 
 ### TypeScript
 
-Kreuzberg ships two npm packages optimized for different runtimes:
+Two npm packages target different runtimes:
 
 | Package | Best for | Performance |
 |---|---|---|
 | `@kreuzberg/node` | Node.js, Bun — server-side apps | Native (100%) |
 | `@kreuzberg/wasm` | Browsers, Deno, Cloudflare Workers | WASM (~60-80%) |
 
-Both are also available via **pnpm** (`pnpm add`) and **yarn** (`yarn add`).
+Both work with **pnpm** (`pnpm add`) and **yarn** (`yarn add`) as well.
 
 !!! note "pnpm workspaces"
     In monorepos, add this to your root `.npmrc` so platform-specific optional deps resolve correctly:
@@ -301,56 +354,6 @@ my_app: my_app.c
     **Windows:** add `-lws2_32 -luserenv -lbcrypt`
 
 [API Reference →](../reference/api-c.md)
-
-### CLI / Docker
-
-=== "Install script"
-
-    ```bash
-    curl -fsSL https://raw.githubusercontent.com/kreuzberg-dev/kreuzberg/main/scripts/install.sh | bash
-    ```
-
-=== "Homebrew"
-
-    ```bash
-    brew install kreuzberg-dev/tap/kreuzberg
-    ```
-
-=== "Cargo"
-
-    ```bash
-    cargo install kreuzberg-cli
-    ```
-
-=== "Docker (CLI image)"
-
-    ```bash
-    docker pull ghcr.io/kreuzberg-dev/kreuzberg-cli:latest
-    docker run -v $(pwd):/data ghcr.io/kreuzberg-dev/kreuzberg-cli:latest extract /data/document.pdf
-    ```
-
-=== "Docker (full image)"
-
-    ```bash
-    docker pull ghcr.io/kreuzberg-dev/kreuzberg:latest
-    ```
-
-[CLI Usage →](../cli/usage.md) · [API Server Guide →](../guides/api-server.md)
-
----
-
-## System requirements
-
-Most packages ship prebuilt binaries — you don't need anything extra. These matter only when building from source or enabling OCR:
-
-| Dependency | When you need it |
-|---|---|
-| Rust toolchain (`rustup`) | Building any native binding from source |
-| C/C++ compiler | Building native bindings (Xcode CLI tools / `build-essential` / MSVC) |
-| Tesseract OCR | Optional — `brew install tesseract` / `apt install tesseract-ocr` |
-| PDFium | Auto-fetched during builds |
-
-WASM packages (`@kreuzberg/wasm`) have **zero** system dependencies.
 
 ---
 

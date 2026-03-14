@@ -1523,6 +1523,226 @@ body:has(.full-width-iframe) article {
 	color: #58fbda;
 }
 
+/* ── CLI / Docker hero section ── */
+.cli-hero {
+	background: #f6f5fa;
+	border: 1px solid #e4e1ed;
+	border-radius: 16px;
+	padding: 28px 28px 24px;
+	margin-bottom: 2rem;
+}
+
+.cli-hero h2 {
+	margin-top: 0 !important;
+	margin-bottom: 0.25rem !important;
+}
+
+.cli-hero>p:first-of-type {
+	margin-top: 0;
+	margin-bottom: 1rem;
+	opacity: 0.7;
+	font-size: 0.95rem;
+}
+
+.cli-hero .install-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: 38px;
+	padding: 0 20px;
+	border-radius: 8px;
+	font-size: 0.85rem;
+	font-weight: 600;
+	line-height: 1;
+	text-decoration: none !important;
+	margin-right: 10px;
+	margin-top: 8px;
+	white-space: nowrap;
+}
+
+.cli-hero .install-btn--ghost {
+	border: 1.5px solid #c9a0d4;
+	color: #3f3456 !important;
+	background: transparent;
+}
+
+.cli-hero .install-btn--ghost:hover {
+	border-color: #a86cbf;
+	background: rgba(218, 42, 224, 0.04);
+}
+
+.cli-hero .install-btn--solid {
+	border: none;
+	color: #ffffff !important;
+	background: linear-gradient(135deg, #2f2848, #3d2d60);
+}
+
+.cli-hero .install-btn--solid:hover {
+	background: linear-gradient(135deg, #3d2d60, #2f2848);
+	box-shadow: 0 2px 8px rgba(47, 40, 72, 0.3);
+}
+
+[data-md-color-scheme="slate"] .cli-hero {
+	background: #302d3e;
+	border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-md-color-scheme="slate"] .cli-hero .install-btn--ghost {
+	border-color: #58fbda;
+	color: #58fbda !important;
+	background: transparent;
+}
+
+[data-md-color-scheme="slate"] .cli-hero .install-btn--ghost:hover {
+	border-color: #7ffce8;
+	color: #7ffce8 !important;
+	background: rgba(88, 251, 218, 0.08);
+}
+
+[data-md-color-scheme="slate"] .cli-hero .install-btn--solid {
+	background: #58fbda;
+	color: #1a1926 !important;
+	border: none;
+}
+
+[data-md-color-scheme="slate"] .cli-hero .install-btn--solid:hover {
+	background: #7ffce8;
+	box-shadow: 0 2px 10px rgba(88, 251, 218, 0.3);
+}
+
+.cli-hero .md-icon svg {
+	fill: currentColor !important;
+}
+
+/* ── Installation cards (Figma design) ── */
+.md-typeset .install-cards.grid.cards>ul>li,
+.md-typeset .install-cards.grid.cards>ol>li {
+	border-radius: 16px;
+	border: 1px solid #e4e1ed;
+	background: #f6f5fa;
+	padding: 20px 20px 18px !important;
+	box-shadow: none;
+}
+
+.md-typeset .install-cards.grid.cards>ul>li hr,
+.md-typeset .install-cards.grid.cards>ol>li hr {
+	display: none;
+}
+
+.md-typeset .install-cards.grid.cards>ul>li>p:first-child,
+.md-typeset .install-cards.grid.cards>ol>li>p:first-child {
+	margin-bottom: 0.1rem;
+}
+
+.md-typeset .install-cards .highlight {
+	background: #2f2b43;
+	border: none;
+	border-radius: 10px;
+	margin: 10px 0 16px;
+	padding: 14px 16px;
+	gap: 0;
+}
+
+.md-typeset .install-cards .highlight pre,
+.md-typeset .install-cards .highlight code {
+	font-size: 0.85rem;
+	line-height: 1.5;
+}
+
+.md-typeset .install-cards .highlight .md-code__nav {
+	right: 10px;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.md-typeset .install-cards .highlight .md-code__button {
+	color: #58fbda;
+}
+
+.md-typeset .install-cards .highlight .md-code__button:hover {
+	color: #7ffce8;
+}
+
+.md-typeset .install-cards .install-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: 36px;
+	padding: 0 18px;
+	border-radius: 8px;
+	font-size: 0.82rem;
+	font-weight: 600;
+	line-height: 1;
+	text-decoration: none !important;
+	margin-right: 8px;
+	white-space: nowrap;
+}
+
+.md-typeset .install-cards .install-btn--ghost {
+	border: 1.5px solid #c9a0d4;
+	color: #3f3456 !important;
+	background: transparent;
+}
+
+.md-typeset .install-cards .install-btn--ghost:hover {
+	border-color: #a86cbf;
+	background: rgba(218, 42, 224, 0.04);
+}
+
+.md-typeset .install-cards .install-btn--solid {
+	border: none;
+	color: #ffffff !important;
+	background: linear-gradient(135deg, #2f2848, #3d2d60);
+}
+
+.md-typeset .install-cards .install-btn--solid:hover {
+	background: linear-gradient(135deg, #3d2d60, #2f2848);
+	box-shadow: 0 2px 8px rgba(47, 40, 72, 0.3);
+}
+
+/* Dark mode */
+[data-md-color-scheme="slate"] .md-typeset .install-cards.grid.cards>ul>li,
+[data-md-color-scheme="slate"] .md-typeset .install-cards.grid.cards>ol>li {
+	background: #302d3e;
+	border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .install-cards .highlight {
+	background: #232131;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .install-cards .install-btn--ghost {
+	border-color: #58fbda;
+	color: #58fbda !important;
+	background: transparent;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .install-cards .install-btn--ghost:hover {
+	border-color: #7ffce8;
+	color: #7ffce8 !important;
+	background: rgba(88, 251, 218, 0.08);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .install-cards .install-btn--solid {
+	background: #58fbda;
+	color: #1a1926 !important;
+	border: none;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .install-cards .install-btn--solid:hover {
+	background: #7ffce8;
+	box-shadow: 0 2px 10px rgba(88, 251, 218, 0.3);
+}
+
+.md-typeset .install-cards .install-btn .twemoji svg,
+.md-typeset .install-cards .install-btn .md-icon svg {
+	fill: currentColor !important;
+	width: 0.9em;
+	height: 0.9em;
+	vertical-align: -0.1em;
+	margin-right: 2px;
+}
+
 /* Homepage hero banner */
 .hero-banner {
 	margin: 0 -0.8rem 1rem;
