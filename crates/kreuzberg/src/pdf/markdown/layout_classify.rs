@@ -279,7 +279,15 @@ pub(super) fn apply_hint_to_paragraph(para: &mut PdfParagraph, hint: &LayoutHint
                 // Layout model says Title — set heading level 1.
                 // Override font-size classification when layout has high confidence.
                 && (para.heading_level.is_none() || hint.confidence >= 0.7) => {
-                    para.heading_level = Some(1);
+                    let word_count: usize = para
+                        .lines
+                        .iter()
+                        .flat_map(|l| l.segments.iter())
+                        .map(|s| s.text.split_whitespace().count())
+                        .sum();
+                    if word_count <= super::constants::MAX_HEADING_WORD_COUNT {
+                        para.heading_level = Some(1);
+                    }
                 }
         LayoutHintClass::SectionHeader
             if !is_sep
@@ -287,8 +295,26 @@ pub(super) fn apply_hint_to_paragraph(para: &mut PdfParagraph, hint: &LayoutHint
                 // numbering in text (e.g., "3.2 Methods" → H3, unnumbered → H2).
                 // Override font-size classification when layout has high confidence.
                 && (para.heading_level.is_none() || hint.confidence >= 0.7) => {
-                    let level = infer_heading_level_from_text(&para_text, hint.class);
-                    para.heading_level = Some(level);
+                    let word_count: usize = para
+                        .lines
+                        .iter()
+                        .flat_map(|l| l.segments.iter())
+                        .map(|s| s.text.split_whitespace().count())
+                        .sum();
+                    let trimmed = para_text.trim();
+                    // Apply same guards as apply_heading_region: word count,
+                    // trailing period/colon, figure labels, monospace.
+                    let too_long = word_count > super::constants::MAX_HEADING_WORD_COUNT;
+                    let ends_period = trimmed.ends_with('.')
+                        && !super::classify::is_section_pattern(trimmed);
+                    let ends_colon = trimmed.ends_with(':');
+                    let is_figure = super::regions::looks_like_figure_label(trimmed);
+                    let is_monospace = para.lines.iter().all(|l| l.is_monospace);
+                    let is_list = para.is_list_item;
+                    if !too_long && !ends_period && !ends_colon && !is_figure && !is_monospace && !is_list {
+                        let level = infer_heading_level_from_text(&para_text, hint.class);
+                        para.heading_level = Some(level);
+                    }
                 }
         LayoutHintClass::Code => {
             para.is_code_block = true;
