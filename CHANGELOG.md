@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Docling comparison benchmarks**: Fixed vendored docling output path resolution and moved vendored data to `tools/benchmark-harness/vendored/docling/`. Enables proper quality comparison across the full 171-document PDF corpus.
 - **`EmailConfig` for MSG fallback codepage** (#505): New `EmailConfig` type with `msg_fallback_codepage` field, configurable via `ExtractionConfig.email`. When an MSG file contains no codepage property, the fallback defaults to windows-1252 and is now configurable (e.g. set `1251` for Cyrillic). Fully typed across all 11 language bindings: Rust, Python, TypeScript, Go, Java, C#, PHP, Ruby, Elixir, R, and WASM.
 - **Binding parity fixes**: `AccelerationConfig` added to Python `.pyi` type stubs and Node.js NAPI types (was previously missing). `SecurityLimits` and `LayoutDetectionConfig` added to Node.js NAPI types. Ruby native binding now parses `layout`, `security_limits`, and `email` config fields. Elixir `to_map/1` now includes `security_limits` (was silently dropped). PHP gains `LayoutDetectionConfig` typed class.
+- **Strong typing across bindings**: Replaced weak `Dictionary`/`Map`/`array` types with strongly typed config classes — C# (`SecurityLimitsConfig`, `YakeParamsConfig`, `RakeParamsConfig`), Java (`SecurityLimitsConfig`), PHP (`SecurityLimitsConfig`, `HtmlConversionOptions`, `YakeParamsConfig`, `RakeParamsConfig`).
 
 ### Changed
 
@@ -133,8 +134,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **CI WASM (Clippy)**: Added `#[allow(clippy::unnecessary_cast)]` for platform-dependent `c_ulong` → `u32` casts in pdfium bindings.
 - **CI C#/Java**: FFI batch functions now accept NULL for `file_config_jsons` (meaning "no per-file configs") instead of rejecting it.
 - **CI Elixir**: Added missing `acceleration` field to `ExtractionConfig.to_map/1` doctests.
-- **CI Go**: Lowered `go.mod` minimum version from 1.26 to 1.25 to match CI toolchain.
+- **CI Go**: Updated all CI workflows to Go 1.26 (matching `go.work` requirement).
 - **CI R**: Vendor script now copies root `Cargo.lock` to ensure consistent dependency resolution.
+- **PDF image extraction** (#511): Fixed extracted images returning raw compressed data instead of properly decoded image bytes.
 
 ---
 
