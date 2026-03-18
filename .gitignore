@@ -158,6 +158,12 @@ packages/php/tests.xml
 # Clippy fix temporary output
 rust_out
 
+# Test-generated image artifacts
+crates/kreuzberg-pdfium-render/*.jpg
+
+# R package vendored cargo cache
+packages/r/src/.cargo/
+
 # C FFI test binaries and build artifacts
 crates/kreuzberg-ffi/tests/c/test_*
 !crates/kreuzberg-ffi/tests/c/test_*.c
