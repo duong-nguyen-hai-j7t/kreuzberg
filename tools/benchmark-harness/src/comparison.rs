@@ -139,6 +139,14 @@ fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfig {
                 preset: "accurate".to_string(),
                 ..Default::default()
             }),
+            // Enable OCR fallback for pages with no native text (image-only PDFs).
+            // With force_ocr=false (default), kreuzberg auto-detects empty pages
+            // and falls back to tesseract OCR only when needed.
+            ocr: Some(kreuzberg::core::config::OcrConfig {
+                backend: "tesseract".to_string(),
+                language: "eng".to_string(),
+                ..Default::default()
+            }),
             ..base
         },
         Pipeline::Tesseract => kreuzberg::ExtractionConfig {

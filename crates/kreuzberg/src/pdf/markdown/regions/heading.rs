@@ -103,6 +103,10 @@ fn apply_heading_region(
 
     for para in paragraphs.iter_mut() {
         para.layout_class = Some(hint.class);
+        // Layout model says SectionHeader/Title — override text-heuristic
+        // list detection. Patterns like "A. Proofs" match is_list_prefix()
+        // but are section headings, not list items.
+        para.is_list_item = false;
 
         let word_count: usize = para
             .lines

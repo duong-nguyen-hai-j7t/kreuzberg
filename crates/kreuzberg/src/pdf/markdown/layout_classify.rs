@@ -164,11 +164,10 @@ fn apply_proportional_overrides(paragraphs: &mut [PdfParagraph], hints: &[Layout
                     apply_hint_to_paragraph(para, hint, None);
                 }
                 LayoutHintClass::SectionHeader | LayoutHintClass::Title
-                    if para.heading_level.is_none()
-                        && !para.is_list_item
-                        && !para.is_code_block
-                        && overlap_frac > 0.3 =>
+                    if para.heading_level.is_none() && !para.is_code_block && overlap_frac > 0.3 =>
                 {
+                    // Layout model says heading — override text-heuristic list detection
+                    para.is_list_item = false;
                     let word_count: usize = para
                         .lines
                         .iter()
@@ -236,8 +235,26 @@ pub(super) fn infer_heading_level_from_text(text: &str, hint_class: LayoutHintCl
     }
 
     let trimmed = text.trim();
-    // Check for section numbering pattern: digits and dots at the start
-    let numbering_end = trimmed.find(|c: char| !c.is_ascii_digit() && c != '.').unwrap_or(0);
+
+    // Check for section numbering pattern at the start.
+    // Supports both numeric ("3.2") and alphabetic ("A.", "B.1") prefixes.
+    let first_char = trimmed.chars().next().unwrap_or(' ');
+    let is_alpha_prefix = first_char.is_ascii_alphabetic()
+        && trimmed.len() >= 2
+        && matches!(trimmed.as_bytes().get(1), Some(b'.' | b')' | b' '));
+
+    let numbering_end = if is_alpha_prefix {
+        // Alphabetic prefix: "A." or "A.1" or "A.1.2"
+        // Start after the letter, continue through digits and dots
+        let after_letter = &trimmed[1..];
+        let rest_end = after_letter
+            .find(|c: char| !c.is_ascii_digit() && c != '.')
+            .unwrap_or(0);
+        1 + rest_end // include the letter
+    } else {
+        // Numeric prefix: "3.2.1"
+        trimmed.find(|c: char| !c.is_ascii_digit() && c != '.').unwrap_or(0)
+    };
 
     if numbering_end == 0 {
         // No numbering → default H2 for SectionHeader
@@ -248,7 +265,7 @@ pub(super) fn infer_heading_level_from_text(text: &str, hint_class: LayoutHintCl
     // Count dots to determine depth: "3" → 0 dots → H2, "3.2" → 1 dot → H3
     let dot_count = numbering.chars().filter(|&c| c == '.').count();
 
-    // Trailing dot (e.g., "3.") doesn't count as depth indicator
+    // Trailing dot (e.g., "3." or "A.") doesn't count as depth indicator
     let effective_dots = if numbering.ends_with('.') {
         dot_count.saturating_sub(1)
     } else {
@@ -256,9 +273,9 @@ pub(super) fn infer_heading_level_from_text(text: &str, hint_class: LayoutHintCl
     };
 
     match effective_dots {
-        0 => 2, // "1 Introduction" → H2
-        1 => 3, // "3.2 AI models" → H3
-        _ => 4, // "3.2.1 Details" → H4
+        0 => 2, // "1 Introduction" or "A Proofs" → H2
+        1 => 3, // "3.2 AI models" or "A.1 Details" → H3
+        _ => 4, // "3.2.1 Details" or "A.1.2 Sub" → H4
     }
 }
 
