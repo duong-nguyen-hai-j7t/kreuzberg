@@ -207,11 +207,13 @@ pub fn assign_heading_levels_smart(
 
     let body_centroid = clusters[body_idx].centroid;
 
-    // Collect heading candidates: clusters with sufficiently larger font size than body
-    // Must pass both ratio gate AND absolute gap gate
+    // Collect heading candidates: clusters with sufficiently larger font size than body.
+    // Must pass EITHER the ratio gate OR the absolute gap gate (whichever is less
+    // restrictive). This captures LaTeX subsection headings (12pt vs 10pt body)
+    // that pass the ratio gate (1.2 > 1.15) but not the gap gate (2.0 < 1.5+10=11.5).
     let min_heading_size = body_centroid * min_heading_ratio;
     let min_heading_abs = body_centroid + min_heading_gap;
-    let heading_threshold = min_heading_size.max(min_heading_abs);
+    let heading_threshold = min_heading_size.min(min_heading_abs);
 
     let mut heading_candidates: Vec<(usize, f32)> = clusters
         .iter()

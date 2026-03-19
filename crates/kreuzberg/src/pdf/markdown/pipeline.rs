@@ -919,6 +919,11 @@ pub fn render_document_as_markdown_with_tables(
         retain_page_furniture_safely(page);
     }
 
+    // Deduplicate paragraphs with identical text within each page.
+    // Catches bold/shadow rendering artifacts (consecutive duplicates)
+    // and table content rendered as both table and body text.
+    deduplicate_paragraphs(&mut all_page_paragraphs);
+
     let total_paragraphs: usize = all_page_paragraphs.iter().map(|p| p.len()).sum();
     tracing::debug!(
         heuristic_page_count = heuristic_pages.len(),
@@ -1324,6 +1329,82 @@ fn has_font_size_variation(paragraphs: &[PdfParagraph]) -> bool {
         }
     }
     false
+}
+
+/// Deduplicate paragraphs with identical text within each page.
+///
+/// Two-pass approach:
+/// 1. Consecutive duplicates: remove back-to-back identical paragraphs
+///    (catches bold/shadow rendering artifacts).
+/// 2. Non-consecutive duplicates: remove body-text paragraphs whose
+///    normalized text was already seen on the same page (catches table
+///    content rendered as both table and body text).
+///
+/// Only deduplicates body text — headings, list items, code blocks,
+/// formulas, and captions are preserved even if duplicated.
+fn deduplicate_paragraphs(all_pages: &mut [Vec<PdfParagraph>]) {
+    for page in all_pages.iter_mut() {
+        if page.len() < 2 {
+            continue;
+        }
+
+        // Pass 1: Remove consecutive duplicates.
+        let mut i = 0;
+        while i + 1 < page.len() {
+            let a_text = paragraph_text_normalized(&page[i]);
+            let b_text = paragraph_text_normalized(&page[i + 1]);
+            if a_text.len() >= 5 && a_text == b_text {
+                page.remove(i + 1);
+            } else {
+                i += 1;
+            }
+        }
+
+        // Pass 2: Remove non-consecutive body-text duplicates.
+        let mut seen = std::collections::HashSet::new();
+        let mut to_remove = Vec::new();
+        for (idx, para) in page.iter().enumerate() {
+            if !is_dedup_candidate(para) {
+                continue;
+            }
+            let text = paragraph_text_normalized(para);
+            if text.len() < 15 {
+                continue;
+            }
+            if !seen.insert(text) {
+                to_remove.push(idx);
+            }
+        }
+        // Remove in reverse order to preserve indices.
+        for idx in to_remove.into_iter().rev() {
+            page.remove(idx);
+        }
+    }
+}
+
+/// Extract normalized text from a paragraph for dedup comparison.
+fn paragraph_text_normalized(p: &PdfParagraph) -> String {
+    let raw: String = p
+        .lines
+        .iter()
+        .flat_map(|l| l.segments.iter())
+        .map(|s| s.text.as_str())
+        .collect::<Vec<_>>()
+        .join(" ");
+    raw.split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+        .to_lowercase()
+}
+
+/// Check if a paragraph is eligible for deduplication.
+fn is_dedup_candidate(p: &PdfParagraph) -> bool {
+    p.heading_level.is_none()
+        && !p.is_list_item
+        && !p.is_code_block
+        && !p.is_formula
+        && !p.is_page_furniture
+        && p.caption_for.is_none()
 }
 
 #[cfg(test)]
