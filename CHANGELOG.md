@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`EmailConfig` for MSG fallback codepage** (#505): New `EmailConfig` type with `msg_fallback_codepage` field, configurable via `ExtractionConfig.email`. When an MSG file contains no codepage property, the fallback defaults to windows-1252 and is now configurable (e.g. set `1251` for Cyrillic). Fully typed across all 11 language bindings: Rust, Python, TypeScript, Go, Java, C#, PHP, Ruby, Elixir, R, and WASM.
 - **Binding parity fixes**: `AccelerationConfig` added to Python `.pyi` type stubs and Node.js NAPI types (was previously missing). `SecurityLimits` and `LayoutDetectionConfig` added to Node.js NAPI types. Ruby native binding now parses `layout`, `security_limits`, and `email` config fields. Elixir `to_map/1` now includes `security_limits` (was silently dropped). PHP gains `LayoutDetectionConfig` typed class.
 - **Strong typing across bindings**: Replaced weak `Dictionary`/`Map`/`array` types with strongly typed config classes — C# (`SecurityLimitsConfig`, `YakeParamsConfig`, `RakeParamsConfig`), Java (`SecurityLimitsConfig`), PHP (`SecurityLimitsConfig`, `HtmlConversionOptions`, `YakeParamsConfig`, `RakeParamsConfig`).
+- **`ConcurrencyConfig` for thread limiting** (#503): New `ConcurrencyConfig` type with `max_threads` field, configurable via `ExtractionConfig.concurrency`. Caps Rayon thread pool, ONNX Runtime intra-op threads, and batch concurrency semaphore to a single limit — useful for deployments on constrained hardware. Fully typed across all language bindings: Rust, Python, TypeScript, Go, Java, C#, PHP, Ruby (with RBS stubs), Elixir, and R.
+- **Opt-in single-column pseudo tables** (#449): New `allow_single_column_tables` boolean on `PdfConfig` (default: `false`). When enabled, relaxes the minimum column requirement from 2–3 to 1, allowing single-column structured data (glossaries, itemized lists in table format) to be emitted as tables. All other quality filters (density, sparsity, prose detection) still apply. Available across all language bindings.
 
 ### Changed
 
@@ -120,6 +122,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **PDF image extraction** (#511): Fixed extracted images returning raw compressed data instead of properly decoded image bytes.
 - **Node.js `extractFileInWorker` mime_type passthrough** (#523): The `extract_file_in_worker` NAPI binding had its third parameter named `password` instead of `mime_type`, causing the MIME type passed from TypeScript to be silently injected into PDF password config while `None` was passed to `extract_file_sync`. Renamed the parameter and removed the incorrect password injection block so explicit MIME types are now correctly forwarded.
 - **DOCX parser type inference failure** (#519): Added explicit `as &[u8]` casts to all `name().as_ref()` and `local_name().as_ref()` calls in the DOCX and XML parsers. The `zip` 8.2.0 dependency introduced `typed-path`, creating ambiguity for the compiler when resolving `AsRef` on quick-xml's `LocalName` and `QName` types.
+- **Python `py.typed` and `.pyi` missing from sdist**: The `py.typed` marker file was not included in maturin's package include list, and `.pyi` type stubs were only included in wheels but not source distributions. Both are now included in both wheel and sdist formats.
 
 ---
 
