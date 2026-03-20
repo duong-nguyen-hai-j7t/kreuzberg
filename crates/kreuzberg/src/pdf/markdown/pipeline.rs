@@ -421,10 +421,14 @@ fn process_single_page(
                         super::types::LayoutHintClass::Table | super::types::LayoutHintClass::Picture
                     )
             }) {
+            // Clone segments before layout assembly consumes them — we may
+            // need them for a standard-pipeline fallback (quality gate).
+            let standard_segments = page_segments.clone();
+
             // Layout-guided assembly: assign segments to layout regions
             // BEFORE line/paragraph assembly, ensuring paragraph boundaries
             // align with the model's structural predictions.
-            super::regions::assemble_region_paragraphs(
+            let layout_paragraphs = super::regions::assemble_region_paragraphs(
                 page_segments,
                 hints,
                 heading_map,
@@ -433,7 +437,67 @@ fn process_single_page(
                 i,
                 &table_bboxes,
                 &hint_validations,
-            )
+            );
+
+            // Quality gate: run the standard pipeline on the same segments
+            // and compare alphanumeric character counts.  If the layout path
+            // drops too much text (< 70% of standard), fall back to standard.
+            let standard_filtered = if !table_bboxes.is_empty() {
+                standard_segments
+                    .into_iter()
+                    .filter(|seg| {
+                        let seg_area = seg.width * seg.height;
+                        if seg_area <= 0.0 || seg.text.trim().is_empty() {
+                            return true;
+                        }
+                        !table_bboxes.iter().any(|bb| {
+                            let inter_left = seg.x.max(bb.x0 as f32);
+                            let inter_right = (seg.x + seg.width).min(bb.x1 as f32);
+                            let inter_bottom = seg.y.max(bb.y0 as f32);
+                            let inter_top = (seg.y + seg.height).min(bb.y1 as f32);
+                            if inter_left >= inter_right || inter_bottom >= inter_top {
+                                return false;
+                            }
+                            let inter_area =
+                                (inter_right - inter_left) * (inter_top - inter_bottom);
+                            inter_area / seg_area >= 0.5
+                        })
+                    })
+                    .collect::<Vec<_>>()
+            } else {
+                standard_segments
+            };
+            let mut standard_paras =
+                super::regions::assemble_standard_pipeline(standard_filtered);
+            classify_paragraphs(&mut standard_paras, heading_map);
+
+            let layout_alphanum: usize =
+                layout_paragraphs.iter().map(|p| paragraph_alphanum_len(p)).sum();
+            let standard_alphanum: usize =
+                standard_paras.iter().map(|p| paragraph_alphanum_len(p)).sum();
+
+            if standard_alphanum > 20 && layout_alphanum < standard_alphanum * 7 / 10 {
+                // Layout lost too much text — fall back to standard pipeline.
+                tracing::debug!(
+                    page = i,
+                    layout_alphanum,
+                    standard_alphanum,
+                    "layout quality gate: falling back to standard pipeline"
+                );
+                if let Some(ref hints) = page_hints {
+                    super::layout_classify::apply_layout_overrides(
+                        &mut standard_paras,
+                        hints,
+                        0.5,
+                        0.2,
+                        doc_body_font_size,
+                    );
+                }
+                merge_continuation_paragraphs(&mut standard_paras);
+                standard_paras
+            } else {
+                layout_paragraphs
+            }
         } else {
             // Standard pipeline: XY-Cut → lines → paragraphs → classify
             // First, suppress segments that overlap with successfully extracted tables
@@ -1390,7 +1454,6 @@ fn deduplicate_paragraphs(all_pages: &mut [Vec<PdfParagraph>]) {
                 to_remove.push(idx);
             }
         }
-        // Remove in reverse order to preserve indices.
         for idx in to_remove.into_iter().rev() {
             page.remove(idx);
         }

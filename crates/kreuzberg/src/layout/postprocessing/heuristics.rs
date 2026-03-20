@@ -36,6 +36,18 @@ pub fn apply_heuristics(detections: &mut Vec<LayoutDetection>, page_width: f32, 
         }
     });
 
+    // 2b. Demote tiny Table/Picture false positives to Text.
+    //     If a Table or Picture covers <3% of page area AND has confidence <0.7,
+    //     it is likely a false positive that would suppress body text.
+    for d in detections.iter_mut() {
+        if matches!(d.class, LayoutClass::Table | LayoutClass::Picture)
+            && d.bbox.page_coverage(page_width, page_height) < 0.03
+            && d.confidence < 0.7
+        {
+            d.class = LayoutClass::Text;
+        }
+    }
+
     // 3. Overlap resolution — iterative (up to 3 passes).
     for _ in 0..3 {
         let prev_len = detections.len();
@@ -119,6 +131,21 @@ fn pick_removal(a: &LayoutDetection, b: &LayoutDetection, containment_a_of_b: f3
         if containment_b_of_a > 0.8 {
             return 0; // remove a
         }
+    }
+
+    // Text preferred over Table/Picture when Text has equal or higher confidence.
+    // This prevents low-confidence Table/Picture detections from suppressing body text.
+    if a.class == LayoutClass::Text
+        && matches!(b.class, LayoutClass::Table | LayoutClass::Picture)
+        && a.confidence >= b.confidence
+    {
+        return 1; // remove Table/Picture, keep Text
+    }
+    if b.class == LayoutClass::Text
+        && matches!(a.class, LayoutClass::Table | LayoutClass::Picture)
+        && b.confidence >= a.confidence
+    {
+        return 0; // remove Table/Picture, keep Text
     }
 
     // Default: keep higher confidence.

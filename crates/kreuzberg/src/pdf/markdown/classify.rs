@@ -485,7 +485,9 @@ pub(super) fn mark_cross_page_repeating_text(all_pages: &mut [Vec<PdfParagraph>]
             if para.is_page_furniture {
                 continue;
             }
-            // Include headings: a heading on >50% of pages is a running header.
+            // Include headings in cross-page repeat detection: a heading
+            // appearing on >50% of pages is a running header, not a
+            // section heading. The layout model often misclassifies these.
             let text = paragraph_plain_text(para);
             let normalized = text.trim().to_lowercase();
             let word_count = normalized.split_whitespace().count();
@@ -509,7 +511,8 @@ pub(super) fn mark_cross_page_repeating_text(all_pages: &mut [Vec<PdfParagraph>]
         return;
     }
 
-    // Mark matching paragraphs as furniture.
+    // Mark matching paragraphs as furniture (including headings that are
+    // actually running headers misclassified by the layout model).
     for page in all_pages.iter_mut() {
         for para in page.iter_mut() {
             if para.is_page_furniture {
@@ -519,7 +522,7 @@ pub(super) fn mark_cross_page_repeating_text(all_pages: &mut [Vec<PdfParagraph>]
             let normalized = text.trim().to_lowercase();
             if repeating.contains(&normalized) {
                 para.is_page_furniture = true;
-                para.heading_level = None;
+                para.heading_level = None; // Demote from heading
             }
         }
     }
@@ -741,7 +744,7 @@ mod tests {
     }
 
     #[test]
-    fn test_cross_page_repeating_skips_headings() {
+    fn test_cross_page_repeating_marks_repeated_headings_as_furniture() {
         let mut pages = vec![];
         for _ in 0..6 {
             let mut h = make_h1(24.0, "Chapter");
@@ -749,7 +752,8 @@ mod tests {
             pages.push(vec![h, make_paragraph(12.0, 3)]);
         }
         mark_cross_page_repeating_text(&mut pages);
-        // Headings repeating on >50% of pages are running headers — furniture.
+        // Headings repeating on >50% of pages are running headers —
+        // they should be marked as furniture and demoted from heading.
         assert!(pages[0][0].is_page_furniture);
         assert!(pages[0][0].heading_level.is_none());
     }

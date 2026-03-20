@@ -583,7 +583,31 @@ impl DocumentExtractor for PdfExtractor {
         };
 
         // Finalize text: apply pre-rendered markdown (with image placeholder injection) if available.
-        // Images (including OCR) are now fully resolved, so we can inject placeholders.
+        // Quality gate: if pre-rendered markdown has >2x the words of native text,
+        // the layout pipeline added garbage (e.g., text extracted from decorative
+        // elements). Fall back to native text in that case.
+        #[cfg(feature = "pdf")]
+        let use_pdf_markdown = if use_pdf_markdown {
+            if let Some(ref md) = pre_rendered_markdown {
+                let md_words = md.split_whitespace().count();
+                let native_words = text.split_whitespace().count();
+                if native_words > 50 && md_words > native_words * 2 {
+                    tracing::debug!(
+                        md_words,
+                        native_words,
+                        "Layout quality gate: markdown has >2x native text words, falling back"
+                    );
+                    false
+                } else {
+                    true
+                }
+            } else {
+                false
+            }
+        } else {
+            false
+        };
+
         #[cfg(feature = "pdf")]
         let (text, used_pdf_markdown) = if use_pdf_markdown {
             if let Some(md) = pre_rendered_markdown {
