@@ -4784,8 +4784,11 @@ type ElementID string
 ### C#
 
 ```csharp title="ElementId.cs"
-// ElementId is represented as a string in C#
-string ElementId { get; }
+public class Element
+{
+    // ElementId is represented as a string in C#
+    public string ElementId { get; }
+}
 ```
 
 ElementId values are deterministically generated from element type, content, and page number, ensuring stable identifiers across extraction runs.

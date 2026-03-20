@@ -108,7 +108,11 @@ pub fn batch_extract_files_sync_impl(
     {
         let config = parse_config(config_json)?;
         let path_vec: Vec<String> = paths.iter().map(|s| s.to_string()).collect();
-        let items = build_file_items(path_vec, file_configs.0)?;
+        let fc = match file_configs {
+            Nullable::NotNull(val) => Some(val),
+            Nullable::Null => None,
+        };
+        let items = build_file_items(path_vec, fc)?;
         let results = kreuzberg::batch_extract_file_sync(items, &config).map_err(kreuzberg_error)?;
         let r_results: Vec<Robj> = results
             .into_iter()
@@ -132,7 +136,11 @@ pub fn batch_extract_files_impl(
     {
         let config = parse_config(config_json)?;
         let path_vec: Vec<String> = paths.iter().map(|s| s.to_string()).collect();
-        let items = build_file_items(path_vec, file_configs.0)?;
+        let fc = match file_configs {
+            Nullable::NotNull(val) => Some(val),
+            Nullable::Null => None,
+        };
+        let items = build_file_items(path_vec, fc)?;
         let runtime = tokio::runtime::Runtime::new().map_err(to_r_error)?;
         let results = runtime
             .block_on(async { kreuzberg::batch_extract_file(items, &config).await })
@@ -157,7 +165,11 @@ pub fn batch_extract_bytes_sync_impl(
     config_json: Nullable<&str>,
 ) -> extendr_api::Result<List> {
     let config = parse_config(config_json)?;
-    let items = build_bytes_items(&data_list, mime_types, file_configs.0)?;
+    let fc = match file_configs {
+        Nullable::NotNull(val) => Some(val),
+        Nullable::Null => None,
+    };
+    let items = build_bytes_items(&data_list, mime_types, fc)?;
     let results = kreuzberg::batch_extract_bytes_sync(items, &config).map_err(kreuzberg_error)?;
     let r_results: Vec<Robj> = results
         .into_iter()
@@ -175,7 +187,11 @@ pub fn batch_extract_bytes_impl(
     #[cfg(not(target_arch = "wasm32"))]
     {
         let config = parse_config(config_json)?;
-        let items = build_bytes_items(&data_list, mime_types, file_configs.0)?;
+        let fc = match file_configs {
+            Nullable::NotNull(val) => Some(val),
+            Nullable::Null => None,
+        };
+        let items = build_bytes_items(&data_list, mime_types, fc)?;
         let runtime = tokio::runtime::Runtime::new().map_err(to_r_error)?;
         let results = runtime
             .block_on(async { kreuzberg::batch_extract_bytes(items, &config).await })

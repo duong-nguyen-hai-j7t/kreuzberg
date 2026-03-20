@@ -370,8 +370,8 @@ public final class E2EHelpers {
       }
       if (chunks != null && eachHasHeadingContext != null && !eachHasHeadingContext) {
         for (var chunk : chunks) {
-          assertNull(
-              chunk.getMetadata().getHeadingContext(),
+          assertTrue(
+              chunk.getMetadata().getHeadingContext().isEmpty(),
               "Expected each chunk to have no heading_context");
         }
       }
