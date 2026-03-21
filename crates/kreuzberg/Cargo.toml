@@ -192,6 +192,7 @@ pkg-config = "0.3"
 [dependencies]
 ahash = { workspace = true }
 async-trait = { workspace = true }
+blake3 = { workspace = true }
 base64 = { workspace = true }
 bitvec = "1.0"
 bytes = { workspace = true }

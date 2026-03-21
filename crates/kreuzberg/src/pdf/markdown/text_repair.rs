@@ -375,7 +375,7 @@ pub(super) fn text_has_broken_word_spacing(text: &str) -> bool {
 /// - It's not a common standalone short word
 /// - The next word starts with a lowercase letter (continuation)
 /// - Or the fragment is part of a run of consecutive short fragments
-pub(super) fn repair_broken_word_spacing(text: &str) -> Cow<'_, str> {
+pub(in crate::pdf::markdown) fn repair_broken_word_spacing(text: &str) -> Cow<'_, str> {
     if text.is_empty() {
         return Cow::Borrowed(text);
     }

@@ -63,6 +63,7 @@ libc = "0.2.183"
 async-trait = "0.1.89"
 tracing = "0.1"
 ahash = "0.8.12"
+blake3 = "1"
 base64 = "0.22.1"
 bytes = { version = "1", features = ["serde"] }
 hex = "0.4.3"
