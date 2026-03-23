@@ -12,10 +12,13 @@ use crate::types::ExtractionResult;
 /// Internal state for a deferred extraction result.
 ///
 /// Wraps either a single result or a batch of results (for batch operations).
-#[allow(clippy::large_enum_variant)]
+/// Results are stored behind `Arc` so that:
+/// - The large `ExtractionResult` struct is heap-allocated, keeping enum variant sizes equal.
+/// - Multiple retrieve calls (e.g. repeated `getResult()` or `wait()`) share the same
+///   allocation; `Arc::unwrap_or_clone` moves the value on the last retrieval to avoid copying.
 pub(crate) enum DeferredInner {
-    Single(Option<Result<kreuzberg::ExtractionResult, String>>),
-    Batch(Option<Result<Vec<kreuzberg::ExtractionResult>, String>>),
+    Single(Option<Result<Arc<kreuzberg::ExtractionResult>, String>>),
+    Batch(Option<Result<Vec<Arc<kreuzberg::ExtractionResult>>, String>>),
 }
 
 /// A deferred result from an async extraction operation.
@@ -77,7 +80,9 @@ impl DeferredResult {
         match &*guard {
             DeferredInner::Single(Some(result)) => match result {
                 Ok(r) => Ok(Some(ExtractionResult::from_rust_with_config(
-                    r.clone(),
+                    // Clone only the Arc pointer here; Arc::unwrap_or_clone moves the value
+                    // out if this is the last reference, otherwise clones the inner data.
+                    Arc::unwrap_or_clone(Arc::clone(r)),
                     self.extract_tables,
                 )?)),
                 Err(e) => Err(PhpException::default(e.clone())),
@@ -107,7 +112,10 @@ impl DeferredResult {
                 match &*guard {
                     DeferredInner::Single(Some(result)) => {
                         return match result {
-                            Ok(r) => ExtractionResult::from_rust_with_config(r.clone(), self.extract_tables),
+                            Ok(r) => ExtractionResult::from_rust_with_config(
+                                Arc::unwrap_or_clone(Arc::clone(r)),
+                                self.extract_tables,
+                            ),
                             Err(e) => Err(PhpException::default(e.clone())),
                         };
                     }
@@ -142,7 +150,12 @@ impl DeferredResult {
                         return match result {
                             Ok(results) => results
                                 .iter()
-                                .map(|r| ExtractionResult::from_rust_with_config(r.clone(), self.extract_tables))
+                                .map(|r| {
+                                    ExtractionResult::from_rust_with_config(
+                                        Arc::unwrap_or_clone(Arc::clone(r)),
+                                        self.extract_tables,
+                                    )
+                                })
                                 .collect(),
                             Err(e) => Err(PhpException::default(e.clone())),
                         };
@@ -182,7 +195,7 @@ impl DeferredResult {
                     DeferredInner::Single(Some(result)) => {
                         return match result {
                             Ok(r) => Ok(Some(ExtractionResult::from_rust_with_config(
-                                r.clone(),
+                                Arc::unwrap_or_clone(Arc::clone(r)),
                                 self.extract_tables,
                             )?)),
                             Err(e) => Err(PhpException::default(e.clone())),
@@ -231,7 +244,12 @@ impl DeferredResult {
                             Ok(results) => Ok(Some(
                                 results
                                     .iter()
-                                    .map(|r| ExtractionResult::from_rust_with_config(r.clone(), self.extract_tables))
+                                    .map(|r| {
+                                        ExtractionResult::from_rust_with_config(
+                                            Arc::unwrap_or_clone(Arc::clone(r)),
+                                            self.extract_tables,
+                                        )
+                                    })
                                     .collect::<PhpResult<Vec<_>>>()?,
                             )),
                             Err(e) => Err(PhpException::default(e.clone())),

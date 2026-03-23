@@ -10,6 +10,7 @@ use js_sys::Uint8Array;
 use kreuzberg::{
     FileExtractionConfig, batch_extract_bytes_sync, extract_bytes, extract_bytes_sync, utils::camel_to_snake,
 };
+use std::sync::Arc;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 
@@ -142,17 +143,17 @@ pub fn extract_bytes_wasm(data: Uint8Array, mime_type: String, config: Option<Js
 /// ```
 #[wasm_bindgen(js_name = extractFile)]
 pub fn extract_file_wasm(file: &web_sys::File, mime_type: Option<String>, config: Option<JsValue>) -> js_sys::Promise {
+    // `file` is borrowed so it must be cloned to move into the async block;
+    // `mime_type` and `config` are owned values that can be moved directly.
     let file_clone = file.clone();
-    let mime_type_clone = mime_type.clone();
-    let config_clone = config.clone();
 
     wasm_bindgen_futures::future_to_promise(async move {
         let bytes = read_file_as_array_buffer(&file_clone)
             .await
             .map_err(|e| JsValue::from_str(&format!("Failed to read file: {}", e)))?;
 
-        let extraction_config = parse_config(config_clone)?;
-        let mime = mime_type_clone.unwrap_or_else(|| file_clone.type_());
+        let extraction_config = parse_config(config)?;
+        let mime = mime_type.unwrap_or_else(|| file_clone.type_());
 
         let result = extract_bytes(&bytes, &mime, &extraction_config)
             .await
@@ -276,16 +277,22 @@ pub fn batch_extract_bytes_wasm(
             return Err(JsValue::from_str("data_list and mime_types must have the same length"));
         }
 
-        let extraction_config = parse_config(config)?;
+        let extraction_config = Arc::new(parse_config(config)?);
         let items = build_batch_items(data_list, mime_types, file_configs)?;
 
         let mut results = Vec::with_capacity(items.len());
         for (data, mime, file_config) in &items {
-            let effective_config = match file_config {
-                Some(fc) => extraction_config.with_file_overrides(fc),
-                None => extraction_config.clone(),
+            // When there is a per-file override we must build a new config struct; otherwise
+            // we pass a reference to the shared Arc so no full struct clone is needed.
+            let effective_config;
+            let config_ref = match file_config {
+                Some(fc) => {
+                    effective_config = extraction_config.with_file_overrides(fc);
+                    &effective_config
+                }
+                None => &*extraction_config,
             };
-            let result = extract_bytes(data.as_slice(), mime, &effective_config)
+            let result = extract_bytes(data.as_slice(), mime, config_ref)
                 .await
                 .map_err(convert_error)?;
             results.push(result);

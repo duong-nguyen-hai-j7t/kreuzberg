@@ -55,7 +55,8 @@ pub fn kreuzberg_extract_file_async(
     worker_runtime()?.spawn(async move {
         let result = kreuzberg::extract_file(&path, mime_type.as_deref(), &rust_config)
             .await
-            .map_err(|e| e.to_string());
+            .map_err(|e| e.to_string())
+            .map(Arc::new);
 
         *slot_clone.lock() = DeferredInner::Single(Some(result));
     });
@@ -105,7 +106,8 @@ pub fn kreuzberg_extract_bytes_async(
     worker_runtime()?.spawn(async move {
         let result = kreuzberg::extract_bytes(&data_owned, &mime_type, &rust_config)
             .await
-            .map_err(|e| e.to_string());
+            .map_err(|e| e.to_string())
+            .map(Arc::new);
 
         *slot_clone.lock() = DeferredInner::Single(Some(result));
     });
@@ -179,7 +181,8 @@ pub fn kreuzberg_batch_extract_files_async(
     worker_runtime()?.spawn(async move {
         let result = kreuzberg::batch_extract_file(items, &rust_config)
             .await
-            .map_err(|e| e.to_string());
+            .map_err(|e| e.to_string())
+            .map(|results| results.into_iter().map(Arc::new).collect());
 
         *slot_clone.lock() = DeferredInner::Batch(Some(result));
     });
@@ -278,7 +281,8 @@ pub fn kreuzberg_batch_extract_bytes_async(
     worker_runtime()?.spawn(async move {
         let result = kreuzberg::batch_extract_bytes(items, &rust_config)
             .await
-            .map_err(|e| e.to_string());
+            .map_err(|e| e.to_string())
+            .map(|results| results.into_iter().map(Arc::new).collect());
 
         *slot_clone.lock() = DeferredInner::Batch(Some(result));
     });
