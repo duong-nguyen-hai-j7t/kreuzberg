@@ -91,6 +91,7 @@ fn build_document_structure(doc: &crate::extraction::docx::parser::Document) -> 
                         page_end: None,
                         bbox: None,
                         annotations: Vec::new(),
+                        attributes: None,
                     };
                     node_count += 1;
                     let group_idx = structure.push_node(group);
@@ -109,6 +110,7 @@ fn build_document_structure(doc: &crate::extraction::docx::parser::Document) -> 
                         page_end: None,
                         bbox: None,
                         annotations: Vec::new(),
+                        attributes: None,
                     };
                     node_count += 1;
                     let heading_idx = structure.push_node(heading);
@@ -127,6 +129,7 @@ fn build_document_structure(doc: &crate::extraction::docx::parser::Document) -> 
                         page_end: None,
                         bbox: None,
                         annotations: Vec::new(),
+                        attributes: None,
                     };
                     node_count += 1;
                     let idx = structure.push_node(node);
@@ -145,6 +148,7 @@ fn build_document_structure(doc: &crate::extraction::docx::parser::Document) -> 
                         page_end: None,
                         bbox: None,
                         annotations: Vec::new(),
+                        attributes: None,
                     };
                     node_count += 1;
                     let idx = structure.push_node(node);
@@ -192,6 +196,7 @@ fn build_document_structure(doc: &crate::extraction::docx::parser::Document) -> 
                     page_end: None,
                     bbox: None,
                     annotations: Vec::new(),
+                    attributes: None,
                 };
                 node_count += 1;
                 let table_idx = structure.push_node(node);
@@ -215,6 +220,7 @@ fn build_document_structure(doc: &crate::extraction::docx::parser::Document) -> 
                     page_end: None,
                     bbox: None,
                     annotations: Vec::new(),
+                    attributes: None,
                 };
                 node_count += 1;
                 let img_idx = structure.push_node(node);
@@ -252,6 +258,7 @@ fn build_document_structure(doc: &crate::extraction::docx::parser::Document) -> 
                     page_end: None,
                     bbox: None,
                     annotations: Vec::new(),
+                    attributes: None,
                 };
                 node_count += 1;
                 structure.push_node(node);
@@ -280,6 +287,7 @@ fn build_document_structure(doc: &crate::extraction::docx::parser::Document) -> 
             page_end: None,
             bbox: None,
             annotations: Vec::new(),
+            attributes: None,
         };
         node_count += 1;
         structure.push_node(node);
