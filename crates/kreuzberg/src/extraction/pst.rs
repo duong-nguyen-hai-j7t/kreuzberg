@@ -26,8 +26,10 @@
 //! ```
 
 use crate::error::{KreuzbergError, Result};
-use crate::types::EmailExtractionResult;
+use crate::types::{EmailExtractionResult, ProcessingWarning};
+use std::borrow::Cow;
 use std::collections::HashMap;
+use std::string::String;
 
 #[cfg(feature = "email")]
 use outlook_pst::{
@@ -56,7 +58,7 @@ use std::rc::Rc;
 /// Returns an error if the PST data cannot be written to a temporary file,
 /// or if the PST format is invalid.
 #[cfg(feature = "email")]
-pub fn extract_pst_messages(pst_data: &[u8]) -> Result<Vec<EmailExtractionResult>> {
+pub fn extract_pst_messages(pst_data: &[u8]) -> Result<(Vec<EmailExtractionResult>, Vec<ProcessingWarning>)> {
     use std::io::Write;
 
     // open_store requires a file path, so we write to a uniquely-named temp file
@@ -69,26 +71,28 @@ pub fn extract_pst_messages(pst_data: &[u8]) -> Result<Vec<EmailExtractionResult
     temp_file.write_all(pst_data).map_err(KreuzbergError::Io)?;
     temp_file.flush().map_err(KreuzbergError::Io)?;
 
-    extract_from_path(temp_file.path())
+    let (messages, warnings) = extract_from_path(temp_file.path())?;
+    Ok((messages, warnings))
 }
 
 #[cfg(feature = "email")]
-fn extract_from_path(path: &std::path::Path) -> Result<Vec<EmailExtractionResult>> {
+fn extract_from_path(path: &std::path::Path) -> Result<(Vec<EmailExtractionResult>, Vec<ProcessingWarning>)> {
     let store = outlook_pst::open_store(path).map_err(|e| KreuzbergError::Validation {
         message: format!("Failed to open PST file: {e}"),
         source: None,
     })?;
 
     let mut messages = Vec::new();
+    let mut warnings = Vec::new();
 
     let ipm_entry = match store.properties().ipm_sub_tree_entry_id() {
         Ok(e) => e,
-        Err(_) => return Ok(messages),
+        Err(_) => return Ok((messages, warnings)),
     };
 
     let root_folder = match store.open_folder(&ipm_entry) {
         Ok(f) => f,
-        Err(_) => return Ok(messages),
+        Err(_) => return Ok((messages, warnings)),
     };
 
     // Iterative depth-first traversal to avoid deep recursion
@@ -104,11 +108,25 @@ fn extract_from_path(path: &std::path::Path) -> Result<Vec<EmailExtractionResult
             let ids: Vec<u32> = contents.rows_matrix().map(|r| u32::from(r.id())).collect();
             for id in ids {
                 let node = NodeId::from(id);
-                let Ok(entry_id) = store.properties().make_entry_id(node) else {
-                    continue;
+                let entry_id = match store.properties().make_entry_id(node) {
+                    Ok(e) => e,
+                    Err(e) => {
+                        warnings.push(ProcessingWarning {
+                            source: Cow::Borrowed("pst_extraction"),
+                            message: Cow::Owned(format!("Failed to create entry ID for message node {:?}: {}", node, e)),
+                        });
+                        continue;
+                    }
                 };
-                let Ok(msg) = store.open_message(&entry_id, None) else {
-                    continue;
+                let msg = match store.open_message(&entry_id, None) {
+                    Ok(m) => m,
+                    Err(e) => {
+                        warnings.push(ProcessingWarning {
+                            source: Cow::Borrowed("pst_extraction"),
+                            message: Cow::Owned(format!("Failed to open message {:?}: {}", entry_id, e)),
+                        });
+                        continue;
+                    }
                 };
                 messages.push(extract_message_content(msg.as_ref()));
             }
@@ -119,18 +137,32 @@ fn extract_from_path(path: &std::path::Path) -> Result<Vec<EmailExtractionResult
             let ids: Vec<u32> = hierarchy.rows_matrix().map(|r| u32::from(r.id())).collect();
             for id in ids {
                 let node = NodeId::from(id);
-                let Ok(entry_id) = store.properties().make_entry_id(node) else {
-                    continue;
+                let entry_id = match store.properties().make_entry_id(node) {
+                    Ok(e) => e,
+                    Err(e) => {
+                        warnings.push(ProcessingWarning {
+                            source: Cow::Borrowed("pst_extraction"),
+                            message: Cow::Owned(format!("Failed to create entry ID for folder node {:?}: {}", node, e)),
+                        });
+                        continue;
+                    }
                 };
-                let Ok(sub_folder) = store.open_folder(&entry_id) else {
-                    continue;
+                let sub_folder = match store.open_folder(&entry_id) {
+                    Ok(f) => f,
+                    Err(e) => {
+                        warnings.push(ProcessingWarning {
+                            source: Cow::Borrowed("pst_extraction"),
+                            message: Cow::Owned(format!("Failed to open folder {:?}: {}", entry_id, e)),
+                        });
+                        continue;
+                    }
                 };
                 folder_stack.push((sub_folder, depth + 1));
             }
         }
     }
 
-    Ok(messages)
+    Ok((messages, warnings))
 }
 
 #[cfg(feature = "email")]
@@ -143,7 +175,7 @@ fn extract_message_content(message: &dyn PstMessage) -> EmailExtractionResult {
     let from_email = sender_email.or(sender_name);
 
     let plain_text = get_str_prop(props, 0x1000); // PR_BODY
-    let html_content = get_str_prop(props, 0x1013); // PR_HTML (may be Binary; handled below)
+    let html_content = get_str_prop(props, 0x1013); // PR_HTML (handles String or Binary via prop_value_to_string)
 
     let cleaned_text = plain_text
         .clone()
@@ -249,57 +281,32 @@ fn prop_value_to_string(value: &PropertyValue) -> Option<String> {
     match value {
         PropertyValue::String8(v) => Some(v.to_string()),
         PropertyValue::Unicode(v) => Some(v.to_string()),
+        PropertyValue::Binary(v) => Some(String::from_utf8_lossy(v.buffer()).into_owned()),
         _ => None,
     }
 }
 
-/// Convert a Windows FILETIME (100-ns intervals since 1601-01-01) to an ISO-8601 string.
-///
-/// Uses a simple Unix timestamp calculation without external date libraries.
 #[cfg(feature = "email")]
 fn windows_filetime_to_string(filetime: i64) -> String {
+    use chrono::{DateTime, Utc};
+
     // 100-nanosecond intervals between 1601-01-01 and 1970-01-01
     const EPOCH_DIFF_100NS: i64 = 116_444_736_000_000_000;
-    let unix_secs = (filetime.saturating_sub(EPOCH_DIFF_100NS)) / 10_000_000;
+    let unix_100ns = filetime.saturating_sub(EPOCH_DIFF_100NS);
+    let unix_secs = unix_100ns / 10_000_000;
+    let nsecs = (unix_100ns % 10_000_000) * 100;
 
-    // Format as a simple UTC timestamp: "YYYY-MM-DD HH:MM:SS UTC"
-    // Days since Unix epoch
-    if unix_secs < 0 {
+    if unix_100ns < 0 {
         return format!("(invalid timestamp: {})", filetime);
     }
-    let secs = unix_secs as u64;
-    let seconds_of_day = secs % 86400;
-    let days = secs / 86400;
 
-    let hh = seconds_of_day / 3600;
-    let mm = (seconds_of_day % 3600) / 60;
-    let ss = seconds_of_day % 60;
-
-    // Gregorian calendar calculation
-    let (year, month, day) = days_to_ymd(days);
-
-    format!("{:04}-{:02}-{:02}T{:02}:{:02}:{:02}Z", year, month, day, hh, mm, ss)
-}
-
-/// Convert days since Unix epoch (1970-01-01) to (year, month, day).
-#[cfg(feature = "email")]
-fn days_to_ymd(days: u64) -> (u64, u64, u64) {
-    // Algorithm from: https://howardhinnant.github.io/date_algorithms.html
-    let z = days + 719468;
-    let era = z / 146097;
-    let doe = z % 146097;
-    let yoe = (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365;
-    let y = yoe + era * 400;
-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
-    let mp = (5 * doy + 2) / 153;
-    let d = doy - (153 * mp + 2) / 5 + 1;
-    let m = if mp < 10 { mp + 3 } else { mp - 9 };
-    let y = if m <= 2 { y + 1 } else { y };
-    (y, m, d)
+    DateTime::<Utc>::from_timestamp(unix_secs, nsecs as u32)
+        .map(|dt| dt.to_rfc3339_opts(chrono::SecondsFormat::Secs, true))
+        .unwrap_or_else(|| format!("(invalid timestamp: {})", filetime))
 }
 
 #[cfg(not(feature = "email"))]
-pub fn extract_pst_messages(_pst_data: &[u8]) -> Result<Vec<EmailExtractionResult>> {
+pub fn extract_pst_messages(_pst_data: &[u8]) -> Result<(Vec<EmailExtractionResult>, Vec<ProcessingWarning>)> {
     Err(KreuzbergError::FeatureNotEnabled {
         feature: "email".to_string(),
         context: Some("PST extraction requires the 'email' feature to be enabled".to_string()),
