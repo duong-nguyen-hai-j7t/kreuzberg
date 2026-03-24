@@ -1,4 +1,5 @@
 ```typescript title="simple_benchmark.ts"
+/* oxlint-disable */
 import { extractFile, type ExtractionConfig } from "@kreuzberg/node";
 
 async function benchmarkExtractions(): Promise<void> {
@@ -13,9 +14,9 @@ async function benchmarkExtractions(): Promise<void> {
   const syncDuration = (performance.now() - start) / 1000;
   const avgSync = syncDuration / numRuns;
 
-  console.log(`Sync extraction (${numRuns} runs):`);
-  console.log(`  - Total time: ${syncDuration.toFixed(3)}s`);
-  console.log(`  - Average: ${avgSync.toFixed(3)}s per extraction`);
+  console.log("Sync extraction (" + numRuns + " runs):");
+  console.log("  - Total time: " + syncDuration.toFixed(3) + "s");
+  console.log("  - Average: " + avgSync.toFixed(3) + "s per extraction");
 
   start = performance.now();
   const tasks = Array(numRuns)
@@ -24,10 +25,10 @@ async function benchmarkExtractions(): Promise<void> {
   await Promise.all(tasks);
   const asyncDuration = (performance.now() - start) / 1000;
 
-  console.log(`\nAsync extraction (${numRuns} parallel runs):`);
-  console.log(`  - Total time: ${asyncDuration.toFixed(3)}s`);
-  console.log(`  - Average: ${(asyncDuration / numRuns).toFixed(3)}s per extraction`);
-  console.log(`  - Speedup: ${(syncDuration / asyncDuration).toFixed(1)}x`);
+  console.log("\nAsync extraction (" + numRuns + " parallel runs):");
+  console.log("  - Total time: " + asyncDuration.toFixed(3) + "s");
+  console.log("  - Average: " + (asyncDuration / numRuns).toFixed(3) + "s per extraction");
+  console.log("  - Speedup: " + (syncDuration / asyncDuration).toFixed(1) + "x");
 
   const cacheConfig: ExtractionConfig = { useCache: true };
 
@@ -35,14 +36,14 @@ async function benchmarkExtractions(): Promise<void> {
   start = performance.now();
   const _result1 = await extractFile(filePath, null, cacheConfig);
   const firstDuration = (performance.now() - start) / 1000;
-  console.log(`  - Time: ${firstDuration.toFixed(3)}s`);
+  console.log("  - Time: " + firstDuration.toFixed(3) + "s");
 
   console.log("Second extraction (from cache)...");
   start = performance.now();
   const _result2 = await extractFile(filePath, null, cacheConfig);
   const cachedDuration = (performance.now() - start) / 1000;
-  console.log(`  - Time: ${cachedDuration.toFixed(3)}s`);
-  console.log(`  - Cache speedup: ${(firstDuration / cachedDuration).toFixed(1)}x`);
+  console.log("  - Time: " + cachedDuration.toFixed(3) + "s");
+  console.log("  - Cache speedup: " + (firstDuration / cachedDuration).toFixed(1) + "x");
 }
 
 benchmarkExtractions().catch(console.error);

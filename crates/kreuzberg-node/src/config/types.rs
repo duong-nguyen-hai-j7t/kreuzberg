@@ -1327,6 +1327,7 @@ impl TryFrom<ExtractionConfig> for JsExtractionConfig {
                 chunker_type: match chunk.chunker_type {
                     ChunkerType::Text => None,
                     ChunkerType::Markdown => Some("markdown".to_string()),
+                    ChunkerType::Yaml => Some("yaml".to_string()),
                 },
                 sizing_type: match &chunk.sizing {
                     kreuzberg::ChunkSizing::Characters => None,
@@ -1679,6 +1680,7 @@ impl TryFrom<FileExtractionConfig> for JsFileExtractionConfig {
                 chunker_type: match chunk.chunker_type {
                     ChunkerType::Text => None,
                     ChunkerType::Markdown => Some("markdown".to_string()),
+                    ChunkerType::Yaml => Some("yaml".to_string()),
                 },
                 sizing_type: match &chunk.sizing {
                     kreuzberg::ChunkSizing::Characters => None,

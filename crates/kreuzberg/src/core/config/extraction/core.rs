@@ -336,6 +336,28 @@ impl ExtractionConfig {
         config
     }
 
+    /// Normalize configuration for implicit requirements.
+    ///
+    /// Currently handles:
+    /// - Auto-enabling `extract_pages` when `result_format` is `ElementBased`, because
+    ///   the element transformation requires per-page data to assign correct page numbers.
+    ///   Without this, all elements would incorrectly get `page_number=1`.
+    pub fn normalized(&self) -> std::borrow::Cow<'_, Self> {
+        if self.result_format == crate::types::OutputFormat::ElementBased {
+            let needs_pages = match &self.pages {
+                Some(page_config) => !page_config.extract_pages,
+                None => true,
+            };
+            if needs_pages {
+                let mut config = self.clone();
+                let page_config = config.pages.get_or_insert_with(super::super::page::PageConfig::default);
+                page_config.extract_pages = true;
+                return std::borrow::Cow::Owned(config);
+            }
+        }
+        std::borrow::Cow::Borrowed(self)
+    }
+
     /// Check if image processing is needed by examining OCR and image extraction settings.
     ///
     /// Returns `true` if either OCR is enabled or image extraction is configured,

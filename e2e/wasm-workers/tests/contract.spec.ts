@@ -3,10 +3,10 @@
 
 // Tests for contract fixtures. Cloudflare Workers with Vitest + Miniflare
 
-import { describe, it, expect } from "vitest";
-import { extractBytes, batchExtractBytes, batchExtractBytesSync } from "@kreuzberg/wasm";
-import { assertions, buildConfig, getFixture, shouldSkipFixture } from "./helpers.js";
 import type { ExtractionResult } from "@kreuzberg/wasm";
+import { batchExtractBytes, batchExtractBytesSync, extractBytes } from "@kreuzberg/wasm";
+import { describe, it } from "vitest";
+import { assertions, buildConfig, getFixture, shouldSkipFixture } from "./helpers.js";
 
 describe("contract", () => {
 	it("api_batch_bytes_async", async () => {
@@ -372,7 +372,7 @@ describe("contract", () => {
 		}
 		assertions.assertExpectedMime(result, ["application/pdf"]);
 		assertions.assertMinContentLength(result, 10);
-		assertions.assertChunks(result, 1, null, true, null, null);
+		assertions.assertChunks(result, 1, null, true, null, null, null);
 	});
 
 	it("config_chunking_heading_context", async () => {
@@ -396,7 +396,7 @@ describe("contract", () => {
 			return;
 		}
 		assertions.assertMinContentLength(result, 10);
-		assertions.assertChunks(result, 2, null, true, null, true);
+		assertions.assertChunks(result, 2, null, true, null, true, null);
 	});
 
 	it("config_chunking_markdown", async () => {
@@ -421,7 +421,7 @@ describe("contract", () => {
 		}
 		assertions.assertExpectedMime(result, ["application/pdf"]);
 		assertions.assertMinContentLength(result, 10);
-		assertions.assertChunks(result, 1, null, true, null, null);
+		assertions.assertChunks(result, 1, null, true, null, null, null);
 	});
 
 	it("config_chunking_no_headings", async () => {
@@ -445,7 +445,33 @@ describe("contract", () => {
 			return;
 		}
 		assertions.assertMinContentLength(result, 10);
-		assertions.assertChunks(result, 2, null, true, null, false);
+		assertions.assertChunks(result, 2, null, true, null, false, null);
+	});
+
+	it("config_chunking_prepend_heading_context", async () => {
+		const documentBytes = getFixture("markdown/extraction_test.md");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({
+			chunking: { chunker_type: "markdown", max_chars: 300, max_overlap: 50, prepend_heading_context: true },
+		});
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "application/octet-stream", config);
+		} catch (error) {
+			if (shouldSkipFixture(error, "config_chunking_prepend_heading_context", ["chunking"], undefined)) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertMinContentLength(result, 10);
+		assertions.assertChunks(result, 2, null, true, null, true, true);
 	});
 
 	it("config_chunking_small", async () => {
@@ -470,7 +496,7 @@ describe("contract", () => {
 		}
 		assertions.assertExpectedMime(result, ["application/pdf"]);
 		assertions.assertMinContentLength(result, 10);
-		assertions.assertChunks(result, 2, null, true, null, null);
+		assertions.assertChunks(result, 2, null, true, null, null, null);
 	});
 
 	it("config_chunking_text", async () => {
@@ -495,7 +521,7 @@ describe("contract", () => {
 		}
 		assertions.assertExpectedMime(result, ["application/pdf"]);
 		assertions.assertMinContentLength(result, 10);
-		assertions.assertChunks(result, 1, null, true, null, null);
+		assertions.assertChunks(result, 1, null, true, null, null, null);
 	});
 
 	it("config_djot_content", async () => {

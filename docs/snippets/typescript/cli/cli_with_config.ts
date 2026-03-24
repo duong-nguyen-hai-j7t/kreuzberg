@@ -1,4 +1,5 @@
 ```typescript title="cli_with_config.ts"
+/* oxlint-disable */
 import { spawn } from "child_process";
 
 interface ExtractionResult {
@@ -34,7 +35,8 @@ async function extractWithConfig(
 
     child.on("close", (code) => {
       if (code !== 0) {
-        reject(new Error(`CLI exited with code ${code}: ${stderr}`));
+        const errMsg = "CLI exited with code " + code + ": " + stderr;
+        reject(new Error(errMsg));
         return;
       }
 
@@ -46,10 +48,11 @@ async function extractWithConfig(
 const configFile = "kreuzberg.toml";
 const document = "document.pdf";
 
-console.log(`Extracting ${document} with config ${configFile}`);
+console.log("Extracting " + document + " with config " + configFile);
 const result = await extractWithConfig(document, configFile);
 
-console.log(`Content length: ${result.content.length}`);
-console.log(`Format: ${result.format}`);
-console.log(`Languages: ${result.languages?.join(", ")}`);
+console.log("Content length: " + result.content.length);
+console.log("Format: " + result.format);
+const languages = result.languages ? result.languages.join(", ") : "";
+console.log("Languages: " + languages);
 ```

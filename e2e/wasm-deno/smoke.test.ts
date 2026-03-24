@@ -3,6 +3,7 @@
 
 // Tests for smoke fixtures. Run with: deno test --allow-read
 
+import type { ExtractionResult } from "./helpers.ts";
 import {
 	assertions,
 	buildConfig,
@@ -12,11 +13,30 @@ import {
 	resolveDocument,
 	shouldSkipFixture,
 } from "./helpers.ts";
-import type { ExtractionResult } from "./helpers.ts";
 
 // Initialize WASM module and enable OCR once at module load time
 await initWasm();
 await enableOcr();
+
+Deno.test("smoke_cache_namespace", { permissions: { read: true, net: true } }, async () => {
+	const config = buildConfig({ cache_namespace: "test_tenant", cache_ttl_secs: 3600, use_cache: true });
+	let result: ExtractionResult | null = null;
+	try {
+		const documentBytes = await resolveDocument("text/report.txt");
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "text/plain", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "smoke_cache_namespace", [], undefined)) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertExpectedMime(result, ["text/plain"]);
+	assertions.assertMinContentLength(result, 5);
+});
 
 Deno.test("smoke_docx_basic", { permissions: { read: true, net: true } }, async () => {
 	const config = buildConfig(undefined);

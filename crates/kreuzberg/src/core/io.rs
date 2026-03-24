@@ -12,6 +12,7 @@ use std::path::Path;
 /// Files smaller than this are read with a regular `read()` call since the
 /// mmap overhead (open, fstat, mmap syscalls + TLB pressure) outweighs the
 /// benefit for small allocations.
+#[cfg(not(target_arch = "wasm32"))]
 const MMAP_THRESHOLD_BYTES: u64 = 1_048_576; // 1 MiB
 
 /// An owned buffer of file bytes.

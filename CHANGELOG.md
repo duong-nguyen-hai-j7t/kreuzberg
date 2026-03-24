@@ -7,10 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [4.6.0] - 2026-03-24
 
 ### Added
 
+- **Recursive archive extraction**: Archives (ZIP, TAR, 7Z, GZIP) now recursively extract all processable files, each with its own `ExtractionResult` including `DocumentStructure`, annotations, and metadata. New `ArchiveEntry` type with path, mime type, and nested result. Configurable via `max_archive_depth` (default: 3, set to 0 for legacy single-text behavior).
+- **YAML/JSON section chunker**: New `ChunkerType::Yaml` variant that splits structured files by keys with full hierarchy paths (e.g., `database > primary > host`). Auto-inferred from extraction metadata — no explicit `chunker_type` needed for YAML/JSON files.
 - **Unified DocumentStructure DTO**: Extended the `DocumentStructure` model with 7 new node types (`Slide`, `DefinitionList`, `DefinitionItem`, `Citation`, `Admonition`, `RawBlock`, `MetadataBlock`), 4 new annotation kinds (`Highlight`, `Color`, `FontSize`, `Custom`), and format-specific `attributes` bag on every node.
 - **DocumentStructureBuilder**: Ergonomic builder with heading-driven section nesting, container stack (Quote/Admonition/Slide auto-parenting), and annotation helpers. Replaces hand-constructed `DocumentNode` structs across all extractors.
 - **Unified rendering module**: `render_to_markdown()` and `render_to_plain()` renderers that walk a `DocumentStructure` tree to produce consistent output with inline annotation rendering, table pipe escaping, and nested list depth support.
@@ -21,11 +23,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Scientific: JATS (article structure), DocBook (section hierarchy)
   - Data: Excel (sheet headings + tables), CSV, DBF, JSON/YAML/TOML, BibTeX (citations), Jupyter (code + markdown cells)
   - Other: Email (metadata headers), RTF, OPML (outline hierarchy), HWP, iWork (Keynote/Numbers/Pages), XML, Image (OCR text)
-- **Integration tests**: 44 tests verifying DocumentStructure output for every migrated extractor using real fixture files.
+- **DocBook/JATS inline annotations**: Semantic inline formatting for academic/technical documents — emphasis, bold, code, links, subscript/superscript mapped to `AnnotationKind` variants.
+- **Document-level OCR**: `OcrBackend` trait supports `process_document()` for whole-file extraction without per-page rasterization. Up to 30% faster on multi-page documents with better context.
+
+### Changed
+
+- **CSV extraction for embedding quality**: Produces `Row N: Header: Value` format instead of space-separated when a header row is detected. Programmatic `tables` field unchanged.
+- **XML extraction for embedding quality**: Indented hierarchical output preserving element tree with attributes inline, blank lines between top-level siblings, and `xmlns:*` filtering.
+
+### Improved
+
+- **Zero-copy file I/O**: Automatic memory-mapping for files >1MB via `memmap2` with SIMD-accelerated UTF-8 validation (`simdutf8`). Measurable speed improvement for large PDFs and archives. WASM falls back to heap allocation.
+- **Unified concurrency management**: Centralized thread budget for Rayon, ONNX, and PaddleOCR with configurable `ConcurrencyConfig`. PDF OCR batched in chunks instead of all-at-once, reducing memory footprint on large documents.
 
 ### Fixed
 
-- **Chunking preset tests**: Gated `test_resolve_preset_balanced` and `test_resolve_preset_preserves_explicit_embedding` on `embeddings` feature — they depend on preset resolution which requires the embeddings module.
+- **Incorrect page numbers in element-based output** (#557): When `result_format="element_based"` was used without `PageConfig(extract_pages=True)`, all elements received `page_number=1`. Now auto-enables `extract_pages` when element-based output is requested.
+- **Misleading `PageConfig` docstring** (#558): Updated docstring and type stub to show default constructor first and document interaction with `result_format="element_based"`.
+- **MSG extraction misses compressed RTF bodies** (#560): Added PR_RTF_COMPRESSED (0x1009) fallback for `.msg` files that store the body only in compressed RTF format. Implements MS-OXRTFCP decompression and RTF-to-plain-text stripping.
+- **Indexed colour PDF images returned as raw** (#561): Palette-based PDF images now decode correctly. Extracts the colour palette from the PDF dictionary and applies palette lookup to produce valid PNG output instead of unusable raw bytes.
+- **ODT extraction robustness**: Replaced unwraps with safe fallbacks in ODT parsing.
 
 ---
 

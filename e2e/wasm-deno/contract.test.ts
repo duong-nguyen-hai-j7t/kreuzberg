@@ -3,6 +3,7 @@
 
 // Tests for contract fixtures. Run with: deno test --allow-read
 
+import type { ExtractionResult } from "./helpers.ts";
 import {
 	assertions,
 	buildConfig,
@@ -12,7 +13,6 @@ import {
 	resolveDocument,
 	shouldSkipFixture,
 } from "./helpers.ts";
-import type { ExtractionResult } from "./helpers.ts";
 
 // Initialize WASM module and enable OCR once at module load time
 await initWasm();
@@ -313,7 +313,7 @@ Deno.test("config_chunking", { permissions: { read: true, net: true } }, async (
 	}
 	assertions.assertExpectedMime(result, ["application/pdf"]);
 	assertions.assertMinContentLength(result, 10);
-	assertions.assertChunks(result, 1, null, true, null, null);
+	assertions.assertChunks(result, 1, null, true, null, null, null);
 });
 
 Deno.test("config_chunking_heading_context", { permissions: { read: true, net: true } }, async () => {
@@ -333,7 +333,7 @@ Deno.test("config_chunking_heading_context", { permissions: { read: true, net: t
 		return;
 	}
 	assertions.assertMinContentLength(result, 10);
-	assertions.assertChunks(result, 2, null, true, null, true);
+	assertions.assertChunks(result, 2, null, true, null, true, null);
 });
 
 Deno.test("config_chunking_markdown", { permissions: { read: true, net: true } }, async () => {
@@ -354,7 +354,7 @@ Deno.test("config_chunking_markdown", { permissions: { read: true, net: true } }
 	}
 	assertions.assertExpectedMime(result, ["application/pdf"]);
 	assertions.assertMinContentLength(result, 10);
-	assertions.assertChunks(result, 1, null, true, null, null);
+	assertions.assertChunks(result, 1, null, true, null, null, null);
 });
 
 Deno.test("config_chunking_no_headings", { permissions: { read: true, net: true } }, async () => {
@@ -374,7 +374,29 @@ Deno.test("config_chunking_no_headings", { permissions: { read: true, net: true 
 		return;
 	}
 	assertions.assertMinContentLength(result, 10);
-	assertions.assertChunks(result, 2, null, true, null, false);
+	assertions.assertChunks(result, 2, null, true, null, false, null);
+});
+
+Deno.test("config_chunking_prepend_heading_context", { permissions: { read: true, net: true } }, async () => {
+	const config = buildConfig({
+		chunking: { chunker_type: "markdown", max_chars: 300, max_overlap: 50, prepend_heading_context: true },
+	});
+	let result: ExtractionResult | null = null;
+	try {
+		const documentBytes = await resolveDocument("markdown/extraction_test.md");
+		// Sync file extraction - WASM uses extractBytes with pre-read bytes
+		result = await extractBytes(documentBytes, "application/octet-stream", config);
+	} catch (error) {
+		if (shouldSkipFixture(error, "config_chunking_prepend_heading_context", ["chunking"], undefined)) {
+			return;
+		}
+		throw error;
+	}
+	if (result === null) {
+		return;
+	}
+	assertions.assertMinContentLength(result, 10);
+	assertions.assertChunks(result, 2, null, true, null, true, true);
 });
 
 Deno.test("config_chunking_small", { permissions: { read: true, net: true } }, async () => {
@@ -395,7 +417,7 @@ Deno.test("config_chunking_small", { permissions: { read: true, net: true } }, a
 	}
 	assertions.assertExpectedMime(result, ["application/pdf"]);
 	assertions.assertMinContentLength(result, 10);
-	assertions.assertChunks(result, 2, null, true, null, null);
+	assertions.assertChunks(result, 2, null, true, null, null, null);
 });
 
 Deno.test("config_chunking_text", { permissions: { read: true, net: true } }, async () => {
@@ -416,7 +438,7 @@ Deno.test("config_chunking_text", { permissions: { read: true, net: true } }, as
 	}
 	assertions.assertExpectedMime(result, ["application/pdf"]);
 	assertions.assertMinContentLength(result, 10);
-	assertions.assertChunks(result, 1, null, true, null, null);
+	assertions.assertChunks(result, 1, null, true, null, null, null);
 });
 
 Deno.test("config_djot_content", { permissions: { read: true, net: true } }, async () => {

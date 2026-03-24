@@ -3,6 +3,7 @@
 
 // Tests for token_reduction fixtures. Run with: deno test --allow-read
 
+import type { ExtractionResult } from "./helpers.ts";
 import {
 	assertions,
 	buildConfig,
@@ -12,7 +13,6 @@ import {
 	resolveDocument,
 	shouldSkipFixture,
 } from "./helpers.ts";
-import type { ExtractionResult } from "./helpers.ts";
 
 // Initialize WASM module and enable OCR once at module load time
 await initWasm();
@@ -102,6 +102,6 @@ Deno.test("token_reduction_with_chunking", { permissions: { read: true, net: tru
 	assertions.assertExpectedMime(result, ["application/pdf"]);
 	assertions.assertMinContentLength(result, 5);
 	assertions.assertMaxContentLength(result, 200);
-	assertions.assertChunks(result, 1, null, true, null, null);
+	assertions.assertChunks(result, 1, null, true, null, null, null);
 	assertions.assertContentNotEmpty(result);
 });

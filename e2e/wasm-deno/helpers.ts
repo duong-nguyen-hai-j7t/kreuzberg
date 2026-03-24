@@ -1,6 +1,3 @@
-import { assertEquals, assertExists } from "@std/assert";
-// @deno-types="../../crates/kreuzberg-wasm/dist/index.d.ts"
-import { enableOcr, extractBytes, initWasm } from "npm:@kreuzberg/wasm@^4.0.0";
 // @deno-types="../../crates/kreuzberg-wasm/dist/index.d.ts"
 import type {
 	ChunkingConfig,
@@ -17,6 +14,9 @@ import type {
 	TesseractConfig,
 	TokenReductionConfig,
 } from "npm:@kreuzberg/wasm@^4.0.0";
+// @deno-types="../../crates/kreuzberg-wasm/dist/index.d.ts"
+import { enableOcr, extractBytes, initWasm } from "npm:@kreuzberg/wasm@^4.0.0";
+import { assertEquals, assertExists } from "@std/assert";
 
 export type {
 	ChunkingConfig,
@@ -117,6 +117,7 @@ function mapChunkingConfig(raw: PlainRecord): ChunkingConfig {
 	if (typeof raw.chunker_type === "string") {
 		config.chunkerType = raw.chunker_type;
 	}
+	assignBooleanField(config, raw, "prepend_heading_context", "prependHeadingContext");
 	return config as unknown as ChunkingConfig;
 }
 
@@ -402,6 +403,7 @@ export const assertions = {
 		eachHasContent?: boolean | null,
 		eachHasEmbedding?: boolean | null,
 		eachHasHeadingContext?: boolean | null,
+		contentStartsWithHeading?: boolean | null,
 	): void {
 		const chunks = (result as unknown as PlainRecord).chunks as unknown[] | undefined;
 		assertExists(chunks, "Expected chunks to be defined");
@@ -435,6 +437,16 @@ export const assertions = {
 					((chunk as PlainRecord).metadata as PlainRecord)?.headingContext ?? null,
 					null,
 					"Chunk should have no heading_context",
+				);
+			}
+		}
+		if (contentStartsWithHeading === true) {
+			for (const chunk of chunks) {
+				const content = (chunk as PlainRecord).content;
+				assertEquals(
+					typeof content === "string" && (content as string).charCodeAt(0) === 35,
+					true,
+					"Chunk content should start with heading",
 				);
 			}
 		}
@@ -668,7 +680,7 @@ export const assertions = {
 				true,
 				"Expected images with bounding boxes but no images found",
 			);
-			for (const img of images!) {
+			for (const img of images) {
 				const bb = (img as PlainRecord).boundingBox ?? (img as PlainRecord).bounding_box;
 				assertExists(bb, "Expected image to have bounding_box but it was null");
 			}

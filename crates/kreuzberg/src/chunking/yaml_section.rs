@@ -68,7 +68,9 @@ fn flatten_json(text: &str) -> Result<Vec<Section>> {
         None => return Ok(Vec::new()),
     };
     Ok(flatten_value_tree(
-        mapping.iter().filter_map(|(k, v)| Some((k.as_str()?.to_string(), v.clone()))),
+        mapping
+            .iter()
+            .filter_map(|(k, v)| Some((k.as_str()?.to_string(), v.clone()))),
     ))
 }
 
@@ -83,7 +85,9 @@ fn flatten_yaml(text: &str) -> Result<Vec<Section>> {
         None => return Ok(Vec::new()),
     };
     Ok(flatten_value_tree(
-        mapping.iter().filter_map(|(k, v)| Some((k.as_str()?.to_string(), v.clone()))),
+        mapping
+            .iter()
+            .filter_map(|(k, v)| Some((k.as_str()?.to_string(), v.clone()))),
     ))
 }
 
@@ -542,7 +546,7 @@ mod tests {
         let yaml = ":\n  - :\n  invalid:: yaml::: [unterminated";
         let result = chunk_yaml_by_sections(yaml, &make_config()).unwrap();
         // Should not panic; falls back to text chunking
-        assert!(result.chunk_count >= 0);
+        assert!(result.chunk_count > 0);
     }
 
     #[test]
@@ -550,7 +554,7 @@ mod tests {
         let json = r#"{"key": "unterminated"#;
         let result = chunk_yaml_by_sections(json, &make_config()).unwrap();
         // Should not panic; falls back to text chunking
-        assert!(result.chunk_count >= 0);
+        assert!(result.chunk_count > 0);
     }
 
     #[test]

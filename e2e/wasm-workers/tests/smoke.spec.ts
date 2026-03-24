@@ -3,12 +3,36 @@
 
 // Tests for smoke fixtures. Cloudflare Workers with Vitest + Miniflare
 
-import { describe, it, expect } from "vitest";
-import { extractBytes } from "@kreuzberg/wasm";
-import { assertions, buildConfig, getFixture, shouldSkipFixture } from "./helpers.js";
 import type { ExtractionResult } from "@kreuzberg/wasm";
+import { extractBytes } from "@kreuzberg/wasm";
+import { describe, it } from "vitest";
+import { assertions, buildConfig, getFixture, shouldSkipFixture } from "./helpers.js";
 
 describe("smoke", () => {
+	it("smoke_cache_namespace", async () => {
+		const documentBytes = getFixture("text/report.txt");
+		if (documentBytes === null) {
+			console.warn("[SKIP] Test skipped: fixture not available in Cloudflare Workers environment");
+			return;
+		}
+
+		const config = buildConfig({ cache_namespace: "test_tenant", cache_ttl_secs: 3600, use_cache: true });
+		let result: ExtractionResult | null = null;
+		try {
+			result = await extractBytes(documentBytes, "text/plain", config);
+		} catch (error) {
+			if (shouldSkipFixture(error, "smoke_cache_namespace", [], undefined)) {
+				return;
+			}
+			throw error;
+		}
+		if (result === null) {
+			return;
+		}
+		assertions.assertExpectedMime(result, ["text/plain"]);
+		assertions.assertMinContentLength(result, 5);
+	});
+
 	it("smoke_docx_basic", async () => {
 		const documentBytes = getFixture("docx/fake.docx");
 		if (documentBytes === null) {

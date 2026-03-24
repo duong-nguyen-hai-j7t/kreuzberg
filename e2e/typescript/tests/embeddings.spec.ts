@@ -3,7 +3,7 @@
 
 // Tests for embeddings fixtures.
 
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import type { ExtractionResult } from "@kreuzberg/node";
 import { extractFile, extractFileSync } from "@kreuzberg/node";
 import { describe, it } from "vitest";

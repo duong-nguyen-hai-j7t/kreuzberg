@@ -21,7 +21,7 @@ const _embeddingConfig: EmbeddingConfig = {
 
 // Example 2: Custom ONNX model (requires embeddings feature)
 // Direct access to specific ONNX embedding models from HuggingFace with custom dimensions.
-const embeddingConfig: EmbeddingConfig = {
+const _embeddingConfig2: EmbeddingConfig = {
 	model: {
 		type: "custom",
 		modelId: "BAAI/bge-small-en-v1.5",
@@ -41,7 +41,7 @@ const embeddingConfig: EmbeddingConfig = {
 
 // Example 3: Alternative Custom ONNX Model
 // For advanced users wanting different ONNX embedding models.
-const embeddingConfig: EmbeddingConfig = {
+const _embeddingConfig3: EmbeddingConfig = {
 	model: {
 		type: "custom",
 		modelId: "sentence-transformers/all-mpnet-base-v2",

@@ -3,10 +3,10 @@
 
 // Tests for token_reduction fixtures. Cloudflare Workers with Vitest + Miniflare
 
-import { describe, it, expect } from "vitest";
-import { extractBytes } from "@kreuzberg/wasm";
-import { assertions, buildConfig, getFixture, shouldSkipFixture } from "./helpers.js";
 import type { ExtractionResult } from "@kreuzberg/wasm";
+import { extractBytes } from "@kreuzberg/wasm";
+import { describe, it } from "vitest";
+import { assertions, buildConfig, getFixture, shouldSkipFixture } from "./helpers.js";
 
 describe("token_reduction", () => {
 	it("token_reduction_aggressive", async () => {
@@ -112,7 +112,7 @@ describe("token_reduction", () => {
 		assertions.assertExpectedMime(result, ["application/pdf"]);
 		assertions.assertMinContentLength(result, 5);
 		assertions.assertMaxContentLength(result, 200);
-		assertions.assertChunks(result, 1, null, true, null, null);
+		assertions.assertChunks(result, 1, null, true, null, null, null);
 		assertions.assertContentNotEmpty(result);
 	});
 });

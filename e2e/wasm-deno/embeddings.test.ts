@@ -3,6 +3,7 @@
 
 // Tests for embeddings fixtures. Run with: deno test --allow-read
 
+import type { ExtractionResult } from "./helpers.ts";
 import {
 	assertions,
 	buildConfig,
@@ -12,7 +13,6 @@ import {
 	resolveDocument,
 	shouldSkipFixture,
 } from "./helpers.ts";
-import type { ExtractionResult } from "./helpers.ts";
 
 // Initialize WASM module and enable OCR once at module load time
 await initWasm();
@@ -36,5 +36,5 @@ Deno.test("embedding_disabled", { permissions: { read: true, net: true } }, asyn
 	}
 	assertions.assertExpectedMime(result, ["application/pdf"]);
 	assertions.assertMinContentLength(result, 10);
-	assertions.assertChunks(result, 1, null, true, false, null);
+	assertions.assertChunks(result, 1, null, true, false, null, null);
 });

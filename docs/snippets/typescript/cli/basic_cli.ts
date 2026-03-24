@@ -1,4 +1,5 @@
 ```typescript title="basic_cli.ts"
+/* oxlint-disable */
 import { spawn } from "child_process";
 
 interface ExtractionResult {
@@ -27,7 +28,8 @@ async function extractWithCli(
 
     child.on("close", (code) => {
       if (code !== 0) {
-        reject(new Error(`CLI exited with code ${code}: ${stderr}`));
+        const errMsg = "CLI exited with code " + code + ": " + stderr;
+        reject(new Error(errMsg));
         return;
       }
 

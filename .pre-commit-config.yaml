@@ -122,7 +122,7 @@ repos:
     hooks:
       - id: oxlint
         args: ["--fix"]
-        exclude: ^tools/benchmark-harness/fixtures/
+        exclude: ^(tools/benchmark-harness/fixtures/|docs/snippets/)
 
   # C/C++: formatting and linting
   - repo: https://github.com/pocc/pre-commit-hooks
