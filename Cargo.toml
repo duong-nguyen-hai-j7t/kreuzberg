@@ -17,6 +17,7 @@ members = [
     "tools/snippet-runner",
 ]
 exclude = [
+    "packages/r/src/rust",
     "packages/ruby/ext/kreuzberg_rb/native",
     "tests/test_apps/elixir",
     "tests/test_apps/rust",
