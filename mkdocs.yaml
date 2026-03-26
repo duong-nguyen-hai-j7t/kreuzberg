@@ -176,6 +176,9 @@ nav:
       - Creating Plugins: guides/plugins.md
       - AI Coding Assistants: guides/agent-skills.md
       - C# Bindings: guides/csharp.md
+  - Integrations:
+      - integrations/index.md
+      - SurrealDB: integrations/surrealdb.md
   - CLI: cli/usage.md
   - API Reference:
       - Python: reference/api-python.md
