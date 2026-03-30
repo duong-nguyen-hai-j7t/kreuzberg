@@ -25,7 +25,7 @@ pub(crate) fn map_output_format(format: KreuzbergOutputFormat) -> LibOutputForma
 ///
 /// If no options are provided, creates defaults with:
 /// - `extract_metadata = true` (parse YAML frontmatter)
-/// - `hocr_spatial_tables = false` (disable hOCR table detection)
+/// - `include_document_structure = true` (populate document tree)
 /// - `preprocessing.enabled = false` (disable HTML preprocessing)
 ///
 /// Sets output format based on the provided format parameter.
@@ -50,7 +50,7 @@ pub fn resolve_conversion_options(
 ///
 /// Uses sensible defaults if no configuration is provided:
 /// - `extract_metadata = true` (parse YAML frontmatter)
-/// - `hocr_spatial_tables = false` (disable hOCR table detection)
+/// - `include_document_structure = true` (populate document tree)
 /// - `preprocessing.enabled = false` (disable HTML preprocessing)
 ///
 /// Supports both markdown and djot output based on the output_format parameter.
