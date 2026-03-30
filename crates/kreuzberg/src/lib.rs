@@ -143,7 +143,7 @@ pub use core::config::{TreeSitterConfig, TreeSitterProcessConfig};
 pub use tree_sitter_language_pack::{
     ChunkContext, CodeChunk, CommentInfo, CommentKind, Diagnostic, DiagnosticSeverity, DocstringFormat, DocstringInfo,
     ExportInfo, ExportKind, FileMetrics, ImportInfo, ProcessConfig, ProcessResult, Span, StructureItem, StructureKind,
-    SymbolInfo, SymbolKind,
+    SymbolInfo, SymbolKind, process as process_code,
 };
 
 #[cfg(feature = "layout-detection")]
