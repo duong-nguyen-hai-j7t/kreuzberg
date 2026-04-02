@@ -38,6 +38,19 @@ pub fn render_markdown(doc: &InternalDocument) -> String {
         output = output.replace("\\_", "_");
     }
 
+    // Un-escape brackets and parentheses: comrak's format_commonmark escapes `[`, `]`,
+    // `(`, `)` in text nodes to prevent accidental link syntax. Since the AST already
+    // handles real links via NodeValue::Link (rendered as `[text](url)` without
+    // escaping), all remaining `\[`, `\]`, `\(`, `\)` are literal characters that
+    // should appear un-escaped.
+    if output.contains("\\[") || output.contains("\\]") || output.contains("\\(") || output.contains("\\)") {
+        output = output
+            .replace("\\[", "[")
+            .replace("\\]", "]")
+            .replace("\\(", "(")
+            .replace("\\)", ")");
+    }
+
     // Un-escape stars and hashes at the START of lines only.
     // comrak escapes `*` → `\*` and `#` → `\#` to prevent false emphasis / ATX-heading
     // interpretation. We need to un-escape these for RST list markers (`\* item` → `* item`)
@@ -82,5 +95,7 @@ pub(crate) fn comrak_options<'a>() -> Options<'a> {
     options.extension.superscript = true;
     options.extension.highlight = true;
     options.extension.alerts = true;
+    // Use fenced code blocks (```) instead of 4-space indentation.
+    options.render.prefer_fenced = true;
     options
 }

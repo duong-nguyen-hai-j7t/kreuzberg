@@ -425,6 +425,8 @@ enum ContentOutputFormatArg {
     Djot,
     /// HTML format
     Html,
+    /// JSON tree format with heading-driven sections
+    Json,
 }
 
 impl From<ContentOutputFormatArg> for ContentOutputFormat {
@@ -434,6 +436,7 @@ impl From<ContentOutputFormatArg> for ContentOutputFormat {
             ContentOutputFormatArg::Markdown => ContentOutputFormat::Markdown,
             ContentOutputFormatArg::Djot => ContentOutputFormat::Djot,
             ContentOutputFormatArg::Html => ContentOutputFormat::Html,
+            ContentOutputFormatArg::Json => ContentOutputFormat::Json,
         }
     }
 }

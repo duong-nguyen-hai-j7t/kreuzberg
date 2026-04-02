@@ -581,10 +581,27 @@ pub fn derive_extraction_result(
 
     // 3. Pre-render formatted content if a non-plain output format is requested.
     //    This runs while the InternalDocument still owns its element data.
+    //
+    //    If the extractor already produced high-quality formatted output (stored in
+    //    `pre_rendered_content`) and the requested format matches what the extractor
+    //    produced (`metadata.output_format`), use it directly to avoid the lossy
+    //    InternalDocument → renderer round-trip.
     let formatted_content = match output_format {
         crate::core::config::OutputFormat::Plain => None,
-        crate::core::config::OutputFormat::Markdown => Some(crate::rendering::render_markdown(&doc)),
-        crate::core::config::OutputFormat::Djot => Some(crate::rendering::render_djot(&doc)),
+        crate::core::config::OutputFormat::Markdown => {
+            if doc.pre_rendered_content.is_some() && doc.metadata.output_format.as_deref() == Some("markdown") {
+                doc.pre_rendered_content.take()
+            } else {
+                Some(crate::rendering::render_markdown(&doc))
+            }
+        }
+        crate::core::config::OutputFormat::Djot => {
+            if doc.pre_rendered_content.is_some() && doc.metadata.output_format.as_deref() == Some("djot") {
+                doc.pre_rendered_content.take()
+            } else {
+                Some(crate::rendering::render_djot(&doc))
+            }
+        }
         crate::core::config::OutputFormat::Html => Some(crate::rendering::render_html(&doc)),
         crate::core::config::OutputFormat::Json => Some(crate::rendering::render_json(&doc)),
         crate::core::config::OutputFormat::Structured => None,

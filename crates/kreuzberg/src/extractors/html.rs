@@ -300,10 +300,10 @@ impl SyncExtractor for HtmlExtractor {
 
         // Signal that the extractor already formatted the output so the pipeline
         // does not double-convert.
-        let pre_formatted = match config.output_format {
-            OutputFormat::Markdown => Some("markdown".to_string()),
-            OutputFormat::Djot => Some("djot".to_string()),
-            _ => None,
+        let (pre_formatted, pre_rendered) = match config.output_format {
+            OutputFormat::Markdown => (Some("markdown".to_string()), Some(content_text.clone())),
+            OutputFormat::Djot => (Some("djot".to_string()), Some(content_text.clone())),
+            _ => (None, None),
         };
 
         // Build InternalDocument from html-to-markdown's DocumentStructure.
@@ -339,6 +339,7 @@ impl SyncExtractor for HtmlExtractor {
             ..Default::default()
         };
         doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
+        doc.pre_rendered_content = pre_rendered;
 
         // Add tables to InternalDocument
         for table in tables {

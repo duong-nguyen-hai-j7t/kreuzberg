@@ -146,6 +146,15 @@ pub struct InternalDocument {
     /// When populated, `derive_extraction_result` uses this directly instead of
     /// attempting to reconstruct pages from element-level page numbers.
     pub prebuilt_pages: Option<Vec<crate::types::PageContent>>,
+
+    /// Pre-rendered formatted content produced by the extractor itself.
+    ///
+    /// When an extractor has direct access to high-quality formatted output (e.g.,
+    /// html-to-markdown produces GFM markdown), it can store that here to bypass
+    /// the lossy InternalDocument → renderer round-trip. `derive_extraction_result`
+    /// will use this directly when the requested output format matches
+    /// `metadata.output_format`.
+    pub pre_rendered_content: Option<String>,
 }
 
 impl InternalDocument {
@@ -164,6 +173,7 @@ impl InternalDocument {
             processing_warnings: Vec::new(),
             annotations: None,
             prebuilt_pages: None,
+            pre_rendered_content: None,
         }
     }
 
