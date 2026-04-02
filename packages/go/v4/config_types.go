@@ -280,7 +280,6 @@ type LanguageDetectionConfig struct {
 
 // LayoutDetectionConfig configures ONNX-based document layout detection.
 type LayoutDetectionConfig struct {
-	Preset              *string  `json:"preset,omitempty"`
 	ConfidenceThreshold *float32 `json:"confidence_threshold,omitempty"`
 	ApplyHeuristics     *bool    `json:"apply_heuristics,omitempty"`
 	TableModel          *string  `json:"table_model,omitempty"`

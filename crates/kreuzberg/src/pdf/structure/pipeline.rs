@@ -446,7 +446,7 @@ pub fn extract_document_structure(
     #[cfg(feature = "layout-detection")] layout_results: Option<&[crate::pdf::layout_runner::PageLayoutResult]>,
     #[cfg(not(feature = "layout-detection"))] _layout_results: Option<()>,
     allow_single_column: bool,
-    #[cfg(feature = "layout-detection")] table_model: Option<&str>,
+    #[cfg(feature = "layout-detection")] table_model: crate::core::config::layout::TableModel,
     #[cfg(not(feature = "layout-detection"))] _table_model: Option<()>,
 ) -> Result<(crate::types::internal::InternalDocument, bool)> {
     let pages = document.pages();
@@ -625,10 +625,11 @@ pub fn extract_document_structure(
         // Supports TATR (default) and SLANeXT table models via `table_model` config.
         #[cfg(feature = "layout-detection")]
         {
-            use crate::layout::TableModelBackend;
+            use crate::core::config::layout::TableModel;
             use std::cell::RefCell;
 
-            let table_backend = TableModelBackend::from_config(table_model);
+            // When Disabled, skip model inference entirely and go straight to heuristic path.
+            let use_model_inference = table_model != TableModel::Disabled;
 
             thread_local! {
                 static TL_TATR: RefCell<Option<crate::layout::models::tatr::TatrModel>> = const { RefCell::new(None) };
@@ -638,16 +639,18 @@ pub fn extract_document_structure(
             }
 
             // Determine which table model to use and seed thread-locals
-            let slanet_variant = match table_backend {
-                TableModelBackend::SlanetWired => Some("slanet_wired"),
-                TableModelBackend::SlanetWireless => Some("slanet_wireless"),
-                TableModelBackend::SlanetPlus => Some("slanet_plus"),
-                TableModelBackend::SlanetAuto => Some("slanet_wired"), // primary=wired, alt=wireless
-                TableModelBackend::Tatr => None,
+            let slanet_variant = match table_model {
+                TableModel::SlanetWired => Some("slanet_wired"),
+                TableModel::SlanetWireless => Some("slanet_wireless"),
+                TableModel::SlanetPlus => Some("slanet_plus"),
+                TableModel::SlanetAuto => Some("slanet_wired"), // primary=wired, alt=wireless
+                TableModel::Tatr | TableModel::Disabled => None,
             };
-            let is_auto = table_backend == TableModelBackend::SlanetAuto;
+            let is_auto = table_model == TableModel::SlanetAuto;
 
-            let has_table_model = if let Some(variant) = slanet_variant {
+            let has_table_model = if !use_model_inference {
+                false
+            } else if let Some(variant) = slanet_variant {
                 // SLANeXT path
                 let seed = if layout_images.is_some() {
                     crate::layout::take_or_create_slanet(variant)
@@ -692,11 +695,11 @@ pub fn extract_document_structure(
 
             tracing::debug!(
                 has_table_model,
-                table_backend = ?table_backend,
+                table_model = %table_model,
                 table_page_count = table_pages.len(),
                 "Table extraction phase 2: model availability"
             );
-            if !has_table_model && !table_pages.is_empty() {
+            if use_model_inference && !has_table_model && !table_pages.is_empty() {
                 let model_name = slanet_variant.unwrap_or("tatr");
                 return Err(crate::pdf::error::PdfError::TextExtractionFailed(format!(
                     "Layout detection found table regions but {model_name} model is not available. \

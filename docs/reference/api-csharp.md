@@ -1891,6 +1891,6 @@ Configuration for ONNX-based document layout detection.
 
 - `ApplyHeuristics` (bool?): Whether to apply heuristic post-processing to refine layout regions. Default: true.
 - `ConfidenceThreshold` (double?): Minimum confidence threshold for detected layout regions (0.0-1.0).
-- `Preset` (string?): Model preset controlling accuracy vs speed trade-off ("fast", "accurate"). Default: "fast".
+- `TableModel` (string?): Table structure recognition model. Options: `"tatr"` (default), `"slanet_wired"`, `"slanet_wireless"`, `"slanet_plus"`, `"slanet_auto"`. Default: null (uses `"tatr"`).
 
 ---

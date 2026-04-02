@@ -327,9 +327,9 @@ Configure layout detection for document structure analysis.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `preset` | String | "accurate" | Model preset: "fast" (YOLO DocLayNet, 11 classes) or "accurate" (RT-DETR v2, 17 classes) |
 | `confidence_threshold` | Float\|nil | nil | Minimum confidence score (0.0-1.0) for layout detection results. If nil, no filtering applied |
 | `apply_heuristics` | Boolean | true | Apply post-processing heuristics to refine layout results |
+| `table_model` | String\|nil | nil | Table structure recognition model: `"tatr"` (default), `"slanet_wired"`, `"slanet_wireless"`, `"slanet_plus"`, `"slanet_auto"` |
 
 **Example:**
 
@@ -338,7 +338,6 @@ require 'kreuzberg'
 
 config = Kreuzberg::Config::Extraction.new(
   layout: Kreuzberg::Config::LayoutDetection.new(
-    preset: 'accurate',
     confidence_threshold: 0.5,
     apply_heuristics: true
   )

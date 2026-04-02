@@ -761,13 +761,6 @@ func NewLayoutDetectionConfig(opts ...LayoutDetectionOption) *LayoutDetectionCon
 	return cfg
 }
 
-// WithLayoutPreset sets the layout detection preset.
-func WithLayoutPreset(preset string) LayoutDetectionOption {
-	return func(c *LayoutDetectionConfig) {
-		c.Preset = &preset
-	}
-}
-
 // WithLayoutConfidenceThreshold sets the confidence threshold for layout detection.
 func WithLayoutConfidenceThreshold(threshold float32) LayoutDetectionOption {
 	return func(c *LayoutDetectionConfig) {

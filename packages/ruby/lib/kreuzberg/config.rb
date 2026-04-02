@@ -858,21 +858,20 @@ module Kreuzberg
 
     # Layout detection configuration
     #
-    # @example Basic usage with fast preset
-    #   layout = LayoutDetection.new(preset: "fast")
+    # @example Basic usage
+    #   layout = LayoutDetection.new
     #
-    # @example Accurate preset with custom threshold
+    # @example With custom threshold and table model
     #   layout = LayoutDetection.new(
-    #     preset: "accurate",
     #     confidence_threshold: 0.5,
-    #     apply_heuristics: true
+    #     apply_heuristics: true,
+    #     table_model: "tatr"
     #   )
     #
     class LayoutDetection
-      attr_reader :preset, :confidence_threshold, :apply_heuristics, :table_model
+      attr_reader :confidence_threshold, :apply_heuristics, :table_model
 
-      def initialize(preset: 'fast', confidence_threshold: nil, apply_heuristics: true, table_model: nil)
-        @preset = preset.to_s
+      def initialize(confidence_threshold: nil, apply_heuristics: true, table_model: nil)
         @confidence_threshold = confidence_threshold&.to_f
         @apply_heuristics = apply_heuristics ? true : false
         @table_model = table_model&.to_s
@@ -880,7 +879,6 @@ module Kreuzberg
 
       def to_h
         {
-          preset: @preset,
           confidence_threshold: @confidence_threshold,
           apply_heuristics: @apply_heuristics,
           table_model: @table_model

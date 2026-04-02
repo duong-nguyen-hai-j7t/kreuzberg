@@ -63,8 +63,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migrated deprecated `metadata.additional` writes to typed fields across all extractors
 - Strong types for all new metadata variants across all 11 language bindings
 
+### Breaking Changes
+
+- **Layout detection preset removed**: The `preset` field on `LayoutDetectionConfig` has been removed across all bindings. Layout detection now uses the RT-DETR v2 model unconditionally — no "fast" vs "accurate" distinction. The `--layout-preset` CLI flag is removed. Old configs with `"preset": "..."` are silently ignored for backward compatibility.
+- **Table model config typed**: `table_model` on `LayoutDetectionConfig` changed from `Option<String>` to a `TableModel` enum (`tatr`, `slanet_wired`, `slanet_wireless`, `slanet_plus`, `slanet_auto`, `disabled`). Defaults to `tatr`. String values still accepted in JSON/TOML configs.
+
 ### Fixed
 
+- **PDF structural extraction quality**: Improved heading detection (font-size-ratio H2/H3 differentiation, section numbering patterns, ALL-CAPS detection, paragraph-to-heading rescue pass), table discrimination (reject multi-column prose misclassified as tables via flow-through detection, row-count/column-count ratio, and table quality validation), list detection (multi-token prefix patterns), image scoring (normalize image block matching), and formula detection (math character density heuristic). Layout SF1 improved from 40.7% to 43.7% across 157 verified PDF fixtures.
+- **PDF ground truth verified**: All 157 PDF benchmark fixtures verified using vision (rendered page images vs GT markdown). 7 broken Mistral OCR GTs with hallucinated content replaced with vision-verified markdown.
 - **LaTeX extraction**: Convert `\href`, `\emph`, `\textbf`, `\textgreater`, `\verb`, `\sout`, blockquotes, lists, special characters, and typographic ligatures to markdown.
 - **XLSX/XLS sheet name headings**: Emit `## SheetName` heading before each sheet's table, matching pandoc convention.
 - **OPML outline headings**: All outline nodes now emit headings at appropriate depth, not just parent outlines. Inline HTML in text attributes converted to markdown.

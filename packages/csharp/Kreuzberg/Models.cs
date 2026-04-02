@@ -4176,19 +4176,11 @@ public sealed class DocumentTextAnnotation
 /// <summary>
 /// Configuration for ONNX-based document layout detection.
 ///
-/// Controls the layout analysis model preset, confidence filtering,
-/// and optional heuristic post-processing for page-level layout detection.
+/// Controls confidence filtering, heuristic post-processing,
+/// and table model selection for page-level layout detection.
 /// </summary>
 public sealed class LayoutDetectionConfig
 {
-    /// <summary>
-    /// Model preset controlling accuracy vs speed trade-off.
-    /// Supported values: "fast", "accurate".
-    /// Default: "fast"
-    /// </summary>
-    [JsonPropertyName("preset")]
-    public string? Preset { get; init; }
-
     /// <summary>
     /// Minimum confidence threshold for detected layout regions (0.0-1.0).
     /// Regions below this threshold are discarded.

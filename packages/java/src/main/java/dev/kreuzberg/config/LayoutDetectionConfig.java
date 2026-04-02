@@ -9,13 +9,11 @@ import java.util.Map;
  * @since 4.4.0
  */
 public final class LayoutDetectionConfig {
-	private final String preset;
 	private final Double confidenceThreshold;
 	private final Boolean applyHeuristics;
 	private final String tableModel;
 
 	private LayoutDetectionConfig(Builder builder) {
-		this.preset = builder.preset;
 		this.confidenceThreshold = builder.confidenceThreshold;
 		this.applyHeuristics = builder.applyHeuristics;
 		this.tableModel = builder.tableModel;
@@ -23,10 +21,6 @@ public final class LayoutDetectionConfig {
 
 	public static Builder builder() {
 		return new Builder();
-	}
-
-	public String getPreset() {
-		return preset;
 	}
 
 	public Double getConfidenceThreshold() {
@@ -43,9 +37,6 @@ public final class LayoutDetectionConfig {
 
 	public Map<String, Object> toMap() {
 		Map<String, Object> map = new HashMap<>();
-		if (preset != null) {
-			map.put("preset", preset);
-		}
 		if (confidenceThreshold != null) {
 			map.put("confidence_threshold", confidenceThreshold);
 		}
@@ -59,17 +50,11 @@ public final class LayoutDetectionConfig {
 	}
 
 	public static final class Builder {
-		private String preset = "fast";
 		private Double confidenceThreshold;
 		private Boolean applyHeuristics = true;
 		private String tableModel;
 
 		private Builder() {
-		}
-
-		public Builder preset(String preset) {
-			this.preset = preset;
-			return this;
 		}
 
 		public Builder confidenceThreshold(Double confidenceThreshold) {
@@ -97,9 +82,6 @@ public final class LayoutDetectionConfig {
 			return null;
 		}
 		Builder builder = builder();
-		if (map.get("preset") instanceof String) {
-			builder.preset((String) map.get("preset"));
-		}
 		Object confidenceThresholdValue = map.get("confidence_threshold");
 		if (confidenceThresholdValue instanceof Number) {
 			builder.confidenceThreshold(((Number) confidenceThresholdValue).doubleValue());

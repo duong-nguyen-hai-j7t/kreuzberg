@@ -460,7 +460,7 @@ Create a layout detection configuration.
 **Signature:**
 
 ```r title="R"
-layout_detection_config(preset = "fast", confidence_threshold = NULL, apply_heuristics = TRUE, ...) -> list
+layout_detection_config(confidence_threshold = NULL, apply_heuristics = TRUE, table_model = NULL, ...) -> list
 ```
 
 **Parameters:**
@@ -469,7 +469,7 @@ layout_detection_config(preset = "fast", confidence_threshold = NULL, apply_heur
 |-----------|------|-------------|
 | `apply_heuristics` | logical | Whether to apply heuristic post-processing to refine layout regions. Default: TRUE |
 | `confidence_threshold` | numeric, NULL | Minimum confidence threshold for detected regions (0.0-1.0). Default: NULL |
-| `preset` | character | Model preset controlling accuracy vs speed trade-off ("fast" or "accurate"). Default: "fast" |
+| `table_model` | character, NULL | Table structure recognition model: "tatr" (default), "slanet_wired", "slanet_wireless", "slanet_plus", "slanet_auto". Default: NULL |
 | ... | | Additional layout detection options |
 
 **Returns:**
@@ -480,7 +480,7 @@ layout_detection_config(preset = "fast", confidence_threshold = NULL, apply_heur
 
 ```r title="R"
 config <- extraction_config(
-  layout = layout_detection_config(preset = "accurate", apply_heuristics = TRUE)
+  layout = layout_detection_config(apply_heuristics = TRUE)
 )
 ```
 

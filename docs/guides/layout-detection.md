@@ -5,18 +5,15 @@ Detect document layout regions (tables, figures, headers, text blocks, etc.) in 
 !!! note "Feature gate"
     Requires the `layout-detection` Cargo feature. Not included in the default feature set.
 
-## Model Presets
+## Model
 
-| Preset | Model | Classes | Speed | Best for |
-|--------|-------|---------|-------|----------|
-| `"fast"` | YOLO DocLayNet | 11 | Fastest | High-throughput pipelines, general documents |
-| `"accurate"` | RT-DETR v2 | 17 | Fast | Complex layouts, forms, mixed-content pages |
+Layout detection uses the **RT-DETR v2** model (17 layout classes), an ONNX-based deep learning model for accurate document layout analysis.
 
 ### When to Enable
 
 **Recommended for:** complex multi-column PDFs, scanned documents, academic papers, business forms, documents where table extraction quality matters.
 
-**Less beneficial for:** simple single-column text, high-throughput pipelines where 3.4x latency is unacceptable (consider GPU), documents already well-handled by the PDF structure tree.
+**Less beneficial for:** simple single-column text, high-throughput pipelines where latency is critical (consider GPU), documents already well-handled by the PDF structure tree.
 
 ### Performance Impact
 
@@ -36,7 +33,6 @@ Detect document layout regions (tables, figures, headers, text blocks, etc.) in 
 
     config = ExtractionConfig(
         layout=LayoutDetectionConfig(
-            preset="accurate",
             confidence_threshold=0.5,
             apply_heuristics=True,
             table_model="tatr",
@@ -50,7 +46,6 @@ Detect document layout regions (tables, figures, headers, text blocks, etc.) in 
     ```typescript
     const result = await extract("document.pdf", {
       layout: {
-        preset: "accurate",
         confidenceThreshold: 0.5,
         applyHeuristics: true,
         tableModel: "tatr",
@@ -65,7 +60,6 @@ Detect document layout regions (tables, figures, headers, text blocks, etc.) in 
 
     let config = ExtractionConfig {
         layout: Some(LayoutDetectionConfig {
-            preset: "accurate".to_string(),
             confidence_threshold: Some(0.5),
             apply_heuristics: true,
             table_model: Some("tatr".to_string()),
@@ -79,20 +73,9 @@ Detect document layout regions (tables, figures, headers, text blocks, etc.) in 
 
     ```toml title="kreuzberg.toml"
     [layout]
-    preset = "fast"
     apply_heuristics = true
     # table_model = "tatr"
     ```
-
-### Environment Variable
-
-Set `KREUZBERG_LAYOUT_PRESET` to enable layout detection without modifying code:
-
-```bash title="Terminal"
-export KREUZBERG_LAYOUT_PRESET=accurate
-```
-
-Valid: `fast`, `accurate` (aliases: `yolo`, `rtdetr`, `rt-detr`).
 
 ## Table Structure Models <span class="version-badge">v4.5.3</span>
 
@@ -124,7 +107,7 @@ To override:
 
 ```python
 config = ExtractionConfig(
-    layout=LayoutDetectionConfig(preset="accurate"),
+    layout=LayoutDetectionConfig(),
     acceleration=AccelerationConfig(provider="cuda", device_id=0)
 )
 ```
@@ -133,27 +116,27 @@ See [AccelerationConfig reference](../reference/configuration.md#accelerationcon
 
 ## Layout Classes
 
-All model backends map to 17 canonical classes:
+The RT-DETR v2 model detects 17 layout classes:
 
-| Class | Fast | Accurate | Description |
-|-------|------|----------|-------------|
-| `Caption` | Yes | Yes | Figure or table caption |
-| `Footnote` | Yes | Yes | Page footnote |
-| `Formula` | Yes | Yes | Mathematical formula |
-| `ListItem` | Yes | Yes | List item or bullet point |
-| `PageFooter` | Yes | Yes | Running page footer |
-| `PageHeader` | Yes | Yes | Running page header |
-| `Picture` | Yes | Yes | Image, chart, or diagram |
-| `SectionHeader` | Yes | Yes | Section heading |
-| `Table` | Yes | Yes | Tabular data region |
-| `Text` | Yes | Yes | Body text paragraph |
-| `Title` | Yes | Yes | Document or page title |
-| `DocumentIndex` | — | Yes | Table of contents |
-| `Code` | — | Yes | Code block |
-| `CheckboxSelected` | — | Yes | Checked checkbox |
-| `CheckboxUnselected` | — | Yes | Unchecked checkbox |
-| `Form` | — | Yes | Form region |
-| `KeyValueRegion` | — | Yes | Key-value pair region |
+| Class | Description |
+|-------|-------------|
+| `Caption` | Figure or table caption |
+| `Footnote` | Page footnote |
+| `Formula` | Mathematical formula |
+| `ListItem` | List item or bullet point |
+| `PageFooter` | Running page footer |
+| `PageHeader` | Running page header |
+| `Picture` | Image, chart, or diagram |
+| `SectionHeader` | Section heading |
+| `Table` | Tabular data region |
+| `Text` | Body text paragraph |
+| `Title` | Document or page title |
+| `DocumentIndex` | Table of contents |
+| `Code` | Code block |
+| `CheckboxSelected` | Checked checkbox |
+| `CheckboxUnselected` | Unchecked checkbox |
+| `Form` | Form region |
+| `KeyValueRegion` | Key-value pair region |
 
 ## Acknowledgments
 

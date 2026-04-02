@@ -2114,7 +2114,7 @@ Configuration for ONNX-based document layout detection.
 LayoutDetectionConfig config = LayoutDetectionConfig.builder()
     .applyHeuristics(true)             // Apply heuristic post-processing (default: true)
     .confidenceThreshold(0.5)          // Min confidence threshold (0.0-1.0)
-    .preset("fast")                    // Model preset: "fast", "accurate"
+    .tableModel("tatr")               // Table structure model: "tatr", "slanet_wired", etc.
     .build();
 ```
 

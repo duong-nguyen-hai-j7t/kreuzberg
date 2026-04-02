@@ -202,10 +202,7 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
     match pipeline {
         Pipeline::Baseline => base,
         Pipeline::Layout => kreuzberg::ExtractionConfig {
-            layout: Some(LayoutDetectionConfig {
-                preset: "accurate".to_string(),
-                ..Default::default()
-            }),
+            layout: Some(LayoutDetectionConfig::default()),
             // Enable OCR fallback for pages with no native text (image-only pages).
             // With force_ocr=false (default), kreuzberg auto-detects empty pages
             // and falls back to tesseract OCR only when needed.
@@ -232,10 +229,7 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
                 language: "eng".to_string(),
                 ..Default::default()
             }),
-            layout: Some(LayoutDetectionConfig {
-                preset: "accurate".to_string(),
-                ..Default::default()
-            }),
+            layout: Some(LayoutDetectionConfig::default()),
             ..base
         },
         Pipeline::Paddle => kreuzberg::ExtractionConfig {
@@ -256,10 +250,7 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
                 auto_rotate: true,
                 ..Default::default()
             }),
-            layout: Some(LayoutDetectionConfig {
-                preset: "accurate".to_string(),
-                ..Default::default()
-            }),
+            layout: Some(LayoutDetectionConfig::default()),
             ..base
         },
         Pipeline::PaddleServer => kreuzberg::ExtractionConfig {
@@ -282,10 +273,7 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
                 paddle_ocr_config: Some(serde_json::json!({"model_tier": "server"})),
                 ..Default::default()
             }),
-            layout: Some(LayoutDetectionConfig {
-                preset: "accurate".to_string(),
-                ..Default::default()
-            }),
+            layout: Some(LayoutDetectionConfig::default()),
             ..base
         },
         Pipeline::TesseractAutoRotate => kreuzberg::ExtractionConfig {
@@ -310,7 +298,6 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
         },
         Pipeline::LayoutSlanetAuto => kreuzberg::ExtractionConfig {
             layout: Some(LayoutDetectionConfig {
-                preset: "accurate".to_string(),
                 table_model: Some("slanet_auto".to_string()),
                 ..Default::default()
             }),
@@ -324,7 +311,6 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
         Pipeline::Docling | Pipeline::PaddleOcrPython | Pipeline::RapidOcr => base, // Not used for extraction — read from file
         Pipeline::LayoutSlanetWired => kreuzberg::ExtractionConfig {
             layout: Some(LayoutDetectionConfig {
-                preset: "accurate".to_string(),
                 table_model: Some("slanet_wired".to_string()),
                 ..Default::default()
             }),
@@ -337,7 +323,6 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
         },
         Pipeline::LayoutSlanetWireless => kreuzberg::ExtractionConfig {
             layout: Some(LayoutDetectionConfig {
-                preset: "accurate".to_string(),
                 table_model: Some("slanet_wireless".to_string()),
                 ..Default::default()
             }),
@@ -350,7 +335,6 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
         },
         Pipeline::LayoutSlanetPlus => kreuzberg::ExtractionConfig {
             layout: Some(LayoutDetectionConfig {
-                preset: "accurate".to_string(),
                 table_model: Some("slanet_plus".to_string()),
                 ..Default::default()
             }),

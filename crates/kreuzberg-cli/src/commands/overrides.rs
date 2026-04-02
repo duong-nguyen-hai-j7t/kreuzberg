@@ -146,21 +146,16 @@ pub struct ExtractionOverrides {
     pub detect_language: Option<bool>,
 
     // ── Layout detection ─────────────────────────────────────────────
-    /// Layout detection preset (e.g. "accurate").
-    #[cfg(feature = "layout-detection")]
-    #[arg(long)]
-    pub layout_preset: Option<String>,
-
     /// Layout detection confidence threshold (0.0 - 1.0).
     #[cfg(feature = "layout-detection")]
     #[arg(long)]
     pub layout_confidence: Option<f32>,
 
-    /// Table structure model: tatr (default), slanet_wired, slanet_wireless, slanet_plus, slanet_auto.
+    /// Table structure model: tatr (default), slanet_wired, slanet_wireless, slanet_plus, slanet_auto, disabled.
     #[cfg(feature = "layout-detection")]
     #[arg(
         long,
-        help = "Table structure model: tatr (default), slanet_wired, slanet_wireless, slanet_plus, slanet_auto"
+        help = "Table structure model: tatr (default), slanet_wired, slanet_wireless, slanet_plus, slanet_auto, disabled"
     )]
     pub layout_table_model: Option<String>,
 
@@ -487,18 +482,14 @@ impl ExtractionOverrides {
     fn apply_layout(&self, config: &mut ExtractionConfig) {
         #[cfg(feature = "layout-detection")]
         {
-            let has_layout_flag =
-                self.layout_preset.is_some() || self.layout_confidence.is_some() || self.layout_table_model.is_some();
+            let has_layout_flag = self.layout_confidence.is_some() || self.layout_table_model.is_some();
             if has_layout_flag {
                 let mut layout = config.layout.clone().unwrap_or_default();
-                if let Some(ref preset) = self.layout_preset {
-                    layout.preset = preset.clone();
-                }
                 if let Some(confidence) = self.layout_confidence {
                     layout.confidence_threshold = Some(confidence);
                 }
                 if let Some(ref table_model) = self.layout_table_model {
-                    layout.table_model = Some(table_model.clone());
+                    layout.table_model = table_model.parse().unwrap_or_default();
                 }
                 config.layout = Some(layout);
             }
@@ -866,15 +857,15 @@ mod tests {
 
     #[cfg(feature = "layout-detection")]
     #[test]
-    fn test_layout_preset_applied() {
+    fn test_layout_table_model_applied() {
         let mut config = ExtractionConfig::default();
         let overrides = ExtractionOverrides {
-            layout_preset: Some("accurate".to_string()),
+            layout_table_model: Some("slanet_wired".to_string()),
             ..default_overrides()
         };
         overrides.apply(&mut config);
         let layout = config.layout.unwrap();
-        assert_eq!(layout.preset, "accurate");
+        assert_eq!(layout.table_model, kreuzberg::TableModel::SlanetWired);
     }
 
     #[cfg(feature = "layout-detection")]

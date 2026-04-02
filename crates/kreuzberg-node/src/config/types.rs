@@ -1153,9 +1153,20 @@ pub struct JsPageConfig {
     pub marker_format: Option<String>,
 }
 
+fn parse_table_model(s: &str) -> kreuzberg::core::config::layout::TableModel {
+    match s {
+        "tatr" => kreuzberg::core::config::layout::TableModel::Tatr,
+        "slanet_wired" => kreuzberg::core::config::layout::TableModel::SlanetWired,
+        "slanet_wireless" => kreuzberg::core::config::layout::TableModel::SlanetWireless,
+        "slanet_plus" => kreuzberg::core::config::layout::TableModel::SlanetPlus,
+        "slanet_auto" => kreuzberg::core::config::layout::TableModel::SlanetAuto,
+        "disabled" => kreuzberg::core::config::layout::TableModel::Disabled,
+        _ => kreuzberg::core::config::layout::TableModel::default(),
+    }
+}
+
 #[napi(object)]
 pub struct JsLayoutDetectionConfig {
-    pub preset: Option<String>,
     pub confidence_threshold: Option<f64>,
     pub apply_heuristics: Option<bool>,
     pub table_model: Option<String>,
@@ -1164,10 +1175,9 @@ pub struct JsLayoutDetectionConfig {
 impl From<JsLayoutDetectionConfig> for kreuzberg::core::config::layout::LayoutDetectionConfig {
     fn from(val: JsLayoutDetectionConfig) -> Self {
         kreuzberg::core::config::layout::LayoutDetectionConfig {
-            preset: val.preset.unwrap_or_else(|| "fast".to_string()),
             confidence_threshold: val.confidence_threshold.map(|v| v as f32),
             apply_heuristics: val.apply_heuristics.unwrap_or(true),
-            table_model: val.table_model,
+            table_model: val.table_model.as_deref().map(parse_table_model).unwrap_or_default(),
         }
     }
 }
@@ -1175,10 +1185,9 @@ impl From<JsLayoutDetectionConfig> for kreuzberg::core::config::layout::LayoutDe
 impl From<kreuzberg::core::config::layout::LayoutDetectionConfig> for JsLayoutDetectionConfig {
     fn from(config: kreuzberg::core::config::layout::LayoutDetectionConfig) -> Self {
         Self {
-            preset: Some(config.preset),
             confidence_threshold: config.confidence_threshold.map(|v| v as f64),
             apply_heuristics: Some(config.apply_heuristics),
-            table_model: config.table_model,
+            table_model: Some(config.table_model.to_string()),
         }
     }
 }

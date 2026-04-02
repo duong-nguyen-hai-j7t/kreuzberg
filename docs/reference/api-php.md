@@ -1100,22 +1100,22 @@ Layout detection configuration (requires `layout-detection` feature).
 readonly class LayoutDetectionConfig
 {
     public function __construct(
-        public string $preset = 'accurate',
         public ?float $confidenceThreshold = null,
         public bool $applyHeuristics = true,
+        public ?string $tableModel = null,
     );
 }
 ```
 
 **Fields:**
 
-- `$preset` (string): Model selection preset. `"fast"` (YOLO DocLayNet, 11 classes) or `"accurate"` (RT-DETR v2, 17 classes). Default: `"accurate"`
 - `$confidenceThreshold` (float|null): Confidence threshold for layout detection (0.0-1.0). Default: `null`
 - `$applyHeuristics` (bool): Apply post-processing heuristics to refine layout results. Default: `true`
+- `$tableModel` (string|null): Table structure recognition model. Options: `"tatr"` (default), `"slanet_wired"`, `"slanet_wireless"`, `"slanet_plus"`, `"slanet_auto"`. Default: `null` (uses `"tatr"`)
 
 **Example:**
 
-```php title="layout_detection_config.php"
+```php title="layout_detection_config_example.php"
 <?php
 
 use Kreuzberg\Config\LayoutDetectionConfig;
@@ -1123,7 +1123,6 @@ use Kreuzberg\Config\ExtractionConfig;
 
 $config = new ExtractionConfig(
     layout: new LayoutDetectionConfig(
-        preset: 'accurate',
         confidenceThreshold: 0.5,
         applyHeuristics: true
     )

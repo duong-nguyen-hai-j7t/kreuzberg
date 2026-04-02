@@ -1402,9 +1402,9 @@ Configuration for layout detection and document structure analysis.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `preset` | string | "accurate" | Model preset: "fast" (YOLO DocLayNet, 11 classes) or "accurate" (RT-DETR v2, 17 classes) |
 | `confidenceThreshold` | number \| undefined | undefined | Minimum confidence score (0.0-1.0) for layout detection results. If undefined, no filtering applied |
 | `applyHeuristics` | boolean | true | Apply post-processing heuristics to refine layout results |
+| `tableModel` | string \| undefined | undefined | Table structure recognition model: `"tatr"` (default), `"slanet_wired"`, `"slanet_wireless"`, `"slanet_plus"`, `"slanet_auto"` |
 
 **Example:**
 
@@ -1413,7 +1413,6 @@ import { Kreuzberg } from '@kreuzberg/wasm';
 
 const config: ExtractionConfig = {
   layout: {
-    preset: 'accurate',
     confidenceThreshold: 0.5,
     applyHeuristics: true
   }

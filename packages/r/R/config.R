@@ -159,23 +159,21 @@ chunking_config <- function(max_characters = 1000L, overlap = 200L, ...) {
 
 #' Create a layout detection configuration
 #'
-#' @param preset Model preset controlling accuracy vs speed trade-off.
-#'   Supported values: "fast", "accurate". Default "fast".
 #' @param confidence_threshold Minimum confidence threshold for detected layout
 #'   regions (0.0-1.0). Regions below this threshold are discarded.
 #'   Default NULL (use engine default).
 #' @param apply_heuristics Logical. Whether to apply heuristic post-processing
 #'   to refine layout regions. Default TRUE.
 #' @param table_model Table structure recognition model to use. Supported values:
-#'   "tatr", "slanet_wired", "slanet_wireless", "slanet_plus", "slanet_auto".
+#'   "tatr" (default), "slanet_wired", "slanet_wireless", "slanet_plus",
+#'   "slanet_auto", "disabled".
 #'   Default NULL (use engine default).
 #' @param ... Additional layout detection options.
 #' @return A named list representing the layout detection configuration.
 #' @export
-layout_detection_config <- function(preset = "fast", confidence_threshold = NULL,
+layout_detection_config <- function(confidence_threshold = NULL,
                                     apply_heuristics = TRUE, table_model = NULL, ...) {
-  stopifnot(is.character(preset), length(preset) == 1L)
-  config <- list(preset = preset, apply_heuristics = apply_heuristics)
+  config <- list(apply_heuristics = apply_heuristics)
   if (!is.null(confidence_threshold)) {
     confidence_threshold <- as.double(confidence_threshold)
     if (confidence_threshold < 0 || confidence_threshold > 1) {
@@ -185,7 +183,7 @@ layout_detection_config <- function(preset = "fast", confidence_threshold = NULL
   }
   if (!is.null(table_model)) {
     stopifnot(is.character(table_model), length(table_model) == 1L)
-    valid_table_models <- c("tatr", "slanet_wired", "slanet_wireless", "slanet_plus", "slanet_auto")
+    valid_table_models <- c("tatr", "slanet_wired", "slanet_wireless", "slanet_plus", "slanet_auto", "disabled")
     if (!table_model %in% valid_table_models) {
       stop(
         paste0(

@@ -370,7 +370,7 @@ kreuzberg extract <PATH> [OPTIONS]
 | `--include-structure <true\|false>` | Include hierarchical document structure |
 | `--quality <true\|false>` | Enable quality post-processing |
 | `--detect-language <true\|false>` | Enable language detection |
-| `--layout-preset <PRESET>` | Layout detection preset (e.g. `accurate`) |
+| `--layout` | Enable layout detection (RT-DETR v2) |
 | `--layout-confidence <FLOAT>` | Layout confidence threshold (0.0 - 1.0) |
 | `--acceleration <PROVIDER>` | ONNX execution provider: `auto`, `cpu`, `coreml`, `cuda`, `tensorrt` |
 | `--max-concurrent <N>` | Max parallel extractions in batch mode |
@@ -885,7 +885,7 @@ None by default. The binary includes core extraction.
 - **`api`**: Enable the REST API server (`kreuzberg serve` command) and API utilities (`kreuzberg api schema`)
 - **`mcp`**: Enable Model Context Protocol server (`kreuzberg mcp` command)
 - **`embeddings`**: Enable embedding generation (`kreuzberg embed` command)
-- **`layout-detection`**: Enable layout detection flags (`--layout-preset`, `--layout-confidence`)
+- **`layout-detection`**: Enable layout detection flags (`--layout`, `--layout-confidence`)
 - **`chunking-tokenizers`**: Enable token-based chunking (`--chunking-tokenizer`)
 - **`all`**: Enable all features (`api` + `mcp`)
 

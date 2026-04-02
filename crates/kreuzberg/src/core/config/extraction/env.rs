@@ -186,7 +186,8 @@ impl ExtractionConfig {
             }
         }
 
-        // KREUZBERG_LAYOUT_PRESET override
+        // KREUZBERG_LAYOUT_PRESET override (backward compat: enables layout detection).
+        // Only one model (RT-DETR) exists, so the specific preset value is ignored.
         #[cfg(feature = "layout-detection")]
         if let Ok(preset) = std::env::var("KREUZBERG_LAYOUT_PRESET") {
             let lower = preset.to_lowercase();
@@ -202,9 +203,8 @@ impl ExtractionConfig {
             if self.layout.is_none() {
                 self.layout = Some(super::super::layout::LayoutDetectionConfig::default());
             }
-            if let Some(ref mut layout) = self.layout {
-                layout.preset = lower;
-            }
+            // preset value is accepted but ignored -- only RT-DETR is available
+            let _ = lower;
         }
 
         // KREUZBERG_CHUNKING_TOKENIZER override
@@ -226,7 +226,8 @@ impl ExtractionConfig {
             }
         }
 
-        // KREUZBERG_LAYOUT_PRESET override
+        // KREUZBERG_LAYOUT_PRESET override (backward compat: enables layout detection).
+        // Only one model (RT-DETR) exists, so the specific preset value is ignored.
         #[cfg(feature = "layout-detection")]
         if let Ok(preset) = std::env::var("KREUZBERG_LAYOUT_PRESET") {
             let lower = preset.to_lowercase();
@@ -242,9 +243,8 @@ impl ExtractionConfig {
             if self.layout.is_none() {
                 self.layout = Some(super::super::layout::LayoutDetectionConfig::default());
             }
-            if let Some(ref mut layout) = self.layout {
-                layout.preset = lower;
-            }
+            // preset value is accepted but ignored -- only RT-DETR is available
+            let _ = lower;
         }
 
         // KREUZBERG_DISABLE_OCR override

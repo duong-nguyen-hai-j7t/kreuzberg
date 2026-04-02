@@ -440,11 +440,11 @@ kreuzberg extract document.pdf --content-format markdown --include-structure tru
 
 | Flag | Description |
 |------|-------------|
-| `--layout-preset <PRESET>` | Layout detection preset (e.g. `accurate`). Requires the `layout-detection` feature. |
+| `--layout` | Enable layout detection (RT-DETR v2). Requires the `layout-detection` feature. |
 | `--layout-confidence <FLOAT>` | Layout detection confidence threshold (0.0 - 1.0). |
 
 ```bash title="Terminal"
-kreuzberg extract document.pdf --layout-preset accurate --layout-confidence 0.7
+kreuzberg extract document.pdf --layout --layout-confidence 0.7
 ```
 
 ### Acceleration Flags

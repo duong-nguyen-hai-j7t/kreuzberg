@@ -1,7 +1,7 @@
-//! Layout model A/B benchmark: compare layout detection models on rendered PDF pages.
+//! Layout model A/B benchmark: compare layout detection configurations on rendered PDF pages.
 //!
 //! Replaces `crates/kreuzberg/tests/layout_model_benchmark.rs`.
-//! Compares two layout presets on cold start, inference latency, and class distribution.
+//! Compares two table model configurations on cold start, inference latency, and class distribution.
 
 use crate::Result;
 use crate::corpus::{self, CorpusFilter};
@@ -20,8 +20,8 @@ impl Default for ModelBenchmarkConfig {
     fn default() -> Self {
         Self {
             fixtures_dir: PathBuf::from("tools/benchmark-harness/fixtures"),
-            model_a: "rtdetr".to_string(),
-            model_b: "accurate".to_string(),
+            model_a: "tatr".to_string(),
+            model_b: "slanet_auto".to_string(),
             max_pages: 3,
         }
     }
@@ -39,7 +39,7 @@ pub struct ModelDocResult {
 
 /// Run model benchmark (stub — full implementation requires layout model API).
 ///
-/// This currently extracts using the two layout presets and measures timing.
+/// This currently extracts using the two table model configurations and measures timing.
 /// A full implementation would directly invoke the ONNX models on rendered pages.
 pub async fn run_model_benchmark(config: &ModelBenchmarkConfig) -> Result<Vec<ModelDocResult>> {
     let filter = CorpusFilter {
@@ -61,11 +61,11 @@ pub async fn run_model_benchmark(config: &ModelBenchmarkConfig) -> Result<Vec<Mo
     let mut results = Vec::new();
 
     for doc in &docs {
-        // Model A: extract with layout
+        // Model A: extract with layout + table model A
         let config_a = kreuzberg::ExtractionConfig {
             output_format: kreuzberg::core::config::OutputFormat::Markdown,
             layout: Some(kreuzberg::core::config::layout::LayoutDetectionConfig {
-                preset: config.model_a.clone(),
+                table_model: Some(config.model_a.clone()),
                 ..Default::default()
             }),
             ..Default::default()
@@ -86,11 +86,11 @@ pub async fn run_model_benchmark(config: &ModelBenchmarkConfig) -> Result<Vec<Mo
         };
         let model_a_ms = t.elapsed().as_secs_f64() * 1000.0;
 
-        // Model B: extract with different layout preset
+        // Model B: extract with different table model
         let config_b = kreuzberg::ExtractionConfig {
             output_format: kreuzberg::core::config::OutputFormat::Markdown,
             layout: Some(kreuzberg::core::config::layout::LayoutDetectionConfig {
-                preset: config.model_b.clone(),
+                table_model: Some(config.model_b.clone()),
                 ..Default::default()
             }),
             ..Default::default()

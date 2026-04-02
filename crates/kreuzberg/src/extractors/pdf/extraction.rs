@@ -133,7 +133,7 @@ pub(crate) fn extract_all_from_document(
             None,
             allow_single_column,
             #[cfg(feature = "layout-detection")]
-            config.layout.as_ref().and_then(|l| l.table_model.as_deref()),
+            config.layout.as_ref().map(|l| l.table_model).unwrap_or_default(),
             #[cfg(not(feature = "layout-detection"))]
             None,
         ) {

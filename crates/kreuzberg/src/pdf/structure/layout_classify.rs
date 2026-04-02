@@ -341,7 +341,7 @@ pub(super) fn apply_hint_to_paragraph(para: &mut PdfParagraph, hint: &LayoutHint
                     let high_confidence_bold = hint.confidence >= 0.7 && para.is_bold;
                     let looks_like_sentence = trimmed.ends_with('.') && word_count > 8;
                     let body_size_guard = near_body && is_unnumbered
-                        && !(high_confidence_bold && !looks_like_sentence);
+                        && (!high_confidence_bold || looks_like_sentence);
                     if !too_long && !ends_period && !ends_colon && !is_figure && !is_monospace && !body_size_guard {
                         para.heading_level = Some(text_level);
                     }

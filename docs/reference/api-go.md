@@ -820,7 +820,7 @@ Configure ONNX-based document layout detection.
 type LayoutDetectionConfig struct {
 	ApplyHeuristics     *bool    // Whether to apply heuristic post-processing
 	ConfidenceThreshold *float64 // Minimum confidence threshold (0.0-1.0)
-	Preset              *string  // Model preset: "fast", "accurate"
+	TableModel          *string  // Table structure model: "tatr", "slanet_wired", etc.
 }
 ```
 

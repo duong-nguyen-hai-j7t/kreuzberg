@@ -261,10 +261,8 @@ pub(super) fn classify_paragraphs(paragraphs: &mut [PdfParagraph], heading_map: 
             let ratio = para.dominant_font_size / body_font_size;
             if ratio > 1.4 {
                 1
-            } else if ratio > 1.2 {
-                2
-            } else if wc <= 5 {
-                2 // Short ALL-CAPS title → H2
+            } else if ratio > 1.2 || wc <= 5 {
+                2 // Larger font or short ALL-CAPS title → H2
             } else {
                 3 // Longer ALL-CAPS label → H3
             }

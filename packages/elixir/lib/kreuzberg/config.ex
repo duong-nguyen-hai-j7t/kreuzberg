@@ -37,7 +37,7 @@ defmodule Kreuzberg.ExtractionConfig do
     * `:keywords` - Keyword extraction configuration
     * `:pdf_options` - PDF-specific options (requires pdf feature to be enabled)
     * `:html_options` - HTML to Markdown conversion options (quality, format, preprocessing options)
-    * `:layout` - Layout detection configuration (preset, confidence_threshold, apply_heuristics)
+    * `:layout` - Layout detection configuration (confidence_threshold, apply_heuristics, table_model)
     * `:acceleration` - GPU acceleration configuration (provider, device_id)
     * `:security_limits` - Security limits for archive extraction (max sizes, compression ratio, etc.)
     * `:email` - Email extraction configuration (msg_fallback_codepage)
@@ -148,7 +148,6 @@ defmodule Kreuzberg.ExtractionConfig do
 
   @type layout_config ::
           %{
-            preset: String.t(),
             confidence_threshold: float() | nil,
             apply_heuristics: boolean(),
             table_model: String.t() | nil
@@ -546,13 +545,8 @@ defmodule Kreuzberg.ExtractionConfig do
   defp normalize_layout_config(layout_config) when is_map(layout_config) do
     normalized = normalize_map_keys(layout_config)
 
-    # Add default preset if not present ("fast" is the default)
-    normalized =
-      if Map.has_key?(normalized, "preset") do
-        normalized
-      else
-        Map.put(normalized, "preset", "fast")
-      end
+    # Remove preset if present (no longer used)
+    normalized = Map.delete(normalized, "preset")
 
     # Add default apply_heuristics if not present
     normalized =
@@ -1085,35 +1079,9 @@ defmodule Kreuzberg.ExtractionConfig do
 
   @doc false
   defp validate_layout_config(config) when is_map(config) do
-    with :ok <- validate_layout_preset(config),
-         :ok <- validate_layout_confidence_threshold(config),
+    with :ok <- validate_layout_confidence_threshold(config),
          :ok <- validate_layout_apply_heuristics(config) do
       validate_layout_table_model(config)
-    end
-  end
-
-  @doc false
-  defp validate_layout_preset(config) do
-    preset = Map.get(config, "preset") || Map.get(config, :preset)
-
-    case preset do
-      nil ->
-        :ok
-
-      value when is_binary(value) ->
-        case String.downcase(value) do
-          "fast" ->
-            :ok
-
-          "accurate" ->
-            :ok
-
-          _invalid ->
-            {:error, "Field 'layout.preset' must be one of: fast, accurate, got: #{value}"}
-        end
-
-      value ->
-        {:error, "Field 'layout.preset' must be a string, got: #{type_name(value)}"}
     end
   end
 

@@ -799,16 +799,21 @@ pub fn parse_acceleration_config(ruby: &Ruby, hash: RHash) -> Result<Acceleratio
     Ok(config)
 }
 
+/// Parse a table model string into a TableModel enum.
+fn parse_table_model_str(s: &str) -> kreuzberg::core::config::layout::TableModel {
+    match s {
+        "tatr" => kreuzberg::core::config::layout::TableModel::Tatr,
+        "slanet_wired" => kreuzberg::core::config::layout::TableModel::SlanetWired,
+        "slanet_wireless" => kreuzberg::core::config::layout::TableModel::SlanetWireless,
+        "slanet_plus" => kreuzberg::core::config::layout::TableModel::SlanetPlus,
+        "slanet_auto" => kreuzberg::core::config::layout::TableModel::SlanetAuto,
+        "disabled" => kreuzberg::core::config::layout::TableModel::Disabled,
+        _ => kreuzberg::core::config::layout::TableModel::default(),
+    }
+}
+
 /// Parse LayoutDetectionConfig from Ruby Hash
 pub fn parse_layout_detection_config(ruby: &Ruby, hash: RHash) -> Result<LayoutDetectionConfig, Error> {
-    let preset = if let Some(val) = get_kw(ruby, hash, "preset")
-        && val.equal(ruby.qnil()).ok() != Some(true)
-    {
-        symbol_to_string(val)?
-    } else {
-        "accurate".to_string()
-    };
-
     let confidence_threshold = if let Some(val) = get_kw(ruby, hash, "confidence_threshold")
         && val.equal(ruby.qnil()).ok() != Some(true)
     {
@@ -826,13 +831,12 @@ pub fn parse_layout_detection_config(ruby: &Ruby, hash: RHash) -> Result<LayoutD
     let table_model = if let Some(val) = get_kw(ruby, hash, "table_model")
         && val.equal(ruby.qnil()).ok() != Some(true)
     {
-        Some(String::try_convert(val)?)
+        parse_table_model_str(&String::try_convert(val)?)
     } else {
-        None
+        kreuzberg::core::config::layout::TableModel::default()
     };
 
     let config = LayoutDetectionConfig {
-        preset,
         confidence_threshold,
         apply_heuristics,
         table_model,

@@ -226,12 +226,12 @@ enum Commands {
         #[arg(short, long)]
         fixtures: PathBuf,
 
-        /// First model preset name
-        #[arg(long, default_value = "fast")]
+        /// First table model name (e.g. "tatr", "slanet_wired", "slanet_auto")
+        #[arg(long, default_value = "tatr")]
         model_a: String,
 
-        /// Second model preset name
-        #[arg(long, default_value = "accurate")]
+        /// Second table model name (e.g. "tatr", "slanet_wired", "slanet_auto")
+        #[arg(long, default_value = "slanet_auto")]
         model_b: String,
     },
 

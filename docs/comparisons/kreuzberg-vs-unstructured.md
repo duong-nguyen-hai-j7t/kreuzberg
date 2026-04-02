@@ -47,7 +47,7 @@ How you integrate each tool into your stack.
 Both tools handle OCR and document layout, but with different approaches.
 
 - **OCR** -- Both integrate Tesseract. Kreuzberg adds a native **PaddleOCR** backend (ONNX-based, no Python needed) and a **multi-backend pipeline** that auto-falls back between engines based on output quality.
-- **Layout detection** -- Kreuzberg ships ONNX-based models with two presets: YOLO (fast) and RT-DETR v2 (accurate), covering 17 element classes plus SLANet table structure recognition. Unstructured offers mature ML-based layout detection with strong complex table support.
+- **Layout detection** -- Kreuzberg ships an ONNX-based RT-DETR v2 model covering 17 element classes plus SLANet table structure recognition. Unstructured offers mature ML-based layout detection with strong complex table support.
 
 ### Embeddings and Chunking
 

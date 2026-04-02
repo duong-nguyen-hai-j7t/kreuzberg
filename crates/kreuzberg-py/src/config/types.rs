@@ -1466,45 +1466,42 @@ impl PostProcessorConfig {
 /// Layout detection configuration.
 ///
 /// Controls layout detection behavior for PDF extraction using ONNX-based
-/// document layout models (YOLO or RT-DETR).
+/// document layout models.
 ///
 /// Example:
 ///     >>> from kreuzberg import LayoutDetectionConfig
-///     >>> config = LayoutDetectionConfig(preset="fast", apply_heuristics=True)
+///     >>> config = LayoutDetectionConfig(apply_heuristics=True, table_model="tatr")
 #[pyclass(name = "LayoutDetectionConfig", module = "kreuzberg", from_py_object)]
 #[derive(Clone)]
 pub struct LayoutDetectionConfig {
     pub inner: kreuzberg::core::config::layout::LayoutDetectionConfig,
 }
 
+/// Parse a table model string into a TableModel enum.
+fn parse_table_model(s: &str) -> kreuzberg::core::config::layout::TableModel {
+    match s {
+        "tatr" => kreuzberg::core::config::layout::TableModel::Tatr,
+        "slanet_wired" => kreuzberg::core::config::layout::TableModel::SlanetWired,
+        "slanet_wireless" => kreuzberg::core::config::layout::TableModel::SlanetWireless,
+        "slanet_plus" => kreuzberg::core::config::layout::TableModel::SlanetPlus,
+        "slanet_auto" => kreuzberg::core::config::layout::TableModel::SlanetAuto,
+        "disabled" => kreuzberg::core::config::layout::TableModel::Disabled,
+        _ => kreuzberg::core::config::layout::TableModel::default(),
+    }
+}
+
 #[pymethods]
 impl LayoutDetectionConfig {
     #[new]
-    #[pyo3(signature = (preset=None, confidence_threshold=None, apply_heuristics=None, table_model=None))]
-    fn new(
-        preset: Option<String>,
-        confidence_threshold: Option<f32>,
-        apply_heuristics: Option<bool>,
-        table_model: Option<String>,
-    ) -> Self {
+    #[pyo3(signature = (confidence_threshold=None, apply_heuristics=None, table_model=None))]
+    fn new(confidence_threshold: Option<f32>, apply_heuristics: Option<bool>, table_model: Option<String>) -> Self {
         Self {
             inner: kreuzberg::core::config::layout::LayoutDetectionConfig {
-                preset: preset.unwrap_or_else(|| "fast".to_string()),
                 confidence_threshold,
                 apply_heuristics: apply_heuristics.unwrap_or(true),
-                table_model,
+                table_model: table_model.as_deref().map(parse_table_model).unwrap_or_default(),
             },
         }
-    }
-
-    #[getter]
-    fn preset(&self) -> String {
-        self.inner.preset.clone()
-    }
-
-    #[setter]
-    fn set_preset(&mut self, value: String) {
-        self.inner.preset = value;
     }
 
     #[getter]
@@ -1528,29 +1525,24 @@ impl LayoutDetectionConfig {
     }
 
     #[getter]
-    fn table_model(&self) -> Option<String> {
-        self.inner.table_model.clone()
+    fn table_model(&self) -> String {
+        self.inner.table_model.to_string()
     }
 
     #[setter]
-    fn set_table_model(&mut self, value: Option<String>) {
-        self.inner.table_model = value;
+    fn set_table_model(&mut self, value: String) {
+        self.inner.table_model = parse_table_model(&value);
     }
 
     fn __repr__(&self) -> String {
         format!(
-            "LayoutDetectionConfig(preset='{}', confidence_threshold={}, apply_heuristics={}, table_model={})",
-            self.inner.preset,
+            "LayoutDetectionConfig(confidence_threshold={}, apply_heuristics={}, table_model='{}')",
             self.inner
                 .confidence_threshold
                 .map(|v| v.to_string())
                 .unwrap_or_else(|| "None".to_string()),
             self.inner.apply_heuristics,
-            self.inner
-                .table_model
-                .as_deref()
-                .map(|v| format!("'{v}'"))
-                .unwrap_or_else(|| "None".to_string()),
+            self.inner.table_model,
         )
     }
 }

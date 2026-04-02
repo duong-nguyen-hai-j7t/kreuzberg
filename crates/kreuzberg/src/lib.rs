@@ -135,7 +135,7 @@ pub use core::config::{HierarchyConfig, PdfConfig};
 pub use paddle_ocr::{CacheStats, ModelManager, ModelPaths, PaddleLanguage, PaddleOcrBackend, PaddleOcrConfig};
 
 #[cfg(feature = "layout-detection")]
-pub use core::config::LayoutDetectionConfig;
+pub use core::config::{LayoutDetectionConfig, TableModel};
 
 #[cfg(feature = "tree-sitter")]
 pub use core::config::{TreeSitterConfig, TreeSitterProcessConfig};
@@ -145,9 +145,6 @@ pub use tree_sitter_language_pack::{
     ExportInfo, ExportKind, FileMetrics, ImportInfo, ProcessConfig, ProcessResult, Span, StructureItem, StructureKind,
     SymbolInfo, SymbolKind, process as process_code,
 };
-
-#[cfg(feature = "layout-detection")]
-pub use layout::LayoutPreset;
 
 pub use core::mime::{
     DOCX_MIME_TYPE, EXCEL_MIME_TYPE, HTML_MIME_TYPE, JSON_MIME_TYPE, MARKDOWN_MIME_TYPE, PDF_MIME_TYPE,
