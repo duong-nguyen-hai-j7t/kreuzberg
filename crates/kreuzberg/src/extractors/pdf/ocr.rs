@@ -796,31 +796,8 @@ pub(crate) async fn extract_with_ocr(
                 // Collect recognized tables as Table structs for ExtractionResult.tables
                 for rt in &recognized_tables {
                     if !rt.markdown.is_empty() {
-                        let cells: Vec<Vec<String>> = rt
-                            .markdown
-                            .lines()
-                            .filter(|line| {
-                                let trimmed = line.trim();
-                                if trimmed.is_empty() || !trimmed.contains('|') {
-                                    return false;
-                                }
-                                let inner = trimmed.trim_matches('|');
-                                !inner.split('|').all(|seg| {
-                                    let s = seg.trim();
-                                    !s.is_empty() && s.chars().all(|c| c == '-' || c == ':')
-                                })
-                            })
-                            .map(|line| {
-                                line.trim()
-                                    .trim_matches('|')
-                                    .split('|')
-                                    .map(|cell| cell.trim().to_string())
-                                    .collect()
-                            })
-                            .collect();
-
                         collected_tables.push(crate::types::Table {
-                            cells,
+                            cells: rt.cells.clone(),
                             markdown: rt.markdown.clone(),
                             page_number: page_idx + 1,
                             bounding_box: None,
@@ -916,7 +893,21 @@ pub(crate) async fn extract_with_ocr(
         }
     };
     #[cfg(not(feature = "layout-detection"))]
-    let ocr_doc: Option<crate::types::internal::InternalDocument> = None;
+    let ocr_doc: Option<crate::types::internal::InternalDocument> = {
+        let mut doc = crate::types::internal::InternalDocument::new("pdf");
+        for paragraph in result.split("\n\n") {
+            let trimmed = paragraph.trim();
+            if !trimmed.is_empty() {
+                doc.push_element(crate::types::internal::InternalElement::text(
+                    crate::types::internal::ElementKind::Paragraph,
+                    trimmed,
+                    0,
+                ));
+            }
+        }
+        doc.tables = collected_tables.clone();
+        Some(doc)
+    };
 
     Ok((result, mean_text_conf, collected_tables, all_ocr_elements, ocr_doc))
 }
@@ -1019,7 +1010,12 @@ pub(crate) async fn run_ocr_pipeline(
     config: &ExtractionConfig,
     pipeline: &crate::core::config::OcrPipelineConfig,
     path: Option<&std::path::Path>,
-) -> crate::Result<(String, Vec<crate::types::Table>, Vec<crate::types::OcrElement>)> {
+) -> crate::Result<(
+    String,
+    Vec<crate::types::Table>,
+    Vec<crate::types::OcrElement>,
+    Option<crate::types::internal::InternalDocument>,
+)> {
     use crate::plugins::registry::get_ocr_backend_registry;
 
     let default_ocr_config = crate::core::config::OcrConfig::default();
@@ -1050,7 +1046,13 @@ pub(crate) async fn run_ocr_pipeline(
         });
     }
 
-    let mut best_result: Option<(String, f64, Vec<crate::types::Table>, Vec<crate::types::OcrElement>)> = None;
+    let mut best_result: Option<(
+        String,
+        f64,
+        Vec<crate::types::Table>,
+        Vec<crate::types::OcrElement>,
+        Option<crate::types::internal::InternalDocument>,
+    )> = None;
 
     for stage in &available_stages {
         // Build a modified config for this stage
@@ -1088,7 +1090,7 @@ pub(crate) async fn run_ocr_pipeline(
         .await;
 
         match result {
-            Ok((text, mean_conf, stage_tables, stage_ocr_elements, _stage_doc)) => {
+            Ok((text, mean_conf, stage_tables, stage_ocr_elements, stage_doc)) => {
                 let text_score = compute_quality_score(&text, &pipeline.quality_thresholds);
 
                 let score = match mean_conf {
@@ -1106,16 +1108,16 @@ pub(crate) async fn run_ocr_pipeline(
                 );
 
                 if score >= pipeline.quality_thresholds.pipeline_min_quality {
-                    return Ok((text, stage_tables, stage_ocr_elements));
+                    return Ok((text, stage_tables, stage_ocr_elements, stage_doc));
                 }
 
                 // Track best-so-far
                 match best_result {
-                    Some((_, best_score, _, _)) if score > best_score => {
-                        best_result = Some((text, score, stage_tables, stage_ocr_elements));
+                    Some((_, best_score, _, _, _)) if score > best_score => {
+                        best_result = Some((text, score, stage_tables, stage_ocr_elements, stage_doc));
                     }
                     None => {
-                        best_result = Some((text, score, stage_tables, stage_ocr_elements));
+                        best_result = Some((text, score, stage_tables, stage_ocr_elements, stage_doc));
                     }
                     _ => {}
                 }
@@ -1132,13 +1134,13 @@ pub(crate) async fn run_ocr_pipeline(
 
     // Return best result (with warning) or error if all backends failed entirely
     match best_result {
-        Some((text, score, tables, elements)) => {
+        Some((text, score, tables, elements, doc)) => {
             tracing::warn!(
                 score,
                 threshold = pipeline.quality_thresholds.pipeline_min_quality,
                 "All OCR pipeline backends produced suboptimal quality, using best result"
             );
-            Ok((text, tables, elements))
+            Ok((text, tables, elements, doc))
         }
         None => Err(crate::KreuzbergError::Parsing {
             message: "All OCR pipeline backends failed".to_string(),

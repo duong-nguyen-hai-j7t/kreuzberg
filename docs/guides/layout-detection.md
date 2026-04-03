@@ -24,6 +24,9 @@ Layout detection uses the **RT-DETR v2** model (17 layout classes), an ONNX-base
 
 *171-document PDF corpus, CPU only. GPU acceleration significantly reduces the time penalty.*
 
+!!! warning "`preset` removed"
+    The `preset` field (`"fast"` / `"accurate"`) was removed from `LayoutDetectionConfig`. If it appears in a config file it is silently ignored. Only the RT-DETR v2 model is used for layout detection.
+
 ## Configuration
 
 === "Python"

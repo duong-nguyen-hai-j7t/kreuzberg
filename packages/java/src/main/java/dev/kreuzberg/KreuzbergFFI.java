@@ -130,6 +130,7 @@ public final class KreuzbergFFI {
 			ValueLayout.ADDRESS.withName("processing_warnings_json"),
 			ValueLayout.ADDRESS.withName("quality_score_json"), ValueLayout.ADDRESS.withName("subject"),
 			ValueLayout.ADDRESS.withName("tables_json"), ValueLayout.ADDRESS.withName("uris_json"),
+			ValueLayout.ADDRESS.withName("code_intelligence_json"),
 			ValueLayout.JAVA_BOOLEAN.withName("success"), MemoryLayout.paddingLayout(7));
 
 	public static final long CONTENT_OFFSET = C_EXTRACTION_RESULT_LAYOUT

@@ -1,6 +1,6 @@
 # Element-Based Output <span class="version-badge">v4.1.0</span>
 
-Segments a document into a flat array of typed elements — titles, paragraphs, tables, list items, code blocks, images, and more. Each element carries page number and bounding box coordinates.
+Segments a document into a flat array of typed elements — titles, paragraphs, tables, list items, code blocks, images, and more. Each element carries a page number and, for text elements in PDFs when hierarchy extraction is enabled, bounding box coordinates.
 
 Use element-based output for RAG chunking, semantic search, or Unstructured.io-compatible pipelines. For hierarchical tree structure, use [document structure](document-structure.md). For plain text, use the default unified output.
 
@@ -60,7 +60,7 @@ Every element's `metadata` contains:
 |-------|------|-------------|
 | `page_number` | `int \| None` | 1-indexed page number (PDF, DOCX, PPTX) |
 | `filename` | `str \| None` | Source filename |
-| `coordinates` | `BoundingBox \| None` | `x0`, `y0`, `x1`, `y1` in PDF points (PDF and OCR) |
+| `coordinates` | `BoundingBox \| None` | `x0`, `y0`, `x1`, `y1` in PDF points. Only populated for **text elements** when `pdf_options.hierarchy` is enabled with `include_bbox=True`. Table and image elements do not carry coordinates. |
 | `element_index` | `int` | Zero-based position in the elements array |
 | `additional` | `dict[str, str]` | Element-type-specific fields (see table above) |
 

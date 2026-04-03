@@ -47,7 +47,7 @@ Hierarchy data is in `result.pages[n].hierarchy`. Each page has a `blocks` list:
 }
 ```
 
-- `bbox`: `[left, top, right, bottom]` in PDF points (present when `include_bbox=True`)
+- `bbox`: `[left, top, right, bottom]` in PDF points (present when `include_bbox=True`). This is the only way to obtain bounding box coordinates for text elements — they are not included by default.
 - `level`: `"h1"` – `"h6"` or `"body"`
 
 ## Configuration

@@ -195,7 +195,7 @@ async fn run_ocr_with_layout(
 
     // Check for pipeline configuration
     if let Some(pipeline) = ocr_config.effective_pipeline() {
-        let (text, _ocr_tables, ocr_elements) = ocr::run_ocr_pipeline(
+        let (text, _ocr_tables, ocr_elements, pipeline_doc) = ocr::run_ocr_pipeline(
             Some(content),
             None,
             #[cfg(feature = "layout-detection")]
@@ -205,7 +205,7 @@ async fn run_ocr_with_layout(
             path,
         )
         .await?;
-        return Ok((text, Vec::new(), ocr_elements, None));
+        return Ok((text, Vec::new(), ocr_elements, pipeline_doc));
     }
 
     #[cfg(feature = "layout-detection")]

@@ -1587,6 +1587,9 @@ PDF-specific extraction configuration.
 | `hierarchy`                | `HierarchyConfig?` | `None`  | Hierarchy extraction configuration (None = hierarchy extraction disabled) |
 | `allow_single_column_tables` <span class="version-badge">v4.5.0</span> | `bool`             | `false` | Relax min column count from 2-3 to 1, allowing single-column table extraction |
 
+!!! note "Bounding boxes require explicit opt-in"
+    Element bounding box coordinates are **not** extracted by default. To enable them, set `pdf_options=PdfConfig(hierarchy=HierarchyConfig(enabled=True, include_bbox=True))`. Coordinates are currently only available for **text elements** (headings and body blocks) — table and image regions do not carry per-element bbox data from this path.
+
 ### Example
 
 === "C#"
@@ -3347,23 +3350,19 @@ Configuration for ONNX-based document layout detection. Analyzes PDF pages to id
 
 **Feature Gate**: Requires the `layout-detection` Cargo feature. Layout detection is only available when this feature is enabled.
 
-**Environment Variable**: `KREUZBERG_LAYOUT_PRESET` - Set the model preset via environment (`fast` or `accurate`). When set, layout detection is automatically enabled if not already configured.
+!!! warning "`preset` removed"
+    The `preset` field was removed. If present in a config file it is silently ignored. The RT-DETR v2 model is now the only layout detection model.
 
 ### Fields
 
 | Field                  | Type       | Default  | Description                                                                                   |
 | ---------------------- | ---------- | -------- | --------------------------------------------------------------------------------------------- |
-| `preset`               | `str`      | `"fast"` | Model preset: `"fast"` (YOLO DocLayNet, 11 classes) or `"accurate"` (RT-DETR, 17 classes)     |
 | `confidence_threshold` | `float?`   | `None`   | Confidence threshold override (0.0-1.0). If None, uses the model's built-in default threshold |
 | `apply_heuristics`     | `bool`     | `true`   | Apply postprocessing heuristics (containment filtering, deduplication)                         |
 | `table_model`          | `str?`     | `None` (uses `"tatr"`) | Table structure recognition model. Options: `"tatr"` (30MB, default), `"slanet_wired"` (365MB, bordered tables), `"slanet_wireless"` (365MB, borderless tables), `"slanet_plus"` (7.78MB, lightweight), `"slanet_auto"` (~737MB, classifier-routed). See [Table Structure Models](../guides/layout-detection.md#table-structure-models). |
 
-### Model Presets
-
-| Preset       | Model          | Classes | Input Size | Characteristics                        |
-| ------------ | -------------- | ------- | ---------- | -------------------------------------- |
-| `"fast"`     | YOLO DocLayNet | 11      | 640x640    | Lower latency, good accuracy           |
-| `"accurate"` | RT-DETR v2     | 17      | 640x640    | Higher accuracy, NMS-free, more classes |
+!!! note "Table detection requires layout detection"
+    Table extraction only runs when `layout` is set in `ExtractionConfig`. Setting only `table_model` has no effect without an enclosing `LayoutDetectionConfig`.
 
 ### Configuration Examples
 
@@ -3374,10 +3373,9 @@ Configuration for ONNX-based document layout detection. Analyzes PDF pages to id
 
     config = ExtractionConfig(
         layout=LayoutDetectionConfig(
-            preset="accurate",
             confidence_threshold=0.5,
             apply_heuristics=True,
-            table_model="tatr",  # or "slanet_wired", "slanet_wireless", "slanet_auto", "slanet_plus"
+            table_model="slanet_auto",  # or "tatr", "slanet_wired", "slanet_wireless", "slanet_plus"
         )
     )
     ```
@@ -3389,10 +3387,9 @@ Configuration for ONNX-based document layout detection. Analyzes PDF pages to id
 
     const result = await extract("document.pdf", {
       layout: {
-        preset: "accurate",
         confidenceThreshold: 0.5,
         applyHeuristics: true,
-        tableModel: "tatr", // or "slanet_wired", "slanet_wireless", "slanet_auto", "slanet_plus"
+        tableModel: "slanet_auto", // or "tatr", "slanet_wired", "slanet_wireless", "slanet_plus"
       },
     });
     ```
@@ -3404,9 +3401,10 @@ Configuration for ONNX-based document layout detection. Analyzes PDF pages to id
 
     let config = ExtractionConfig {
         layout: Some(LayoutDetectionConfig {
-            preset: "accurate".to_string(),
             confidence_threshold: Some(0.5),
             apply_heuristics: true,
+            table_model: Some("slanet_auto".to_string()),
+            ..Default::default()
         }),
         ..Default::default()
     };
@@ -3418,18 +3416,18 @@ Configuration for ONNX-based document layout detection. Analyzes PDF pages to id
 
     ```toml title="kreuzberg.toml"
     [layout]
-    preset = "accurate"
     confidence_threshold = 0.5
     apply_heuristics = true
+    # table_model = "slanet_auto"
     ```
 
 === "YAML"
 
     ```yaml title="kreuzberg.yaml"
     layout:
-      preset: accurate
       confidence_threshold: 0.5
       apply_heuristics: true
+      # table_model: slanet_auto
     ```
 
 ---
