@@ -190,9 +190,11 @@ pub struct JsUri {
 }
 
 #[napi(object)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct JsArchiveEntry {
     pub path: String,
     #[napi(js_name = "mimeType")]
+    #[serde(rename = "mimeType")]
     pub mime_type: String,
     #[napi(ts_type = "JsExtractionResult")]
     pub result: serde_json::Value,
@@ -226,7 +228,6 @@ pub struct JsExtractionResult {
     #[napi(js_name = "processingWarnings")]
     pub processing_warnings: Vec<JsProcessingWarning>,
     pub annotations: Vec<JsPdfAnnotation>,
-    #[serde(skip)]
     pub children: Vec<JsArchiveEntry>,
     pub uris: Vec<JsUri>,
     /// Code intelligence results from tree-sitter processing.

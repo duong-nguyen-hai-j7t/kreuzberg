@@ -93,6 +93,24 @@ public record PdfAnnotation(@JsonProperty("annotation_type") String annotationTy
 	}
 
 	/**
+	 * Returns the text content of the annotation.
+	 *
+	 * @return the content string, or null if not available
+	 */
+	public String getContent() {
+		return content;
+	}
+
+	/**
+	 * Returns the page number where the annotation appears.
+	 *
+	 * @return the page number (1-indexed)
+	 */
+	public int getPageNumber() {
+		return pageNumber;
+	}
+
+	/**
 	 * Returns the bounding box of the annotation.
 	 *
 	 * @return the bounding box, or null if not available

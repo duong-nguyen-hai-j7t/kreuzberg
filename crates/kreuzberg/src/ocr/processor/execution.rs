@@ -726,7 +726,16 @@ pub(super) fn perform_ocr(
     // the top of `get_or_init_api` on the next reuse). No dangling pointer issue.
     let mut pix_guard: Option<kreuzberg_tesseract::Pix> = {
         match kreuzberg_tesseract::Pix::from_raw_rgb(&image_data, width, height) {
-            Ok(pix) => {
+            Ok(mut pix) => {
+                // Ensure the Pix has a valid DPI before preprocessing.
+                // Some image sources (e.g. in-memory buffers) may have 0 DPI,
+                // which causes Leptonica operations to produce incorrect results.
+                if let Ok((xres, yres)) = pix.get_resolution()
+                    && (xres == 0 || yres == 0)
+                {
+                    let _ = pix.set_resolution(72, 72);
+                }
+
                 // Pipeline: background normalization → unsharp mask → grayscale.
                 // No binarization — Tesseract performs its own internal thresholding.
                 let processed = pix

@@ -125,6 +125,33 @@ public record Table(@JsonProperty("cells") List<List<String>> cells, @JsonProper
 	}
 
 	/**
+	 * Returns the table cells as a 2D list (rows x columns).
+	 *
+	 * @return an unmodifiable 2D list of cell values
+	 */
+	public List<List<String>> getCells() {
+		return cells;
+	}
+
+	/**
+	 * Returns the Markdown representation of the table.
+	 *
+	 * @return the Markdown string
+	 */
+	public String getMarkdown() {
+		return markdown;
+	}
+
+	/**
+	 * Returns the page number where the table was found.
+	 *
+	 * @return the page number (1-indexed, or 0 for non-paginated documents)
+	 */
+	public int getPageNumber() {
+		return pageNumber;
+	}
+
+	/**
 	 * Returns the bounding box of the table.
 	 *
 	 * @return the bounding box, or null if not available
