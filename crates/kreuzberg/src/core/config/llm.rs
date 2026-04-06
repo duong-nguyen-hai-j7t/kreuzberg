@@ -89,7 +89,13 @@ pub struct StructuredExtractionConfig {
     #[serde(default)]
     pub strict: bool,
 
-    /// Custom extraction prompt. When `None`, a default template is used.
+    /// Custom Jinja2 extraction prompt template. When `None`, a default template is used.
+    ///
+    /// Available template variables:
+    /// - `{{ content }}` — The extracted document text.
+    /// - `{{ schema }}` — The JSON schema as a formatted string.
+    /// - `{{ schema_name }}` — The schema name.
+    /// - `{{ schema_description }}` — The schema description (may be empty).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prompt: Option<String>,
 

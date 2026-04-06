@@ -476,52 +476,101 @@ pub fn validate_chunking_params(max_chars: usize, max_overlap: usize) -> Result<
     Ok(())
 }
 
-/// Validate that a VLM OCR backend has the required `vlm_config`.
-///
-/// When the OCR backend is set to `"vlm"`, the `vlm_config` field must be present
-/// to provide the model endpoint configuration.
+/// Validate that an [`LlmConfig`](crate::core::config::LlmConfig) has a non-empty model string.
 ///
 /// # Arguments
 ///
-/// * `backend` - The OCR backend name
-/// * `has_vlm_config` - Whether the `vlm_config` field is `Some`
+/// * `model` - The model string to validate
 ///
 /// # Returns
 ///
-/// `Ok(())` if the backend is not `"vlm"` or `vlm_config` is present,
-/// or a `ValidationError` if `"vlm"` backend is used without `vlm_config`.
+/// `Ok(())` if the model is non-empty, or a `ValidationError` otherwise.
 ///
 /// # Examples
 ///
 /// ```rust
-/// use kreuzberg::core::config_validation::validate_vlm_backend_config;
+/// use kreuzberg::core::config_validation::validate_llm_config_model;
 ///
-/// assert!(validate_vlm_backend_config("tesseract", false).is_ok());
-/// assert!(validate_vlm_backend_config("vlm", true).is_ok());
-/// assert!(validate_vlm_backend_config("vlm", false).is_err());
+/// assert!(validate_llm_config_model("openai/gpt-4o").is_ok());
+/// assert!(validate_llm_config_model("").is_err());
 /// ```
-pub fn validate_vlm_backend_config(backend: &str, has_vlm_config: bool) -> Result<()> {
-    if backend.to_lowercase() == "vlm" && !has_vlm_config {
+pub fn validate_llm_config_model(model: &str) -> Result<()> {
+    if model.trim().is_empty() {
         return Err(KreuzbergError::Validation {
-            message: "OCR backend 'vlm' requires 'vlm_config' to be set with model endpoint configuration.".to_string(),
+            message: "LLM config 'model' must not be empty. Provide a model identifier (e.g., 'openai/gpt-4o')."
+                .to_string(),
             source: None,
         });
     }
     Ok(())
 }
 
+/// Validate that a VLM OCR backend has the required `vlm_config`.
+///
+/// When the OCR backend is set to `"vlm"`, the `vlm_config` field must be present
+/// to provide the model endpoint configuration, and the model string must be non-empty.
+///
+/// # Arguments
+///
+/// * `backend` - The OCR backend name
+/// * `vlm_config` - The optional VLM config to validate
+///
+/// # Returns
+///
+/// `Ok(())` if the backend is not `"vlm"` or `vlm_config` is present with a valid model,
+/// or a `ValidationError` if `"vlm"` backend is used without `vlm_config` or with an empty model.
+///
+/// # Examples
+///
+/// ```rust
+/// use kreuzberg::core::config_validation::validate_vlm_backend_config;
+/// use kreuzberg::core::config::LlmConfig;
+///
+/// assert!(validate_vlm_backend_config("tesseract", None).is_ok());
+/// let config = LlmConfig {
+///     model: "openai/gpt-4o".to_string(),
+///     api_key: None,
+///     base_url: None,
+///     timeout_secs: None,
+///     max_retries: None,
+///     temperature: None,
+///     max_tokens: None,
+/// };
+/// assert!(validate_vlm_backend_config("vlm", Some(&config)).is_ok());
+/// assert!(validate_vlm_backend_config("vlm", None).is_err());
+/// ```
+pub fn validate_vlm_backend_config(backend: &str, vlm_config: Option<&crate::core::config::LlmConfig>) -> Result<()> {
+    if backend.to_lowercase() == "vlm" {
+        match vlm_config {
+            None => {
+                return Err(KreuzbergError::Validation {
+                    message: "OCR backend 'vlm' requires 'vlm_config' to be set with model endpoint configuration."
+                        .to_string(),
+                    source: None,
+                });
+            }
+            Some(config) => {
+                validate_llm_config_model(&config.model)?;
+            }
+        }
+    }
+    Ok(())
+}
+
 /// Validate structured extraction configuration.
 ///
-/// When structured extraction is enabled, the JSON schema must not be null or empty.
+/// When structured extraction is enabled, the JSON schema must not be null or empty,
+/// and the LLM config must have a non-empty model string.
 ///
 /// # Arguments
 ///
 /// * `schema` - The JSON schema value to validate
+/// * `llm_model` - The LLM model string from the nested `LlmConfig`
 ///
 /// # Returns
 ///
-/// `Ok(())` if the schema is a non-empty object or array,
-/// or a `ValidationError` if the schema is null or an empty object.
+/// `Ok(())` if the schema is a non-empty object or array and the model is valid,
+/// or a `ValidationError` if the schema is null/empty or the model is empty.
 ///
 /// # Examples
 ///
@@ -529,15 +578,18 @@ pub fn validate_vlm_backend_config(backend: &str, has_vlm_config: bool) -> Resul
 /// use kreuzberg::core::config_validation::validate_structured_extraction_schema;
 ///
 /// let valid = serde_json::json!({"type": "object", "properties": {}});
-/// assert!(validate_structured_extraction_schema(&valid).is_ok());
+/// assert!(validate_structured_extraction_schema(&valid, "openai/gpt-4o").is_ok());
 ///
 /// let empty = serde_json::Value::Object(Default::default());
-/// assert!(validate_structured_extraction_schema(&empty).is_err());
+/// assert!(validate_structured_extraction_schema(&empty, "openai/gpt-4o").is_err());
 ///
 /// let null = serde_json::Value::Null;
-/// assert!(validate_structured_extraction_schema(&null).is_err());
+/// assert!(validate_structured_extraction_schema(&null, "openai/gpt-4o").is_err());
+///
+/// let valid = serde_json::json!({"type": "object", "properties": {}});
+/// assert!(validate_structured_extraction_schema(&valid, "").is_err());
 /// ```
-pub fn validate_structured_extraction_schema(schema: &serde_json::Value) -> Result<()> {
+pub fn validate_structured_extraction_schema(schema: &serde_json::Value, llm_model: &str) -> Result<()> {
     match schema {
         serde_json::Value::Null => Err(KreuzbergError::Validation {
             message: "Structured extraction schema must not be null. Provide a valid JSON schema.".to_string(),
@@ -547,6 +599,9 @@ pub fn validate_structured_extraction_schema(schema: &serde_json::Value) -> Resu
             message: "Structured extraction schema must not be an empty object. Provide a valid JSON schema with at least one property.".to_string(),
             source: None,
         }),
-        _ => Ok(()),
+        _ => {
+            validate_llm_config_model(llm_model)?;
+            Ok(())
+        }
     }
 }

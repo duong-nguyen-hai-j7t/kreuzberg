@@ -254,6 +254,13 @@ pub struct OcrConfig {
     /// images to a vision model for text extraction.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vlm_config: Option<super::llm::LlmConfig>,
+
+    /// Custom Jinja2 prompt template for VLM OCR.
+    ///
+    /// When `None`, uses the default template. Available variables:
+    /// - `{{ language }}` — The document language code (e.g., "eng", "deu").
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vlm_prompt: Option<String>,
 }
 
 impl Default for OcrConfig {
@@ -269,6 +276,7 @@ impl Default for OcrConfig {
             pipeline: None,
             auto_rotate: false,
             vlm_config: None,
+            vlm_prompt: None,
         }
     }
 }
@@ -286,7 +294,7 @@ impl OcrConfig {
     pub fn validate(&self) -> Result<(), KreuzbergError> {
         validate_ocr_backend(&self.backend)?;
         // When backend is "vlm", vlm_config must be present.
-        crate::core::config_validation::validate_vlm_backend_config(&self.backend, self.vlm_config.is_some())?;
+        crate::core::config_validation::validate_vlm_backend_config(&self.backend, self.vlm_config.as_ref())?;
         if let Some(ref pipeline) = self.pipeline {
             for stage in &pipeline.stages {
                 validate_ocr_backend(&stage.backend)?;

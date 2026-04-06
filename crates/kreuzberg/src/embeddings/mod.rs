@@ -657,23 +657,41 @@ pub fn embed_texts<T: AsRef<str>>(
         }
     }
 
-    let chunk_count = texts.len();
-    let (repo, model_file, pooling) = resolve_model_info(&config.model)?;
-    let engine = get_or_init_engine(repo, model_file, pooling, config.cache_dir.clone())?;
+    // Dispatch: LLM-hosted embeddings bypass the local ONNX engine entirely.
+    match &config.model {
+        #[cfg(feature = "liter-llm")]
+        crate::core::config::EmbeddingModelType::Llm { llm } => {
+            let llm = llm.clone();
+            let normalize = config.normalize;
+            // Run the async LLM call on the current Tokio runtime.
+            let rt = tokio::runtime::Handle::current();
+            rt.block_on(crate::llm::vlm_embeddings::embed_via_llm(texts, &llm, normalize))
+        }
+        #[cfg(not(feature = "liter-llm"))]
+        crate::core::config::EmbeddingModelType::Llm { .. } => Err(crate::KreuzbergError::MissingDependency(
+            "LLM embeddings require the 'liter-llm' feature. Rebuild with --features liter-llm".into(),
+        )),
+        _ => {
+            // Local ONNX path for Preset and Custom model types.
+            let chunk_count = texts.len();
+            let (repo, model_file, pooling) = resolve_model_info(&config.model)?;
+            let engine = get_or_init_engine(repo, model_file, pooling, config.cache_dir.clone())?;
 
-    let text_refs: Vec<&str> = texts.iter().map(|t| t.as_ref()).collect();
-    let mut embeddings = engine.embed(&text_refs, config.batch_size).map_err(|e| {
-        crate::KreuzbergError::embedding(format!(
-            "Failed to generate embeddings for {chunk_count} texts (model={:?}, batch_size={}): {e}",
-            config.model, config.batch_size
-        ))
-    })?;
+            let text_refs: Vec<&str> = texts.iter().map(|t| t.as_ref()).collect();
+            let mut embeddings = engine.embed(&text_refs, config.batch_size).map_err(|e| {
+                crate::KreuzbergError::embedding(format!(
+                    "Failed to generate embeddings for {chunk_count} texts (model={:?}, batch_size={}): {e}",
+                    config.model, config.batch_size
+                ))
+            })?;
 
-    if config.normalize {
-        normalize_embeddings(&mut embeddings);
+            if config.normalize {
+                normalize_embeddings(&mut embeddings);
+            }
+
+            Ok(embeddings)
+        }
     }
-
-    Ok(embeddings)
 }
 
 /// Generate embeddings asynchronously for a list of text strings.
@@ -712,6 +730,19 @@ pub async fn embed_texts_async<T: AsRef<str> + Send + 'static>(
 ) -> crate::Result<Vec<Vec<f32>>> {
     if texts.is_empty() {
         return Ok(Vec::new());
+    }
+
+    // LLM-hosted embeddings can be awaited directly — no need for spawn_blocking.
+    #[cfg(feature = "liter-llm")]
+    if let crate::core::config::EmbeddingModelType::Llm { llm } = &config.model {
+        return crate::llm::vlm_embeddings::embed_via_llm(&texts, llm, config.normalize).await;
+    }
+
+    #[cfg(not(feature = "liter-llm"))]
+    if let crate::core::config::EmbeddingModelType::Llm { .. } = &config.model {
+        return Err(crate::KreuzbergError::MissingDependency(
+            "LLM embeddings require the 'liter-llm' feature. Rebuild with --features liter-llm".into(),
+        ));
     }
 
     // Acquire a permit from the global semaphore to limit concurrent ONNX

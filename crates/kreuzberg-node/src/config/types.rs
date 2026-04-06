@@ -151,6 +151,7 @@ impl From<JsOcrConfig> for RustOcrConfig {
             pipeline: None,
             auto_rotate: false,
             vlm_config: None,
+            vlm_prompt: None,
         }
     }
 }

@@ -16,6 +16,7 @@ readme = "README.md"
 [package.metadata.cargo-machete]
 ignored = [
     "liter-llm",
+    "minijinja",
     "opentelemetry",
     "opentelemetry_sdk",
     "tracing-opentelemetry",
@@ -66,7 +67,7 @@ xml = ["dep:quick-xml", "dep:roxmltree"]
 archives = ["dep:zip", "dep:tar", "dep:sevenz-rust2", "dep:flate2"]
 mdx = []
 
-liter-llm = ["dep:liter-llm", "tokio-runtime"]
+liter-llm = ["dep:liter-llm", "dep:minijinja", "tokio-runtime"]
 
 tree-sitter = ["dep:tree-sitter-language-pack"]
 tree-sitter-wasm = ["tree-sitter"]
@@ -298,6 +299,7 @@ mail-parser = { version = "0.11.2", optional = true }
 memchr = "2.8.0"
 memmap2 = { workspace = true }
 mime_guess = "2.0"
+minijinja = { workspace = true, optional = true }
 ndarray = { version = "0.17", optional = true }
 num_cpus = { workspace = true }
 once_cell = { workspace = true }

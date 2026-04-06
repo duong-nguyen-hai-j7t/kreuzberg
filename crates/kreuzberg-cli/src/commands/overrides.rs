@@ -365,6 +365,7 @@ impl ExtractionOverrides {
                     pipeline: None,
                     auto_rotate,
                     vlm_config: None,
+                    vlm_prompt: None,
                 });
             } else {
                 config.ocr = None;
@@ -724,6 +725,7 @@ mod tests {
                 pipeline: None,
                 auto_rotate: false,
                 vlm_config: None,
+                vlm_prompt: None,
             }),
             ..Default::default()
         };

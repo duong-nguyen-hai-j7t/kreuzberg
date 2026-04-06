@@ -147,6 +147,29 @@ pub async fn run_pipeline(doc: InternalDocument, config: &ExtractionConfig) -> R
     // Apply output format conversion as the final step
     apply_output_format(&mut result, config.output_format.clone());
 
+    // Run LLM-based structured extraction if configured
+    #[cfg(feature = "liter-llm")]
+    if let Some(ref structured_config) = config.structured_extraction {
+        match crate::llm::structured::extract_structured(&result.content, structured_config).await {
+            Ok(output) => result.structured_output = Some(output),
+            Err(e) => {
+                tracing::warn!("Structured extraction failed: {e}");
+                result.processing_warnings.push(crate::types::ProcessingWarning {
+                    source: std::borrow::Cow::Borrowed("structured_extraction"),
+                    message: std::borrow::Cow::Owned(format!("Structured extraction failed: {e}")),
+                });
+            }
+        }
+    }
+
+    #[cfg(not(feature = "liter-llm"))]
+    if config.structured_extraction.is_some() {
+        result.processing_warnings.push(crate::types::ProcessingWarning {
+            source: std::borrow::Cow::Borrowed("structured_extraction"),
+            message: std::borrow::Cow::Borrowed("Structured extraction requires the 'liter-llm' feature"),
+        });
+    }
+
     Ok(result)
 }
 
