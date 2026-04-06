@@ -402,6 +402,7 @@ tracing = { workspace = true }
 [dev-dependencies]
 anyhow = { workspace = true }
 criterion = { workspace = true }
+dotenvy = "0.15"
 filetime = "0.2"
 image = { workspace = true, default-features = false, features = ["png"] }
 jsonschema = "0.45"
