@@ -94,6 +94,8 @@ export interface NativeBinding {
 	iteratePdfPagesSync(filePath: string, dpi?: number | null): Array<{ pageIndex: number; data: Buffer }>;
 	iteratePdfPages(filePath: string, dpi?: number | null): Promise<Array<{ pageIndex: number; data: Buffer }>>;
 	pdfPageCount(filePath: string, dpi?: number | null): number;
+	embedSync(texts: string[], config: Record<string, unknown> | null): number[][];
+	embed(texts: string[], config: Record<string, unknown> | null): Promise<number[][]>;
 	JsPdfPageIterator: {
 		new (
 			filePath: string,
