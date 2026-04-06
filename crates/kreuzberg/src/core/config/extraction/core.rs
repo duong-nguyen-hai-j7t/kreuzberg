@@ -231,6 +231,14 @@ pub struct ExtractionConfig {
     #[cfg(feature = "tree-sitter")]
     #[serde(default)]
     pub tree_sitter: Option<super::super::tree_sitter::TreeSitterConfig>,
+
+    /// Structured extraction via LLM (None = disabled).
+    ///
+    /// When set, the extracted document content is sent to an LLM with the
+    /// provided JSON schema. The structured response is stored in
+    /// `ExtractionResult::structured_output`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub structured_extraction: Option<super::super::llm::StructuredExtractionConfig>,
 }
 
 impl Default for ExtractionConfig {
@@ -271,6 +279,7 @@ impl Default for ExtractionConfig {
             max_archive_depth: default_archive_depth(),
             #[cfg(feature = "tree-sitter")]
             tree_sitter: None,
+            structured_extraction: None,
         }
     }
 }
@@ -325,6 +334,7 @@ impl ExtractionConfig {
             ref timeout_secs,
             #[cfg(feature = "tree-sitter")]
             ref tree_sitter,
+            ref structured_extraction,
         } = *overrides;
 
         let mut config = self.clone();
@@ -393,6 +403,9 @@ impl ExtractionConfig {
         #[cfg(feature = "tree-sitter")]
         if let Some(v) = tree_sitter {
             config.tree_sitter = Some(v.clone());
+        }
+        if let Some(v) = structured_extraction {
+            config.structured_extraction = Some(v.clone());
         }
 
         config

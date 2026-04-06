@@ -123,7 +123,8 @@ pub use core::extractor::{batch_extract_file_sync, extract_file_sync};
 pub use core::config::{
     AccelerationConfig, ChunkSizing, ChunkerType, ChunkingConfig, EmailConfig, EmbeddingConfig, EmbeddingModelType,
     ExecutionProviderType, ExtractionConfig, FileExtractionConfig, ImageExtractionConfig, LanguageDetectionConfig,
-    OcrConfig, OutputFormat, PageConfig, PostProcessorConfig, TokenReductionConfig,
+    LlmConfig, OcrConfig, OutputFormat, PageConfig, PostProcessorConfig, StructuredExtractionConfig,
+    TokenReductionConfig,
 };
 
 #[cfg(feature = "api")]

@@ -208,6 +208,9 @@ fn resolve_model_info(
             // Users providing custom HF models should ensure the repo has the expected layout.
             Ok((model_id.as_str(), "onnx/model.onnx", engine::Pooling::Mean))
         }
+        crate::core::config::EmbeddingModelType::Llm { .. } => Err(crate::KreuzbergError::embedding(
+            "LLM-based embeddings require the 'liter-llm' feature and are handled by a separate code path",
+        )),
     }
 }
 

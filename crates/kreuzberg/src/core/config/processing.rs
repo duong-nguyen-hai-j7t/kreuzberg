@@ -335,6 +335,12 @@ pub enum EmbeddingModelType {
 
     /// Use a custom ONNX model from HuggingFace
     Custom { model_id: String, dimensions: usize },
+
+    /// Provider-hosted embedding model via liter-llm.
+    ///
+    /// Uses the model specified in the nested `LlmConfig` (e.g.,
+    /// `"openai/text-embedding-3-small"`).
+    Llm { llm: super::llm::LlmConfig },
 }
 
 fn default_true() -> bool {

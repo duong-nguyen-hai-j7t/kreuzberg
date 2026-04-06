@@ -103,7 +103,7 @@ impl ParaText {
                 0x000B..=0x000C | 0x000E..=0x001F => {
                     i += 7;
                 }
-                0xF020..=0xF07F => {}                   // HWP private-use controls — skip
+                0xF020..=0xF07F => {} // HWP private-use controls — skip
                 _ => {
                     if let Some(c) = char::from_u32(ch as u32) {
                         content.push(c);

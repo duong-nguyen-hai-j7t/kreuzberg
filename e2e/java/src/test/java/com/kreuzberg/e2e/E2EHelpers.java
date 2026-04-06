@@ -149,6 +149,63 @@ public final class E2EHelpers {
 
   /** Assertion utilities for E2E tests. */
   public static final class Assertions {
+    public static void assertEmbedResult(
+        List<float[]> results,
+        int count,
+        int dimensions,
+        boolean noNan,
+        boolean noInf,
+        boolean nonZero,
+        boolean normalized) {
+      assertNotNull(results, "Embedding results should not be null");
+      if (count >= 0) {
+        org.junit.jupiter.api.Assertions.assertEquals(
+            count,
+            results.size(),
+            String.format("Expected %d vectors, got %d", count, results.size()));
+      }
+      if (results.size() > 0) {
+        for (int i = 0; i < results.size(); i++) {
+          float[] vector = results.get(i);
+          assertNotNull(vector, String.format("Vector %d should not be null", i));
+          if (dimensions > 0) {
+            org.junit.jupiter.api.Assertions.assertEquals(
+                dimensions,
+                vector.length,
+                String.format(
+                    "Vector %d expected length %d, got %d", i, dimensions, vector.length));
+          }
+
+          boolean hasNonZero = false;
+          double sqSum = 0.0;
+          for (int j = 0; j < vector.length; j++) {
+            float v = vector[j];
+            if (noNan) {
+              org.junit.jupiter.api.Assertions.assertFalse(
+                  Float.isNaN(v), String.format("Vector %d element %d is NaN", i, j));
+            }
+            if (noInf) {
+              org.junit.jupiter.api.Assertions.assertFalse(
+                  Float.isInfinite(v), String.format("Vector %d element %d is infinite", i, j));
+            }
+            if (v != 0.0f) {
+              hasNonZero = true;
+            }
+            sqSum += (double) v * (double) v;
+          }
+          if (nonZero) {
+            assertTrue(hasNonZero, String.format("Vector %d is all zeros", i));
+          }
+          if (normalized) {
+            double l2Norm = Math.sqrt(sqSum);
+            assertTrue(
+                l2Norm > 0.999 && l2Norm < 1.001,
+                String.format("Vector %d L2 norm is %f (expected ~1.0)", i, l2Norm));
+          }
+        }
+      }
+    }
+
     private Assertions() {}
 
     public static void assertExpectedMime(ExtractionResult result, List<String> expected) {

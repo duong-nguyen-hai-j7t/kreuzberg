@@ -150,6 +150,7 @@ impl From<JsOcrConfig> for RustOcrConfig {
             quality_thresholds: None,
             pipeline: None,
             auto_rotate: false,
+            vlm_config: None,
         }
     }
 }
@@ -1346,6 +1347,7 @@ impl TryFrom<JsExtractionConfig> for ExtractionConfig {
             cache_ttl_secs: val.cache_ttl_secs.map(|v| v as u64),
             max_archive_depth: val.max_archive_depth.map(|v| v as usize).unwrap_or(3),
             tree_sitter: val.tree_sitter.map(Into::into),
+            structured_extraction: None,
         })
     }
 }
@@ -1407,10 +1409,12 @@ impl TryFrom<ExtractionConfig> for JsExtractionConfig {
                         model_type: match emb.model {
                             RustEmbeddingModelType::Preset { .. } => "preset".to_string(),
                             RustEmbeddingModelType::Custom { .. } => "custom".to_string(),
+                            RustEmbeddingModelType::Llm { .. } => "llm".to_string(),
                         },
                         value: match &emb.model {
                             RustEmbeddingModelType::Preset { name } => name.clone(),
                             RustEmbeddingModelType::Custom { model_id, .. } => model_id.clone(),
+                            RustEmbeddingModelType::Llm { llm } => llm.model.clone(),
                         },
                         dimensions: match emb.model {
                             RustEmbeddingModelType::Custom { dimensions, .. } => Some(dimensions as u32),
@@ -1716,6 +1720,7 @@ impl TryFrom<JsFileExtractionConfig> for FileExtractionConfig {
             layout: val.layout.map(Into::into),
             timeout_secs: val.timeout_secs.map(|v| v as u64),
             tree_sitter: val.tree_sitter.map(Into::into),
+            structured_extraction: None,
         })
     }
 }
@@ -1776,10 +1781,12 @@ impl TryFrom<FileExtractionConfig> for JsFileExtractionConfig {
                         model_type: match emb.model {
                             RustEmbeddingModelType::Preset { .. } => "preset".to_string(),
                             RustEmbeddingModelType::Custom { .. } => "custom".to_string(),
+                            RustEmbeddingModelType::Llm { .. } => "llm".to_string(),
                         },
                         value: match &emb.model {
                             RustEmbeddingModelType::Preset { name } => name.clone(),
                             RustEmbeddingModelType::Custom { model_id, .. } => model_id.clone(),
+                            RustEmbeddingModelType::Llm { llm } => llm.model.clone(),
                         },
                         dimensions: match emb.model {
                             RustEmbeddingModelType::Custom { dimensions, .. } => Some(dimensions as u32),

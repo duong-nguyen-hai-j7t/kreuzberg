@@ -13,7 +13,7 @@ const VALID_BINARIZATION_METHODS: &[&str] = &["otsu", "adaptive", "sauvola"];
 const VALID_TOKEN_REDUCTION_LEVELS: &[&str] = &["off", "light", "moderate", "aggressive", "maximum"];
 
 /// Valid OCR backends.
-const VALID_OCR_BACKENDS: &[&str] = &["tesseract", "easyocr", "paddleocr", "paddle-ocr"];
+const VALID_OCR_BACKENDS: &[&str] = &["tesseract", "easyocr", "paddleocr", "paddle-ocr", "vlm"];
 
 /// Common ISO 639-1 language codes (extended list).
 /// Covers most major languages and variants used in document processing.
@@ -474,4 +474,79 @@ pub fn validate_chunking_params(max_chars: usize, max_overlap: usize) -> Result<
     }
 
     Ok(())
+}
+
+/// Validate that a VLM OCR backend has the required `vlm_config`.
+///
+/// When the OCR backend is set to `"vlm"`, the `vlm_config` field must be present
+/// to provide the model endpoint configuration.
+///
+/// # Arguments
+///
+/// * `backend` - The OCR backend name
+/// * `has_vlm_config` - Whether the `vlm_config` field is `Some`
+///
+/// # Returns
+///
+/// `Ok(())` if the backend is not `"vlm"` or `vlm_config` is present,
+/// or a `ValidationError` if `"vlm"` backend is used without `vlm_config`.
+///
+/// # Examples
+///
+/// ```rust
+/// use kreuzberg::core::config_validation::validate_vlm_backend_config;
+///
+/// assert!(validate_vlm_backend_config("tesseract", false).is_ok());
+/// assert!(validate_vlm_backend_config("vlm", true).is_ok());
+/// assert!(validate_vlm_backend_config("vlm", false).is_err());
+/// ```
+pub fn validate_vlm_backend_config(backend: &str, has_vlm_config: bool) -> Result<()> {
+    if backend.to_lowercase() == "vlm" && !has_vlm_config {
+        return Err(KreuzbergError::Validation {
+            message: "OCR backend 'vlm' requires 'vlm_config' to be set with model endpoint configuration.".to_string(),
+            source: None,
+        });
+    }
+    Ok(())
+}
+
+/// Validate structured extraction configuration.
+///
+/// When structured extraction is enabled, the JSON schema must not be null or empty.
+///
+/// # Arguments
+///
+/// * `schema` - The JSON schema value to validate
+///
+/// # Returns
+///
+/// `Ok(())` if the schema is a non-empty object or array,
+/// or a `ValidationError` if the schema is null or an empty object.
+///
+/// # Examples
+///
+/// ```rust
+/// use kreuzberg::core::config_validation::validate_structured_extraction_schema;
+///
+/// let valid = serde_json::json!({"type": "object", "properties": {}});
+/// assert!(validate_structured_extraction_schema(&valid).is_ok());
+///
+/// let empty = serde_json::Value::Object(Default::default());
+/// assert!(validate_structured_extraction_schema(&empty).is_err());
+///
+/// let null = serde_json::Value::Null;
+/// assert!(validate_structured_extraction_schema(&null).is_err());
+/// ```
+pub fn validate_structured_extraction_schema(schema: &serde_json::Value) -> Result<()> {
+    match schema {
+        serde_json::Value::Null => Err(KreuzbergError::Validation {
+            message: "Structured extraction schema must not be null. Provide a valid JSON schema.".to_string(),
+            source: None,
+        }),
+        serde_json::Value::Object(map) if map.is_empty() => Err(KreuzbergError::Validation {
+            message: "Structured extraction schema must not be an empty object. Provide a valid JSON schema with at least one property.".to_string(),
+            source: None,
+        }),
+        _ => Ok(()),
+    }
 }

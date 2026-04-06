@@ -364,6 +364,7 @@ impl ExtractionOverrides {
                     quality_thresholds: None,
                     pipeline: None,
                     auto_rotate,
+                    vlm_config: None,
                 });
             } else {
                 config.ocr = None;
@@ -722,6 +723,7 @@ mod tests {
                 quality_thresholds: None,
                 pipeline: None,
                 auto_rotate: false,
+                vlm_config: None,
             }),
             ..Default::default()
         };

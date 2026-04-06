@@ -2,7 +2,6 @@
 // To regenerate: cargo run -p kreuzberg-e2e-generator -- generate --lang typescript
 
 import { join, resolve } from "node:path";
-import { expect } from "vitest";
 import type {
 	ChunkingConfig,
 	ExtractionConfig,
@@ -19,6 +18,7 @@ import type {
 	TreeSitterConfig,
 	TreeSitterProcessConfig,
 } from "@kreuzberg/node";
+import { expect } from "vitest";
 
 const WORKSPACE_ROOT = resolve(__dirname, "../../..");
 const TEST_DOCUMENTS = join(WORKSPACE_ROOT, "test_documents");

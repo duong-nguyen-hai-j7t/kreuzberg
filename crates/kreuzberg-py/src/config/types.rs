@@ -161,6 +161,7 @@ impl ExtractionConfig {
                 concurrency: concurrency.map(Into::into),
                 max_archive_depth: 3,
                 tree_sitter: tree_sitter.map(Into::into),
+                structured_extraction: None,
             },
             html_options_dict,
         })
@@ -662,6 +663,7 @@ impl OcrConfig {
                 quality_thresholds: None,
                 pipeline: None,
                 auto_rotate: false,
+                vlm_config: None,
             },
         })
     }
@@ -755,6 +757,9 @@ impl EmbeddingModelType {
             kreuzberg::EmbeddingModelType::Preset { name } => format!("EmbeddingModelType.preset('{}')", name),
             kreuzberg::EmbeddingModelType::Custom { model_id, dimensions } => {
                 format!("EmbeddingModelType.custom('{}', {})", model_id, dimensions)
+            }
+            kreuzberg::EmbeddingModelType::Llm { llm } => {
+                format!("EmbeddingModelType.llm('{}')", llm.model)
             }
         }
     }
@@ -2778,6 +2783,7 @@ impl FileExtractionConfig {
                 layout: layout.map(Into::into),
                 timeout_secs,
                 tree_sitter: tree_sitter.map(Into::into),
+                structured_extraction: None,
             },
             html_options_dict,
         })

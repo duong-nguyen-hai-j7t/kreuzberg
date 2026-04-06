@@ -3,10 +3,10 @@
 
 // Tests for standalone embed() / embedSync() fixtures.
 
+import type { EmbeddingConfig } from "@kreuzberg/node";
+import { embed, embedSync } from "@kreuzberg/node";
 import { describe, expect, it } from "vitest";
 import { assertEmbedResult } from "./helpers.js";
-import { embed, embedSync } from "@kreuzberg/node";
-import type { EmbeddingConfig } from "@kreuzberg/node";
 
 const TEST_TIMEOUT_MS = 60_000;
 

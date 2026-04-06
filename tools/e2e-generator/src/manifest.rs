@@ -484,6 +484,7 @@ fn sample_extraction_config() -> Value {
         concurrency: Some(kreuzberg::core::config::ConcurrencyConfig::default()),
         max_archive_depth: 3,
         tree_sitter: Some(kreuzberg::TreeSitterConfig::default()),
+        structured_extraction: None,
     };
 
     serde_json::to_value(&config).expect("ExtractionConfig serialization")

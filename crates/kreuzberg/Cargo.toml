@@ -15,6 +15,7 @@ readme = "README.md"
 
 [package.metadata.cargo-machete]
 ignored = [
+    "liter-llm",
     "opentelemetry",
     "opentelemetry_sdk",
     "tracing-opentelemetry",
@@ -64,6 +65,8 @@ html = ["dep:html-to-markdown-rs"]
 xml = ["dep:quick-xml", "dep:roxmltree"]
 archives = ["dep:zip", "dep:tar", "dep:sevenz-rust2", "dep:flate2"]
 mdx = []
+
+liter-llm = ["dep:liter-llm", "tokio-runtime"]
 
 tree-sitter = ["dep:tree-sitter-language-pack"]
 tree-sitter-wasm = ["tree-sitter"]
@@ -206,6 +209,7 @@ full = [
     "mcp",
     "otel",
     "tree-sitter",
+    "liter-llm",
 ]
 server = [
     "pdf",
@@ -287,6 +291,7 @@ kamadak-exif = { version = "0.6.1", optional = true }
 
 kreuzberg-tesseract = { path = "../kreuzberg-tesseract", version = "4.7.4", optional = true }
 libc = { workspace = true }
+liter-llm = { workspace = true, optional = true }
 log = { workspace = true }
 lopdf = { version = "0.40.0", optional = true }
 mail-parser = { version = "0.11.2", optional = true }

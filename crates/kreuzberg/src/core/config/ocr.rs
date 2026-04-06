@@ -176,6 +176,10 @@ pub struct OcrPipelineStage {
     /// PaddleOCR-specific config for this stage.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paddle_ocr_config: Option<serde_json::Value>,
+
+    /// VLM config override for this pipeline stage.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vlm_config: Option<super::llm::LlmConfig>,
 }
 
 fn default_priority() -> u32 {
@@ -243,6 +247,13 @@ pub struct OcrConfig {
     /// This is critical for handling rotated scanned documents.
     #[serde(default)]
     pub auto_rotate: bool,
+
+    /// VLM (Vision Language Model) OCR configuration.
+    ///
+    /// Required when `backend` is `"vlm"`. Uses liter-llm to send page
+    /// images to a vision model for text extraction.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vlm_config: Option<super::llm::LlmConfig>,
 }
 
 impl Default for OcrConfig {
@@ -257,6 +268,7 @@ impl Default for OcrConfig {
             quality_thresholds: None,
             pipeline: None,
             auto_rotate: false,
+            vlm_config: None,
         }
     }
 }
@@ -273,6 +285,8 @@ impl OcrConfig {
     /// Also validates pipeline stage backends when a pipeline is configured.
     pub fn validate(&self) -> Result<(), KreuzbergError> {
         validate_ocr_backend(&self.backend)?;
+        // When backend is "vlm", vlm_config must be present.
+        crate::core::config_validation::validate_vlm_backend_config(&self.backend, self.vlm_config.is_some())?;
         if let Some(ref pipeline) = self.pipeline {
             for stage in &pipeline.stages {
                 validate_ocr_backend(&stage.backend)?;
@@ -305,6 +319,7 @@ impl OcrConfig {
                 language: None,
                 tesseract_config: self.tesseract_config.clone(),
                 paddle_ocr_config: None,
+                vlm_config: None,
             }];
             // Only add paddleocr fallback if primary backend isn't already paddleocr
             if self.backend != "paddleocr" {
@@ -314,6 +329,7 @@ impl OcrConfig {
                     language: None,
                     tesseract_config: None,
                     paddle_ocr_config: self.paddle_ocr_config.clone(),
+                    vlm_config: None,
                 });
             }
             Some(OcrPipelineConfig {
@@ -429,6 +445,7 @@ mod tests {
                 language: Some("fra".to_string()),
                 tesseract_config: None,
                 paddle_ocr_config: None,
+                vlm_config: None,
             }],
             quality_thresholds: OcrQualityThresholds::default(),
         };
@@ -523,6 +540,7 @@ mod tests {
                     language: Some("eng".to_string()),
                     tesseract_config: None,
                     paddle_ocr_config: None,
+                    vlm_config: None,
                 },
                 OcrPipelineStage {
                     backend: "paddleocr".to_string(),
@@ -530,6 +548,7 @@ mod tests {
                     language: None,
                     tesseract_config: None,
                     paddle_ocr_config: Some(serde_json::json!({"use_gpu": false})),
+                    vlm_config: None,
                 },
             ],
             quality_thresholds: OcrQualityThresholds::default(),
@@ -598,6 +617,7 @@ mod tests {
                         language: None,
                         tesseract_config: None,
                         paddle_ocr_config: None,
+                        vlm_config: None,
                     },
                     OcrPipelineStage {
                         backend: "invalid_backend".to_string(),
@@ -605,6 +625,7 @@ mod tests {
                         language: None,
                         tesseract_config: None,
                         paddle_ocr_config: None,
+                        vlm_config: None,
                     },
                 ],
                 quality_thresholds: OcrQualityThresholds::default(),
@@ -628,6 +649,7 @@ mod tests {
                         language: None,
                         tesseract_config: None,
                         paddle_ocr_config: None,
+                        vlm_config: None,
                     },
                     OcrPipelineStage {
                         backend: "paddleocr".to_string(),
@@ -635,6 +657,7 @@ mod tests {
                         language: None,
                         tesseract_config: None,
                         paddle_ocr_config: None,
+                        vlm_config: None,
                     },
                 ],
                 quality_thresholds: OcrQualityThresholds::default(),

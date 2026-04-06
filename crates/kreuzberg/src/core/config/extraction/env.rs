@@ -24,6 +24,11 @@ impl ExtractionConfig {
     /// - `KREUZBERG_TOKEN_REDUCTION_MODE`: Token reduction mode ("off", "light", "moderate", "aggressive", or "maximum")
     /// - `KREUZBERG_CHUNKING_TOKENIZER`: HuggingFace tokenizer model ID for token-based chunk sizing (requires `chunking-tokenizers` feature)
     /// - `KREUZBERG_DISABLE_OCR`: Disable OCR entirely ("true" or "false")
+    /// - `KREUZBERG_LLM_MODEL`: LLM model for structured extraction (e.g., "openai/gpt-4o")
+    /// - `KREUZBERG_LLM_API_KEY`: API key for the structured extraction LLM provider
+    /// - `KREUZBERG_LLM_BASE_URL`: Custom base URL for the structured extraction LLM provider
+    /// - `KREUZBERG_VLM_OCR_MODEL`: VLM model for vision-based OCR (e.g., "openai/gpt-4o")
+    /// - `KREUZBERG_VLM_EMBEDDING_MODEL`: LLM model for embedding generation (e.g., "openai/text-embedding-3-small")
     /// - `KREUZBERG_MSG_FALLBACK_CODEPAGE`: (deferred) Windows codepage for MSG PT_STRING8 fallback
     ///
     /// # Behavior
@@ -262,6 +267,153 @@ impl ExtractionConfig {
                     });
                 }
             };
+        }
+
+        // KREUZBERG_LLM_MODEL override
+        if let Ok(value) = std::env::var("KREUZBERG_LLM_MODEL") {
+            if value.is_empty() {
+                return Err(KreuzbergError::Validation {
+                    message: "KREUZBERG_LLM_MODEL must not be empty".to_string(),
+                    source: None,
+                });
+            }
+            if self.structured_extraction.is_none() {
+                self.structured_extraction = Some(super::super::llm::StructuredExtractionConfig {
+                    schema: serde_json::Value::Object(Default::default()),
+                    schema_name: "extraction".to_string(),
+                    schema_description: None,
+                    strict: false,
+                    prompt: None,
+                    llm: super::super::llm::LlmConfig {
+                        model: value,
+                        api_key: None,
+                        base_url: None,
+                        timeout_secs: None,
+                        max_retries: None,
+                        temperature: None,
+                        max_tokens: None,
+                    },
+                });
+            } else if let Some(ref mut config) = self.structured_extraction {
+                config.llm.model = value;
+            }
+        }
+
+        // KREUZBERG_LLM_API_KEY override
+        if let Ok(value) = std::env::var("KREUZBERG_LLM_API_KEY") {
+            if value.is_empty() {
+                return Err(KreuzbergError::Validation {
+                    message: "KREUZBERG_LLM_API_KEY must not be empty".to_string(),
+                    source: None,
+                });
+            }
+            if self.structured_extraction.is_none() {
+                self.structured_extraction = Some(super::super::llm::StructuredExtractionConfig {
+                    schema: serde_json::Value::Object(Default::default()),
+                    schema_name: "extraction".to_string(),
+                    schema_description: None,
+                    strict: false,
+                    prompt: None,
+                    llm: super::super::llm::LlmConfig {
+                        model: String::new(),
+                        api_key: Some(value),
+                        base_url: None,
+                        timeout_secs: None,
+                        max_retries: None,
+                        temperature: None,
+                        max_tokens: None,
+                    },
+                });
+            } else if let Some(ref mut config) = self.structured_extraction {
+                config.llm.api_key = Some(value);
+            }
+        }
+
+        // KREUZBERG_LLM_BASE_URL override
+        if let Ok(value) = std::env::var("KREUZBERG_LLM_BASE_URL") {
+            if value.is_empty() {
+                return Err(KreuzbergError::Validation {
+                    message: "KREUZBERG_LLM_BASE_URL must not be empty".to_string(),
+                    source: None,
+                });
+            }
+            if self.structured_extraction.is_none() {
+                self.structured_extraction = Some(super::super::llm::StructuredExtractionConfig {
+                    schema: serde_json::Value::Object(Default::default()),
+                    schema_name: "extraction".to_string(),
+                    schema_description: None,
+                    strict: false,
+                    prompt: None,
+                    llm: super::super::llm::LlmConfig {
+                        model: String::new(),
+                        api_key: None,
+                        base_url: Some(value),
+                        timeout_secs: None,
+                        max_retries: None,
+                        temperature: None,
+                        max_tokens: None,
+                    },
+                });
+            } else if let Some(ref mut config) = self.structured_extraction {
+                config.llm.base_url = Some(value);
+            }
+        }
+
+        // KREUZBERG_VLM_OCR_MODEL override
+        if let Ok(value) = std::env::var("KREUZBERG_VLM_OCR_MODEL") {
+            if value.is_empty() {
+                return Err(KreuzbergError::Validation {
+                    message: "KREUZBERG_VLM_OCR_MODEL must not be empty".to_string(),
+                    source: None,
+                });
+            }
+            if self.ocr.is_none() {
+                self.ocr = Some(OcrConfig::default());
+            }
+            if let Some(ref mut ocr) = self.ocr {
+                if ocr.vlm_config.is_none() {
+                    ocr.vlm_config = Some(super::super::llm::LlmConfig {
+                        model: value,
+                        api_key: None,
+                        base_url: None,
+                        timeout_secs: None,
+                        max_retries: None,
+                        temperature: None,
+                        max_tokens: None,
+                    });
+                } else if let Some(ref mut vlm) = ocr.vlm_config {
+                    vlm.model = value;
+                }
+            }
+        }
+
+        // KREUZBERG_VLM_EMBEDDING_MODEL override
+        if let Ok(value) = std::env::var("KREUZBERG_VLM_EMBEDDING_MODEL") {
+            if value.is_empty() {
+                return Err(KreuzbergError::Validation {
+                    message: "KREUZBERG_VLM_EMBEDDING_MODEL must not be empty".to_string(),
+                    source: None,
+                });
+            }
+            if self.chunking.is_none() {
+                self.chunking = Some(ChunkingConfig::default());
+            }
+            if let Some(ref mut chunking) = self.chunking {
+                chunking.embedding = Some(super::super::processing::EmbeddingConfig {
+                    model: super::super::processing::EmbeddingModelType::Llm {
+                        llm: super::super::llm::LlmConfig {
+                            model: value,
+                            api_key: None,
+                            base_url: None,
+                            timeout_secs: None,
+                            max_retries: None,
+                            temperature: None,
+                            max_tokens: None,
+                        },
+                    },
+                    ..super::super::processing::EmbeddingConfig::default()
+                });
+            }
         }
 
         Ok(())
