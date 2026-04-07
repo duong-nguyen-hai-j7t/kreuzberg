@@ -71,7 +71,7 @@ impl Default for HtmlOutputConfig {
         Self {
             css: None,
             css_file: None,
-            theme: HtmlTheme::Default,
+            theme: HtmlTheme::Unstyled,
             class_prefix: default_class_prefix(),
             embed_css: true,
         }
@@ -85,7 +85,6 @@ pub enum HtmlTheme {
     /// Sensible defaults: system font stack, neutral colours, readable line
     /// measure. CSS custom properties (`--kb-*`) are all defined so user CSS
     /// can override individual values.
-    #[default]
     Default,
     /// GitHub Markdown-inspired palette and spacing.
     GitHub,
@@ -95,6 +94,7 @@ pub enum HtmlTheme {
     Light,
     /// No built-in stylesheet emitted. CSS custom properties are still defined
     /// on `:root` so user stylesheets can reference `var(--kb-*)` tokens.
+    #[default]
     Unstyled,
 }
 
@@ -109,7 +109,7 @@ mod tests {
         assert!(cfg.embed_css);
         assert!(cfg.css.is_none());
         assert!(cfg.css_file.is_none());
-        assert_eq!(cfg.theme, HtmlTheme::Default);
+        assert_eq!(cfg.theme, HtmlTheme::Unstyled);
     }
 
     #[test]
