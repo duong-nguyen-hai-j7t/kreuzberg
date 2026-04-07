@@ -105,6 +105,10 @@ license = "MIT"
 [package.metadata.cargo-machete]
 ignored = ["kreuzberg", "serde_json", "tokio"]
 
+[features]
+default = ["embeddings"]
+embeddings = ["kreuzberg/embeddings"]
+
 [dependencies]
 kreuzberg = { path = "../../crates/kreuzberg", features = ["bundled-pdfium", "full"] }
 serde_json = "1"
@@ -134,6 +138,10 @@ license = "MIT"
 
 [package.metadata.cargo-machete]
 ignored = ["kreuzberg", "serde_json", "tokio"]
+
+[features]
+default = ["embeddings"]
+embeddings = ["kreuzberg/embeddings"]
 
 [dependencies]
 kreuzberg = {{ version = "{version}", features = ["bundled-pdfium", "full"] }}
@@ -1313,7 +1321,7 @@ fn generate_embed_tests_rust(fixtures: &[&Fixture]) -> Result<String> {
         "// To regenerate: cargo run -p kreuzberg-e2e-generator -- generate --lang rust"
     )?;
     writeln!(buf, "\n// Tests for standalone embed() fixtures.")?;
-    writeln!(buf, "#![allow(clippy::too_many_lines)]")?;
+    writeln!(buf, "#![allow(clippy::too_many_lines, unreachable_code)]")?;
     writeln!(buf, "use e2e_rust::assertions;")?;
     writeln!(
         buf,
@@ -1359,8 +1367,12 @@ fn render_embed_test(fixture: &Fixture) -> Result<String> {
             })
             .collect::<Vec<_>>();
         if !conditions.is_empty() {
-            let combined = conditions.join(", ");
-            writeln!(code, "    #[cfg(any({}))]", combined)?;
+            if conditions.len() == 1 {
+                writeln!(code, "    #[cfg({})]", conditions[0])?;
+            } else {
+                let combined = conditions.join(", ");
+                writeln!(code, "    #[cfg(any({}))]", combined)?;
+            }
             writeln!(code, "    return;")?;
         }
     }

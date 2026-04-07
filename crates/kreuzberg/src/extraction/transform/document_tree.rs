@@ -509,6 +509,7 @@ mod tests {
     use crate::types::{ExtractionResult, HierarchicalBlock, Metadata, PageContent, PageHierarchy, Table};
     use std::borrow::Cow;
 
+    #[allow(dead_code)]
     fn test_metadata() -> Metadata {
         Metadata::default()
     }

@@ -2,7 +2,7 @@
 // To regenerate: cargo run -p kreuzberg-e2e-generator -- generate --lang rust
 
 // Tests for standalone embed() fixtures.
-#![allow(clippy::too_many_lines)]
+#![allow(clippy::too_many_lines, unreachable_code)]
 use e2e_rust::assertions;
 use kreuzberg::core::config::{EmbeddingConfig, EmbeddingModelType};
 
@@ -11,7 +11,7 @@ async fn test_embed_async() {
     // Standalone embedding via async API path with balanced preset
     #[cfg(not(feature = "embeddings"))]
     return;
-    #[cfg(any(all(target_os = "windows", target_env = "msvc")))]
+    #[cfg(all(target_os = "windows", target_env = "msvc"))]
     return;
     let model = EmbeddingModelType::Preset {
         name: "balanced".to_string(),
@@ -33,7 +33,7 @@ fn test_embed_batch_texts() {
     // Standalone embedding of a batch of 3 texts with fast preset
     #[cfg(not(feature = "embeddings"))]
     return;
-    #[cfg(any(all(target_os = "windows", target_env = "msvc")))]
+    #[cfg(all(target_os = "windows", target_env = "msvc"))]
     return;
     let model = EmbeddingModelType::Preset {
         name: "fast".to_string(),
@@ -56,7 +56,7 @@ fn test_embed_empty_input() {
     // Standalone embedding with empty text list returns empty result without error
     #[cfg(not(feature = "embeddings"))]
     return;
-    #[cfg(any(all(target_os = "windows", target_env = "msvc")))]
+    #[cfg(all(target_os = "windows", target_env = "msvc"))]
     return;
     let model = EmbeddingModelType::Preset {
         name: "balanced".to_string(),
@@ -78,7 +78,7 @@ fn test_embed_multilingual() {
     // Standalone embedding with multilingual preset for non-English text
     #[cfg(not(feature = "embeddings"))]
     return;
-    #[cfg(any(all(target_os = "windows", target_env = "msvc")))]
+    #[cfg(all(target_os = "windows", target_env = "msvc"))]
     return;
     let model = EmbeddingModelType::Preset {
         name: "multilingual".to_string(),
@@ -100,7 +100,7 @@ fn test_embed_single_text() {
     // Standalone embedding of a single text with balanced preset
     #[cfg(not(feature = "embeddings"))]
     return;
-    #[cfg(any(all(target_os = "windows", target_env = "msvc")))]
+    #[cfg(all(target_os = "windows", target_env = "msvc"))]
     return;
     let model = EmbeddingModelType::Preset {
         name: "balanced".to_string(),
