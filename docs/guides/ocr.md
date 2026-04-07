@@ -4,23 +4,25 @@ Extract text from images and scanned PDFs. Kreuzberg automatically determines wh
 
 ## Backend Comparison
 
-Kreuzberg supports three OCR backends. Pick based on your platform, accuracy needs, and language coverage.
+Kreuzberg supports four OCR backends. Pick based on your platform, accuracy needs, and language coverage.
 
-| | **Tesseract** | **PaddleOCR** | **EasyOCR** |
-|---|---|---|---|
-| **Speed** | Fast | Very fast | Moderate |
-| **Accuracy** | Good | Excellent | Excellent |
-| **Languages** | 100+ | 80+ (11 script families) | 80+ |
-| **Installation** | System package | Built-in (native) or Python package | Python package only |
-| **Model size** | ~10 MB | Mobile ~8 MB, Server ~120 MB | ~100 MB |
-| **GPU support** | No | Yes | Yes |
-| **Platform** | All (including WASM) | All except WASM | Python only |
+| | **Tesseract** | **PaddleOCR** | **EasyOCR** | **VLM** |
+|---|---|---|---|---|
+| **Speed** | Fast | Very fast | Moderate | Slow (API latency) |
+| **Accuracy** | Good | Excellent | Excellent | Highest |
+| **Languages** | 100+ | 80+ (11 script families) | 80+ | All (provider-dependent) |
+| **Installation** | System package | Built-in (native) or Python package | Python package only | API key only |
+| **Model size** | ~10 MB | Mobile ~8 MB, Server ~120 MB | ~100 MB | None (cloud-hosted) |
+| **GPU support** | No | Yes | Yes | N/A (server-side) |
+| **Platform** | All (including WASM) | All except WASM | Python only | All |
+| **Cost** | Free | Free | Free | Per-token API cost |
 
 **When to use which:**
 
 - **Tesseract** — Default choice. Works everywhere, low overhead, broadest platform support.
 - **PaddleOCR** — Best speed-to-accuracy ratio. Preferred for CJK languages. Mobile tier is fast; server tier maximizes accuracy with GPU.
 - **EasyOCR** — Highest accuracy with deep learning models. Python-only, heavier dependency.
+- **VLM** — Best for handwritten text, poor scans, Arabic/Farsi, and complex layouts. Requires an API key and incurs per-token costs. See [LLM Integration](llm-integration.md) for full details.
 
 ## Installation
 
@@ -309,6 +311,58 @@ Skip OCR entirely, even for image files that would normally require it. When `di
 
     --8<-- "snippets/r/ocr/ocr_paddleocr.md"
 
+### Using VLM OCR <span class="version-badge">v4.8.0</span>
+
+Use a vision-language model (e.g., GPT-4o, Claude) as the OCR backend. Each page is rendered as an image and sent to the VLM for text extraction. Requires an API key for the chosen provider.
+
+=== "Python"
+
+    --8<-- "snippets/python/llm/vlm_ocr.md"
+
+=== "TypeScript"
+
+    --8<-- "snippets/typescript/llm/vlm_ocr.md"
+
+=== "Rust"
+
+    ```rust title="Rust"
+    use kreuzberg::{extract_file, ExtractionConfig, OcrConfig, LlmConfig};
+
+    let config = ExtractionConfig {
+        force_ocr: true,
+        ocr: Some(OcrConfig {
+            backend: "vlm".to_string(),
+            vlm_config: Some(LlmConfig {
+                model: "openai/gpt-4o-mini".to_string(),
+                ..Default::default()
+            }),
+            ..Default::default()
+        }),
+        ..Default::default()
+    };
+    let result = extract_file("scan.pdf", None, &config).await?;
+    ```
+
+=== "CLI"
+
+    ```bash title="Terminal"
+    kreuzberg extract scan.pdf --force-ocr true --vlm-model openai/gpt-4o-mini
+    ```
+
+=== "TOML"
+
+    ```toml title="kreuzberg.toml"
+    force_ocr = true
+
+    [ocr]
+    backend = "vlm"
+
+    [ocr.vlm_config]
+    model = "openai/gpt-4o-mini"
+    ```
+
+For more on VLM OCR, including custom prompts, supported providers, and API key configuration, see [LLM Integration](llm-integration.md#vlm-ocr).
+
 !!! tip "GPU Acceleration"
     EasyOCR and PaddleOCR support GPU acceleration. Set `use_gpu=True` in your OCR config. PaddleOCR's `model_tier="server"` gives the best accuracy with GPU.
 
@@ -385,6 +439,9 @@ kreuzberg extract chinese_doc.pdf --ocr true --ocr-backend paddle-ocr --ocr-lang
 # Force OCR on all pages
 kreuzberg extract document.pdf --force-ocr true
 
+# VLM OCR backend
+kreuzberg extract handwritten.pdf --force-ocr true --vlm-model openai/gpt-4o-mini
+
 # Use a config file
 kreuzberg extract scanned.pdf --config kreuzberg.toml --ocr true
 ```
@@ -393,8 +450,9 @@ kreuzberg extract scanned.pdf --config kreuzberg.toml --ocr true
 |------|-------------|
 | `--ocr true` | Enable OCR processing |
 | `--ocr-language <code>` | Language code (`eng`, `deu`, `fra`, `ch`, `ja`, `ru`, etc.) |
-| `--ocr-backend <backend>` | Engine: `tesseract`, `paddle-ocr`, or `easyocr` |
+| `--ocr-backend <backend>` | Engine: `tesseract`, `paddle-ocr`, `easyocr`, or `vlm` |
 | `--force-ocr true` | OCR all pages regardless of text layer |
+| `--vlm-model <model>` | VLM model for OCR (e.g., `openai/gpt-4o-mini`). Implies `--ocr-backend vlm` |
 
 ## Troubleshooting
 
@@ -434,6 +492,7 @@ kreuzberg extract scanned.pdf --config kreuzberg.toml --ocr true
     - Try a different backend — PaddleOCR and EasyOCR often outperform Tesseract on complex layouts
     - Specify the correct language code for your document
     - Use `force_ocr=True` if a PDF's embedded text layer is low quality
+    - For handwritten text or very poor scans, try the VLM backend with a vision-capable model (see [LLM Integration](llm-integration.md#vlm-ocr))
 
 ??? question "Slow processing"
 
@@ -449,6 +508,7 @@ kreuzberg extract scanned.pdf --config kreuzberg.toml --ocr true
 
 ## Next Steps
 
+- [LLM Integration](llm-integration.md) — VLM OCR, structured extraction, and LLM embeddings
 - [Configuration](configuration.md) — all configuration options
 - [Extraction Basics](extraction.md) — core extraction API and supported formats
 - [Advanced Features](advanced.md) — chunking, language detection, embeddings

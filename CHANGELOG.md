@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.8.0] - 2026-04-07
+
+### Added
+
+- **LLM-powered document intelligence via liter-llm** — Integrates with 142+ LLM providers for three new capabilities:
+  - **VLM OCR**: Vision language models as OCR backend (OpenAI GPT-4o, Anthropic Claude, Google Gemini, etc.). Superior accuracy for low-quality scans, handwriting, Arabic/Farsi, and complex layouts. Configure via `ocr.backend = "vlm"` with `ocr.vlm_config`.
+  - **Structured Extraction**: Extract structured JSON data from documents using a JSON schema constraint. Users provide a schema and optional Jinja2 prompt template; the LLM returns conforming data. Supports strict mode (OpenAI) with automatic schema sanitization for cross-provider compatibility.
+  - **VLM Embeddings**: Provider-hosted embedding models (e.g., `openai/text-embedding-3-small`, `mistral/mistral-embed`) as alternative to local ONNX models. Works through existing `/embed` API, `embed_text` MCP tool, and `embed` CLI command.
+- **New CLI command**: `kreuzberg extract-structured` for schema-guided LLM extraction
+- **New API endpoint**: `POST /extract-structured` with multipart file upload
+- **New MCP tool**: `extract_structured` for AI assistant integration
+- **Minijinja template engine** for customizable LLM prompts with `{{ content }}`, `{{ schema }}`, `{{ language }}` variables
+- **5 new environment variables**: `KREUZBERG_LLM_MODEL`, `KREUZBERG_LLM_API_KEY`, `KREUZBERG_LLM_BASE_URL`, `KREUZBERG_VLM_OCR_MODEL`, `KREUZBERG_VLM_EMBEDDING_MODEL`
+- `LlmConfig` and `StructuredExtractionConfig` types exposed in Python, Node.js, and PHP bindings
+- `structured_output` field on `ExtractionResult` across all languages
+- `structured_output_json` field in C FFI `CExtractionResult` struct
+- `EmbeddingModelType::Llm` variant for provider-hosted embeddings
+- VLM OCR registered as plugin backend in OCR registry
+- Standalone text embedding API (#599, #614) with `/embed` endpoint, `embed_text` MCP tool, and `embed` CLI command
+
+### Changed
+
+- All `ExtractionResult` constructors refactored to use `..Default::default()` for forward compatibility
+- Embed CLI command extended with `--provider llm` and `--model` flags
+- Embed MCP tool extended with `model` and `api_key` parameters
+- Extract CLI overrides extended with `--vlm-model`, `--vlm-api-key`, `--vlm-prompt`
+- API returns 501 Not Implemented (instead of 500) when liter-llm feature is disabled
+- JSON schema `additionalProperties` automatically stripped for non-OpenAI providers
+
+### Fixed
+
+- FFI error code tests updated for Embedding variant
+- Flaky FFI string_intern tests serialized with `serial_test`
+- TypeScript `NativeBinding` interface updated with `embedSync`/`embed` declarations
+- E2E generator emits minimal `cfg` (no `any()` wrapper for single conditions)
+
+---
+
 ## [4.7.4] - 2026-04-06
 
 ### Added

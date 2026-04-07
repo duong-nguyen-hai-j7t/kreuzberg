@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the documentation site (Zensical / MkDocs, doc dependency group).
+# Build the documentation site (Zensical, doc dependency group).
 #
 # Usage:
 #   scripts/ci/docs/build.sh

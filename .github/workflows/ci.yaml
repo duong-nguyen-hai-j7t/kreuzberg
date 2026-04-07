@@ -349,7 +349,7 @@ jobs:
               - '.dockerignore'
             docs:
               - 'docs/**'
-              - 'mkdocs.yaml'
+              - 'zensical.toml'
               - 'pyproject.toml'
               - '.github/workflows/docs*'
               - '.typos.toml'

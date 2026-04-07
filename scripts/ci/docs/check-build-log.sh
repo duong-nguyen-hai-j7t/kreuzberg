@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # scripts/ci/docs/check-build-log.sh
 #
-# Scan a Zensical / MkDocs build log for warnings and errors.
+# Scan a Zensical build log for warnings and errors.
 # Usage: ./check-build-log.sh [build-log-file]
 #        Default log path: /tmp/build-log.txt
 #
@@ -37,7 +37,7 @@ if grep -inE '\bERROR\b' "$LOG_FILE"; then
   ISSUES=1
 fi
 
-# Check for common MkDocs issues
+# Check for common Zensical issues
 if grep -i 'not found' "$LOG_FILE" | grep -iv 'expected'; then
   echo ""
   echo "::warning::Build log contains 'not found' references (see above)"

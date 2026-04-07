@@ -127,7 +127,7 @@ perf: parallelize layout inference
 
 ### 6. Update documentation
 
-When adding user-facing features, add or update pages under `docs/` and reference them in `mkdocs.yaml`.
+When adding user-facing features, add or update pages under `docs/` and reference them in `zensical.toml`.
 
 ---
 

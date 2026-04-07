@@ -32,8 +32,7 @@ bench-pymupdf4llm = [ "pillow>=10.0.0", "pymupdf-layout>=0.0.1", "pymupdf4llm>=0
 bench-pypdf = [ "pypdf>=4.0.0" ]
 bench-unstructured = [ "unstructured[all-docs]>=0.18.21" ]
 doc = [
-  "mkdocstrings[python]>=1.0.0",
-  "zensical",
+  "zensical[mkdocstrings-python]",
 ]
 
 [tool.uv]

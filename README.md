@@ -22,7 +22,7 @@
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
   </a>
   <a href="https://github.com/kreuzberg-dev/kreuzberg/releases">
-    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.7.4" alt="Go">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.8.0" alt="Go">
   </a>
   <a href="https://www.nuget.org/packages/Kreuzberg/">
     <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
@@ -74,7 +74,8 @@ Extract text, metadata, and code intelligence from 91+ file formats and 248 prog
 - **Extensible architecture** – Plugin system for custom OCR backends, validators, post-processors, document extractors, and renderers
 - **Polyglot** – Native bindings for Rust, Python, TypeScript/Node.js, Ruby, Go, Java, C#, PHP, Elixir, R, and C
 - **91+ file formats** – PDF, Office documents, images, HTML, XML, emails, archives, academic formats across 8 categories
-- **OCR support** – Tesseract (all bindings, including Tesseract-WASM for browsers), PaddleOCR (all native bindings), EasyOCR (Python), extensible via plugin API
+- **LLM intelligence** – VLM OCR (GPT-4o, Claude, Gemini), structured JSON extraction with schema constraints, and provider-hosted embeddings via 142+ LLM providers through liter-llm
+- **OCR support** – Tesseract (all bindings, including Tesseract-WASM for browsers), PaddleOCR (all native bindings), EasyOCR (Python), VLM OCR (142+ vision model providers), extensible via plugin API
 - **High performance** – Rust core with native PDFium, SIMD optimizations and full parallelism
 - **Flexible deployment** – Use as library, CLI tool, REST API server, or MCP server
 - **TOON wire format** – Token-efficient serialization for LLM/RAG pipelines, ~30-50% fewer tokens than JSON

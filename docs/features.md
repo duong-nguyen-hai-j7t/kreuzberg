@@ -194,6 +194,62 @@ After extraction, Kreuzberg can run a chain of processing steps. Each is optiona
 
 !!! info "Added in v4.6.2"
 
+### LLM-Powered Intelligence
+
+!!! info "Added in v4.8.0"
+
+Kreuzberg integrates with 142+ LLM providers via liter-llm to unlock three new capabilities that complement the local extraction pipeline.
+
+<details>
+<summary><strong>VLM OCR</strong> -- Vision language models as an OCR backend</summary>
+
+Use OpenAI GPT-4o, Anthropic Claude, Google Gemini, or any vision-capable model as an OCR engine. VLM OCR delivers superior accuracy on low-quality scans, handwriting, Arabic/Farsi scripts, and complex layouts where traditional OCR struggles. Configure via `ocr.backend = "vlm"` with `ocr.vlm_config` in your extraction config or `kreuzberg.toml`.
+
+</details>
+
+<details>
+<summary><strong>Structured Extraction</strong> -- Extract typed JSON from documents using a schema</summary>
+
+Provide a JSON schema and an optional Jinja2 prompt template; the LLM returns conforming structured data. Supports strict mode (OpenAI) with automatic `additionalProperties` sanitization for cross-provider compatibility. Available through the `kreuzberg extract-structured` CLI command, `POST /extract-structured` API endpoint, and `extract_structured` MCP tool.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "invoice_number": { "type": "string" },
+    "total": { "type": "number" },
+    "line_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": { "type": "string" },
+          "amount": { "type": "number" }
+        }
+      }
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><strong>VLM Embeddings</strong> -- Provider-hosted embedding models</summary>
+
+Use provider-hosted embedding models (e.g., `openai/text-embedding-3-small`, `mistral/mistral-embed`) as an alternative to local ONNX models. Works through the existing `/embed` API endpoint, `embed_text` MCP tool, and `embed` CLI command with `--provider llm`.
+
+</details>
+
+<details>
+<summary><strong>Custom Jinja2 Prompts</strong> -- Minijinja template engine for LLM prompts</summary>
+
+Customize the prompts sent to LLMs with Minijinja templates. Available variables include `{{ content }}` (extracted text), `{{ schema }}` (JSON schema), and `{{ language }}` (detected language). Override the default prompt per-request or in configuration.
+
+</details>
+
+`LlmConfig` and `StructuredExtractionConfig` types are exposed in Python, Node.js, and PHP bindings. Five new environment variables (`KREUZBERG_LLM_MODEL`, `KREUZBERG_LLM_API_KEY`, `KREUZBERG_LLM_BASE_URL`, `KREUZBERG_VLM_OCR_MODEL`, `KREUZBERG_VLM_EMBEDDING_MODEL`) provide zero-code configuration.
+
 ### For Search and Indexing
 
 **Keyword Extraction** -- Extract key phrases using YAKE (unsupervised, language-independent) or RAKE (fast statistical method). Configurable n-gram ranges and language-specific stopword filtering. See the [Keyword Extraction Guide](guides/keywords.md).
