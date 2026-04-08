@@ -100,6 +100,23 @@ pub mod assertions {
         assert!(all_found, "Expected content to contain all snippets {:?}", snippets);
     }
 
+    pub fn assert_content_contains_none(result: &ExtractionResult, snippets: &[&str]) {
+        if snippets.is_empty() {
+            return;
+        }
+        let lowered = result.content.to_lowercase();
+        let found: Vec<&&str> = snippets
+            .iter()
+            .filter(|snippet| lowered.contains(&snippet.to_lowercase()))
+            .collect();
+        assert!(
+            found.is_empty(),
+            "Expected content to contain none of {:?}, but found {:?}",
+            snippets,
+            found
+        );
+    }
+
     /// Assert table count boundaries.
     pub fn assert_table_count(result: &ExtractionResult, min: Option<usize>, max: Option<usize>) {
         if let Some(min_tables) = min {
