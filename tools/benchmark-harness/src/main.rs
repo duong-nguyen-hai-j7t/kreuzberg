@@ -453,6 +453,38 @@ async fn main() -> Result<()> {
                 }
             }
 
+            // Register kreuzberg-rust-oxide adapter (pdf_oxide backend)
+            if should_init("kreuzberg-rust-oxide") {
+                if matches!(config.benchmark_mode, BenchmarkMode::Batch) {
+                    use benchmark_harness::adapters::create_rust_oxide_batch_adapter;
+                    match create_rust_oxide_batch_adapter(ocr) {
+                        Ok(adapter) => {
+                            registry.register(Arc::new(adapter))?;
+                            eprintln!("[adapter] ✓ kreuzberg-rust-oxide (batch subprocess mode)");
+                            kreuzberg_count += 1;
+                        }
+                        Err(err) => {
+                            eprintln!(
+                                "[adapter] ✗ kreuzberg-rust-oxide batch (initialization failed: {})",
+                                err
+                            );
+                        }
+                    }
+                } else {
+                    use benchmark_harness::adapters::create_rust_oxide_subprocess_adapter;
+                    match create_rust_oxide_subprocess_adapter(ocr) {
+                        Ok(adapter) => {
+                            registry.register(Arc::new(adapter))?;
+                            eprintln!("[adapter] ✓ kreuzberg-rust-oxide (subprocess mode)");
+                            kreuzberg_count += 1;
+                        }
+                        Err(err) => {
+                            eprintln!("[adapter] ✗ kreuzberg-rust-oxide (initialization failed: {})", err);
+                        }
+                    }
+                }
+            }
+
             // Register batch adapters in batch mode (real batch API), single-file adapters otherwise
             if matches!(config.benchmark_mode, BenchmarkMode::Batch) {
                 use benchmark_harness::adapters::{

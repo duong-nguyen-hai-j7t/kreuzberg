@@ -399,6 +399,172 @@ fn extract_tables_from_document(
     Ok(all_tables)
 }
 
+/// Extract text, metadata, tables, and annotations from a PDF document using the pdf_oxide backend.
+///
+/// This is the oxide equivalent of [`extract_all_from_document`]. It opens the document via
+/// `OxideDocument`, then delegates to each oxide extraction module. The return type matches
+/// `PdfExtractionPhaseResult` so callers can switch transparently between backends.
+///
+/// # Notes
+///
+/// - Layout detection and structured-document pre-rendering are not yet supported on the
+///   oxide path. The `pre_rendered_doc` slot is always `None`.
+/// - Font encoding issue detection is not available; the flag is always `false`.
+#[cfg(feature = "pdf-oxide")]
+pub(crate) fn extract_all_from_oxide_document(
+    content: &[u8],
+    config: &ExtractionConfig,
+) -> Result<PdfExtractionPhaseResult> {
+    let _span = tracing::debug_span!("extract_pdf_oxide").entered();
+
+    let mut doc = crate::pdf::oxide::OxideDocument::open_bytes(content)?;
+
+    // --- Text + metadata (single pass) ---
+    let (native_text, boundaries, page_contents, pdf_metadata) =
+        crate::pdf::oxide::text::extract_text_and_metadata(&mut doc, Some(config)).map_err(|e| {
+            crate::error::KreuzbergError::Parsing {
+                message: format!("pdf_oxide text extraction failed: {e}"),
+                source: None,
+            }
+        })?;
+
+    // --- Tables ---
+    let allow_single_column = config
+        .pdf_options
+        .as_ref()
+        .is_some_and(|o| o.allow_single_column_tables);
+    let tables = extract_tables_from_oxide_document(&mut doc, allow_single_column)?;
+
+    // --- Annotations ---
+    let annotations = if config.pdf_options.as_ref().is_some_and(|opts| opts.extract_annotations) {
+        let extracted = crate::pdf::oxide::annotations::extract_annotations(&mut doc);
+        if extracted.is_empty() { None } else { Some(extracted) }
+    } else {
+        None
+    };
+
+    // Structured document rendering is not yet supported on the oxide path.
+    let pre_rendered_doc = None;
+    let has_font_encoding_issues = false;
+
+    Ok((
+        pdf_metadata,
+        native_text,
+        tables,
+        page_contents,
+        boundaries,
+        pre_rendered_doc,
+        has_font_encoding_issues,
+        annotations,
+    ))
+}
+
+/// Extract tables from an oxide document using the shared table reconstruction pipeline.
+#[cfg(feature = "pdf-oxide")]
+fn extract_tables_from_oxide_document(
+    doc: &mut crate::pdf::oxide::OxideDocument,
+    allow_single_column: bool,
+) -> Result<Vec<Table>> {
+    use crate::pdf::table_reconstruct::{post_process_table, reconstruct_table, table_to_markdown};
+
+    let page_count = doc
+        .doc
+        .page_count()
+        .map_err(|e| crate::error::KreuzbergError::Parsing {
+            message: format!("pdf_oxide: failed to get page count: {e}"),
+            source: None,
+        })?;
+
+    let mut all_tables = Vec::new();
+
+    for page_index in 0..page_count {
+        let words = match crate::pdf::oxide::table::extract_words_from_page(doc, page_index, 0.0) {
+            Ok(w) => w,
+            Err(e) => {
+                tracing::debug!(page = page_index, "oxide table word extraction failed: {e}");
+                continue;
+            }
+        };
+
+        if words.len() < 6 {
+            continue;
+        }
+
+        if !has_column_alignment(&words) {
+            continue;
+        }
+
+        let column_threshold = 50;
+        let row_threshold_ratio = 0.5;
+        let table_cells = reconstruct_table(&words, column_threshold, row_threshold_ratio);
+
+        if table_cells.is_empty() || table_cells[0].is_empty() {
+            continue;
+        }
+
+        let table_cells = match post_process_table(table_cells, false, allow_single_column) {
+            Some(cleaned) => cleaned,
+            None => continue,
+        };
+
+        let markdown = table_to_markdown(&table_cells);
+
+        // Compute page height for bounding box conversion
+        let page_height = doc
+            .doc
+            .get_page_media_box(page_index)
+            .ok()
+            .map(|(_, lly, _, ury)| (ury - lly).abs() as f64)
+            .unwrap_or(792.0);
+
+        let img_left = words.iter().map(|w| w.left as f64).fold(f64::INFINITY, f64::min);
+        let img_top = words.iter().map(|w| w.top as f64).fold(f64::INFINITY, f64::min);
+        let img_right = words
+            .iter()
+            .map(|w| (w.left + w.width) as f64)
+            .fold(f64::NEG_INFINITY, f64::max);
+        let img_bottom = words
+            .iter()
+            .map(|w| (w.top + w.height) as f64)
+            .fold(f64::NEG_INFINITY, f64::max);
+
+        let bounding_box = if img_left.is_finite() {
+            Some(crate::types::BoundingBox {
+                x0: img_left,
+                y0: page_height - img_bottom,
+                x1: img_right,
+                y1: page_height - img_top,
+            })
+        } else {
+            None
+        };
+
+        // Reject false-positive tables spanning most of the page
+        if let Some(ref bb) = bounding_box {
+            let bbox_height = (bb.y1 - bb.y0).abs();
+            if table_cells.len() <= 3 && page_height > 0.0 && bbox_height / page_height > 0.5 {
+                tracing::trace!(
+                    page = page_index,
+                    rows = table_cells.len(),
+                    bbox_height,
+                    page_height,
+                    "oxide: heuristic table with <=3 rows spans >50% of page — skipping"
+                );
+                continue;
+            }
+        }
+
+        all_tables.push(Table {
+            cells: table_cells,
+            markdown,
+            page_number: page_index + 1,
+            bounding_box,
+        });
+    }
+
+    Ok(all_tables)
+}
+
 #[cfg(test)]
 mod tests {
 

@@ -869,6 +869,51 @@ pub fn create_rust_subprocess_adapter(ocr_enabled: bool) -> Result<SubprocessAda
     ))
 }
 
+/// Create Rust subprocess adapter with pdf_oxide backend (persistent server mode)
+///
+/// Same as `create_rust_subprocess_adapter` but uses pdf_oxide instead of pdfium for
+/// PDF text extraction. Registered as framework name `kreuzberg-rust-oxide` for
+/// separate aggregation and backend comparison.
+pub fn create_rust_oxide_subprocess_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
+    let binary_path = find_kreuzberg_extract_binary()?;
+
+    let mut args = vec![ocr_flag(ocr_enabled)];
+    args.push("--pdf-backend".to_string());
+    args.push("pdf-oxide".to_string());
+
+    let supported_formats = get_kreuzberg_supported_formats();
+    Ok(SubprocessAdapter::with_persistent_mode(
+        "kreuzberg-rust-oxide",
+        binary_path,
+        args,
+        vec![],
+        supported_formats,
+    ))
+}
+
+/// Create Rust batch adapter with pdf_oxide backend
+///
+/// Same as `create_rust_batch_adapter` but uses pdf_oxide instead of pdfium for
+/// PDF text extraction. Registered as framework name `kreuzberg-rust-oxide` for
+/// separate aggregation and backend comparison.
+pub fn create_rust_oxide_batch_adapter(ocr_enabled: bool) -> Result<SubprocessAdapter> {
+    let binary_path = find_kreuzberg_extract_binary()?;
+
+    let mut args = vec![ocr_flag(ocr_enabled)];
+    args.push("--pdf-backend".to_string());
+    args.push("pdf-oxide".to_string());
+    args.push("batch".to_string());
+
+    let supported_formats = get_kreuzberg_supported_formats();
+    Ok(SubprocessAdapter::with_batch_support(
+        "kreuzberg-rust-oxide",
+        binary_path,
+        args,
+        vec![],
+        supported_formats,
+    ))
+}
+
 /// Create Rust subprocess adapter with PaddleOCR backend (persistent server mode)
 ///
 /// Same as `create_rust_subprocess_adapter` but uses PaddleOCR instead of Tesseract.

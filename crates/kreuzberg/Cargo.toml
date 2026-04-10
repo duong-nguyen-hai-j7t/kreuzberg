@@ -43,6 +43,7 @@ pdf = ["dep:pdfium-render", "dep:lopdf", "dep:image", "dep:flate2", "html"]
 # Provides cleaner word spacing for PDFs with broken font CMaps.
 # Requires 'pdf' feature. Not included in 'full' — opt-in only.
 pdf-oxide = ["pdf", "dep:pdf_oxide"]
+pdf-oxide-rendering = ["pdf-oxide", "pdf_oxide/rendering"]
 static-pdfium = ["pdf"]
 bundled-pdfium = ["pdf"]
 system-pdfium = ["pdf"]

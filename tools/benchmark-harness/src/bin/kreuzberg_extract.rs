@@ -12,7 +12,8 @@
 //! - On error: {"error": "message"}
 
 use kreuzberg::{
-    ExtractionConfig, FileExtractionConfig, FormatMetadata, OcrConfig, batch_extract_file_sync, extract_file_sync,
+    ExtractionConfig, FileExtractionConfig, FormatMetadata, OcrConfig, PdfBackend, PdfConfig, batch_extract_file_sync,
+    extract_file_sync,
 };
 use serde_json::json;
 use std::io::{self, BufRead, Write};
@@ -36,6 +37,22 @@ fn main() {
         .windows(2)
         .find(|w| w[0] == "--layout-preset" || w[0] == "--table-model")
         .map(|w| w[1].clone());
+
+    // Parse --pdf-backend <backend> (default: pdfium)
+    let pdf_backend = args.windows(2).find(|w| w[0] == "--pdf-backend").map(|w| w[1].as_str());
+
+    let pdf_options = pdf_backend.map(|backend| {
+        let backend = match backend {
+            "pdf-oxide" | "pdf_oxide" | "oxide" => PdfBackend::PdfOxide,
+            "pdfium" => PdfBackend::Pdfium,
+            "auto" => PdfBackend::Auto,
+            _ => PdfBackend::default(),
+        };
+        PdfConfig {
+            backend,
+            ..Default::default()
+        }
+    });
 
     let layout_config = layout_model.map(|model| {
         let table_model = match model.as_str() {
@@ -65,6 +82,7 @@ fn main() {
             None
         },
         layout: layout_config,
+        pdf_options,
         ..Default::default()
     };
 

@@ -75,6 +75,10 @@ pub enum Pipeline {
     LayoutSlanetPlus,
     /// Native pdfium + layout detection + classifier-routed SLANeXT (wired/wireless auto)
     LayoutSlanetAuto,
+    /// pdf_oxide backend text extraction (no OCR, no layout)
+    PdfOxide,
+    /// pdf_oxide backend + layout detection
+    PdfOxideLayout,
 }
 
 impl Pipeline {
@@ -97,6 +101,8 @@ impl Pipeline {
             Pipeline::LayoutSlanetWireless => "layout+slanet-wireless",
             Pipeline::LayoutSlanetPlus => "layout+slanet-plus",
             Pipeline::LayoutSlanetAuto => "layout+slanet-auto",
+            Pipeline::PdfOxide => "pdf-oxide",
+            Pipeline::PdfOxideLayout => "pdf-oxide+layout",
         }
     }
 
@@ -123,6 +129,8 @@ impl Pipeline {
             "layout+slanet-auto" | "layout-slanet-auto" | "layout+slanet" | "layout-slanet" => {
                 Some(Pipeline::LayoutSlanetAuto)
             }
+            "pdf-oxide" | "pdf_oxide" | "oxide" => Some(Pipeline::PdfOxide),
+            "pdf-oxide+layout" | "pdf-oxide-layout" | "oxide+layout" | "oxide-layout" => Some(Pipeline::PdfOxideLayout),
             _ => None,
         }
     }
@@ -138,6 +146,8 @@ impl Pipeline {
             Pipeline::PaddleLayout,
             Pipeline::PaddleServer,
             Pipeline::PaddleServerLayout,
+            Pipeline::PdfOxide,
+            Pipeline::PdfOxideLayout,
         ]
     }
 }
@@ -305,6 +315,26 @@ pub fn build_extraction_config(pipeline: Pipeline) -> kreuzberg::ExtractionConfi
                 table_model: kreuzberg::core::config::layout::TableModel::SlanetAuto,
                 ..Default::default()
             }),
+            ocr: Some(kreuzberg::core::config::OcrConfig {
+                backend: "tesseract".to_string(),
+                language: "eng".to_string(),
+                ..Default::default()
+            }),
+            ..base
+        },
+        Pipeline::PdfOxide => kreuzberg::ExtractionConfig {
+            pdf_options: Some(kreuzberg::PdfConfig {
+                backend: kreuzberg::PdfBackend::PdfOxide,
+                ..Default::default()
+            }),
+            ..base
+        },
+        Pipeline::PdfOxideLayout => kreuzberg::ExtractionConfig {
+            pdf_options: Some(kreuzberg::PdfConfig {
+                backend: kreuzberg::PdfBackend::PdfOxide,
+                ..Default::default()
+            }),
+            layout: Some(LayoutDetectionConfig::default()),
             ocr: Some(kreuzberg::core::config::OcrConfig {
                 backend: "tesseract".to_string(),
                 language: "eng".to_string(),
@@ -1259,6 +1289,8 @@ mod tests {
             "layout+slanet-wireless",
             "layout+slanet-plus",
             "layout+slanet-auto",
+            "pdf-oxide",
+            "pdf-oxide+layout",
         ];
         for name in all_names {
             let pipeline = Pipeline::parse(name).unwrap_or_else(|| panic!("Failed to parse pipeline '{name}'"));

@@ -1261,6 +1261,7 @@ impl PdfConfig {
                 top_margin_fraction,
                 bottom_margin_fraction,
                 allow_single_column_tables: allow_single_column_tables.unwrap_or(false),
+                backend: kreuzberg::PdfBackend::default(),
             },
         }
     }

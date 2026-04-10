@@ -600,6 +600,7 @@ impl From<JsPdfConfig> for RustPdfConfig {
             top_margin_fraction: val.top_margin_fraction.map(|v| v as f32),
             bottom_margin_fraction: val.bottom_margin_fraction.map(|v| v as f32),
             allow_single_column_tables: val.allow_single_column_tables.unwrap_or(false),
+            backend: kreuzberg::PdfBackend::default(),
         }
     }
 }
