@@ -66,7 +66,7 @@
   </a>
 </div>
 
-Extract text, metadata, and code intelligence from 91+ file formats and 248 programming languages at native speeds without needing a GPU.
+Extract text, metadata, and code intelligence from 97+ file formats and 305 programming languages at native speeds without needing a GPU.
 
 ## Key Features
 
