@@ -2,6 +2,98 @@
 
 Deploy Kreuzberg to Kubernetes with proper OCR configuration, permissions, and health checks.
 
+## Helm Chart <span class="version-badge new">v4.8.4</span>
+
+The recommended way to deploy Kreuzberg on Kubernetes is via the official Helm chart, published as an OCI artifact to GitHub Container Registry.
+
+### Install
+
+```bash title="Terminal"
+helm install kreuzberg oci://ghcr.io/kreuzberg-dev/charts/kreuzberg --version 4.8.4
+```
+
+### Configure
+
+Override defaults with a `values.yaml` file:
+
+```yaml title="values.yaml"
+replicaCount: 3
+
+image:
+  tag: "4.8.4"
+
+kreuzberg:
+  logLevel: "info"
+  ocrLanguage: "eng"
+
+resources:
+  requests:
+    memory: "1Gi"
+    cpu: "1000m"
+  limits:
+    memory: "4Gi"
+    cpu: "2000m"
+
+cache:
+  enabled: true
+  size: 5Gi
+
+ingress:
+  enabled: true
+  className: "nginx"
+  hosts:
+    - host: kreuzberg.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: kreuzberg-tls
+      hosts:
+        - kreuzberg.example.com
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+```
+
+```bash title="Terminal"
+helm install kreuzberg oci://ghcr.io/kreuzberg-dev/charts/kreuzberg \
+  --version 4.8.4 \
+  -f values.yaml
+```
+
+### Upgrade
+
+```bash title="Terminal"
+helm upgrade kreuzberg oci://ghcr.io/kreuzberg-dev/charts/kreuzberg --version 4.8.4
+```
+
+### What's Included
+
+The chart creates the following resources:
+
+| Resource | Description | Conditional |
+|----------|-------------|-------------|
+| Deployment | Main application with health probes and security hardening | Always |
+| Service | ClusterIP service on port 80 → 8000 | Always |
+| ServiceAccount | Dedicated service account | Always |
+| PersistentVolumeClaim | Cache for embedding models and assets | `cache.enabled` |
+| Ingress | HTTP(S) ingress with TLS | `ingress.enabled` |
+| HorizontalPodAutoscaler | CPU/memory-based autoscaling | `autoscaling.enabled` |
+| PodDisruptionBudget | Availability during disruptions | `podDisruptionBudget.enabled` |
+
+All values are documented in the chart's [`values.yaml`](https://github.com/kreuzberg-dev/kreuzberg/blob/main/charts/kreuzberg/values.yaml).
+
+---
+
+If you need finer control over the manifests, see the raw YAML examples below.
+
 ## Quick Start
 
 ```yaml title="minimal-deployment.yaml"
@@ -135,8 +227,10 @@ Kreuzberg runs as non-root (UID 1000, GID 1000). Fix PVC permissions with either
     spec:
       initContainers:
       - name: init-permissions
-        image: busybox:latest
+        image: busybox:1.37-glibc
         command: ['sh', '-c', 'chown -R 1000:1000 /app/.kreuzberg']
+        securityContext:
+          runAsUser: 0
         volumeMounts:
         - name: cache
           mountPath: /app/.kreuzberg
@@ -254,8 +348,10 @@ spec:
           type: RuntimeDefault
       initContainers:
       - name: init-cache
-        image: busybox:latest
+        image: busybox:1.37-glibc
         command: ['sh', '-c', 'mkdir -p /app/.kreuzberg && chown -R 1000:1000 /app/.kreuzberg']
+        securityContext:
+          runAsUser: 0
         volumeMounts:
         - name: cache
           mountPath: /app/.kreuzberg
