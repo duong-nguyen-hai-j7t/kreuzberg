@@ -136,6 +136,7 @@ pub fn get_module(module: ModuleBuilder) -> ModuleBuilder {
         .class::<types::Keyword>()               // Must be registered before ExtractionResult
         .class::<types::PdfAnnotation>()          // Must be registered before ExtractionResult
         .class::<types::ProcessingWarning>()
+        .class::<types::LlmUsage>()
         .class::<types::BoundingBoxType>()
         .class::<types::UriType>()
         .class::<types::ExtractionResult>()

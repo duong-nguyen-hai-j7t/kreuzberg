@@ -18,6 +18,7 @@ const OPTIONAL_FIELDS: &[&str] = &[
     "elements",
     "extracted_keywords",
     "images",
+    "llm_usage",
     "ocr_elements",
     "pages",
     "quality_score",

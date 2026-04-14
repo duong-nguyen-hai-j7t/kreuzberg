@@ -139,6 +139,10 @@ void assert_processing_warnings(const CExtractionResult *result,
                                 int has_max, size_t max_count,
                                 int has_is_empty, int is_empty);
 
+void assert_llm_usage(const CExtractionResult *result,
+                      int has_max, size_t max_count,
+                      int has_is_empty, int is_empty);
+
 void assert_djot_content(const CExtractionResult *result,
                          int has_content, int content_present,
                          int has_min_blocks, size_t min_blocks);
@@ -794,6 +798,24 @@ void assert_processing_warnings(const CExtractionResult *result,
     }
 }
 
+void assert_llm_usage(const CExtractionResult *result,
+                      int has_max, size_t max_count,
+                      int has_is_empty, int is_empty) {
+    size_t count = json_array_count(result->llm_usage_json);
+    if (has_is_empty && is_empty && count != 0) {
+        fprintf(stderr,
+                "FAIL: expected llm usage to be empty, got %zu\n",
+                count);
+        exit(1);
+    }
+    if (has_max && count > max_count) {
+        fprintf(stderr,
+                "FAIL: expected at most %zu llm usage entries, got %zu\n",
+                max_count, count);
+        exit(1);
+    }
+}
+
 void assert_djot_content(const CExtractionResult *result,
                          int has_content, int content_present,
                          int has_min_blocks, size_t min_blocks) {
@@ -1411,6 +1433,17 @@ fn render_assertions(assertions: &Assertions) -> String {
         writeln!(
             buf,
             "    assert_processing_warnings(result, {has_max}, {max}, {has_is_empty}, {is_empty});"
+        )
+        .unwrap();
+    }
+    if let Some(lu) = assertions.llm_usage.as_ref() {
+        let has_max = lu.max_count.is_some() as u8;
+        let max = lu.max_count.unwrap_or(0);
+        let has_is_empty = lu.is_empty.is_some() as u8;
+        let is_empty = lu.is_empty.unwrap_or(false) as u8;
+        writeln!(
+            buf,
+            "    assert_llm_usage(result, {has_max}, {max}, {has_is_empty}, {is_empty});"
         )
         .unwrap();
     }

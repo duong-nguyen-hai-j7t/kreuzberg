@@ -125,7 +125,8 @@ public final class KreuzbergFFI {
 			ValueLayout.ADDRESS.withName("detected_languages_json"), ValueLayout.ADDRESS.withName("djot_content_json"),
 			ValueLayout.ADDRESS.withName("document_json"), ValueLayout.ADDRESS.withName("elements_json"),
 			ValueLayout.ADDRESS.withName("extracted_keywords_json"), ValueLayout.ADDRESS.withName("images_json"),
-			ValueLayout.ADDRESS.withName("language"), ValueLayout.ADDRESS.withName("metadata_json"),
+			ValueLayout.ADDRESS.withName("language"), ValueLayout.ADDRESS.withName("llm_usage_json"),
+			ValueLayout.ADDRESS.withName("metadata_json"),
 			ValueLayout.ADDRESS.withName("mime_type"), ValueLayout.ADDRESS.withName("ocr_elements_json"),
 			ValueLayout.ADDRESS.withName("page_structure_json"), ValueLayout.ADDRESS.withName("pages_json"),
 			ValueLayout.ADDRESS.withName("processing_warnings_json"),
@@ -141,6 +142,8 @@ public final class KreuzbergFFI {
 			.byteOffset(MemoryLayout.PathElement.groupElement("mime_type"));
 	public static final long LANGUAGE_OFFSET = C_EXTRACTION_RESULT_LAYOUT
 			.byteOffset(MemoryLayout.PathElement.groupElement("language"));
+	public static final long LLM_USAGE_JSON_OFFSET = C_EXTRACTION_RESULT_LAYOUT
+			.byteOffset(MemoryLayout.PathElement.groupElement("llm_usage_json"));
 	public static final long DATE_OFFSET = C_EXTRACTION_RESULT_LAYOUT
 			.byteOffset(MemoryLayout.PathElement.groupElement("date"));
 	public static final long SUBJECT_OFFSET = C_EXTRACTION_RESULT_LAYOUT

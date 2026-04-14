@@ -439,6 +439,7 @@ fn sample_extraction_result() -> Value {
         annotations: Some(vec![annotation]),
         children: Some(vec![archive_entry]),
         uris: Some(vec![uri]),
+        llm_usage: None,
         formatted_content: None,
         code_intelligence: None,
         ocr_internal_document: None,

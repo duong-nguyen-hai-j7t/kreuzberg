@@ -276,6 +276,45 @@ pub struct ProcessingWarning {
     pub source: String,
 }
 
+/// LLM usage metrics for extraction operations.
+#[php_class]
+#[php(name = "Kreuzberg\\Types\\LlmUsage")]
+#[derive(Clone)]
+pub struct LlmUsage {
+    /// LLM model identifier
+    #[php(prop)]
+    pub model: String,
+
+    /// Source of the LLM usage
+    #[php(prop)]
+    pub source: String,
+
+    /// Number of input tokens
+    #[php(prop)]
+    #[php(name = "inputTokens")]
+    pub input_tokens: Option<i64>,
+
+    /// Number of output tokens
+    #[php(prop)]
+    #[php(name = "outputTokens")]
+    pub output_tokens: Option<i64>,
+
+    /// Total number of tokens
+    #[php(prop)]
+    #[php(name = "totalTokens")]
+    pub total_tokens: Option<i64>,
+
+    /// Estimated cost
+    #[php(prop)]
+    #[php(name = "estimatedCost")]
+    pub estimated_cost: Option<f64>,
+
+    /// Finish reason
+    #[php(prop)]
+    #[php(name = "finishReason")]
+    pub finish_reason: Option<String>,
+}
+
 /// Extraction configuration (parity type).
 ///
 /// This is a native Rust-side class under `Kreuzberg\Types\` namespace
@@ -529,6 +568,9 @@ pub struct ExtractionResult {
     /// Processing warnings (accessed via getter property)
     pub processing_warnings: Vec<ProcessingWarning>,
 
+    /// LLM usage metrics (accessed via getter property)
+    pub llm_usage: Option<Vec<LlmUsage>>,
+
     /// Full serialized JSON of the original ExtractionResult (for serialize_to_toon/json)
     pub(crate) result_json: String,
 }
@@ -580,6 +622,12 @@ impl ExtractionResult {
     #[php(getter)]
     pub fn get_processingWarnings(&self) -> Vec<ProcessingWarning> {
         self.processing_warnings.clone()
+    }
+
+    /// LLM usage property getter.
+    #[php(getter)]
+    pub fn get_llmUsage(&self) -> Option<Vec<LlmUsage>> {
+        self.llm_usage.clone()
     }
 
     // -----------------------------------------------------------------------
@@ -1100,6 +1148,21 @@ impl ExtractionResult {
             })
             .collect();
 
+        let llm_usage = result.llm_usage.map(|usages| {
+            usages
+                .into_iter()
+                .map(|u| LlmUsage {
+                    model: u.model,
+                    source: u.source,
+                    input_tokens: u.input_tokens.map(|v| v as i64),
+                    output_tokens: u.output_tokens.map(|v| v as i64),
+                    total_tokens: u.total_tokens.map(|v| v as i64),
+                    estimated_cost: u.estimated_cost,
+                    finish_reason: u.finish_reason,
+                })
+                .collect()
+        });
+
         Ok(Self {
             content: result.content,
             mime_type: result.mime_type.to_string(),
@@ -1120,6 +1183,7 @@ impl ExtractionResult {
             children_json,
             uris_json,
             processing_warnings,
+            llm_usage,
             result_json,
         })
     }

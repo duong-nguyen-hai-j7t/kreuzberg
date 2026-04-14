@@ -620,6 +620,34 @@ export interface ProcessingWarning {
 }
 
 /**
+ * LLM usage statistics for an extraction operation.
+ *
+ * Tracks token usage and cost information when LLM-based processing is applied.
+ */
+export interface LlmUsage {
+	/** LLM model identifier (e.g., 'gpt-4', 'claude-3-opus') */
+	model: string;
+
+	/** Source of this LLM usage (e.g., 'extraction', 'post-processing') */
+	source: string;
+
+	/** Number of input tokens consumed (if available) */
+	inputTokens?: number | null;
+
+	/** Number of output tokens generated (if available) */
+	outputTokens?: number | null;
+
+	/** Total tokens used (sum of input + output tokens, if available) */
+	totalTokens?: number | null;
+
+	/** Estimated cost in USD (if available) */
+	estimatedCost?: number | null;
+
+	/** Finish reason or status (e.g., 'stop', 'max_tokens', 'tool_use') */
+	finishReason?: string | null;
+}
+
+/**
  * Page tracking and extraction configuration.
  *
  * Controls how pages/slides/sheets are extracted and tracked in the document.
@@ -1357,6 +1385,9 @@ export interface ExtractionResult {
 
 	/** PDF annotations when extract_annotations is enabled, null otherwise */
 	annotations?: PdfAnnotation[] | null;
+
+	/** LLM usage statistics when LLM-based processing is applied, null otherwise */
+	llmUsage?: LlmUsage[] | null;
 }
 
 /** Post-processor execution stage in the extraction pipeline. */

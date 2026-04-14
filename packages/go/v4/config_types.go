@@ -92,37 +92,38 @@ type PageOption func(*PageConfig)
 // before crossing the FFI boundary. Use pointer fields to omit values and rely on Kreuzberg
 // defaults whenever possible.
 type ExtractionConfig struct {
-	UseCache                 *bool                    `json:"use_cache,omitempty"`
-	EnableQualityProcessing  *bool                    `json:"enable_quality_processing,omitempty"`
-	Ocr                      *OCRConfig               `json:"ocr,omitempty"`
-	ForceOcr                 *bool                    `json:"force_ocr,omitempty"`
-	DisableOcr               *bool                    `json:"disable_ocr,omitempty"`
-	ForceOcrPages            []uint64                 `json:"force_ocr_pages,omitempty"`
-	Chunking                 *ChunkingConfig          `json:"chunking,omitempty"`
-	Images                   *ImageExtractionConfig   `json:"images,omitempty"`
-	PdfOptions               *PdfConfig               `json:"pdf_options,omitempty"`
-	TokenReduction           *TokenReductionConfig    `json:"token_reduction,omitempty"`
-	LanguageDetection        *LanguageDetectionConfig `json:"language_detection,omitempty"`
-	Keywords                 *KeywordConfig           `json:"keywords,omitempty"`
-	Postprocessor            *PostProcessorConfig     `json:"postprocessor,omitempty"`
-	HTMLOptions              *HTMLConversionOptions   `json:"html_options,omitempty"`
-	HTMLOutput               *HTMLOutputConfig        `json:"html_output,omitempty"`
-	Layout                   *LayoutDetectionConfig   `json:"layout,omitempty"`
-	Pages                    *PageConfig              `json:"pages,omitempty"`
-	SecurityLimits           *SecurityLimitsConfig    `json:"security_limits,omitempty"`
-	Acceleration             *AccelerationConfig      `json:"acceleration,omitempty"`
-	Email                    *EmailConfig             `json:"email,omitempty"`
-	ContentFilter            *ContentFilterConfig     `json:"content_filter,omitempty"`
-	Concurrency              *ConcurrencyConfig       `json:"concurrency,omitempty"`
-	MaxConcurrentExtractions *int                     `json:"max_concurrent_extractions,omitempty"`
-	IncludeDocumentStructure *bool                    `json:"include_document_structure,omitempty"`
-	OutputFormat             string                   `json:"output_format,omitempty"`
-	ResultFormat             string                   `json:"result_format,omitempty"`
-	CacheNamespace           *string                  `json:"cache_namespace,omitempty"`
-	CacheTTLSecs             *uint64                  `json:"cache_ttl_secs,omitempty"`
-	ExtractionTimeoutSecs    *uint64                  `json:"extraction_timeout_secs,omitempty"`
-	MaxArchiveDepth          *int                     `json:"max_archive_depth,omitempty"`
-	TreeSitter               *TreeSitterConfig        `json:"tree_sitter,omitempty"`
+	UseCache                 *bool                       `json:"use_cache,omitempty"`
+	EnableQualityProcessing  *bool                       `json:"enable_quality_processing,omitempty"`
+	Ocr                      *OCRConfig                  `json:"ocr,omitempty"`
+	ForceOcr                 *bool                       `json:"force_ocr,omitempty"`
+	DisableOcr               *bool                       `json:"disable_ocr,omitempty"`
+	ForceOcrPages            []uint64                    `json:"force_ocr_pages,omitempty"`
+	Chunking                 *ChunkingConfig             `json:"chunking,omitempty"`
+	Images                   *ImageExtractionConfig      `json:"images,omitempty"`
+	PdfOptions               *PdfConfig                  `json:"pdf_options,omitempty"`
+	TokenReduction           *TokenReductionConfig       `json:"token_reduction,omitempty"`
+	LanguageDetection        *LanguageDetectionConfig    `json:"language_detection,omitempty"`
+	Keywords                 *KeywordConfig              `json:"keywords,omitempty"`
+	Postprocessor            *PostProcessorConfig        `json:"postprocessor,omitempty"`
+	HTMLOptions              *HTMLConversionOptions      `json:"html_options,omitempty"`
+	HTMLOutput               *HTMLOutputConfig           `json:"html_output,omitempty"`
+	Layout                   *LayoutDetectionConfig      `json:"layout,omitempty"`
+	Pages                    *PageConfig                 `json:"pages,omitempty"`
+	SecurityLimits           *SecurityLimitsConfig       `json:"security_limits,omitempty"`
+	Acceleration             *AccelerationConfig         `json:"acceleration,omitempty"`
+	Email                    *EmailConfig                `json:"email,omitempty"`
+	ContentFilter            *ContentFilterConfig        `json:"content_filter,omitempty"`
+	Concurrency              *ConcurrencyConfig          `json:"concurrency,omitempty"`
+	MaxConcurrentExtractions *int                        `json:"max_concurrent_extractions,omitempty"`
+	IncludeDocumentStructure *bool                       `json:"include_document_structure,omitempty"`
+	OutputFormat             string                      `json:"output_format,omitempty"`
+	ResultFormat             string                      `json:"result_format,omitempty"`
+	CacheNamespace           *string                     `json:"cache_namespace,omitempty"`
+	CacheTTLSecs             *uint64                     `json:"cache_ttl_secs,omitempty"`
+	ExtractionTimeoutSecs    *uint64                     `json:"extraction_timeout_secs,omitempty"`
+	MaxArchiveDepth          *int                        `json:"max_archive_depth,omitempty"`
+	TreeSitter               *TreeSitterConfig           `json:"tree_sitter,omitempty"`
+	StructuredExtraction     *StructuredExtractionConfig `json:"structured_extraction,omitempty"`
 }
 
 // SecurityLimitsConfig controls security thresholds for archive extraction.
@@ -300,13 +301,35 @@ type PostProcessorConfig struct {
 	DisabledProcessors []string `json:"disabled_processors,omitempty"`
 }
 
+// LlmConfig configures an LLM provider/model via liter-llm.
+type LlmConfig struct {
+	Model       string   `json:"model"`
+	APIKey      *string  `json:"api_key,omitempty"`
+	BaseURL     *string  `json:"base_url,omitempty"`
+	TimeoutSecs *uint64  `json:"timeout_secs,omitempty"`
+	MaxRetries  *uint32  `json:"max_retries,omitempty"`
+	Temperature *float64 `json:"temperature,omitempty"`
+	MaxTokens   *uint64  `json:"max_tokens,omitempty"`
+}
+
+// StructuredExtractionConfig configures LLM-based structured data extraction.
+type StructuredExtractionConfig struct {
+	Schema            interface{} `json:"schema"`
+	SchemaName        string      `json:"schema_name,omitempty"`
+	SchemaDescription *string     `json:"schema_description,omitempty"`
+	Strict            *bool       `json:"strict,omitempty"`
+	Prompt            *string     `json:"prompt,omitempty"`
+	Llm               *LlmConfig  `json:"llm,omitempty"`
+}
+
 // EmbeddingModelType configures embedding model selection.
 type EmbeddingModelType struct {
-	Type       string `json:"type"`
-	Name       string `json:"name,omitempty"`
-	Model      string `json:"model,omitempty"`
-	ModelID    string `json:"model_id,omitempty"`
-	Dimensions *int   `json:"dimensions,omitempty"`
+	Type       string     `json:"type"`
+	Name       string     `json:"name,omitempty"`
+	Model      string     `json:"model,omitempty"`
+	ModelID    string     `json:"model_id,omitempty"`
+	Dimensions *int       `json:"dimensions,omitempty"`
+	Llm        *LlmConfig `json:"llm,omitempty"`
 }
 
 // EmbeddingConfig configures embedding generation for chunks.

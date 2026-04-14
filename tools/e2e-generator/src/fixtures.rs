@@ -304,6 +304,9 @@ pub struct Assertions {
     /// Processing warnings assertions
     #[serde(default)]
     pub processing_warnings: Option<ProcessingWarningsAssertion>,
+    /// LLM usage assertions
+    #[serde(default)]
+    pub llm_usage: Option<LlmUsageAssertion>,
     /// Djot content assertions
     #[serde(default)]
     pub djot_content: Option<DjotContentAssertion>,
@@ -463,6 +466,18 @@ pub struct ProcessingWarningsAssertion {
     #[serde(default)]
     pub max_count: Option<usize>,
     /// Whether warnings should be empty
+    #[serde(default)]
+    pub is_empty: Option<bool>,
+}
+
+/// LLM usage assertions
+#[allow(dead_code)]
+#[derive(Debug, Clone, Deserialize)]
+pub struct LlmUsageAssertion {
+    /// Maximum number of usage entries allowed
+    #[serde(default)]
+    pub max_count: Option<usize>,
+    /// Whether usage should be empty
     #[serde(default)]
     pub is_empty: Option<bool>,
 }

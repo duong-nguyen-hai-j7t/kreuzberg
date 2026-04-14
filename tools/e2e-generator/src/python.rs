@@ -710,6 +710,16 @@ def assert_processing_warnings(result: Any, max_count: int | None = None, is_emp
         assert len(warnings) == 0, f"Expected empty processing_warnings, got {len(warnings)}"
 
 
+def assert_llm_usage(result: Any, max_count: int | None = None, is_empty: bool | None = None) -> None:
+    usage = getattr(result, "llm_usage", None) or []
+    if isinstance(result, dict):
+        usage = result.get("llm_usage", [])
+    if max_count is not None:
+        assert len(usage) <= max_count, f"llm_usage count {len(usage)} > {max_count}"
+    if is_empty is True:
+        assert len(usage) == 0, f"Expected empty llm_usage, got {len(usage)}"
+
+
 def assert_djot_content(result: Any, has_content: bool | None = None, min_blocks: int | None = None) -> None:
     djot = getattr(result, "djot_content", None)
     if isinstance(result, dict):
@@ -1465,6 +1475,17 @@ fn render_assertions(assertions: &Assertions) -> String {
             args.join(", ")
         )
         .unwrap();
+    }
+
+    if let Some(llm_usage) = assertions.llm_usage.as_ref() {
+        let mut args = Vec::new();
+        if let Some(max_count) = llm_usage.max_count {
+            args.push(format!("max_count={max_count}"));
+        }
+        if let Some(is_empty) = llm_usage.is_empty {
+            args.push(format!("is_empty={}", if is_empty { "True" } else { "False" }));
+        }
+        writeln!(buffer, "    helpers.assert_llm_usage(result, {})", args.join(", ")).unwrap();
     }
 
     if let Some(djot_content) = assertions.djot_content.as_ref() {

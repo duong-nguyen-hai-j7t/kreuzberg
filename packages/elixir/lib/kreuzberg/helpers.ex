@@ -230,7 +230,8 @@ defmodule Kreuzberg.Helpers do
             extracted_keywords: normalized["extracted_keywords"],
             quality_score: normalized["quality_score"],
             processing_warnings: normalized["processing_warnings"],
-            annotations: normalized["annotations"]
+            annotations: normalized["annotations"],
+            llm_usage: normalized["llm_usage"]
           )
 
         {:ok, result}

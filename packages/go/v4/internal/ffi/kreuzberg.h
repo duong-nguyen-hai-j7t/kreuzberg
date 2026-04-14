@@ -308,6 +308,10 @@ typedef struct CExtractionResult {
    */
   char *language;
   /**
+   * JSON-serialized LLM usage metrics array (null-terminated, or null pointer if none, must be freed with kreuzberg_free_string)
+   */
+  char *llm_usage_json;
+  /**
    * Metadata as JSON object (null-terminated string, or NULL if no metadata, must be freed with kreuzberg_free_string)
    */
   char *metadata_json;
@@ -2823,6 +2827,46 @@ KREUZBERG_EXPORT char *kreuzberg_result_get_detected_language(const ExtractionRe
 KREUZBERG_EXPORT
 struct CMetadataField kreuzberg_result_get_metadata_field(const ExtractionResult *result,
                                                           const char *field_name);
+
+/**
+ * Get LLM usage metrics from extraction result.
+ *
+ * Returns LLM usage information as a JSON string if the extraction was performed
+ * with LLM-based processing (e.g., for code intelligence). Returns NULL if no
+ * LLM usage data is available.
+ *
+ * # Arguments
+ *
+ * * `result` - Pointer to an ExtractionResult structure
+ *
+ * # Returns
+ *
+ * A pointer to a C string containing a JSON array of LLM usage objects, or NULL
+ * if no LLM usage data is available or on error (check `kreuzberg_last_error`).
+ *
+ * The returned pointer (if non-NULL) must be freed with `kreuzberg_free_string()`.
+ *
+ * # Safety
+ *
+ * - `result` must be a valid pointer to an ExtractionResult
+ * - `result` cannot be NULL
+ * - The returned pointer (if non-NULL) must be freed with `kreuzberg_free_string`
+ *
+ * # Example (C)
+ *
+ * ```c
+ * ExtractionResult* result = kreuzberg_extract_file("document.pdf", NULL);
+ * if (result != NULL) {
+ *     char* llm_usage = kreuzberg_result_get_llm_usage_json(result);
+ *     if (llm_usage != NULL) {
+ *         printf("LLM usage: %s\n", llm_usage);
+ *         kreuzberg_free_string(llm_usage);
+ *     }
+ *     kreuzberg_result_free(result);
+ * }
+ * ```
+ */
+KREUZBERG_EXPORT char *kreuzberg_result_get_llm_usage_json(const ExtractionResult *result);
 
 /**
  * Create a new result pool with specified initial capacity.

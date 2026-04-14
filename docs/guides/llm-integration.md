@@ -320,6 +320,41 @@ Kreuzberg supports local LLM inference engines via [liter-llm](https://github.co
     ```python
     LlmConfig(model="ollama/llama3.2", base_url="http://localhost:11435/v1")```
 
+## LLM Usage Tracking
+
+Every LLM call made during extraction is tracked in the `llm_usage` field of `ExtractionResult`. Each entry records the model used, token counts, estimated cost, and why the model stopped generating.
+
+=== "Python"
+
+    ```python
+    result = await extract_file("document.pdf", config)
+    if result.get("llm_usage"):
+        for usage in result["llm_usage"]:
+            print(f"{usage['source']}: {usage['input_tokens']} in, {usage['output_tokens']} out, ${usage['estimated_cost']:.4f}")
+    ```
+
+=== "TypeScript"
+
+    ```typescript
+    const result = await extractFile("document.pdf", config);
+    for (const usage of result.llmUsage ?? []) {
+        console.log(`${usage.source}: ${usage.inputTokens} in, ${usage.outputTokens} out, $${usage.estimatedCost?.toFixed(4)}`);
+    }
+    ```
+
+=== "Rust"
+
+    ```rust
+    let result = extract_file("document.pdf", &config).await?;
+    if let Some(usages) = &result.llm_usage {
+        for usage in usages {
+            println!("{}: {} in, {} out", usage.source, usage.input_tokens.unwrap_or(0), usage.output_tokens.unwrap_or(0));
+        }
+    }
+    ```
+
+The `source` field indicates which pipeline stage triggered the call: `"vlm_ocr"`, `"structured_extraction"`, or `"embeddings"`.
+
 ## API Key Configuration
 
 API keys can be set via (in order of precedence):

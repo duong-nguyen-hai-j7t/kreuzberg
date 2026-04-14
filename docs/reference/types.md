@@ -23,6 +23,7 @@ pub struct ExtractionResult {
     pub ocr_elements: Option<Vec<OcrElement>>,
     pub document: Option<DocumentStructure>,
     pub structured_output: Option<serde_json::Value>,  // LLM-extracted structured data conforming to provided JSON schema
+    pub llm_usage: Option<Vec<LlmUsage>>,  // LLM API usage tracking
 }
 ```
 
@@ -46,6 +47,7 @@ class ExtractionResult(TypedDict):
     elements: list[Element] | None
     document: DocumentStructure | None
     structured_output: dict[str, Any] | None  # LLM-extracted structured data
+    llm_usage: list[LlmUsage] | None  # LLM API usage tracking
 ```
 
 ### TypeScript
@@ -64,6 +66,7 @@ export interface ExtractionResult {
   elements?: Element[];
   document?: DocumentStructure;
   structuredOutput?: Record<string, unknown>;  // LLM-extracted structured data
+  llmUsage?: LlmUsage[] | null;  // LLM API usage tracking
 }
 ```
 
@@ -75,6 +78,7 @@ class Kreuzberg::Result
     attr_reader :detected_languages, :chunks, :images, :extracted_keywords, :quality_score, :processing_warnings
     attr_reader :djot_content, :pages, :elements, :document
     attr_reader :structured_output  # LLM-extracted structured data (Hash or nil)
+    attr_reader :llm_usage  # LLM API usage tracking (Array or nil)
 end
 ```
 
@@ -96,7 +100,8 @@ public record ExtractionResult(
     List<PageContent> pages,
     List<Element> elements,
     DocumentStructure document,
-    Map<String, Object> structuredOutput  // LLM-extracted structured data
+    Map<String, Object> structuredOutput,  // LLM-extracted structured data
+    List<LlmUsage> llmUsage  // LLM API usage tracking
 ) {}
 ```
 
@@ -119,6 +124,7 @@ type ExtractionResult struct {
     Elements            []Element              `json:"elements,omitempty"`
     Document            *DocumentStructure     `json:"document,omitempty"`
     StructuredOutput    map[string]interface{} `json:"structured_output,omitempty"` // LLM-extracted structured data
+    LlmUsage            []LlmUsage             `json:"llm_usage,omitempty"`        // LLM API usage tracking
 }
 ```
 
@@ -351,6 +357,74 @@ public record ProcessingWarning(
 type ProcessingWarning struct {
     Source  string `json:"source"`
     Message string `json:"message"`
+}
+```
+
+## LlmUsage
+
+LLM API usage tracking for individual calls made during extraction pipeline execution.
+
+### Rust
+
+```rust title="llm_usage.rs"
+pub struct LlmUsage {
+    pub source: String,              // Pipeline stage: "vlm_ocr", "structured_extraction", or "embeddings"
+    pub model: String,               // LLM model identifier (e.g., "openai/gpt-4o")
+    pub input_tokens: Option<u32>,   // Number of input tokens (if available)
+    pub output_tokens: Option<u32>,  // Number of output tokens (if available)
+    pub estimated_cost: Option<f64>, // Estimated cost in USD
+    pub stop_reason: Option<String>, // Reason generation stopped (e.g., "stop", "length")
+}
+```
+
+### Python
+
+```python title="llm_usage.py"
+class LlmUsage(TypedDict):
+    source: str              # Pipeline stage: "vlm_ocr", "structured_extraction", or "embeddings"
+    model: str               # LLM model identifier (e.g., "openai/gpt-4o")
+    input_tokens: int | None   # Number of input tokens (if available)
+    output_tokens: int | None  # Number of output tokens (if available)
+    estimated_cost: float | None  # Estimated cost in USD
+    stop_reason: str | None  # Reason generation stopped (e.g., "stop", "length")
+```
+
+### TypeScript
+
+```typescript title="llm_usage.ts"
+export interface LlmUsage {
+    source: string;              // Pipeline stage: "vlm_ocr", "structured_extraction", or "embeddings"
+    model: string;               // LLM model identifier (e.g., "openai/gpt-4o")
+    inputTokens?: number | null;   // Number of input tokens (if available)
+    outputTokens?: number | null;  // Number of output tokens (if available)
+    estimatedCost?: number | null; // Estimated cost in USD
+    stopReason?: string | null;    // Reason generation stopped (e.g., "stop", "length")
+}
+```
+
+### Java
+
+```java title="LlmUsage.java"
+public record LlmUsage(
+    String source,              // Pipeline stage: "vlm_ocr", "structured_extraction", or "embeddings"
+    String model,               // LLM model identifier (e.g., "openai/gpt-4o")
+    Optional<Integer> inputTokens,   // Number of input tokens (if available)
+    Optional<Integer> outputTokens,  // Number of output tokens (if available)
+    Optional<Double> estimatedCost,  // Estimated cost in USD
+    Optional<String> stopReason      // Reason generation stopped (e.g., "stop", "length")
+) {}
+```
+
+### Go
+
+```go title="llm_usage.go"
+type LlmUsage struct {
+    Source         string  `json:"source"`              // Pipeline stage: "vlm_ocr", "structured_extraction", or "embeddings"
+    Model          string  `json:"model"`               // LLM model identifier (e.g., "openai/gpt-4o")
+    InputTokens    *uint32 `json:"input_tokens,omitempty"`    // Number of input tokens (if available)
+    OutputTokens   *uint32 `json:"output_tokens,omitempty"`   // Number of output tokens (if available)
+    EstimatedCost  *float64 `json:"estimated_cost,omitempty"` // Estimated cost in USD
+    StopReason     *string `json:"stop_reason,omitempty"`     // Reason generation stopped (e.g., "stop", "length")
 }
 ```
 

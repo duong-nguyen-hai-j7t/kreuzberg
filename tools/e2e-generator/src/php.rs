@@ -809,6 +809,30 @@ class Helpers
         }
     }
 
+    public static function assertLlmUsage(
+        ExtractionResult $result,
+        ?int $maxCount = null,
+        ?bool $isEmpty = null
+    ): void {
+        $usage = $result->llmUsage ?? $result->llm_usage ?? [];
+
+        if ($maxCount !== null) {
+            Assert::assertLessThanOrEqual(
+                $maxCount,
+                count($usage),
+                sprintf('llm_usage count %d > %d', count($usage), $maxCount)
+            );
+        }
+
+        if ($isEmpty === true) {
+            Assert::assertCount(
+                0,
+                $usage,
+                sprintf('Expected empty llm_usage, got %d', count($usage))
+            );
+        }
+    }
+
     public static function assertDjotContent(
         ExtractionResult $result,
         ?bool $hasContent = null,
@@ -1538,6 +1562,23 @@ fn render_assertions(assertions: &Assertions) -> String {
         writeln!(
             buffer,
             "        Helpers::assertProcessingWarnings($result, {}, {});",
+            max_count, is_empty
+        )
+        .unwrap();
+    }
+
+    if let Some(llm_usage) = assertions.llm_usage.as_ref() {
+        let max_count = llm_usage
+            .max_count
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        let is_empty = llm_usage
+            .is_empty
+            .map(|v| if v { "true" } else { "false" }.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        writeln!(
+            buffer,
+            "        Helpers::assertLlmUsage($result, {}, {});",
             max_count, is_empty
         )
         .unwrap();

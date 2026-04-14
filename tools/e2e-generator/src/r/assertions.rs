@@ -286,6 +286,19 @@ pub fn render_assertions(assertions: &Assertions) -> String {
         }
     }
 
+    if let Some(lu) = assertions.llm_usage.as_ref() {
+        let mut args = Vec::new();
+        if let Some(max_count) = lu.max_count {
+            args.push(format!("max_count = {}", render_numeric_literal(max_count as u64)));
+        }
+        if let Some(is_empty) = lu.is_empty {
+            args.push(format!("is_empty = {}", if is_empty { "TRUE" } else { "FALSE" }));
+        }
+        if !args.is_empty() {
+            buf.push_str(&format!("      assert_llm_usage(result, {})\n", args.join(", ")));
+        }
+    }
+
     if let Some(dc) = assertions.djot_content.as_ref() {
         let mut args = Vec::new();
         if let Some(has_content) = dc.has_content {

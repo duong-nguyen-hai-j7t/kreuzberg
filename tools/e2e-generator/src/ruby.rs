@@ -438,6 +438,14 @@ module E2ERuby
       expect(warnings.length).to be <= max_count
     end
 
+    def self.assert_llm_usage(result, max_count: nil, is_empty: nil)
+      usage = Array(result.llm_usage)
+      expect(usage).to be_empty if is_empty == true
+      return unless max_count
+
+      expect(usage.length).to be <= max_count
+    end
+
     def self.assert_djot_content(result, has_content: nil, min_blocks: nil)
       if has_content
         expect(result.djot_content).not_to be_nil
@@ -1152,6 +1160,22 @@ fn render_assertions(assertions: &Assertions) -> String {
         if !args.is_empty() {
             buffer.push_str(&format!(
                 "      E2ERuby::Assertions.assert_processing_warnings(result, {})\n",
+                args.join(", ")
+            ));
+        }
+    }
+
+    if let Some(lu) = assertions.llm_usage.as_ref() {
+        let mut args = Vec::new();
+        if let Some(max_count) = lu.max_count {
+            args.push(format!("max_count: {}", render_numeric_literal(max_count as u64)));
+        }
+        if let Some(is_empty) = lu.is_empty {
+            args.push(format!("is_empty: {}", if is_empty { "true" } else { "false" }));
+        }
+        if !args.is_empty() {
+            buffer.push_str(&format!(
+                "      E2ERuby::Assertions.assert_llm_usage(result, {})\n",
                 args.join(", ")
             ));
         }

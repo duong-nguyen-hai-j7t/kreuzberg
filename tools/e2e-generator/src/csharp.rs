@@ -926,6 +926,20 @@ public static class TestHelpers
         }
     }
 
+    public static void AssertLlmUsage(ExtractionResult result, int? maxCount, bool? isEmpty)
+    {
+        var usage = result.LlmUsage;
+        var count = usage?.Count ?? 0;
+        if (isEmpty == true && count != 0)
+        {
+            throw new XunitException($"Expected llm usage to be empty, got {count}");
+        }
+        if (maxCount.HasValue && count > maxCount.Value)
+        {
+            throw new XunitException($"Expected at most {maxCount.Value} llm usage entries, got {count}");
+        }
+    }
+
     public static void AssertDjotContent(ExtractionResult result, bool? hasContent, int? minBlocks)
     {
         var djotContent = result.DjotContent;
@@ -1619,6 +1633,21 @@ fn render_assertions(buffer: &mut String, assertions: &Assertions) -> Result<()>
         writeln!(
             buffer,
             "            TestHelpers.AssertProcessingWarnings(result, {}, {});",
+            max_count, is_empty
+        )?;
+    }
+    if let Some(lu) = assertions.llm_usage.as_ref() {
+        let max_count = lu
+            .max_count
+            .map(|v| format!("{}", v))
+            .unwrap_or_else(|| "null".to_string());
+        let is_empty = lu
+            .is_empty
+            .map(|v| if v { "true" } else { "false" }.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        writeln!(
+            buffer,
+            "            TestHelpers.AssertLlmUsage(result, {}, {});",
             max_count, is_empty
         )?;
     }

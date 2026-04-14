@@ -538,6 +538,13 @@ public sealed class ExtractionResult
     public List<ProcessingWarning>? ProcessingWarnings { get; set; }
 
     /// <summary>
+    /// LLM usage metrics from structured extraction and other LLM-based processing.
+    /// Contains token counts, costs, and other metrics from LLM calls.
+    /// </summary>
+    [JsonPropertyName("llm_usage")]
+    public List<LlmUsage>? LlmUsage { get; set; }
+
+    /// <summary>
     /// PDF annotations extracted from the document, if any.
     /// Available when the document is a PDF containing annotations such as
     /// comments, highlights, links, stamps, underlines, or strikeouts.
@@ -1464,6 +1471,54 @@ public class ProcessingWarning
     /// </summary>
     [JsonPropertyName("message")]
     public string Message { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Represents LLM usage metrics from structured extraction and other LLM-based processing.
+/// </summary>
+public class LlmUsage
+{
+    /// <summary>
+    /// The LLM model name used (e.g., "gpt-4", "claude-3").
+    /// </summary>
+    [JsonPropertyName("model")]
+    public string? Model { get; set; }
+
+    /// <summary>
+    /// The source component using the LLM.
+    /// </summary>
+    [JsonPropertyName("source")]
+    public string? Source { get; set; }
+
+    /// <summary>
+    /// Number of input tokens used.
+    /// </summary>
+    [JsonPropertyName("input_tokens")]
+    public long? InputTokens { get; set; }
+
+    /// <summary>
+    /// Number of output tokens generated.
+    /// </summary>
+    [JsonPropertyName("output_tokens")]
+    public long? OutputTokens { get; set; }
+
+    /// <summary>
+    /// Total tokens used (input + output).
+    /// </summary>
+    [JsonPropertyName("total_tokens")]
+    public long? TotalTokens { get; set; }
+
+    /// <summary>
+    /// Estimated cost of the LLM call in USD.
+    /// </summary>
+    [JsonPropertyName("estimated_cost")]
+    public double? EstimatedCost { get; set; }
+
+    /// <summary>
+    /// Finish reason from the LLM (e.g., "stop", "length").
+    /// </summary>
+    [JsonPropertyName("finish_reason")]
+    public string? FinishReason { get; set; }
 }
 
 /// <summary>

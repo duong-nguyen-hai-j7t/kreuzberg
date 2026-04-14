@@ -45,7 +45,8 @@ defmodule Kreuzberg.ExtractionResult do
           annotations: list(Kreuzberg.PdfAnnotation.t()) | nil,
           uris: list(Kreuzberg.Uri.t()) | nil,
           children: list(t()) | nil,
-          code_intelligence: Kreuzberg.CodeProcessResult.t() | nil
+          code_intelligence: Kreuzberg.CodeProcessResult.t() | nil,
+          llm_usage: list(map()) | nil
         }
 
   defstruct [
@@ -63,6 +64,7 @@ defmodule Kreuzberg.ExtractionResult do
     :uris,
     :children,
     :code_intelligence,
+    :llm_usage,
     content: "",
     processing_warnings: [],
     mime_type: "",
@@ -108,7 +110,8 @@ defmodule Kreuzberg.ExtractionResult do
       annotations: normalize_annotations(Keyword.get(opts, :annotations)),
       uris: normalize_uris(Keyword.get(opts, :uris)),
       children: Keyword.get(opts, :children),
-      code_intelligence: normalize_code_intelligence(Keyword.get(opts, :code_intelligence))
+      code_intelligence: normalize_code_intelligence(Keyword.get(opts, :code_intelligence)),
+      llm_usage: Keyword.get(opts, :llm_usage)
     }
   end
 
@@ -153,7 +156,8 @@ defmodule Kreuzberg.ExtractionResult do
           nil -> nil
           %Kreuzberg.CodeProcessResult{} = c -> Kreuzberg.CodeProcessResult.to_map(c)
           other -> other
-        end
+        end,
+      "llm_usage" => result.llm_usage
     }
   end
 

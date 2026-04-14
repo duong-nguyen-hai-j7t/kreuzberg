@@ -2,7 +2,7 @@ use crate::KNOWN_FORMAT_FIELDS;
 use crate::config::{JsExtractionConfig, JsFileExtractionConfig};
 use kreuzberg::{
     Chunk as RustChunk, ChunkMetadata as RustChunkMetadata, ExtractionConfig, ExtractionResult as RustExtractionResult,
-    FileExtractionConfig, ProcessingWarning as RustProcessingWarning, utils::snake_to_camel,
+    FileExtractionConfig, LlmUsage as RustLlmUsage, ProcessingWarning as RustProcessingWarning, utils::snake_to_camel,
 };
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
@@ -127,6 +127,21 @@ pub struct JsProcessingWarning {
 
 #[napi(object)]
 #[derive(serde::Serialize, serde::Deserialize)]
+pub struct JsLlmUsage {
+    pub model: String,
+    pub source: String,
+    #[napi(ts_type = "number | undefined")]
+    pub input_tokens: Option<i64>,
+    #[napi(ts_type = "number | undefined")]
+    pub output_tokens: Option<i64>,
+    #[napi(ts_type = "number | undefined")]
+    pub total_tokens: Option<i64>,
+    pub estimated_cost: Option<f64>,
+    pub finish_reason: Option<String>,
+}
+
+#[napi(object)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct JsPdfAnnotation {
     #[napi(js_name = "annotationType")]
     pub annotation_type: String,
@@ -227,6 +242,8 @@ pub struct JsExtractionResult {
     pub quality_score: Option<f64>,
     #[napi(js_name = "processingWarnings")]
     pub processing_warnings: Vec<JsProcessingWarning>,
+    #[napi(js_name = "llmUsage")]
+    pub llm_usage: Vec<JsLlmUsage>,
     pub annotations: Vec<JsPdfAnnotation>,
     pub children: Vec<JsArchiveEntry>,
     pub uris: Vec<JsUri>,
@@ -478,6 +495,24 @@ impl TryFrom<RustExtractionResult> for JsExtractionResult {
             })
             .collect();
 
+        let llm_usage = val
+            .llm_usage
+            .map(|usages| {
+                usages
+                    .into_iter()
+                    .map(|u| JsLlmUsage {
+                        model: u.model,
+                        source: u.source,
+                        input_tokens: u.input_tokens.map(|v| v as i64),
+                        output_tokens: u.output_tokens.map(|v| v as i64),
+                        total_tokens: u.total_tokens.map(|v| v as i64),
+                        estimated_cost: u.estimated_cost,
+                        finish_reason: u.finish_reason,
+                    })
+                    .collect()
+            })
+            .unwrap_or_default();
+
         let annotations = val
             .annotations
             .map(|annots| {
@@ -616,6 +651,7 @@ impl TryFrom<RustExtractionResult> for JsExtractionResult {
             extracted_keywords,
             quality_score: val.quality_score,
             processing_warnings,
+            llm_usage,
             annotations,
             children,
             uris,
@@ -909,6 +945,24 @@ impl TryFrom<JsExtractionResult> for RustExtractionResult {
                     message: std::borrow::Cow::Owned(w.message),
                 })
                 .collect(),
+            llm_usage: if val.llm_usage.is_empty() {
+                None
+            } else {
+                Some(
+                    val.llm_usage
+                        .into_iter()
+                        .map(|u| RustLlmUsage {
+                            model: u.model,
+                            source: u.source,
+                            input_tokens: u.input_tokens.and_then(|v| u64::try_from(v).ok()),
+                            output_tokens: u.output_tokens.and_then(|v| u64::try_from(v).ok()),
+                            total_tokens: u.total_tokens.and_then(|v| u64::try_from(v).ok()),
+                            estimated_cost: u.estimated_cost,
+                            finish_reason: u.finish_reason,
+                        })
+                        .collect(),
+                )
+            },
             annotations: if val.annotations.is_empty() {
                 None
             } else {

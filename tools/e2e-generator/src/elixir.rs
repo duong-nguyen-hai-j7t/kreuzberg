@@ -706,6 +706,24 @@ defmodule E2E.Helpers do
     result
   end
 
+  def assert_llm_usage(result, opts) do
+    usage = Map.get(result, :llm_usage) || Map.get(result, "llm_usage") || []
+
+    if opts[:max_count] do
+      if length(usage) > opts[:max_count] do
+        flunk("llm_usage count #{length(usage)} > #{opts[:max_count]}")
+      end
+    end
+
+    if opts[:is_empty] == true do
+      if length(usage) != 0 do
+        flunk("Expected empty llm_usage, got #{length(usage)}")
+      end
+    end
+
+    result
+  end
+
   def assert_djot_content(result, opts) do
     djot = Map.get(result, :djot_content) || Map.get(result, "djot_content")
 
@@ -1533,6 +1551,19 @@ fn render_assertions(assertions: &Assertions) -> String {
         }
         if !args.is_empty() {
             pipes.push(format!("E2E.Helpers.assert_processing_warnings({})", args.join(", ")));
+        }
+    }
+
+    if let Some(llm_usage) = assertions.llm_usage.as_ref() {
+        let mut args = Vec::new();
+        if let Some(max_count) = llm_usage.max_count {
+            args.push(format!("max_count: {}", render_numeric_literal(max_count as u64)));
+        }
+        if let Some(is_empty) = llm_usage.is_empty {
+            args.push(format!("is_empty: {}", if is_empty { "true" } else { "false" }));
+        }
+        if !args.is_empty() {
+            pipes.push(format!("E2E.Helpers.assert_llm_usage({})", args.join(", ")));
         }
     }
 

@@ -400,6 +400,12 @@ assert_processing_warnings <- function(result, max_count = NULL, is_empty = NULL
   if (!is.null(max_count)) testthat::expect_lte(length(warnings_list), max_count)
 }
 
+assert_llm_usage <- function(result, max_count = NULL, is_empty = NULL) {
+  usage_list <- if (is.null(result$llm_usage)) character(0) else result$llm_usage
+  if (isTRUE(is_empty)) testthat::expect_length(usage_list, 0)
+  if (!is.null(max_count)) testthat::expect_lte(length(usage_list), max_count)
+}
+
 assert_djot_content <- function(result, has_content = NULL, min_blocks = NULL) {
   if (isTRUE(has_content)) {
     testthat::expect_false(is.null(result$djot_content))

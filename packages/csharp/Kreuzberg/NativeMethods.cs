@@ -60,6 +60,8 @@ internal static partial class NativeMethods
         public IntPtr ImagesJson;
         /// <summary>Detected language pointer.</summary>
         public IntPtr Language;
+        /// <summary>JSON array of LLM usage metrics pointer.</summary>
+        public IntPtr LlmUsageJson;
         /// <summary>JSON object of metadata pointer.</summary>
         public IntPtr MetadataJson;
         /// <summary>MIME type pointer.</summary>

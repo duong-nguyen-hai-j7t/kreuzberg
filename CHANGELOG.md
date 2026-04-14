@@ -9,11 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [4.8.5] - 2026-04-14
 
+### Added
+
+- **LLM usage tracking** — new `llm_usage` field on `ExtractionResult` captures token counts, estimated cost (USD), model identifier, and finish reason for every LLM call (VLM OCR, structured extraction, LLM embeddings). Multiple entries are produced when multiple LLM calls occur in a single extraction. Exposed across all bindings: Python, TypeScript, Ruby, PHP, Go, Java, C#, Elixir, R, C FFI, and WASM.
+
 ### Fixed
 
 - **Markdown chunker duplicates heading when `prepend_heading_context` is enabled** — the heading was prepended twice when a chunk boundary aligned with a heading node, producing repeated heading text in the output. (#701)
 - **Helm chart icon 404 on Artifact Hub** — `Chart.yaml` referenced `logo.png` but the file is `logo.svg`.
 - **Python wheel manylinux_2_38 compliance failure** — tesseract build script dynamically links `libstdc++`, introducing `GLIBCXX_3.4.31` symbols that violate manylinux_2_38. Added `KREUZBERG_STATIC_LIBSTDCXX` env var to force static `libstdc++` linking in manylinux builds.
+- **FFI memory leak** — `kreuzberg_free_result` was not freeing `djot_content_json`, `structured_output_json`, and `llm_usage_json` pointers.
+- **R e2e embed tests fail** — generated R embedding config was missing the `type` discriminator field required by Rust's tagged enum deserialization.
+- **Elixir parity test fails** — `ExtractionConfig` struct was missing the `:html_output` field.
+- **Go LLM e2e tests fail** — `EmbeddingModelType` struct was missing `Llm` nested config, `ExtractionConfig` was missing `StructuredExtraction` field.
 
 ---
 

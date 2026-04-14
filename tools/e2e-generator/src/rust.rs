@@ -656,6 +656,20 @@ fn render_assertions(assertions: &Assertions) -> String {
         ));
     }
 
+    if let Some(llm_usage) = assertions.llm_usage.as_ref() {
+        let max_count = llm_usage
+            .max_count
+            .map(|v| format!("Some({v})"))
+            .unwrap_or_else(|| "None".into());
+        let is_empty = llm_usage
+            .is_empty
+            .map(|v| format!("Some({v})"))
+            .unwrap_or_else(|| "None".into());
+        buffer.push_str(&format!(
+            "    assertions::assert_llm_usage(&result, {max_count}, {is_empty});\n"
+        ));
+    }
+
     if let Some(djot) = assertions.djot_content.as_ref() {
         let has_content = djot
             .has_content

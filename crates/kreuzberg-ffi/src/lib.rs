@@ -152,8 +152,8 @@ mod tests {
         // Test size
         assert_eq!(
             std::mem::size_of::<CExtractionResult>(),
-            200,
-            "CExtractionResult must be exactly 200 bytes"
+            208,
+            "CExtractionResult must be exactly 208 bytes"
         );
 
         // Test alignment
@@ -225,6 +225,7 @@ mod tests {
             processing_warnings_json: ptr::null_mut(),
             annotations_json: ptr::null_mut(),
             uris_json: ptr::null_mut(),
+            llm_usage_json: ptr::null_mut(),
             code_intelligence_json: ptr::null_mut(),
             structured_output_json: ptr::null_mut(),
             success: true,
@@ -553,6 +554,7 @@ mod tests {
                 processing_warnings_json: ptr::null_mut(),
                 annotations_json: ptr::null_mut(),
                 uris_json: ptr::null_mut(),
+                llm_usage_json: ptr::null_mut(),
                 code_intelligence_json: ptr::null_mut(),
                 structured_output_json: ptr::null_mut(),
                 success: true,
@@ -594,6 +596,7 @@ mod tests {
                     .into_raw(),
                 annotations_json: ptr::null_mut(),
                 uris_json: ptr::null_mut(),
+                llm_usage_json: ptr::null_mut(),
                 code_intelligence_json: ptr::null_mut(),
                 structured_output_json: ptr::null_mut(),
                 success: true,
@@ -680,7 +683,7 @@ mod tests {
     /// Test CExtractionResult size exactly matches FFI contract
     #[test]
     fn test_c_extraction_result_size() {
-        assert_eq!(std::mem::size_of::<CExtractionResult>(), 200);
+        assert_eq!(std::mem::size_of::<CExtractionResult>(), 208);
         assert_eq!(std::mem::align_of::<CExtractionResult>(), 8);
     }
 

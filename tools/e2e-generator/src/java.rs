@@ -735,6 +735,19 @@ public final class E2EHelpers {
             }
         }
 
+        public static void assertLlmUsage(ExtractionResult result, Integer maxCount, Boolean isEmpty) {
+            var usage = result.getLlmUsage().orElse(null);
+            int count = usage != null ? usage.size() : 0;
+            if (isEmpty != null && isEmpty) {
+                assertTrue(count == 0,
+                        String.format("Expected llm usage to be empty, got %d", count));
+            }
+            if (maxCount != null) {
+                assertTrue(count <= maxCount,
+                        String.format("Expected at most %d llm usage entries, got %d", maxCount, count));
+            }
+        }
+
         public static void assertDjotContent(ExtractionResult result, Boolean hasContent, Integer minBlocks) {
             var djotContent = result.getDjotContent().orElse(null);
             if (hasContent != null && hasContent) {
@@ -1956,6 +1969,17 @@ fn render_assertions(assertions: &Assertions) -> String {
         let is_empty = pw.is_empty.map(|v| v.to_string()).unwrap_or_else(|| "null".to_string());
         buffer.push_str(&format!(
             "                E2EHelpers.Assertions.assertProcessingWarnings(result, {}, {});\n",
+            max_count, is_empty
+        ));
+    }
+    if let Some(lu) = assertions.llm_usage.as_ref() {
+        let max_count = lu
+            .max_count
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "null".to_string());
+        let is_empty = lu.is_empty.map(|v| v.to_string()).unwrap_or_else(|| "null".to_string());
+        buffer.push_str(&format!(
+            "                E2EHelpers.Assertions.assertLlmUsage(result, {}, {});\n",
             max_count, is_empty
         ));
     }

@@ -1374,6 +1374,7 @@ public static class KreuzbergClient
             result.ExtractedKeywords = DeserializeField<List<ExtractedKeyword>>(cRes.ExtractedKeywordsJson);
             result.QualityScore = DeserializeField<double?>(cRes.QualityScoreJson);
             result.ProcessingWarnings = DeserializeField<List<ProcessingWarning>>(cRes.ProcessingWarningsJson) ?? new List<ProcessingWarning>();
+            result.LlmUsage = DeserializeField<List<LlmUsage>>(cRes.LlmUsageJson) ?? new List<LlmUsage>();
             result.Annotations = DeserializeField<List<PdfAnnotation>>(cRes.AnnotationsJson);
             result.Uris = DeserializeField<List<ExtractedUri>>(cRes.UrisJson);
             result.Children = DeserializeField<List<ArchiveEntry>>(cRes.ChildrenJson);

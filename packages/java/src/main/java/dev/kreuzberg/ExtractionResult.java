@@ -37,6 +37,8 @@ public final class ExtractionResult {
 	private final Double qualityScore;
 	@JsonProperty("processing_warnings")
 	private final List<ProcessingWarning> processingWarnings;
+	@JsonProperty("llm_usage")
+	private final List<LlmUsage> llmUsage;
 	@JsonProperty("annotations")
 	private final List<PdfAnnotation> annotations;
 	@JsonProperty("uris")
@@ -56,7 +58,7 @@ public final class ExtractionResult {
 			List<ProcessingWarning> processingWarnings, List<PdfAnnotation> annotations, List<Uri> uris) {
 		this(content, mimeType, metadata, tables, detectedLanguages, chunks, images, pages, pageStructure, elements,
 				ocrElements, djotContent, document, extractedKeywords, qualityScore, processingWarnings, annotations,
-				uris, null, null);
+				uris, null, null, null, null);
 	}
 
 	ExtractionResult(String content, String mimeType, Metadata metadata, List<Table> tables,
@@ -67,7 +69,7 @@ public final class ExtractionResult {
 			List<ArchiveEntry> children) {
 		this(content, mimeType, metadata, tables, detectedLanguages, chunks, images, pages, pageStructure, elements,
 				ocrElements, djotContent, document, extractedKeywords, qualityScore, processingWarnings, annotations,
-				uris, children, null);
+				uris, children, null, null, null);
 	}
 
 	ExtractionResult(String content, String mimeType, Metadata metadata, List<Table> tables,
@@ -78,7 +80,7 @@ public final class ExtractionResult {
 			List<ArchiveEntry> children, CodeProcessResult codeIntelligence) {
 		this(content, mimeType, metadata, tables, detectedLanguages, chunks, images, pages, pageStructure, elements,
 				ocrElements, djotContent, document, extractedKeywords, qualityScore, processingWarnings, annotations,
-				uris, children, codeIntelligence, null);
+				uris, children, codeIntelligence, null, null);
 	}
 
 	@SuppressWarnings("CPD-END")
@@ -87,7 +89,8 @@ public final class ExtractionResult {
 			PageStructure pageStructure, List<Element> elements, List<OcrElement> ocrElements, DjotContent djotContent,
 			DocumentStructure document, List<ExtractedKeyword> extractedKeywords, Double qualityScore,
 			List<ProcessingWarning> processingWarnings, List<PdfAnnotation> annotations, List<Uri> uris,
-			List<ArchiveEntry> children, CodeProcessResult codeIntelligence, Map<String, Object> structuredOutput) {
+			List<ArchiveEntry> children, CodeProcessResult codeIntelligence, List<LlmUsage> llmUsage,
+			Map<String, Object> structuredOutput) {
 		this.content = Objects.requireNonNull(content, "content must not be null");
 		this.mimeType = Objects.requireNonNull(mimeType, "mimeType must not be null");
 		this.metadata = metadata != null ? metadata : Metadata.empty();
@@ -108,6 +111,7 @@ public final class ExtractionResult {
 		this.extractedKeywords = extractedKeywords != null ? Collections.unmodifiableList(extractedKeywords) : null;
 		this.qualityScore = qualityScore;
 		this.processingWarnings = processingWarnings != null ? Collections.unmodifiableList(processingWarnings) : null;
+		this.llmUsage = llmUsage != null ? Collections.unmodifiableList(llmUsage) : null;
 		this.annotations = annotations != null ? Collections.unmodifiableList(annotations) : null;
 		this.uris = uris != null ? Collections.unmodifiableList(uris) : null;
 		this.children = children != null ? Collections.unmodifiableList(children) : null;
@@ -284,6 +288,19 @@ public final class ExtractionResult {
 	 */
 	public Optional<List<ProcessingWarning>> getProcessingWarnings() {
 		return Optional.ofNullable(processingWarnings);
+	}
+
+	/**
+	 * Get the LLM usage metrics from the extraction (optional).
+	 *
+	 * <p>
+	 * Contains token counts, costs, and other metrics from LLM calls made during
+	 * structured extraction or other LLM-based processing steps.
+	 *
+	 * @return optional unmodifiable list of LLM usage records, or empty if none
+	 */
+	public Optional<List<LlmUsage>> getLlmUsage() {
+		return Optional.ofNullable(llmUsage);
 	}
 
 	/**
@@ -522,6 +539,7 @@ public final class ExtractionResult {
 				+ ", hasDocumentStructure=" + (document != null) + ", extractedKeywords="
 				+ (extractedKeywords != null ? extractedKeywords.size() : "null") + ", qualityScore=" + qualityScore
 				+ ", processingWarnings=" + (processingWarnings != null ? processingWarnings.size() : "null")
+				+ ", llmUsage=" + (llmUsage != null ? llmUsage.size() : "null")
 				+ ", annotations=" + (annotations != null ? annotations.size() : "null")
 				+ ", uris=" + (uris != null ? uris.size() : "null")
 				+ ", children=" + (children != null ? children.size() : "null") + '}';

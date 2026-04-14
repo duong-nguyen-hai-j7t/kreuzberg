@@ -94,10 +94,41 @@ fn render_embed_test(fixture: &Fixture) -> Result<String> {
 fn render_embed_config_r(config: &Map<String, Value>) -> Result<String> {
     let mut parts = Vec::new();
 
-    if let Some(model) = config.get("model")
-        && let Some(name) = model.get("name").and_then(|v| v.as_str())
-    {
-        parts.push(format!("model = list(name = \"{}\")", name));
+    if let Some(model) = config.get("model") {
+        let model_type = model.get("type").and_then(|v| v.as_str()).unwrap_or("preset");
+        match model_type {
+            "preset" => {
+                if let Some(name) = model.get("name").and_then(|v| v.as_str()) {
+                    parts.push(format!("model = list(type = \"preset\", name = \"{}\")", name));
+                }
+            }
+            "custom" => {
+                if let Some(model_id) = model.get("model_id").and_then(|v| v.as_str())
+                    && let Some(dimensions) = model.get("dimensions").and_then(|v| v.as_i64())
+                {
+                    parts.push(format!(
+                        "model = list(type = \"custom\", model_id = \"{}\", dimensions = {}L)",
+                        model_id, dimensions
+                    ));
+                }
+            }
+            "llm" => {
+                if let Some(llm) = model.get("llm") {
+                    let mut llm_fields = vec!["type = \"llm\"".to_string()];
+                    if let Some(model_name) = llm.get("model").and_then(|v| v.as_str()) {
+                        llm_fields.push(format!("model = \"{}\"", model_name));
+                    }
+                    if let Some(api_key) = llm.get("api_key").and_then(|v| v.as_str()) {
+                        llm_fields.push(format!("api_key = \"{}\"", api_key));
+                    }
+                    if let Some(base_url) = llm.get("base_url").and_then(|v| v.as_str()) {
+                        llm_fields.push(format!("base_url = \"{}\"", base_url));
+                    }
+                    parts.push(format!("model = list({})", llm_fields.join(", ")));
+                }
+            }
+            _ => {}
+        }
     }
 
     if let Some(v) = config.get("normalize").and_then(|v| v.as_bool()) {

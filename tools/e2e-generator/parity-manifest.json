@@ -309,6 +309,10 @@
 					"json_type": "array",
 					"required": false
 				},
+				"llm_usage": {
+					"json_type": "array",
+					"required": false
+				},
 				"metadata": {
 					"json_type": "object",
 					"required": true

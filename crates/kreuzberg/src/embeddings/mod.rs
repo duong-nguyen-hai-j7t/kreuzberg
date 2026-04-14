@@ -671,6 +671,7 @@ pub fn embed_texts<T: AsRef<str>>(
                     crate::KreuzbergError::embedding(format!("Failed to create runtime for LLM embeddings: {e}"))
                 })?;
             rt.block_on(crate::llm::vlm_embeddings::embed_via_llm(texts, llm, normalize))
+                .map(|(embeddings, _usage)| embeddings)
         }
         #[cfg(not(feature = "liter-llm"))]
         crate::core::config::EmbeddingModelType::Llm { .. } => Err(crate::KreuzbergError::MissingDependency(
@@ -740,7 +741,9 @@ pub async fn embed_texts_async<T: AsRef<str> + Send + 'static>(
     // LLM-hosted embeddings can be awaited directly — no need for spawn_blocking.
     #[cfg(feature = "liter-llm")]
     if let crate::core::config::EmbeddingModelType::Llm { llm } = &config.model {
-        return crate::llm::vlm_embeddings::embed_via_llm(&texts, llm, config.normalize).await;
+        return crate::llm::vlm_embeddings::embed_via_llm(&texts, llm, config.normalize)
+            .await
+            .map(|(embeddings, _usage)| embeddings);
     }
 
     #[cfg(not(feature = "liter-llm"))]

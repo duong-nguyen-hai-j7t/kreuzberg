@@ -1361,6 +1361,8 @@ public final class Kreuzberg {
 				.readCString(result.get(ValueLayout.ADDRESS, KreuzbergFFI.QUALITY_SCORE_OFFSET));
 		String processingWarningsJson = KreuzbergFFI
 				.readCString(result.get(ValueLayout.ADDRESS, KreuzbergFFI.PROCESSING_WARNINGS_OFFSET));
+		String llmUsageJson = KreuzbergFFI
+				.readCString(result.get(ValueLayout.ADDRESS, KreuzbergFFI.LLM_USAGE_JSON_OFFSET));
 		String annotationsJson = KreuzbergFFI
 				.readCString(result.get(ValueLayout.ADDRESS, KreuzbergFFI.ANNOTATIONS_JSON_OFFSET));
 		String urisJson = KreuzbergFFI
@@ -1373,7 +1375,7 @@ public final class Kreuzberg {
 		return ResultParser.parse(content, mimeType, tablesJson, detectedLanguagesJson, metadataJson, chunksJson,
 				imagesJson, pagesJson, pageStructureJson, elementsJson, ocrElementsJson, djotContentJson, language,
 				date, subject, documentJson, extractedKeywordsJson, qualityScoreJson, processingWarningsJson,
-				annotationsJson, urisJson, structuredOutputJson);
+				annotationsJson, urisJson, structuredOutputJson, llmUsageJson);
 	}
 
 	/**

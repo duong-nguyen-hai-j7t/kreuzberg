@@ -97,6 +97,24 @@ type ProcessingWarning struct {
 	Message string `json:"message"`
 }
 
+// LlmUsage represents LLM usage metrics from structured extraction and other LLM-based processing.
+type LlmUsage struct {
+	// Model is the LLM model name used (e.g., "gpt-4", "claude-3").
+	Model string `json:"model,omitempty"`
+	// Source is the source component using the LLM.
+	Source string `json:"source,omitempty"`
+	// InputTokens is the number of input tokens used.
+	InputTokens *uint64 `json:"input_tokens,omitempty"`
+	// OutputTokens is the number of output tokens generated.
+	OutputTokens *uint64 `json:"output_tokens,omitempty"`
+	// TotalTokens is the total tokens used (input + output).
+	TotalTokens *uint64 `json:"total_tokens,omitempty"`
+	// EstimatedCost is the estimated cost of the LLM call in USD.
+	EstimatedCost *float64 `json:"estimated_cost,omitempty"`
+	// FinishReason is the finish reason from the LLM (e.g., "stop", "length").
+	FinishReason *string `json:"finish_reason,omitempty"`
+}
+
 // URI represents a URI extracted from a document.
 // Includes hyperlinks, image references, citations, email addresses, and other URI-like references.
 type URI struct {
@@ -166,6 +184,9 @@ type ExtractionResult struct {
 
 	// ProcessingWarnings contains non-fatal warnings from pipeline stages.
 	ProcessingWarnings []ProcessingWarning `json:"processing_warnings,omitempty"`
+
+	// LlmUsage contains LLM usage metrics from structured extraction and other LLM-based processing.
+	LlmUsage []LlmUsage `json:"llm_usage,omitempty"`
 
 	// Annotations contains PDF annotations extracted from the document.
 	Annotations []PdfAnnotation `json:"annotations,omitempty"`

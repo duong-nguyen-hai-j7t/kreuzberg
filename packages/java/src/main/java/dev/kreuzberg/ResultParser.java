@@ -33,6 +33,8 @@ final class ResultParser {
 	};
 	private static final TypeReference<List<ProcessingWarning>> WARNING_LIST = new TypeReference<>() {
 	};
+	private static final TypeReference<List<LlmUsage>> LLM_USAGE_LIST = new TypeReference<>() {
+	};
 	private static final TypeReference<List<PdfAnnotation>> ANNOTATION_LIST = new TypeReference<>() {
 	};
 	private static final TypeReference<List<Uri>> URI_LIST = new TypeReference<>() {
@@ -116,6 +118,18 @@ final class ResultParser {
 			String subject, String documentStructureJson, String extractedKeywordsJson, String qualityScoreStr,
 			String processingWarningsJson, String annotationsJson, String urisJson, String structuredOutputJson)
 			throws KreuzbergException {
+		return parse(content, mimeType, tablesJson, detectedLanguagesJson, metadataJson, chunksJson, imagesJson,
+				pagesJson, pageStructureJson, elementsJson, ocrElementsJson, djotContentJson, language, date, subject,
+				documentStructureJson, extractedKeywordsJson, qualityScoreStr, processingWarningsJson, annotationsJson,
+				urisJson, structuredOutputJson, null);
+	}
+
+	static ExtractionResult parse(String content, String mimeType, String tablesJson, String detectedLanguagesJson,
+			String metadataJson, String chunksJson, String imagesJson, String pagesJson, String pageStructureJson,
+			String elementsJson, String ocrElementsJson, String djotContentJson, String language, String date,
+			String subject, String documentStructureJson, String extractedKeywordsJson, String qualityScoreStr,
+			String processingWarningsJson, String annotationsJson, String urisJson, String structuredOutputJson,
+			String llmUsageJson) throws KreuzbergException {
 		try {
 			Map<String, Object> metadata = decode(metadataJson, METADATA_MAP, Collections.emptyMap());
 			List<Table> tables = decode(tablesJson, TABLE_LIST, List.of());
@@ -133,6 +147,7 @@ final class ResultParser {
 					? Double.valueOf(qualityScoreStr)
 					: null;
 			List<ProcessingWarning> processingWarnings = decode(processingWarningsJson, WARNING_LIST, null);
+			List<LlmUsage> llmUsage = decode(llmUsageJson, LLM_USAGE_LIST, null);
 			List<PdfAnnotation> annotations = decode(annotationsJson, ANNOTATION_LIST, null);
 			List<Uri> uris = decode(urisJson, URI_LIST, null);
 			Map<String, Object> structuredOutput = decode(structuredOutputJson, METADATA_MAP, null);
@@ -143,7 +158,7 @@ final class ResultParser {
 			return new ExtractionResult(content != null ? content : "", mimeType != null ? mimeType : "", metadataObj,
 					tables, detectedLanguages, chunks, images, pages, pageStructure, elements, ocrElements, djotContent,
 					documentStructure, extractedKeywords, qualityScore, processingWarnings, annotations, uris, null,
-					null, structuredOutput);
+					null, llmUsage, structuredOutput);
 		} catch (Exception e) {
 			throw new KreuzbergException("Failed to parse extraction result", e);
 		}
@@ -282,7 +297,7 @@ final class ResultParser {
 					wire.elements != null ? wire.elements : List.of(),
 					wire.ocrElements != null ? wire.ocrElements : List.of(), wire.djotContent, wire.document,
 					wire.extractedKeywords, wire.qualityScore, wire.processingWarnings, wire.annotations,
-					wire.uris, wire.children);
+					wire.uris, wire.children, null, wire.llmUsage, null);
 		} catch (Exception e) {
 			throw new KreuzbergException("Failed to parse result JSON", e);
 		}
@@ -295,8 +310,8 @@ final class ResultParser {
 				result.getOcrElements(), result.getDjotContent().orElse(null),
 				result.getDocumentStructure().orElse(null), result.getExtractedKeywords().orElse(null),
 				result.getQualityScore().orElse(null), result.getProcessingWarnings().orElse(null),
-				result.getAnnotations().orElse(null), result.getUris().orElse(null),
-				result.getChildren().orElse(null));
+				result.getLlmUsage().orElse(null), result.getAnnotations().orElse(null),
+				result.getUris().orElse(null), result.getChildren().orElse(null));
 		return MAPPER.writeValueAsString(wire);
 	}
 
@@ -332,6 +347,7 @@ final class ResultParser {
 		private final List<ExtractedKeyword> extractedKeywords;
 		private final Double qualityScore;
 		private final List<ProcessingWarning> processingWarnings;
+		private final List<LlmUsage> llmUsage;
 		private final List<PdfAnnotation> annotations;
 		private final List<Uri> uris;
 		private final List<ArchiveEntry> children;
@@ -349,6 +365,7 @@ final class ResultParser {
 				@JsonProperty("extracted_keywords") List<ExtractedKeyword> extractedKeywords,
 				@JsonProperty("quality_score") Double qualityScore,
 				@JsonProperty("processing_warnings") List<ProcessingWarning> processingWarnings,
+				@JsonProperty("llm_usage") List<LlmUsage> llmUsage,
 				@JsonProperty("annotations") List<PdfAnnotation> annotations,
 				@JsonProperty("uris") List<Uri> uris,
 				@JsonProperty("children") List<ArchiveEntry> children) {
@@ -368,6 +385,7 @@ final class ResultParser {
 			this.extractedKeywords = extractedKeywords;
 			this.qualityScore = qualityScore;
 			this.processingWarnings = processingWarnings;
+			this.llmUsage = llmUsage;
 			this.annotations = annotations;
 			this.uris = uris;
 			this.children = children;

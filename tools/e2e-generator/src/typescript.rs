@@ -670,6 +670,23 @@ export const assertions = {
         }
     },
 
+    assertLlmUsage(
+        result: ExtractionResult,
+        maxCount?: number | null,
+        isEmpty?: boolean | null,
+    ): void {
+        const usage = (result as unknown as PlainRecord).llmUsage
+            ?? (result as unknown as PlainRecord).llm_usage;
+        if (isEmpty === true) {
+            if (usage != null) {
+                expect(Array.isArray(usage) && usage.length === 0).toBe(true);
+            }
+        }
+        if (Array.isArray(usage) && typeof maxCount === "number") {
+            expect(usage.length).toBeLessThanOrEqual(maxCount);
+        }
+    },
+
     assertDjotContent(
         result: ExtractionResult,
         hasContent?: boolean | null,
@@ -1661,6 +1678,20 @@ fn render_assertions(assertions: &Assertions) -> String {
             .unwrap_or_else(|| "undefined".into());
         buffer.push_str(&format!(
             "    assertions.assertProcessingWarnings(result, {max_count}, {is_empty});\n"
+        ));
+    }
+
+    if let Some(llm_usage) = assertions.llm_usage.as_ref() {
+        let max_count = llm_usage
+            .max_count
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "undefined".into());
+        let is_empty = llm_usage
+            .is_empty
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "undefined".into());
+        buffer.push_str(&format!(
+            "    assertions.assertLlmUsage(result, {max_count}, {is_empty});\n"
         ));
     }
 

@@ -712,6 +712,45 @@ pub fn extraction_result_to_ruby(ruby: &Ruby, result: RustExtractionResult) -> R
     }
     set_hash_entry(ruby, &hash, "processing_warnings", warnings_array.into_value_with(ruby))?;
 
+    // Convert LLM usage
+    if let Some(usages) = result.llm_usage {
+        let usage_array = ruby.ary_new();
+        for usage in usages {
+            let usage_hash = ruby.hash_new();
+            usage_hash.aset("model", usage.model.as_ref())?;
+            usage_hash.aset("source", usage.source.as_ref())?;
+            if let Some(input_tokens) = usage.input_tokens {
+                usage_hash.aset("input_tokens", input_tokens as i64)?;
+            } else {
+                usage_hash.aset("input_tokens", ruby.qnil().as_value())?;
+            }
+            if let Some(output_tokens) = usage.output_tokens {
+                usage_hash.aset("output_tokens", output_tokens as i64)?;
+            } else {
+                usage_hash.aset("output_tokens", ruby.qnil().as_value())?;
+            }
+            if let Some(total_tokens) = usage.total_tokens {
+                usage_hash.aset("total_tokens", total_tokens as i64)?;
+            } else {
+                usage_hash.aset("total_tokens", ruby.qnil().as_value())?;
+            }
+            if let Some(cost) = usage.estimated_cost {
+                usage_hash.aset("estimated_cost", ruby.float_from_f64(cost).into_value_with(ruby))?;
+            } else {
+                usage_hash.aset("estimated_cost", ruby.qnil().as_value())?;
+            }
+            if let Some(reason) = usage.finish_reason {
+                usage_hash.aset("finish_reason", reason.as_ref())?;
+            } else {
+                usage_hash.aset("finish_reason", ruby.qnil().as_value())?;
+            }
+            usage_array.push(usage_hash)?;
+        }
+        set_hash_entry(ruby, &hash, "llm_usage", usage_array.into_value_with(ruby))?;
+    } else {
+        set_hash_entry(ruby, &hash, "llm_usage", ruby.qnil().as_value())?;
+    }
+
     // Convert annotations
     if let Some(annotations) = result.annotations {
         let annotations_array = ruby.ary_new();
