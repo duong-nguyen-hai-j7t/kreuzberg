@@ -788,19 +788,6 @@ mod build_tesseract {
                 println!("cargo:rustc-link-lib=static=stdc++");
             } else if env::var("CC").map(|cc| cc.contains("clang")).unwrap_or(false) {
                 println!("cargo:rustc-link-lib=c++");
-            } else if env::var("KREUZBERG_STATIC_LIBSTDCXX").is_ok() {
-                // manylinux builds: statically link libstdc++ to avoid
-                // GLIBCXX symbol versions that violate manylinux compliance.
-                if let Ok(output) = std::process::Command::new("gcc")
-                    .arg("--print-file-name=libstdc++.a")
-                    .output()
-                {
-                    let path = String::from_utf8_lossy(&output.stdout);
-                    if let Some(parent) = std::path::Path::new(path.trim()).parent() {
-                        println!("cargo:rustc-link-search=native={}", parent.display());
-                    }
-                }
-                println!("cargo:rustc-link-lib=static=stdc++");
             } else {
                 println!("cargo:rustc-link-lib=stdc++");
                 println!("cargo:rustc-link-lib=stdc++fs");

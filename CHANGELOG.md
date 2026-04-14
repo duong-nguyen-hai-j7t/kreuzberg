@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Markdown chunker duplicates heading when `prepend_heading_context` is enabled** — the heading was prepended twice when a chunk boundary aligned with a heading node, producing repeated heading text in the output. (#701)
 - **Helm chart icon 404 on Artifact Hub** — `Chart.yaml` referenced `logo.png` but the file is `logo.svg`.
-- **Python wheel manylinux_2_38 compliance failure** — tesseract build script dynamically links `libstdc++`, introducing `GLIBCXX_3.4.31` symbols that violate manylinux_2_38. Added `KREUZBERG_STATIC_LIBSTDCXX` env var to force static `libstdc++` linking in manylinux builds.
+- **Python wheel manylinux compliance failure** — bumped manylinux from `2_38` to `2_39` to allow `GLIBCXX_3.4.31` symbols from the build toolchain, matching the v4.6.x baseline that worked.
 - **FFI memory leak** — `kreuzberg_free_result` was not freeing `djot_content_json`, `structured_output_json`, and `llm_usage_json` pointers.
 - **R e2e embed tests fail** — generated R embedding config was missing the `type` discriminator field required by Rust's tagged enum deserialization.
 - **Elixir parity test fails** — `ExtractionConfig` struct was missing the `:html_output` field.

@@ -498,7 +498,7 @@ jobs:
             os: ubuntu-latest
             artifact: python-wheels-linux-x86_64
             rust_target: x86_64-unknown-linux-gnu
-            manylinux: manylinux_2_38
+            manylinux: manylinux_2_39
             python: "3.10"
             needs_qemu: false
             extra_args: ""
@@ -506,7 +506,7 @@ jobs:
             os: ubuntu-24.04-arm
             artifact: python-wheels-linux-aarch64
             rust_target: aarch64-unknown-linux-gnu
-            manylinux: manylinux_2_38
+            manylinux: manylinux_2_39
             python: "3.10"
             needs_qemu: false
             extra_args: ""
@@ -623,10 +623,6 @@ jobs:
           docker-options: ${{ steps.tesseract-cache.outputs.docker-options }}
           before-script-linux: |
             set -euo pipefail
-            # Statically link libstdc++/libgcc to avoid GLIBCXX/CXXABI version
-            # symbols that violate manylinux_2_38 compliance.
-            export RUSTFLAGS="${RUSTFLAGS:-} -C link-arg=-static-libstdc++ -C link-arg=-static-libgcc"
-            export KREUZBERG_STATIC_LIBSTDCXX=1
             rustup component add rust-src || true
             # Install dependencies based on the container distro
             if command -v yum >/dev/null 2>&1; then

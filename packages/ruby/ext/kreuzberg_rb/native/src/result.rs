@@ -717,8 +717,8 @@ pub fn extraction_result_to_ruby(ruby: &Ruby, result: RustExtractionResult) -> R
         let usage_array = ruby.ary_new();
         for usage in usages {
             let usage_hash = ruby.hash_new();
-            usage_hash.aset("model", usage.model.as_ref())?;
-            usage_hash.aset("source", usage.source.as_ref())?;
+            usage_hash.aset("model", usage.model.as_str())?;
+            usage_hash.aset("source", usage.source.as_str())?;
             if let Some(input_tokens) = usage.input_tokens {
                 usage_hash.aset("input_tokens", input_tokens as i64)?;
             } else {
@@ -740,7 +740,7 @@ pub fn extraction_result_to_ruby(ruby: &Ruby, result: RustExtractionResult) -> R
                 usage_hash.aset("estimated_cost", ruby.qnil().as_value())?;
             }
             if let Some(reason) = usage.finish_reason {
-                usage_hash.aset("finish_reason", reason.as_ref())?;
+                usage_hash.aset("finish_reason", reason.as_str())?;
             } else {
                 usage_hash.aset("finish_reason", ruby.qnil().as_value())?;
             }
