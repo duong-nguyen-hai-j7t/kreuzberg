@@ -55,6 +55,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.9.4] - 2026-04-22
+
+### Fixed
+
+- **Ruby gem build failure** — add missing `max_images_per_page` field to `ImageExtractionConfig` initializer in Ruby binding (`kreuzberg-rb`), fixing compilation error E0063 on all platforms.
+- **Node binding build failure on Linux** — stop removing `/usr/local/lib/node_modules` in CI disk cleanup script; npm was being deleted before `pnpm/action-setup` could use it, causing `spawn npm ENOENT`.
+- **Homebrew formula publish failure** — grant `contents: write` permission to the `publish-homebrew` job so `gh release upload` can attach bottle artifacts (was `contents: read`).
+
+---
+
 ## [4.9.3] - 2026-04-22
 
 ### Added
