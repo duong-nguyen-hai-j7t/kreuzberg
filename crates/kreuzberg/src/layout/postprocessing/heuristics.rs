@@ -29,11 +29,11 @@ pub(crate) fn apply_heuristics(
     page_height: f32,
 ) -> Vec<LayoutDetection> {
     // 1. Apply per-class confidence thresholds.
-    detections.retain(|d| d.confidence >= class_threshold(d.class));
+    detections.retain(|d| d.confidence >= class_threshold(d.class_name));
 
     // 2. Remove full-page pictures (>90% of page area).
     detections.retain(|d| {
-        if d.class == LayoutClass::Picture {
+        if d.class_name == LayoutClass::Picture {
             d.bbox.page_coverage(page_width, page_height) < 0.9
         } else {
             true
@@ -44,11 +44,11 @@ pub(crate) fn apply_heuristics(
     //     If a Table or Picture covers <3% of page area AND has confidence <0.7,
     //     it is likely a false positive that would suppress body text.
     for d in detections.iter_mut() {
-        if matches!(d.class, LayoutClass::Table | LayoutClass::Picture)
+        if matches!(d.class_name, LayoutClass::Table | LayoutClass::Picture)
             && d.bbox.page_coverage(page_width, page_height) < 0.03
             && d.confidence < 0.7
         {
-            d.class = LayoutClass::Text;
+            d.class_name = LayoutClass::Text;
         }
     }
 
@@ -114,13 +114,13 @@ fn resolve_overlaps(detections: &mut Vec<LayoutDetection>) {
 /// Returns 0 to remove `a`, 1 to remove `b`.
 fn pick_removal(a: &LayoutDetection, b: &LayoutDetection, containment_a_of_b: f32) -> usize {
     // ListItem preferred over Text when similar area (±20%).
-    if a.class == LayoutClass::ListItem && b.class == LayoutClass::Text {
+    if a.class_name == LayoutClass::ListItem && b.class_name == LayoutClass::Text {
         let area_ratio = a.bbox.area() / b.bbox.area().max(1e-6);
         if (0.8..=1.2).contains(&area_ratio) {
             return 1; // remove Text
         }
     }
-    if b.class == LayoutClass::ListItem && a.class == LayoutClass::Text {
+    if b.class_name == LayoutClass::ListItem && a.class_name == LayoutClass::Text {
         let area_ratio = b.bbox.area() / a.bbox.area().max(1e-6);
         if (0.8..=1.2).contains(&area_ratio) {
             return 0; // remove Text
@@ -128,10 +128,10 @@ fn pick_removal(a: &LayoutDetection, b: &LayoutDetection, containment_a_of_b: f3
     }
 
     // Code preferred when other is 80%+ contained.
-    if a.class == LayoutClass::Code && containment_a_of_b > 0.8 {
+    if a.class_name == LayoutClass::Code && containment_a_of_b > 0.8 {
         return 1; // remove b
     }
-    if b.class == LayoutClass::Code {
+    if b.class_name == LayoutClass::Code {
         let containment_b_of_a = b.bbox.containment_of(&a.bbox);
         if containment_b_of_a > 0.8 {
             return 0; // remove a
@@ -140,14 +140,14 @@ fn pick_removal(a: &LayoutDetection, b: &LayoutDetection, containment_a_of_b: f3
 
     // Text preferred over Table/Picture when Text has equal or higher confidence.
     // This prevents low-confidence Table/Picture detections from suppressing body text.
-    if a.class == LayoutClass::Text
-        && matches!(b.class, LayoutClass::Table | LayoutClass::Picture)
+    if a.class_name == LayoutClass::Text
+        && matches!(b.class_name, LayoutClass::Table | LayoutClass::Picture)
         && a.confidence >= b.confidence
     {
         return 1; // remove Table/Picture, keep Text
     }
-    if b.class == LayoutClass::Text
-        && matches!(a.class, LayoutClass::Table | LayoutClass::Picture)
+    if b.class_name == LayoutClass::Text
+        && matches!(a.class_name, LayoutClass::Table | LayoutClass::Picture)
         && b.confidence >= a.confidence
     {
         return 0; // remove Table/Picture, keep Text
@@ -163,11 +163,11 @@ fn resolve_kvr_table_overlap(detections: &mut Vec<LayoutDetection>) {
     let mut remove = vec![false; n];
 
     for i in 0..n {
-        if remove[i] || detections[i].class != LayoutClass::KeyValueRegion {
+        if remove[i] || detections[i].class_name != LayoutClass::KeyValueRegion {
             continue;
         }
         for j in 0..n {
-            if i == j || remove[j] || detections[j].class != LayoutClass::Table {
+            if i == j || remove[j] || detections[j].class_name != LayoutClass::Table {
                 continue;
             }
             let overlap = detections[j].bbox.containment_of(&detections[i].bbox);

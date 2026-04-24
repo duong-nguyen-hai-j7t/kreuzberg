@@ -150,7 +150,7 @@ fn run_layout_detection_ocr_pass(
                             y2: (page_h - region.bbox.bottom) * sy,
                         };
                         crate::layout::LayoutDetection {
-                            class: region.class,
+                            class_name: region.class_name,
                             confidence: region.confidence,
                             bbox,
                         }

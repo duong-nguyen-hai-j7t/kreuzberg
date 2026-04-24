@@ -74,7 +74,7 @@ pub(crate) enum LayoutHintClass {
 /// in PDF coordinate space (points, y=0 at bottom of page).
 #[derive(Debug, Clone)]
 pub(crate) struct LayoutHint {
-    pub class: LayoutHintClass,
+    pub class_name: LayoutHintClass,
     pub confidence: f32,
     pub left: f32,
     pub bottom: f32,

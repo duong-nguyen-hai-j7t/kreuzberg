@@ -135,7 +135,7 @@ pub struct TatrDetection {
     /// Detection confidence score (0.0..1.0).
     pub confidence: f32,
     /// Detected class.
-    pub class: TatrClass,
+    pub class_name: TatrClass,
 }
 
 /// Aggregated TATR recognition result with detections separated by class.
@@ -322,7 +322,7 @@ impl TatrModel {
             let detection = TatrDetection {
                 bbox,
                 confidence,
-                class,
+                class_name: class,
             };
 
             match class {
@@ -755,12 +755,12 @@ mod tests {
             TatrDetection {
                 bbox: [0.0, 0.0, 100.0, 20.0],
                 confidence: 0.9,
-                class: TatrClass::Row,
+                class_name: TatrClass::Row,
             },
             TatrDetection {
                 bbox: [0.0, 2.0, 100.0, 22.0],
                 confidence: 0.7,
-                class: TatrClass::Row,
+                class_name: TatrClass::Row,
             },
         ];
         let bboxes: Vec<[f32; 4]> = detections.iter().map(|d| d.bbox).collect();
@@ -776,12 +776,12 @@ mod tests {
             TatrDetection {
                 bbox: [0.0, 0.0, 100.0, 20.0],
                 confidence: 0.9,
-                class: TatrClass::Row,
+                class_name: TatrClass::Row,
             },
             TatrDetection {
                 bbox: [0.0, 50.0, 100.0, 70.0],
                 confidence: 0.8,
-                class: TatrClass::Row,
+                class_name: TatrClass::Row,
             },
         ];
         let bboxes: Vec<[f32; 4]> = detections.iter().map(|d| d.bbox).collect();
@@ -797,12 +797,12 @@ mod tests {
             TatrDetection {
                 bbox: [0.0, 0.0, 100.0, 20.0],
                 confidence: 0.9,
-                class: TatrClass::Row,
+                class_name: TatrClass::Row,
             },
             TatrDetection {
                 bbox: [0.0, 18.0, 100.0, 38.0],
                 confidence: 0.8,
-                class: TatrClass::Row,
+                class_name: TatrClass::Row,
             },
         ];
         let bboxes: Vec<[f32; 4]> = detections.iter().map(|d| d.bbox).collect();
@@ -820,24 +820,24 @@ mod tests {
                 TatrDetection {
                     bbox: [0.0, 0.0, 100.0, 20.0],
                     confidence: 0.9,
-                    class: TatrClass::Row,
+                    class_name: TatrClass::Row,
                 },
                 TatrDetection {
                     bbox: [0.0, 20.0, 100.0, 40.0],
                     confidence: 0.85,
-                    class: TatrClass::Row,
+                    class_name: TatrClass::Row,
                 },
             ],
             columns: vec![
                 TatrDetection {
                     bbox: [0.0, 0.0, 50.0, 40.0],
                     confidence: 0.9,
-                    class: TatrClass::Column,
+                    class_name: TatrClass::Column,
                 },
                 TatrDetection {
                     bbox: [50.0, 0.0, 100.0, 40.0],
                     confidence: 0.85,
-                    class: TatrClass::Column,
+                    class_name: TatrClass::Column,
                 },
             ],
             headers: Vec::new(),
@@ -881,12 +881,12 @@ mod tests {
             rows: vec![TatrDetection {
                 bbox: [10.0, 5.0, 90.0, 25.0],
                 confidence: 0.9,
-                class: TatrClass::Row,
+                class_name: TatrClass::Row,
             }],
             columns: vec![TatrDetection {
                 bbox: [0.0, 0.0, 50.0, 30.0],
                 confidence: 0.9,
-                class: TatrClass::Column,
+                class_name: TatrClass::Column,
             }],
             headers: Vec::new(),
             spanning: Vec::new(),
@@ -926,18 +926,18 @@ mod tests {
                 TatrDetection {
                     bbox: [0.0, 30.0, 100.0, 50.0], // bottom row
                     confidence: 0.95,
-                    class: TatrClass::Row,
+                    class_name: TatrClass::Row,
                 },
                 TatrDetection {
                     bbox: [0.0, 0.0, 100.0, 20.0], // top row
                     confidence: 0.80,
-                    class: TatrClass::Row,
+                    class_name: TatrClass::Row,
                 },
             ],
             columns: vec![TatrDetection {
                 bbox: [0.0, 0.0, 100.0, 50.0],
                 confidence: 0.9,
-                class: TatrClass::Column,
+                class_name: TatrClass::Column,
             }],
             headers: Vec::new(),
             spanning: Vec::new(),
@@ -961,18 +961,18 @@ mod tests {
             rows: vec![TatrDetection {
                 bbox: [0.0, 0.0, 100.0, 20.0],
                 confidence: 0.9,
-                class: TatrClass::Row,
+                class_name: TatrClass::Row,
             }],
             columns: vec![
                 TatrDetection {
                     bbox: [60.0, 0.0, 100.0, 20.0], // right column
                     confidence: 0.95,
-                    class: TatrClass::Column,
+                    class_name: TatrClass::Column,
                 },
                 TatrDetection {
                     bbox: [0.0, 0.0, 50.0, 20.0], // left column
                     confidence: 0.80,
-                    class: TatrClass::Column,
+                    class_name: TatrClass::Column,
                 },
             ],
             headers: Vec::new(),
@@ -1020,12 +1020,12 @@ mod tests {
             TatrDetection {
                 bbox: [0.0, 0.0, col_width, 100.0],
                 confidence: 0.9,
-                class: TatrClass::Column,
+                class_name: TatrClass::Column,
             },
             TatrDetection {
                 bbox: [col_width - overlap, 0.0, 2.0 * col_width - overlap, 100.0],
                 confidence: 0.85,
-                class: TatrClass::Column,
+                class_name: TatrClass::Column,
             },
         ];
         let bboxes: Vec<[f32; 4]> = detections.iter().map(|d| d.bbox).collect();
@@ -1050,12 +1050,12 @@ mod tests {
             TatrDetection {
                 bbox: [0.0, 0.0, 20.0, 100.0],
                 confidence: 0.9,
-                class: TatrClass::Column,
+                class_name: TatrClass::Column,
             },
             TatrDetection {
                 bbox: [17.0, 0.0, 37.0, 100.0], // 3/20 = 0.15 overlap
                 confidence: 0.85,
-                class: TatrClass::Column,
+                class_name: TatrClass::Column,
             },
         ];
         let bboxes: Vec<[f32; 4]> = detections.iter().map(|d| d.bbox).collect();
@@ -1071,23 +1071,23 @@ mod tests {
             rows: vec![TatrDetection {
                 bbox: [0.0, 0.0, 100.0, 20.0],
                 confidence: 0.9,
-                class: TatrClass::Row,
+                class_name: TatrClass::Row,
             }],
             columns: vec![
                 TatrDetection {
                     bbox: [0.0, 0.0, 50.0, 20.0], // real column: 50px wide
                     confidence: 0.9,
-                    class: TatrClass::Column,
+                    class_name: TatrClass::Column,
                 },
                 TatrDetection {
                     bbox: [60.0, 0.0, 60.5, 20.0], // noise column: 0.5px wide (< 1% of 100)
                     confidence: 0.5,
-                    class: TatrClass::Column,
+                    class_name: TatrClass::Column,
                 },
                 TatrDetection {
                     bbox: [70.0, 0.0, 100.0, 20.0], // real column: 30px wide
                     confidence: 0.85,
-                    class: TatrClass::Column,
+                    class_name: TatrClass::Column,
                 },
             ],
             headers: Vec::new(),
@@ -1113,18 +1113,18 @@ mod tests {
                 TatrDetection {
                     bbox: [0.0, 0.0, 100.0, 25.0],
                     confidence: 0.9,
-                    class: TatrClass::Row,
+                    class_name: TatrClass::Row,
                 },
                 TatrDetection {
                     bbox: [0.0, 15.0, 100.0, 40.0], // 10/25 = 0.4 IoB with first
                     confidence: 0.85,
-                    class: TatrClass::Row,
+                    class_name: TatrClass::Row,
                 },
             ],
             columns: vec![TatrDetection {
                 bbox: [0.0, 0.0, 50.0, 40.0],
                 confidence: 0.9,
-                class: TatrClass::Column,
+                class_name: TatrClass::Column,
             }],
             headers: Vec::new(),
             spanning: Vec::new(),

@@ -547,7 +547,7 @@ mod tests {
         //   List:  image (100,250)-(500,300) → PDF bbox (100, 700, 500, 750)
         let hints = vec![
             LayoutHint {
-                class: LayoutHintClass::Title,
+                class_name: LayoutHintClass::Title,
                 confidence: 0.95,
                 left: 90.0,
                 bottom: 895.0,
@@ -555,7 +555,7 @@ mod tests {
                 top: 955.0,
             },
             LayoutHint {
-                class: LayoutHintClass::Text,
+                class_name: LayoutHintClass::Text,
                 confidence: 0.90,
                 left: 90.0,
                 bottom: 795.0,
@@ -563,7 +563,7 @@ mod tests {
                 top: 855.0,
             },
             LayoutHint {
-                class: LayoutHintClass::ListItem,
+                class_name: LayoutHintClass::ListItem,
                 confidence: 0.88,
                 left: 90.0,
                 bottom: 695.0,

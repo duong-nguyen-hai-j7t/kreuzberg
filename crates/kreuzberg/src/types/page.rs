@@ -175,13 +175,21 @@ pub struct PageContent {
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct LayoutRegion {
     /// Layout class name (e.g. "picture", "table", "text", "section_header").
-    pub class: String,
+    pub class_name: String,
     /// Confidence score from the layout detection model (0.0 to 1.0).
     pub confidence: f64,
     /// Bounding box in document coordinate space.
     pub bounding_box: BoundingBox,
     /// Fraction of the page area covered by this region (0.0 to 1.0).
     pub area_fraction: f64,
+}
+
+impl LayoutRegion {
+    /// Deprecated: use the `class_name` field directly.
+    #[deprecated(since = "4.10.0", note = "Use `class_name` field instead")]
+    pub fn class(&self) -> &str {
+        &self.class_name
+    }
 }
 
 /// Page hierarchy structure containing heading levels and block information.

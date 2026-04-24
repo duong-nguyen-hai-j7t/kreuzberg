@@ -228,7 +228,7 @@ impl ImageExtractor {
 
         for det in &detections {
             // Skip picture regions (OCR on an embedded image is not useful)
-            if det.class == LayoutClass::Picture {
+            if det.class_name == LayoutClass::Picture {
                 continue;
             }
 
@@ -266,14 +266,14 @@ impl ImageExtractor {
             }
 
             tracing::trace!(
-                class = ?det.class,
+                class = ?det.class_name,
                 confidence = det.confidence,
                 text_len = text.len(),
                 "OCR result for layout region"
             );
 
             // Map layout class to InternalElement
-            match det.class {
+            match det.class_name {
                 LayoutClass::Title => {
                     builder.push_heading(1, &text, None, None);
                 }

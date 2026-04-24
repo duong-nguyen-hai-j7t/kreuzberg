@@ -222,7 +222,7 @@ impl fmt::Display for LayoutClass {
 /// A single layout detection result.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LayoutDetection {
-    pub class: LayoutClass,
+    pub class_name: LayoutClass,
     pub confidence: f32,
     pub bbox: BBox,
 }
@@ -234,12 +234,18 @@ impl LayoutDetection {
         detections
     }
 
-    pub(crate) fn new(class: LayoutClass, confidence: f32, bbox: BBox) -> Self {
+    pub(crate) fn new(class_name: LayoutClass, confidence: f32, bbox: BBox) -> Self {
         Self {
-            class,
+            class_name,
             confidence,
             bbox,
         }
+    }
+
+    /// Deprecated: use the `class_name` field directly.
+    #[deprecated(since = "4.10.0", note = "Use `class_name` field instead")]
+    pub fn class(&self) -> LayoutClass {
+        self.class_name
     }
 }
 
@@ -248,7 +254,7 @@ impl fmt::Display for LayoutDetection {
         write!(
             f,
             "{:20} conf={:.3}  bbox={}",
-            self.class.name(),
+            self.class_name.name(),
             self.confidence,
             self.bbox
         )

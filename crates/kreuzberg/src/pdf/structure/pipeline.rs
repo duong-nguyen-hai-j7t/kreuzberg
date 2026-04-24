@@ -557,7 +557,7 @@ pub(crate) fn extract_document_structure(
         .map(|h| {
             h.iter()
                 .flat_map(|p| p.iter())
-                .filter(|hint| matches!(hint.class, super::types::LayoutHintClass::Table))
+                .filter(|hint| matches!(hint.class_name, super::types::LayoutHintClass::Table))
                 .count()
         })
         .unwrap_or(0);
@@ -688,7 +688,10 @@ pub(crate) fn extract_document_structure(
             let Some(hints) = hints_pages.get(page_idx) else {
                 continue;
             };
-            if !hints.iter().any(|h| h.class == super::types::LayoutHintClass::Table) {
+            if !hints
+                .iter()
+                .any(|h| h.class_name == super::types::LayoutHintClass::Table)
+            {
                 continue;
             }
 
@@ -1520,7 +1523,10 @@ pub(crate) fn extract_document_structure_from_segments(
             let Some(hints) = hints_pages.get(page_idx) else {
                 continue;
             };
-            if !hints.iter().any(|h| h.class == super::types::LayoutHintClass::Table) {
+            if !hints
+                .iter()
+                .any(|h| h.class_name == super::types::LayoutHintClass::Table)
+            {
                 continue;
             }
             let page_height = page_heights[page_idx];

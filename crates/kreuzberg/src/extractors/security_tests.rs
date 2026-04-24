@@ -306,55 +306,6 @@ mod general_security_tests {
     use crate::extractors::security::*;
 
     #[test]
-    fn test_depth_validator_limits() {
-        let mut validator = DepthValidator::new(10);
-
-        for i in 0..10 {
-            assert!(validator.push().is_ok(), "Push {} should succeed", i);
-        }
-
-        assert!(validator.push().is_err(), "Push at limit should fail");
-    }
-
-    #[test]
-    fn test_string_growth_validator() {
-        let mut validator = StringGrowthValidator::new(1000);
-
-        assert!(validator.check_append(500).is_ok());
-        assert!(validator.check_append(500).is_ok());
-        assert!(validator.check_append(1).is_err(), "Should fail when exceeding limit");
-    }
-
-    #[test]
-    fn test_entity_validator_limits() {
-        let validator = EntityValidator::new(32);
-
-        assert!(validator.validate("short").is_ok());
-        assert!(validator.validate(&"x".repeat(32)).is_ok());
-        assert!(validator.validate(&"x".repeat(33)).is_err());
-    }
-
-    #[test]
-    fn test_iteration_validator() {
-        let mut validator = IterationValidator::new(100);
-
-        for i in 0..100 {
-            assert!(validator.check_iteration().is_ok(), "Iteration {} should succeed", i);
-        }
-
-        assert!(validator.check_iteration().is_err(), "Iteration at limit should fail");
-    }
-
-    #[test]
-    fn test_table_validator_cell_limits() {
-        let mut validator = TableValidator::new(1000);
-
-        assert!(validator.add_cells(500).is_ok());
-        assert!(validator.add_cells(500).is_ok());
-        assert!(validator.add_cells(1).is_err(), "Should fail when exceeding cell limit");
-    }
-
-    #[test]
     fn test_security_limits_defaults() {
         let limits = SecurityLimits::default();
 

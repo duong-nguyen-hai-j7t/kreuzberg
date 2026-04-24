@@ -25,7 +25,7 @@ pub(in crate::pdf::structure) fn extract_tables_from_layout_hints(
 
     let table_hints: Vec<&LayoutHint> = hints
         .iter()
-        .filter(|h| h.class == LayoutHintClass::Table && h.confidence >= min_confidence)
+        .filter(|h| h.class_name == LayoutHintClass::Table && h.confidence >= min_confidence)
         .collect();
 
     if table_hints.is_empty() {
@@ -345,7 +345,7 @@ mod tests {
 
     fn make_table_hint(confidence: f32, left: f32, bottom: f32, right: f32, top: f32) -> LayoutHint {
         LayoutHint {
-            class: LayoutHintClass::Table,
+            class_name: LayoutHintClass::Table,
             confidence,
             left,
             bottom,
@@ -358,7 +358,7 @@ mod tests {
     fn test_no_table_hints_returns_empty() {
         let words = vec![make_word("hello", 10, 10, 50, 12)];
         let hints = vec![LayoutHint {
-            class: LayoutHintClass::Text,
+            class_name: LayoutHintClass::Text,
             confidence: 0.9,
             left: 0.0,
             bottom: 0.0,

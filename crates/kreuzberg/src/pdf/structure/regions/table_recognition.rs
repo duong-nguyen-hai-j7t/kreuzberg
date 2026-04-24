@@ -65,7 +65,7 @@ pub(in crate::pdf::structure) fn recognize_tables_for_native_page(
     let table_hints: Vec<&LayoutHint> = hints
         .iter()
         .filter(|h| {
-            if h.class != LayoutHintClass::Table || h.confidence < 0.5 {
+            if h.class_name != LayoutHintClass::Table || h.confidence < 0.5 {
                 return false;
             }
             // Structural hint guard relaxed: region assignment now handles
@@ -444,7 +444,7 @@ pub(in crate::pdf::structure) fn recognize_tables_slanet(
 
     let table_hints: Vec<&LayoutHint> = hints
         .iter()
-        .filter(|h| h.class == LayoutHintClass::Table && h.confidence >= 0.5)
+        .filter(|h| h.class_name == LayoutHintClass::Table && h.confidence >= 0.5)
         .collect();
 
     if table_hints.is_empty() {

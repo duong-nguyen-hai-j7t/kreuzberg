@@ -121,7 +121,7 @@ pub(in crate::pdf::structure) fn validate_page_regions(
         .iter()
         .map(|hint| {
             // Only validate Table and Picture (suppressible classes)
-            if !matches!(hint.class, LayoutHintClass::Table | LayoutHintClass::Picture) {
+            if !matches!(hint.class_name, LayoutHintClass::Table | LayoutHintClass::Picture) {
                 return RegionValidation::Skipped;
             }
 

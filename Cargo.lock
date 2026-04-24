@@ -3684,7 +3684,6 @@ dependencies = [
  "async-trait",
  "js-sys",
  "kreuzberg",
- "serde",
  "serde-wasm-bindgen",
  "serde_json",
  "wasm-bindgen",

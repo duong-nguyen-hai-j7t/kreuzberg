@@ -84,7 +84,7 @@ pub(crate) fn assign_layout_regions_to_pages(
                     let region_area = f64::from(r.bbox.width()) * f64::from(r.bbox.height());
                     let area_fraction = if page_area > 0.0 { region_area / page_area } else { 0.0 };
                     crate::types::LayoutRegion {
-                        class: r.class.name().to_string(),
+                        class_name: r.class_name.name().to_string(),
                         confidence: f64::from(r.confidence),
                         bounding_box: crate::types::BoundingBox {
                             x0: f64::from(r.bbox.left),

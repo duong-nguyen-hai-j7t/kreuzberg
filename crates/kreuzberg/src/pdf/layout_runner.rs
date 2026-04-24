@@ -41,7 +41,7 @@ impl PdfLayoutBBox {
 /// A detected layout region mapped to PDF coordinate space.
 #[derive(Debug, Clone)]
 pub struct PageLayoutRegion {
-    pub class: LayoutClass,
+    pub class_name: LayoutClass,
     pub confidence: f32,
     pub bbox: PdfLayoutBBox,
 }
@@ -174,7 +174,7 @@ fn detection_to_page_result(
         .detections
         .iter()
         .map(|det| PageLayoutRegion {
-            class: det.class,
+            class_name: det.class_name,
             confidence: det.confidence,
             bbox: pixel_to_pdf_bbox(
                 &det.bbox,
@@ -640,11 +640,11 @@ mod tests {
         let result = detection_to_page_result(0, &detection, 612.0, 792.0);
         assert_eq!(result.page_index, 0);
         assert_eq!(result.regions.len(), 2);
-        assert_eq!(result.regions[0].class, LayoutClass::Title);
+        assert_eq!(result.regions[0].class_name, LayoutClass::Title);
         assert!((result.regions[0].confidence - 0.95).abs() < 0.001);
         // Title should be near the top of the page (high y)
         assert!(result.regions[0].bbox.top > 700.0);
-        assert_eq!(result.regions[1].class, LayoutClass::Text);
+        assert_eq!(result.regions[1].class_name, LayoutClass::Text);
         assert_eq!(result.render_width_px, 640);
         assert_eq!(result.render_height_px, 640);
     }

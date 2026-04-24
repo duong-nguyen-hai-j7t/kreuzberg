@@ -235,7 +235,7 @@ pub(crate) fn convert_results_to_hints(
                 .regions
                 .iter()
                 .map(|region| {
-                    let class = match region.class {
+                    let class = match region.class_name {
                         LayoutClass::Title => LayoutHintClass::Title,
                         LayoutClass::SectionHeader => LayoutHintClass::SectionHeader,
                         LayoutClass::Code => LayoutHintClass::Code,
@@ -251,7 +251,7 @@ pub(crate) fn convert_results_to_hints(
                         _ => LayoutHintClass::Other,
                     };
                     LayoutHint {
-                        class,
+                        class_name: class,
                         confidence: region.confidence,
                         left: region.bbox.left,
                         bottom: region.bbox.bottom,
@@ -264,7 +264,7 @@ pub(crate) fn convert_results_to_hints(
                 page = page_idx,
                 table_hints = hints
                     .iter()
-                    .filter(|h| matches!(h.class, LayoutHintClass::Table))
+                    .filter(|h| matches!(h.class_name, LayoutHintClass::Table))
                     .count(),
                 "Layout hints for page"
             );

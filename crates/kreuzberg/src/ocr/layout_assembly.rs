@@ -36,7 +36,7 @@ pub(crate) fn recognize_page_tables(
     let mut tables = Vec::new();
 
     for det in &detection.detections {
-        if det.class != LayoutClass::Table || det.confidence < MIN_CONFIDENCE {
+        if det.class_name != LayoutClass::Table || det.confidence < MIN_CONFIDENCE {
             continue;
         }
 

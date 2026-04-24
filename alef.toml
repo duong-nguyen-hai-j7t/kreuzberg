@@ -677,15 +677,15 @@ methods = [
     "StreamReader.read_u16",
     "StreamReader.read_u32",
     "StreamReader.push",
-    "StringGrowthValidator.check_append",
-    "IterationValidator.check_iteration",
-    "DepthValidator.push",
-    "TableValidator.add_cells",
 
     # fmt trait impls — not callable from bindings
     "BBox.fmt",
     "LayoutDetection.fmt",
     "PooledString.fmt",
+
+    # Deprecated Rust-only aliases — excluded from bindings
+    "LayoutDetection.class",
+    "LayoutRegion.class",
 ]
 
 # ---------------------------------------------------------------------------
@@ -768,10 +768,6 @@ exclude_functions = [
 exclude_types = [
     # Opaque Arc<Mutex<T>> types — codegen doesn't generate .lock() calls for methods
     "StreamReader",
-    "StringGrowthValidator",
-    "IterationValidator",
-    "DepthValidator",
-    "TableValidator",
     "PooledString",
 ]
 

@@ -1213,7 +1213,7 @@ fn detection_to_layout_hints(
         .detections
         .iter()
         .map(|det| {
-            let class = match det.class {
+            let class = match det.class_name {
                 LayoutClass::Title => LayoutHintClass::Title,
                 LayoutClass::SectionHeader => LayoutHintClass::SectionHeader,
                 LayoutClass::Code => LayoutHintClass::Code,
@@ -1229,7 +1229,7 @@ fn detection_to_layout_hints(
                 _ => LayoutHintClass::Other,
             };
             LayoutHint {
-                class,
+                class_name: class,
                 confidence: det.confidence,
                 left: det.bbox.x1,
                 right: det.bbox.x2,

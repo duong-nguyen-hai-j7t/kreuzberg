@@ -10,7 +10,7 @@ categories = ["text-processing"]
 
 [lib]
 name = "kreuzberg_rb"
-path = "../../../../../crates/kreuzberg-rb/src/lib.rs"
+path = "../src/lib.rs"
 crate-type = ["cdylib"]
 
 [dependencies]

@@ -45,7 +45,6 @@ typedef struct KREUZBERGCsvMetadata KREUZBERGCsvMetadata;
 typedef struct KREUZBERGCustomProperties KREUZBERGCustomProperties;
 typedef struct KREUZBERGDbfFieldInfo KREUZBERGDbfFieldInfo;
 typedef struct KREUZBERGDbfMetadata KREUZBERGDbfMetadata;
-typedef struct KREUZBERGDepthValidator KREUZBERGDepthValidator;
 typedef struct KREUZBERGDetectMimeTypeParams KREUZBERGDetectMimeTypeParams;
 typedef struct KREUZBERGDetectResponse KREUZBERGDetectResponse;
 typedef struct KREUZBERGDetectedBoundary KREUZBERGDetectedBoundary;
@@ -73,7 +72,6 @@ typedef struct KREUZBERGEmbedTextParams KREUZBERGEmbedTextParams;
 typedef struct KREUZBERGEmbeddedFile KREUZBERGEmbeddedFile;
 typedef struct KREUZBERGEmbeddingConfig KREUZBERGEmbeddingConfig;
 typedef struct KREUZBERGEmbeddingModelType KREUZBERGEmbeddingModelType;
-typedef struct KREUZBERGEntityValidator KREUZBERGEntityValidator;
 typedef struct KREUZBERGEpubMetadata KREUZBERGEpubMetadata;
 typedef struct KREUZBERGErrorMetadata KREUZBERGErrorMetadata;
 typedef struct KREUZBERGExcelMetadata KREUZBERGExcelMetadata;
@@ -115,7 +113,6 @@ typedef struct KREUZBERGImageType KREUZBERGImageType;
 typedef struct KREUZBERGInfoResponse KREUZBERGInfoResponse;
 typedef struct KREUZBERGInlineElement KREUZBERGInlineElement;
 typedef struct KREUZBERGInlineType KREUZBERGInlineType;
-typedef struct KREUZBERGIterationValidator KREUZBERGIterationValidator;
 typedef struct KREUZBERGJatsMetadata KREUZBERGJatsMetadata;
 typedef struct KREUZBERGKeyword KREUZBERGKeyword;
 typedef struct KREUZBERGKeywordAlgorithm KREUZBERGKeywordAlgorithm;
@@ -194,7 +191,6 @@ typedef struct KREUZBERGResolvedStyle KREUZBERGResolvedStyle;
 typedef struct KREUZBERGServerConfig KREUZBERGServerConfig;
 typedef struct KREUZBERGStreamReader KREUZBERGStreamReader;
 typedef struct KREUZBERGStringBufferPool KREUZBERGStringBufferPool;
-typedef struct KREUZBERGStringGrowthValidator KREUZBERGStringGrowthValidator;
 typedef struct KREUZBERGStructuredData KREUZBERGStructuredData;
 typedef struct KREUZBERGStructuredDataResult KREUZBERGStructuredDataResult;
 typedef struct KREUZBERGStructuredDataType KREUZBERGStructuredDataType;
@@ -205,7 +201,6 @@ typedef struct KREUZBERGSupportedFormat KREUZBERGSupportedFormat;
 typedef struct KREUZBERGSyncExtractor KREUZBERGSyncExtractor;
 typedef struct KREUZBERGTableModel KREUZBERGTableModel;
 typedef struct KREUZBERGTableProperties KREUZBERGTableProperties;
-typedef struct KREUZBERGTableValidator KREUZBERGTableValidator;
 typedef struct KREUZBERGTessdataManager KREUZBERGTessdataManager;
 typedef struct KREUZBERGTesseractConfig KREUZBERGTesseractConfig;
 typedef struct KREUZBERGTextAnnotation KREUZBERGTextAnnotation;
@@ -3772,41 +3767,6 @@ int32_t kreuzberg_odt_properties_image_count(const KREUZBERGOdtProperties *ptr);
  * Pointer must have been returned by this library, or be null.
  */
 void kreuzberg_zip_bomb_validator_free(KREUZBERGZipBombValidator *ptr);
-
-/**
- * Free a `StringGrowthValidator` handle.
- * # Safety
- * Pointer must have been returned by this library, or be null.
- */
-void kreuzberg_string_growth_validator_free(KREUZBERGStringGrowthValidator *ptr);
-
-/**
- * Free a `IterationValidator` handle.
- * # Safety
- * Pointer must have been returned by this library, or be null.
- */
-void kreuzberg_iteration_validator_free(KREUZBERGIterationValidator *ptr);
-
-/**
- * Free a `DepthValidator` handle.
- * # Safety
- * Pointer must have been returned by this library, or be null.
- */
-void kreuzberg_depth_validator_free(KREUZBERGDepthValidator *ptr);
-
-/**
- * Free a `EntityValidator` handle.
- * # Safety
- * Pointer must have been returned by this library, or be null.
- */
-void kreuzberg_entity_validator_free(KREUZBERGEntityValidator *ptr);
-
-/**
- * Free a `TableValidator` handle.
- * # Safety
- * Pointer must have been returned by this library, or be null.
- */
-void kreuzberg_table_validator_free(KREUZBERGTableValidator *ptr);
 
 /**
  * Create a `TokenReductionConfig` from a JSON string. Returns null on failure.
@@ -8119,11 +8079,11 @@ char *kreuzberg_layout_region_to_json(const KREUZBERGLayoutRegion *ptr);
 void kreuzberg_layout_region_free(KREUZBERGLayoutRegion *ptr);
 
 /**
- * Get the `class` field from a `LayoutRegion`.
+ * Get the `class_name` field from a `LayoutRegion`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-char *kreuzberg_layout_region_class(const KREUZBERGLayoutRegion *ptr);
+char *kreuzberg_layout_region_class_name(const KREUZBERGLayoutRegion *ptr);
 
 /**
  * Get the `confidence` field from a `LayoutRegion`.
@@ -9971,11 +9931,11 @@ char *kreuzberg_layout_detection_to_json(const KREUZBERGLayoutDetection *ptr);
 void kreuzberg_layout_detection_free(KREUZBERGLayoutDetection *ptr);
 
 /**
- * Get the `class` field from a `LayoutDetection`.
+ * Get the `class_name` field from a `LayoutDetection`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-KREUZBERGLayoutClass *kreuzberg_layout_detection_class(const KREUZBERGLayoutDetection *ptr);
+KREUZBERGLayoutClass *kreuzberg_layout_detection_class_name(const KREUZBERGLayoutDetection *ptr);
 
 /**
  * Get the `confidence` field from a `LayoutDetection`.
@@ -12382,6 +12342,19 @@ KREUZBERGByteBufferPool *kreuzberg_create_byte_buffer_pool(uintptr_t pool_size,
  * Returned pointers must be freed with the appropriate free function.
  */
 char *kreuzberg_openapi_json(void);
+
+/**
+ * Start the API server with default host and port.
+ *
+ * Defaults: host = "127.0.0.1", port = 8000
+ *
+ * Uses config file discovery (searches current/parent directories for kreuzberg.toml/yaml/json).
+ * Validates plugins at startup to help diagnose configuration issues.
+ * # Safety
+ * Caller must ensure all pointer arguments are valid or null.
+ * Returned pointers must be freed with the appropriate free function.
+ */
+int32_t kreuzberg_serve_default(void);
 
 /**
  * L2-normalize a vector.

@@ -97,7 +97,7 @@ fn apply_spatial_overrides(
         if let Some((hint, containment)) = best_2d {
             tracing::trace!(
                 para_idx,
-                hint_class = ?hint.class,
+                hint_class = ?hint.class_name,
                 containment,
                 "spatial hint match"
             );
@@ -172,7 +172,7 @@ fn apply_proportional_overrides(paragraphs: &mut [PdfParagraph], hints: &[Layout
             let para_span = para_end - para_start;
             let overlap_frac = if para_span > 0.0 { overlap / para_span } else { 0.0 };
 
-            match hint.class {
+            match hint.class_name {
                 LayoutHintClass::PageHeader if i == 0 && overlap_frac > 0.25 => {
                     apply_hint_to_paragraph(para, hint, None);
                 }
@@ -195,9 +195,9 @@ fn apply_proportional_overrides(paragraphs: &mut [PdfParagraph], hints: &[Layout
                     };
                     let word_count = text.split_whitespace().count();
                     if word_count <= super::constants::MAX_HEADING_WORD_COUNT && !is_separator_text(&text) {
-                        let level = infer_heading_level_from_text(&text, hint.class);
+                        let level = infer_heading_level_from_text(&text, hint.class_name);
                         para.heading_level = Some(level);
-                        para.layout_class = Some(hint.class);
+                        para.layout_class = Some(hint.class_name);
                     }
                 }
                 _ => {}
@@ -289,13 +289,13 @@ pub(super) fn infer_heading_level_from_text(text: &str, hint_class: LayoutHintCl
 /// false positive from the layout model).
 pub(super) fn apply_hint_to_paragraph(para: &mut PdfParagraph, hint: &LayoutHint, body_font_size: Option<f32>) {
     tracing::debug!(
-        hint_class = ?hint.class,
+        hint_class = ?hint.class_name,
         confidence = hint.confidence,
         old_heading = ?para.heading_level,
         "applying layout hint"
     );
 
-    para.layout_class = Some(hint.class);
+    para.layout_class = Some(hint.class_name);
 
     // Get text from full-text path or segment path.
     let para_text: String = if !para.text.is_empty() {
@@ -311,7 +311,7 @@ pub(super) fn apply_hint_to_paragraph(para: &mut PdfParagraph, hint: &LayoutHint
     let word_count = para_text.split_whitespace().count();
     let is_sep = is_separator_text(&para_text);
 
-    match hint.class {
+    match hint.class_name {
         LayoutHintClass::Title
             if !is_sep
                 && (para.heading_level.is_none() || hint.confidence >= 0.7)
@@ -332,7 +332,7 @@ pub(super) fn apply_hint_to_paragraph(para: &mut PdfParagraph, hint: &LayoutHint
                     } else {
                         para.lines.iter().all(|l| l.is_monospace)
                     };
-                    let text_level = infer_heading_level_from_text(&para_text, hint.class);
+                    let text_level = infer_heading_level_from_text(&para_text, hint.class_name);
                     // Guard: block unnumbered text near body font size (within
                     // body-1.5pt to body+0.5pt). The layout model often misclassifies
                     // bold body text as SectionHeader. Headings well below body size
@@ -390,7 +390,7 @@ pub(super) fn apply_hint_to_paragraph(para: &mut PdfParagraph, hint: &LayoutHint
             // Demote font-size-classified headings when layout has high confidence.
             if para.heading_level.is_some() && hint.confidence >= 0.7 => {
                 tracing::trace!(
-                    ?hint.class,
+                    hint_class = ?hint.class_name,
                     hint_confidence = hint.confidence,
                     old_heading_level = ?para.heading_level,
                     "Demoting heading: layout model classifies as body text"
@@ -510,7 +510,7 @@ mod tests {
 
     fn make_hint(class: LayoutHintClass, confidence: f32, left: f32, bottom: f32, right: f32, top: f32) -> LayoutHint {
         LayoutHint {
-            class,
+            class_name: class,
             confidence,
             left,
             bottom,
