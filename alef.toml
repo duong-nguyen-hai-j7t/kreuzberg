@@ -803,6 +803,9 @@ exclude_functions = [
     # not Send, causing tokio::task::spawn_blocking to reject it. Requires alef source fixes.
     "register_ocr_backend",
     "unregister_ocr_backend",
+    # Returns *mut u8 (raw byte buffer) — no kreuzberg_free_bytes FFI function exists to free
+    # the allocation, and kreuzberg_free_string(*char) is type-incompatible with *uint8_t.
+    "render_pdf_page_to_png",
 ]
 
 [go]

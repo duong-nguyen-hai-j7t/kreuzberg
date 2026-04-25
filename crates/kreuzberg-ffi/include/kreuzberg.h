@@ -12514,36 +12514,6 @@ char *kreuzberg_extract_keywords(const char *text,
 char *kreuzberg_compute_hash(const char *data);
 
 /**
- * Render a single PDF page to a PNG-encoded byte buffer.
- *
- * # Errors
- *
- * Returns an error if the PDF is invalid, the page index is out of bounds,
- * or if the page fails to render.
- *
- * # Example
- *
- * ```rust,no_run
- * use kreuzberg::pdf::render_pdf_page_to_png;
- *
- * # fn example() -> kreuzberg::pdf::error::Result<()> {
- * let pdf_bytes = std::fs::read("document.pdf")?;
- * let png = render_pdf_page_to_png(&pdf_bytes, 0, Some(150), None)?;
- * std::fs::write("page_0.png", png)?;
- * # Ok(())
- * # }
- * ```
- * # Safety
- * Caller must ensure all pointer arguments are valid or null.
- * Returned pointers must be freed with the appropriate free function.
- */
-uint8_t *kreuzberg_render_pdf_page_to_png(const uint8_t *pdf_bytes,
-                                          uintptr_t pdf_bytes_len,
-                                          uintptr_t page_index,
-                                          int32_t dpi,
-                                          const char *password);
-
-/**
  * # Safety
  * Caller must ensure all pointer arguments are valid or null.
  * Returned pointers must be freed with the appropriate free function.
