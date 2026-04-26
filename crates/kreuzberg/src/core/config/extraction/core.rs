@@ -159,9 +159,11 @@ pub struct ExtractionConfig {
     /// Security limits for archive extraction.
     ///
     /// Controls maximum archive size, compression ratio, file count, and other
-    /// security thresholds to prevent decompression bomb attacks.
-    /// When `None`, default limits are used (500MB archive, 100:1 ratio, 10K files).
-    #[cfg(feature = "archives")]
+    /// security thresholds to prevent decompression bomb attacks. Also caps
+    /// nesting depth, iteration count, entity / token length, cumulative
+    /// content size, and table cell count for every extraction path that
+    /// ingests user-controlled bytes.
+    /// When `None`, default limits are used.
     #[serde(default)]
     pub security_limits: Option<crate::extractors::security::SecurityLimits>,
 
@@ -300,7 +302,6 @@ impl Default for ExtractionConfig {
             html_output: None,
             extraction_timeout_secs: None,
             max_concurrent_extractions: None,
-            #[cfg(feature = "archives")]
             security_limits: None,
             #[cfg(feature = "layout-detection")]
             layout: None,

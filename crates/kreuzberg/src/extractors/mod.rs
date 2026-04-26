@@ -75,9 +75,8 @@ pub mod frontmatter_utils;
 pub(crate) mod annotation_utils;
 pub(crate) mod markdown_utils;
 
-#[cfg(feature = "archives")]
 pub mod security;
-#[cfg(all(feature = "archives", test))]
+#[cfg(test)]
 mod security_tests;
 
 #[cfg(any(feature = "ocr", feature = "ocr-wasm"))]
