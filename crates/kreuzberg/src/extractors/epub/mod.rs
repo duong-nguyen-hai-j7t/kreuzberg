@@ -607,9 +607,15 @@ impl DocumentExtractor for EpubExtractor {
 
         // Build InternalDocument from spine chapters
         let cover_image_path = package.metadata.cover_image_href.as_deref();
-        let mut doc =
-            Self::build_internal_document(&mut archive, &spine_hrefs, &manifest_dir, &nav_hrefs, cover_image_path, &mut budget)
-                .unwrap_or_else(|| InternalDocumentBuilder::new("epub").build());
+        let mut doc = Self::build_internal_document(
+            &mut archive,
+            &spine_hrefs,
+            &manifest_dir,
+            &nav_hrefs,
+            cover_image_path,
+            &mut budget,
+        )
+        .unwrap_or_else(|| InternalDocumentBuilder::new("epub").build());
         doc.mime_type = Cow::Owned(mime_type.to_string());
 
         doc.metadata = Metadata {

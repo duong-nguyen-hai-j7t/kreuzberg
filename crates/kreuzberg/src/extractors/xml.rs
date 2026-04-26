@@ -20,11 +20,7 @@ use async_trait::async_trait;
 /// `budget` enforces hostile-input limits (XML depth, iteration count, entity
 /// length, cumulative content size). Any limit violation is converted into a
 /// `KreuzbergError::Security` via the `?` operator at call-site.
-fn build_internal_document(
-    content: &[u8],
-    mime_type: &str,
-    budget: &mut SecurityBudget,
-) -> Result<InternalDocument> {
+fn build_internal_document(content: &[u8], mime_type: &str, budget: &mut SecurityBudget) -> Result<InternalDocument> {
     use quick_xml::Reader;
     use quick_xml::events::Event;
     use std::borrow::Cow;
@@ -188,13 +184,12 @@ impl Plugin for XmlExtractor {
 impl SyncExtractor for XmlExtractor {
     fn extract_sync(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
         let default_limits;
-        let limits: &crate::extractors::security::SecurityLimits =
-            if let Some(ref l) = config.security_limits {
-                l
-            } else {
-                default_limits = crate::extractors::security::SecurityLimits::default();
-                &default_limits
-            };
+        let limits: &crate::extractors::security::SecurityLimits = if let Some(ref l) = config.security_limits {
+            l
+        } else {
+            default_limits = crate::extractors::security::SecurityLimits::default();
+            &default_limits
+        };
         let xml_result = if mime_type == "image/svg+xml" {
             parse_xml_svg(content, false, limits)?
         } else {

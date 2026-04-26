@@ -59,7 +59,11 @@ impl PptxExtractor {
         }
     }
 
-    fn build_internal_document(content: &str, slide_count: u32, budget: &mut SecurityBudget) -> Result<InternalDocument> {
+    fn build_internal_document(
+        content: &str,
+        slide_count: u32,
+        budget: &mut SecurityBudget,
+    ) -> Result<InternalDocument> {
         let mut builder = InternalDocumentBuilder::new("pptx");
         let mut slide_num: u32 = 0;
         let mut in_notes = false;

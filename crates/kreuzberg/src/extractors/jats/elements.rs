@@ -56,14 +56,12 @@ pub(super) fn extract_jats_all_in_one(content: &str) -> Result<(JatsMetadataExtr
 
                 match tag.as_str() {
                     "article" => {
-                        for attr in e.attributes() {
-                            if let Ok(attr) = attr {
-                                let key = String::from_utf8_lossy(attr.key.as_ref());
-                                let val = String::from_utf8_lossy(attr.value.as_ref());
-                                budget.check_attr(&key, &val)?;
-                                if key == "article-type" {
-                                    metadata.article_type = Some(val.to_string());
-                                }
+                        for attr in e.attributes().flatten() {
+                            let key = String::from_utf8_lossy(attr.key.as_ref());
+                            let val = String::from_utf8_lossy(attr.value.as_ref());
+                            budget.check_attr(&key, &val)?;
+                            if key == "article-type" {
+                                metadata.article_type = Some(val.to_string());
                             }
                         }
                     }
@@ -81,14 +79,12 @@ pub(super) fn extract_jats_all_in_one(content: &str) -> Result<(JatsMetadataExtr
                         current_author.clear();
                         current_contrib_type.clear();
                         // Extract contrib-type attribute
-                        for attr in e.attributes() {
-                            if let Ok(attr) = attr {
-                                let key = String::from_utf8_lossy(attr.key.as_ref());
-                                let val = String::from_utf8_lossy(attr.value.as_ref());
-                                budget.check_attr(&key, &val)?;
-                                if key == "contrib-type" {
-                                    current_contrib_type = val.to_string();
-                                }
+                        for attr in e.attributes().flatten() {
+                            let key = String::from_utf8_lossy(attr.key.as_ref());
+                            let val = String::from_utf8_lossy(attr.value.as_ref());
+                            budget.check_attr(&key, &val)?;
+                            if key == "contrib-type" {
+                                current_contrib_type = val.to_string();
                             }
                         }
                     }
@@ -101,14 +97,12 @@ pub(super) fn extract_jats_all_in_one(content: &str) -> Result<(JatsMetadataExtr
                     }
                     "article-id" if in_article_meta => {
                         let mut id_type = String::new();
-                        for attr in e.attributes() {
-                            if let Ok(attr) = attr {
-                                let key = String::from_utf8_lossy(attr.key.as_ref());
-                                let val = String::from_utf8_lossy(attr.value.as_ref());
-                                budget.check_attr(&key, &val)?;
-                                if key == "pub-id-type" {
-                                    id_type = val.to_string();
-                                }
+                        for attr in e.attributes().flatten() {
+                            let key = String::from_utf8_lossy(attr.key.as_ref());
+                            let val = String::from_utf8_lossy(attr.value.as_ref());
+                            budget.check_attr(&key, &val)?;
+                            if key == "pub-id-type" {
+                                id_type = val.to_string();
                             }
                         }
 
@@ -175,14 +169,12 @@ pub(super) fn extract_jats_all_in_one(content: &str) -> Result<(JatsMetadataExtr
                     "date" if in_history => {
                         // Extract date-type attribute
                         let mut date_type = String::new();
-                        for attr in e.attributes() {
-                            if let Ok(attr) = attr {
-                                let key = String::from_utf8_lossy(attr.key.as_ref());
-                                let val = String::from_utf8_lossy(attr.value.as_ref());
-                                budget.check_attr(&key, &val)?;
-                                if key == "date-type" {
-                                    date_type = val.to_string();
-                                }
+                        for attr in e.attributes().flatten() {
+                            let key = String::from_utf8_lossy(attr.key.as_ref());
+                            let val = String::from_utf8_lossy(attr.value.as_ref());
+                            budget.check_attr(&key, &val)?;
+                            if key == "date-type" {
+                                date_type = val.to_string();
                             }
                         }
                         let date_text = extract_text_content(&mut reader, &mut budget)?;

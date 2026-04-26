@@ -9,8 +9,8 @@
 //! - Removed file-path based APIs (we only need bytes/reader)
 //! - Added markdown rendering and formatting support (fixes #376)
 
-use ahash::AHashMap;
 use crate::extractors::security::{SecurityBudget, SecurityError};
+use ahash::AHashMap;
 use serde::{Deserialize, Serialize};
 use std::io::{Cursor, Read, Seek};
 
@@ -1338,170 +1338,170 @@ impl<R: Read + Seek> DocxParser<R> {
                 Ok(Event::Start(ref e)) => {
                     budget.enter()?;
                     match e.name().as_ref() as &[u8] {
-                    b"w:p" => {
-                        if let Some(ctx) = table_stack.last_mut() {
-                            ctx.paragraph = Some(Paragraph::new());
-                        } else {
-                            current_paragraph = Some(Paragraph::new());
-                        }
-                    }
-                    b"w:r" => {
-                        let mut run = Run::default();
-                        if let Some(ref url) = current_hyperlink_url {
-                            run.hyperlink_url = Some(url.clone());
-                        }
-                        current_run = Some(run);
-                    }
-                    b"w:t" if !in_field_instruction => {
-                        in_text = true;
-                    }
-                    b"w:fldChar" => {
-                        for attr in e.attributes().flatten() {
-                            if attr.key.as_ref() == b"w:fldCharType" {
-                                match attr.value.as_ref() as &[u8] {
-                                    b"begin" => in_field_instruction = true,
-                                    b"separate" | b"end" => in_field_instruction = false,
-                                    _ => {}
-                                }
-                            }
-                        }
-                    }
-                    b"w:instrText" => {
-                        // Skip field instruction text
-                    }
-                    // OMML display math — delegate to math.rs
-                    b"m:oMathPara" => {
-                        let latex = super::math::collect_and_convert_omath_para(&mut reader, budget)?;
-                        if !latex.is_empty() {
-                            let run = Run {
-                                math_latex: Some((latex, true)),
-                                ..Default::default()
-                            };
+                        b"w:p" => {
                             if let Some(ctx) = table_stack.last_mut() {
-                                if let Some(ref mut para) = ctx.paragraph {
-                                    para.add_run(run);
-                                } else if let Some(ref mut cell) = ctx.current_cell {
-                                    if cell.paragraphs.is_empty() {
-                                        cell.paragraphs.push(Paragraph::new());
-                                    }
-                                    if let Some(para) = cell.paragraphs.last_mut() {
-                                        para.add_run(run);
-                                    }
-                                }
-                            } else if let Some(ref mut para) = current_paragraph {
-                                para.add_run(run);
+                                ctx.paragraph = Some(Paragraph::new());
+                            } else {
+                                current_paragraph = Some(Paragraph::new());
                             }
                         }
-                    }
-                    // OMML inline math — delegate to math.rs
-                    b"m:oMath" => {
-                        let latex = super::math::collect_and_convert_omath(&mut reader, budget)?;
-                        if !latex.is_empty() {
-                            let run = Run {
-                                math_latex: Some((latex, false)),
-                                ..Default::default()
-                            };
+                        b"w:r" => {
+                            let mut run = Run::default();
+                            if let Some(ref url) = current_hyperlink_url {
+                                run.hyperlink_url = Some(url.clone());
+                            }
+                            current_run = Some(run);
+                        }
+                        b"w:t" if !in_field_instruction => {
+                            in_text = true;
+                        }
+                        b"w:fldChar" => {
+                            for attr in e.attributes().flatten() {
+                                if attr.key.as_ref() == b"w:fldCharType" {
+                                    match attr.value.as_ref() as &[u8] {
+                                        b"begin" => in_field_instruction = true,
+                                        b"separate" | b"end" => in_field_instruction = false,
+                                        _ => {}
+                                    }
+                                }
+                            }
+                        }
+                        b"w:instrText" => {
+                            // Skip field instruction text
+                        }
+                        // OMML display math — delegate to math.rs
+                        b"m:oMathPara" => {
+                            let latex = super::math::collect_and_convert_omath_para(&mut reader, budget)?;
+                            if !latex.is_empty() {
+                                let run = Run {
+                                    math_latex: Some((latex, true)),
+                                    ..Default::default()
+                                };
+                                if let Some(ctx) = table_stack.last_mut() {
+                                    if let Some(ref mut para) = ctx.paragraph {
+                                        para.add_run(run);
+                                    } else if let Some(ref mut cell) = ctx.current_cell {
+                                        if cell.paragraphs.is_empty() {
+                                            cell.paragraphs.push(Paragraph::new());
+                                        }
+                                        if let Some(para) = cell.paragraphs.last_mut() {
+                                            para.add_run(run);
+                                        }
+                                    }
+                                } else if let Some(ref mut para) = current_paragraph {
+                                    para.add_run(run);
+                                }
+                            }
+                        }
+                        // OMML inline math — delegate to math.rs
+                        b"m:oMath" => {
+                            let latex = super::math::collect_and_convert_omath(&mut reader, budget)?;
+                            if !latex.is_empty() {
+                                let run = Run {
+                                    math_latex: Some((latex, false)),
+                                    ..Default::default()
+                                };
+                                if let Some(ctx) = table_stack.last_mut() {
+                                    if let Some(ref mut para) = ctx.paragraph {
+                                        para.add_run(run);
+                                    } else if let Some(ref mut cell) = ctx.current_cell {
+                                        if cell.paragraphs.is_empty() {
+                                            cell.paragraphs.push(Paragraph::new());
+                                        }
+                                        if let Some(para) = cell.paragraphs.last_mut() {
+                                            para.add_run(run);
+                                        }
+                                    }
+                                } else if let Some(ref mut para) = current_paragraph {
+                                    para.add_run(run);
+                                }
+                            }
+                        }
+                        b"w:tbl" => {
+                            table_stack.push(TableContext::new());
+                        }
+                        b"w:tblPr" => {
                             if let Some(ctx) = table_stack.last_mut() {
-                                if let Some(ref mut para) = ctx.paragraph {
-                                    para.add_run(run);
-                                } else if let Some(ref mut cell) = ctx.current_cell {
-                                    if cell.paragraphs.is_empty() {
-                                        cell.paragraphs.push(Paragraph::new());
-                                    }
-                                    if let Some(para) = cell.paragraphs.last_mut() {
-                                        para.add_run(run);
-                                    }
-                                }
-                            } else if let Some(ref mut para) = current_paragraph {
-                                para.add_run(run);
+                                ctx.table.properties = Some(super::table::parse_table_properties(&mut reader));
                             }
                         }
-                    }
-                    b"w:tbl" => {
-                        table_stack.push(TableContext::new());
-                    }
-                    b"w:tblPr" => {
-                        if let Some(ctx) = table_stack.last_mut() {
-                            ctx.table.properties = Some(super::table::parse_table_properties(&mut reader));
+                        b"w:tblGrid" => {
+                            if let Some(ctx) = table_stack.last_mut() {
+                                ctx.table.grid = Some(super::table::parse_table_grid(&mut reader));
+                            }
                         }
-                    }
-                    b"w:tblGrid" => {
-                        if let Some(ctx) = table_stack.last_mut() {
-                            ctx.table.grid = Some(super::table::parse_table_grid(&mut reader));
+                        b"w:tr" => {
+                            if let Some(ctx) = table_stack.last_mut() {
+                                ctx.current_row = Some(TableRow::default());
+                            }
                         }
-                    }
-                    b"w:tr" => {
-                        if let Some(ctx) = table_stack.last_mut() {
-                            ctx.current_row = Some(TableRow::default());
-                        }
-                    }
-                    b"w:trPr" => {
-                        if let Some(ctx) = table_stack.last_mut()
-                            && let Some(ref mut row) = ctx.current_row
-                        {
-                            row.properties = Some(super::table::parse_row_properties(&mut reader));
-                        }
-                    }
-                    b"w:tc" => {
-                        if let Some(ctx) = table_stack.last_mut() {
-                            ctx.current_cell = Some(TableCell::default());
-                        }
-                    }
-                    b"w:tcPr" => {
-                        if let Some(ctx) = table_stack.last_mut()
-                            && let Some(ref mut cell) = ctx.current_cell
-                        {
-                            cell.properties = Some(super::table::parse_cell_properties(&mut reader));
-                        }
-                    }
-                    b"w:b" | b"w:i" | b"w:u" | b"w:strike" | b"w:dstrike" | b"w:vertAlign" | b"w:sz" | b"w:color"
-                    | b"w:highlight" => {
-                        apply_run_formatting(e, &mut current_run);
-                    }
-                    b"w:pStyle" | b"w:ilvl" | b"w:numId" => {
-                        apply_paragraph_property(e, &mut table_stack, &mut current_paragraph);
-                    }
-                    b"w:hyperlink" => {
-                        for attr in e.attributes().flatten() {
-                            if attr.key.as_ref() == b"r:id"
-                                && let Ok(rid) = std::str::from_utf8(&attr.value)
+                        b"w:trPr" => {
+                            if let Some(ctx) = table_stack.last_mut()
+                                && let Some(ref mut row) = ctx.current_row
                             {
-                                current_hyperlink_url = self.relationships.get(rid).cloned();
+                                row.properties = Some(super::table::parse_row_properties(&mut reader));
                             }
                         }
-                    }
-                    b"w:drawing" => {
-                        let drawing = super::drawing::parse_drawing(&mut reader);
-                        let idx = document.drawings.len();
-                        document.drawings.push(drawing);
-                        document.elements.push(DocumentElement::Drawing(idx));
-                    }
-                    // Line break (when not self-closing) or Page break
-                    b"w:br" => {
-                        let mut is_page_break = false;
-                        for attr in e.attributes().flatten() {
-                            if attr.key.as_ref() == b"w:type" && attr.value.as_ref() == b"page" {
-                                is_page_break = true;
-                                break;
+                        b"w:tc" => {
+                            if let Some(ctx) = table_stack.last_mut() {
+                                ctx.current_cell = Some(TableCell::default());
                             }
                         }
+                        b"w:tcPr" => {
+                            if let Some(ctx) = table_stack.last_mut()
+                                && let Some(ref mut cell) = ctx.current_cell
+                            {
+                                cell.properties = Some(super::table::parse_cell_properties(&mut reader));
+                            }
+                        }
+                        b"w:b" | b"w:i" | b"w:u" | b"w:strike" | b"w:dstrike" | b"w:vertAlign" | b"w:sz"
+                        | b"w:color" | b"w:highlight" => {
+                            apply_run_formatting(e, &mut current_run);
+                        }
+                        b"w:pStyle" | b"w:ilvl" | b"w:numId" => {
+                            apply_paragraph_property(e, &mut table_stack, &mut current_paragraph);
+                        }
+                        b"w:hyperlink" => {
+                            for attr in e.attributes().flatten() {
+                                if attr.key.as_ref() == b"r:id"
+                                    && let Ok(rid) = std::str::from_utf8(&attr.value)
+                                {
+                                    current_hyperlink_url = self.relationships.get(rid).cloned();
+                                }
+                            }
+                        }
+                        b"w:drawing" => {
+                            let drawing = super::drawing::parse_drawing(&mut reader);
+                            let idx = document.drawings.len();
+                            document.drawings.push(drawing);
+                            document.elements.push(DocumentElement::Drawing(idx));
+                        }
+                        // Line break (when not self-closing) or Page break
+                        b"w:br" => {
+                            let mut is_page_break = false;
+                            for attr in e.attributes().flatten() {
+                                if attr.key.as_ref() == b"w:type" && attr.value.as_ref() == b"page" {
+                                    is_page_break = true;
+                                    break;
+                                }
+                            }
 
-                        if is_page_break && table_stack.is_empty() {
-                            document.elements.push(DocumentElement::PageBreak);
-                        } else if !is_page_break && let Some(ref mut run) = current_run {
-                            run.text.push('\n');
+                            if is_page_break && table_stack.is_empty() {
+                                document.elements.push(DocumentElement::PageBreak);
+                            } else if !is_page_break && let Some(ref mut run) = current_run {
+                                run.text.push('\n');
+                            }
                         }
+                        b"w:lastRenderedPageBreak" if table_stack.is_empty() => {
+                            document.elements.push(DocumentElement::PageBreak);
+                        }
+                        b"w:sectPr" => {
+                            let sect_props = super::section::parse_section_properties_streaming(&mut reader);
+                            document.sections.push(sect_props);
+                        }
+                        _ => {}
                     }
-                    b"w:lastRenderedPageBreak" if table_stack.is_empty() => {
-                        document.elements.push(DocumentElement::PageBreak);
-                    }
-                    b"w:sectPr" => {
-                        let sect_props = super::section::parse_section_properties_streaming(&mut reader);
-                        document.sections.push(sect_props);
-                    }
-                    _ => {}
-                    }
-                },
+                }
                 Ok(Event::Empty(ref e)) => match e.name().as_ref() as &[u8] {
                     b"w:fldChar" => {
                         for attr in e.attributes().flatten() {
@@ -1596,84 +1596,84 @@ impl<R: Read + Seek> DocxParser<R> {
                 Ok(Event::End(ref e)) => {
                     budget.leave();
                     match e.name().as_ref() as &[u8] {
-                    b"w:t" => {
-                        in_text = false;
-                    }
-                    b"w:r" => {
-                        if let Some(run) = current_run.take() {
-                            if let Some(ctx) = table_stack.last_mut() {
-                                if let Some(ref mut para) = ctx.paragraph {
-                                    para.add_run(run);
-                                } else if let Some(ref mut cell) = ctx.current_cell {
-                                    if cell.paragraphs.is_empty() {
-                                        cell.paragraphs.push(Paragraph::new());
-                                    }
-                                    if let Some(para) = cell.paragraphs.last_mut() {
+                        b"w:t" => {
+                            in_text = false;
+                        }
+                        b"w:r" => {
+                            if let Some(run) = current_run.take() {
+                                if let Some(ctx) = table_stack.last_mut() {
+                                    if let Some(ref mut para) = ctx.paragraph {
                                         para.add_run(run);
+                                    } else if let Some(ref mut cell) = ctx.current_cell {
+                                        if cell.paragraphs.is_empty() {
+                                            cell.paragraphs.push(Paragraph::new());
+                                        }
+                                        if let Some(para) = cell.paragraphs.last_mut() {
+                                            para.add_run(run);
+                                        }
                                     }
+                                } else if let Some(ref mut para) = current_paragraph {
+                                    para.add_run(run);
                                 }
-                            } else if let Some(ref mut para) = current_paragraph {
-                                para.add_run(run);
                             }
                         }
-                    }
-                    b"w:p" => {
-                        if let Some(ctx) = table_stack.last_mut() {
-                            if let Some(para) = ctx.paragraph.take()
-                                && let Some(ref mut cell) = ctx.current_cell
+                        b"w:p" => {
+                            if let Some(ctx) = table_stack.last_mut() {
+                                if let Some(para) = ctx.paragraph.take()
+                                    && let Some(ref mut cell) = ctx.current_cell
+                                {
+                                    cell.paragraphs.push(para);
+                                }
+                            } else if let Some(para) = current_paragraph.take() {
+                                let idx = document.paragraphs.len();
+                                document.paragraphs.push(para);
+                                document.elements.push(DocumentElement::Paragraph(idx));
+                            }
+                        }
+                        b"w:tc" => {
+                            if let Some(ctx) = table_stack.last_mut()
+                                && let Some(cell) = ctx.current_cell.take()
+                                && let Some(ref mut row) = ctx.current_row
                             {
-                                cell.paragraphs.push(para);
+                                budget.add_cells(1)?;
+                                row.cells.push(cell);
                             }
-                        } else if let Some(para) = current_paragraph.take() {
-                            let idx = document.paragraphs.len();
-                            document.paragraphs.push(para);
-                            document.elements.push(DocumentElement::Paragraph(idx));
                         }
-                    }
-                    b"w:tc" => {
-                        if let Some(ctx) = table_stack.last_mut()
-                            && let Some(cell) = ctx.current_cell.take()
-                            && let Some(ref mut row) = ctx.current_row
-                        {
-                            budget.add_cells(1)?;
-                            row.cells.push(cell);
+                        b"w:tr" => {
+                            if let Some(ctx) = table_stack.last_mut()
+                                && let Some(row) = ctx.current_row.take()
+                            {
+                                ctx.table.rows.push(row);
+                            }
                         }
-                    }
-                    b"w:tr" => {
-                        if let Some(ctx) = table_stack.last_mut()
-                            && let Some(row) = ctx.current_row.take()
-                        {
-                            ctx.table.rows.push(row);
-                        }
-                    }
-                    b"w:tbl" => {
-                        if let Some(completed_ctx) = table_stack.pop() {
-                            let completed_table = completed_ctx.table;
-                            if let Some(parent_ctx) = table_stack.last_mut() {
-                                // Nested table: flatten content into parent cell
-                                if let Some(ref mut cell) = parent_ctx.current_cell {
-                                    for row in completed_table.rows {
-                                        for table_cell in row.cells {
-                                            for para in table_cell.paragraphs {
-                                                cell.paragraphs.push(para);
+                        b"w:tbl" => {
+                            if let Some(completed_ctx) = table_stack.pop() {
+                                let completed_table = completed_ctx.table;
+                                if let Some(parent_ctx) = table_stack.last_mut() {
+                                    // Nested table: flatten content into parent cell
+                                    if let Some(ref mut cell) = parent_ctx.current_cell {
+                                        for row in completed_table.rows {
+                                            for table_cell in row.cells {
+                                                for para in table_cell.paragraphs {
+                                                    cell.paragraphs.push(para);
+                                                }
                                             }
                                         }
                                     }
+                                } else {
+                                    // Top-level table
+                                    let idx = document.tables.len();
+                                    document.tables.push(completed_table);
+                                    document.elements.push(DocumentElement::Table(idx));
                                 }
-                            } else {
-                                // Top-level table
-                                let idx = document.tables.len();
-                                document.tables.push(completed_table);
-                                document.elements.push(DocumentElement::Table(idx));
                             }
                         }
+                        b"w:hyperlink" => {
+                            current_hyperlink_url = None;
+                        }
+                        _ => {}
                     }
-                    b"w:hyperlink" => {
-                        current_hyperlink_url = None;
-                    }
-                    _ => {}
-                    }
-                },
+                }
                 Ok(Event::Eof) => break,
                 Err(e) => return Err(e.into()),
                 _ => {}
@@ -1707,50 +1707,52 @@ impl<R: Read + Seek> DocxParser<R> {
                 Ok(Event::Start(ref e)) => {
                     budget.enter()?;
                     match e.name().as_ref() as &[u8] {
-                    b"w:abstractNum" => {
-                        for attr in e.attributes().flatten() {
-                            if attr.key.as_ref() == b"w:abstractNumId"
-                                && let Ok(id_str) = std::str::from_utf8(&attr.value)
-                            {
-                                current_abstract_num_id = id_str.parse().ok();
+                        b"w:abstractNum" => {
+                            for attr in e.attributes().flatten() {
+                                if attr.key.as_ref() == b"w:abstractNumId"
+                                    && let Ok(id_str) = std::str::from_utf8(&attr.value)
+                                {
+                                    current_abstract_num_id = id_str.parse().ok();
+                                }
                             }
                         }
-                    }
-                    b"w:num" => {
-                        for attr in e.attributes().flatten() {
-                            if attr.key.as_ref() == b"w:numId"
-                                && let Ok(id_str) = std::str::from_utf8(&attr.value)
-                            {
-                                current_num_id = id_str.parse().ok();
+                        b"w:num" => {
+                            for attr in e.attributes().flatten() {
+                                if attr.key.as_ref() == b"w:numId"
+                                    && let Ok(id_str) = std::str::from_utf8(&attr.value)
+                                {
+                                    current_num_id = id_str.parse().ok();
+                                }
                             }
                         }
-                    }
-                    b"w:lvl" => {
-                        for attr in e.attributes().flatten() {
-                            if attr.key.as_ref() == b"w:ilvl"
-                                && let Ok(id_str) = std::str::from_utf8(&attr.value)
-                            {
-                                current_lvl = id_str.parse().ok();
+                        b"w:lvl" => {
+                            for attr in e.attributes().flatten() {
+                                if attr.key.as_ref() == b"w:ilvl"
+                                    && let Ok(id_str) = std::str::from_utf8(&attr.value)
+                                {
+                                    current_lvl = id_str.parse().ok();
+                                }
                             }
                         }
-                    }
-                    b"w:numFmt" => {
-                        if let (Some(abstract_id), Some(lvl)) = (current_abstract_num_id, current_lvl) {
-                            let fmt = get_val_attr_string(e);
-                            let list_type = match fmt.as_deref() {
-                                Some("decimal") | Some("decimalZero") | Some("lowerLetter") | Some("upperLetter")
-                                | Some("lowerRoman") | Some("upperRoman") => ListType::Numbered,
-                                _ => ListType::Bullet,
-                            };
-                            abstract_num_formats
-                                .entry(abstract_id)
-                                .or_default()
-                                .insert(lvl, list_type);
+                        b"w:numFmt" => {
+                            if let (Some(abstract_id), Some(lvl)) = (current_abstract_num_id, current_lvl) {
+                                let fmt = get_val_attr_string(e);
+                                let list_type = match fmt.as_deref() {
+                                    Some("decimal") | Some("decimalZero") | Some("lowerLetter")
+                                    | Some("upperLetter") | Some("lowerRoman") | Some("upperRoman") => {
+                                        ListType::Numbered
+                                    }
+                                    _ => ListType::Bullet,
+                                };
+                                abstract_num_formats
+                                    .entry(abstract_id)
+                                    .or_default()
+                                    .insert(lvl, list_type);
+                            }
                         }
+                        _ => {}
                     }
-                    _ => {}
-                    }
-                },
+                }
                 Ok(Event::Empty(ref e)) => match e.name().as_ref() as &[u8] {
                     b"w:abstractNumId" => {
                         if let Some(num_id) = current_num_id
@@ -1778,19 +1780,19 @@ impl<R: Read + Seek> DocxParser<R> {
                 Ok(Event::End(ref e)) => {
                     budget.leave();
                     match e.name().as_ref() as &[u8] {
-                    b"w:abstractNum" => {
-                        current_abstract_num_id = None;
-                        current_lvl = None;
+                        b"w:abstractNum" => {
+                            current_abstract_num_id = None;
+                            current_lvl = None;
+                        }
+                        b"w:lvl" => {
+                            current_lvl = None;
+                        }
+                        b"w:num" => {
+                            current_num_id = None;
+                        }
+                        _ => {}
                     }
-                    b"w:lvl" => {
-                        current_lvl = None;
-                    }
-                    b"w:num" => {
-                        current_num_id = None;
-                    }
-                    _ => {}
-                    }
-                },
+                }
                 Ok(Event::Eof) => break,
                 _ => {}
             }
@@ -1853,16 +1855,16 @@ impl<R: Read + Seek> DocxParser<R> {
                 Ok(Event::Start(ref e)) => {
                     budget.enter()?;
                     match e.name().as_ref() as &[u8] {
-                    b"w:p" => current_paragraph = Some(Paragraph::new()),
-                    b"w:r" => current_run = Some(Run::default()),
-                    b"w:t" => in_text = true,
-                    b"w:b" | b"w:i" | b"w:u" | b"w:strike" | b"w:dstrike" | b"w:vertAlign" | b"w:sz" | b"w:color"
-                    | b"w:highlight" => {
-                        apply_run_formatting(e, &mut current_run);
+                        b"w:p" => current_paragraph = Some(Paragraph::new()),
+                        b"w:r" => current_run = Some(Run::default()),
+                        b"w:t" => in_text = true,
+                        b"w:b" | b"w:i" | b"w:u" | b"w:strike" | b"w:dstrike" | b"w:vertAlign" | b"w:sz"
+                        | b"w:color" | b"w:highlight" => {
+                            apply_run_formatting(e, &mut current_run);
+                        }
+                        _ => {}
                     }
-                    _ => {}
-                    }
-                },
+                }
                 Ok(Event::Empty(ref e)) => match e.name().as_ref() as &[u8] {
                     b"w:b" | b"w:i" | b"w:u" | b"w:strike" | b"w:dstrike" | b"w:vertAlign" | b"w:sz" | b"w:color"
                     | b"w:highlight" => {
@@ -1881,22 +1883,22 @@ impl<R: Read + Seek> DocxParser<R> {
                 Ok(Event::End(ref e)) => {
                     budget.leave();
                     match e.name().as_ref() as &[u8] {
-                    b"w:t" => in_text = false,
-                    b"w:r" => {
-                        if let Some(run) = current_run.take()
-                            && let Some(ref mut para) = current_paragraph
-                        {
-                            para.add_run(run);
+                        b"w:t" => in_text = false,
+                        b"w:r" => {
+                            if let Some(run) = current_run.take()
+                                && let Some(ref mut para) = current_paragraph
+                            {
+                                para.add_run(run);
+                            }
                         }
-                    }
-                    b"w:p" => {
-                        if let Some(para) = current_paragraph.take() {
-                            header_footer.paragraphs.push(para);
+                        b"w:p" => {
+                            if let Some(para) = current_paragraph.take() {
+                                header_footer.paragraphs.push(para);
+                            }
                         }
+                        _ => {}
                     }
-                    _ => {}
-                    }
-                },
+                }
                 Ok(Event::Eof) => break,
                 _ => {}
             }
@@ -1928,35 +1930,35 @@ impl<R: Read + Seek> DocxParser<R> {
                 Ok(Event::Start(ref e)) => {
                     budget.enter()?;
                     match e.name().as_ref() as &[u8] {
-                    b"w:footnote" | b"w:endnote" => {
-                        let mut id = String::new();
-                        for attr in e.attributes().flatten() {
-                            if attr.key.as_ref() == b"w:id" {
-                                id = String::from_utf8_lossy(&attr.value).to_string();
+                        b"w:footnote" | b"w:endnote" => {
+                            let mut id = String::new();
+                            for attr in e.attributes().flatten() {
+                                if attr.key.as_ref() == b"w:id" {
+                                    id = String::from_utf8_lossy(&attr.value).to_string();
+                                }
+                            }
+                            current_note = Some(Note {
+                                id,
+                                note_type,
+                                paragraphs: Vec::new(),
+                            });
+                        }
+                        b"w:p" => current_paragraph = Some(Paragraph::new()),
+                        b"w:r" => current_run = Some(Run::default()),
+                        b"w:t" => in_text = true,
+                        b"w:b" => {
+                            if let Some(ref mut run) = current_run {
+                                run.bold = is_format_enabled(e);
                             }
                         }
-                        current_note = Some(Note {
-                            id,
-                            note_type,
-                            paragraphs: Vec::new(),
-                        });
-                    }
-                    b"w:p" => current_paragraph = Some(Paragraph::new()),
-                    b"w:r" => current_run = Some(Run::default()),
-                    b"w:t" => in_text = true,
-                    b"w:b" => {
-                        if let Some(ref mut run) = current_run {
-                            run.bold = is_format_enabled(e);
+                        b"w:i" => {
+                            if let Some(ref mut run) = current_run {
+                                run.italic = is_format_enabled(e);
+                            }
                         }
+                        _ => {}
                     }
-                    b"w:i" => {
-                        if let Some(ref mut run) = current_run {
-                            run.italic = is_format_enabled(e);
-                        }
-                    }
-                    _ => {}
-                    }
-                },
+                }
                 Ok(Event::Empty(ref e)) => match e.name().as_ref() as &[u8] {
                     b"w:b" => {
                         if let Some(ref mut run) = current_run {
@@ -1981,34 +1983,34 @@ impl<R: Read + Seek> DocxParser<R> {
                 Ok(Event::End(ref e)) => {
                     budget.leave();
                     match e.name().as_ref() as &[u8] {
-                    b"w:t" => in_text = false,
-                    b"w:r" => {
-                        if let Some(run) = current_run.take()
-                            && let Some(ref mut para) = current_paragraph
-                        {
-                            para.add_run(run);
+                        b"w:t" => in_text = false,
+                        b"w:r" => {
+                            if let Some(run) = current_run.take()
+                                && let Some(ref mut para) = current_paragraph
+                            {
+                                para.add_run(run);
+                            }
                         }
-                    }
-                    b"w:p" => {
-                        if let Some(para) = current_paragraph.take()
-                            && let Some(ref mut note) = current_note
-                        {
-                            note.paragraphs.push(para);
+                        b"w:p" => {
+                            if let Some(para) = current_paragraph.take()
+                                && let Some(ref mut note) = current_note
+                            {
+                                note.paragraphs.push(para);
+                            }
                         }
-                    }
-                    b"w:footnote" | b"w:endnote" => {
-                        // Filter separator/continuation separator notes (id -1, 0, 1)
-                        if let Some(note) = current_note.take()
-                            && note.id != "-1"
-                            && note.id != "0"
-                            && note.id != "1"
-                        {
-                            notes.push(note);
+                        b"w:footnote" | b"w:endnote" => {
+                            // Filter separator/continuation separator notes (id -1, 0, 1)
+                            if let Some(note) = current_note.take()
+                                && note.id != "-1"
+                                && note.id != "0"
+                                && note.id != "1"
+                            {
+                                notes.push(note);
+                            }
                         }
+                        _ => {}
                     }
-                    _ => {}
-                    }
-                },
+                }
                 Ok(Event::Eof) => break,
                 _ => {}
             }
@@ -2486,7 +2488,9 @@ mod tests {
         let mut document = Document::new();
         {
             let mut budget = crate::extractors::security::SecurityBudget::with_defaults();
-            parser_struct.parse_document_xml(xml, &mut document, &mut budget).unwrap();
+            parser_struct
+                .parse_document_xml(xml, &mut document, &mut budget)
+                .unwrap();
         }
 
         assert_eq!(document.paragraphs.len(), 1);
@@ -2523,7 +2527,9 @@ mod tests {
         let mut notes = Vec::new();
         {
             let mut budget = crate::extractors::security::SecurityBudget::with_defaults();
-            parser_struct.parse_notes(xml, &mut notes, NoteType::Footnote, &mut budget).unwrap();
+            parser_struct
+                .parse_notes(xml, &mut notes, NoteType::Footnote, &mut budget)
+                .unwrap();
         }
 
         assert_eq!(notes.len(), 1, "Only actual footnote should remain");
@@ -3035,7 +3041,9 @@ mod tests {
         let mut document = Document::new();
         {
             let mut budget = crate::extractors::security::SecurityBudget::with_defaults();
-            parser_struct.parse_document_xml(xml, &mut document, &mut budget).unwrap();
+            parser_struct
+                .parse_document_xml(xml, &mut document, &mut budget)
+                .unwrap();
         }
         document
     }
@@ -3051,7 +3059,9 @@ mod tests {
         let mut document = Document::new();
         {
             let mut budget = crate::extractors::security::SecurityBudget::with_defaults();
-            parser_struct.parse_document_xml(xml, &mut document, &mut budget).unwrap();
+            parser_struct
+                .parse_document_xml(xml, &mut document, &mut budget)
+                .unwrap();
         }
         document
     }

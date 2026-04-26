@@ -1271,7 +1271,8 @@ mod tests {
 </article>"#;
 
         let mut budget = SecurityBudget::with_defaults();
-        let (content, title, _, _, _, _, _) = parse_docbook_single_pass(docbook, false, &mut budget).expect("Parse failed");
+        let (content, title, _, _, _, _, _) =
+            parse_docbook_single_pass(docbook, false, &mut budget).expect("Parse failed");
         assert_eq!(title, "Test Article");
         assert!(content.contains("Test content"));
     }
@@ -1299,7 +1300,8 @@ mod tests {
 </article>"#;
 
         let mut budget = SecurityBudget::with_defaults();
-        let (_, _, _, _, tables, _, _) = parse_docbook_single_pass(docbook, false, &mut budget).expect("Table extraction failed");
+        let (_, _, _, _, tables, _, _) =
+            parse_docbook_single_pass(docbook, false, &mut budget).expect("Table extraction failed");
         assert_eq!(tables.len(), 1);
         assert_eq!(tables[0].cells.len(), 2);
         assert_eq!(tables[0].cells[0], vec!["Col1", "Col2"]);
@@ -1359,7 +1361,8 @@ mod tests {
 </article>"#;
 
         let mut budget = SecurityBudget::with_defaults();
-        let (_, _, _, _, _, publisher, copyright) = parse_docbook_single_pass(docbook, false, &mut budget).expect("Parse failed");
+        let (_, _, _, _, _, publisher, copyright) =
+            parse_docbook_single_pass(docbook, false, &mut budget).expect("Parse failed");
         assert_eq!(publisher, Some("O'Reilly Media".to_string()));
         assert!(copyright.is_some());
         assert!(copyright.unwrap().contains("2024"));

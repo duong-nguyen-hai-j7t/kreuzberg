@@ -422,10 +422,8 @@ fn collect_frac_pr(reader: &mut Reader<&[u8]>, budget: &mut SecurityBudget) -> R
                     };
                 }
             }
-            Ok(Event::End(ref e)) => {
-                if e.name().as_ref() as &[u8] == b"m:fPr" {
-                    break;
-                }
+            Ok(Event::End(ref e)) if e.name().as_ref() as &[u8] == b"m:fPr" => {
+                break;
             }
             Ok(Event::Eof) => break,
             _ => {}
@@ -483,10 +481,8 @@ fn collect_rad_pr(reader: &mut Reader<&[u8]>, budget: &mut SecurityBudget) -> Re
             Ok(Event::Start(ref e) | Event::Empty(ref e)) if e.name().as_ref() as &[u8] == b"m:degHide" => {
                 deg_hide = get_m_val(e).as_deref() != Some("0");
             }
-            Ok(Event::End(ref e)) => {
-                if e.name().as_ref() as &[u8] == b"m:radPr" {
-                    break;
-                }
+            Ok(Event::End(ref e)) if e.name().as_ref() as &[u8] == b"m:radPr" => {
+                break;
             }
             Ok(Event::Eof) => break,
             _ => {}
@@ -571,10 +567,8 @@ fn collect_nary_pr(
                 }
                 _ => {}
             },
-            Ok(Event::End(ref e)) => {
-                if e.name().as_ref() as &[u8] == b"m:naryPr" {
-                    break;
-                }
+            Ok(Event::End(ref e)) if e.name().as_ref() as &[u8] == b"m:naryPr" => {
+                break;
             }
             Ok(Event::Eof) => break,
             _ => {}
@@ -659,10 +653,8 @@ fn collect_delim_pr(
                 }
                 _ => {}
             },
-            Ok(Event::End(ref e)) => {
-                if e.name().as_ref() as &[u8] == b"m:dPr" {
-                    break;
-                }
+            Ok(Event::End(ref e)) if e.name().as_ref() as &[u8] == b"m:dPr" => {
+                break;
             }
             Ok(Event::Eof) => break,
             _ => {}
@@ -741,7 +733,11 @@ fn collect_acc(reader: &mut Reader<&[u8]>, budget: &mut SecurityBudget) -> Resul
 }
 
 /// Read accent properties.
-fn collect_acc_pr(reader: &mut Reader<&[u8]>, chr: &mut String, budget: &mut SecurityBudget) -> Result<(), SecurityError> {
+fn collect_acc_pr(
+    reader: &mut Reader<&[u8]>,
+    chr: &mut String,
+    budget: &mut SecurityBudget,
+) -> Result<(), SecurityError> {
     let mut buf = Vec::new();
 
     loop {
@@ -754,10 +750,8 @@ fn collect_acc_pr(reader: &mut Reader<&[u8]>, chr: &mut String, budget: &mut Sec
                     *chr = val;
                 }
             }
-            Ok(Event::End(ref e)) => {
-                if e.name().as_ref() as &[u8] == b"m:accPr" {
-                    break;
-                }
+            Ok(Event::End(ref e)) if e.name().as_ref() as &[u8] == b"m:accPr" => {
+                break;
             }
             Ok(Event::Eof) => break,
             _ => {}
@@ -914,10 +908,8 @@ fn collect_bar_pr(reader: &mut Reader<&[u8]>, budget: &mut SecurityBudget) -> Re
                     top = val != "bot";
                 }
             }
-            Ok(Event::End(ref e)) => {
-                if e.name().as_ref() as &[u8] == b"m:barPr" {
-                    break;
-                }
+            Ok(Event::End(ref e)) if e.name().as_ref() as &[u8] == b"m:barPr" => {
+                break;
             }
             Ok(Event::Eof) => break,
             _ => {}
@@ -993,7 +985,10 @@ fn collect_matrix(reader: &mut Reader<&[u8]>, budget: &mut SecurityBudget) -> Re
 }
 
 /// Collect a matrix row (m:mr) — returns cells.
-fn collect_matrix_row(reader: &mut Reader<&[u8]>, budget: &mut SecurityBudget) -> Result<Vec<Vec<MathNode>>, SecurityError> {
+fn collect_matrix_row(
+    reader: &mut Reader<&[u8]>,
+    budget: &mut SecurityBudget,
+) -> Result<Vec<Vec<MathNode>>, SecurityError> {
     let mut cells: Vec<Vec<MathNode>> = Vec::new();
     let mut buf = Vec::new();
 

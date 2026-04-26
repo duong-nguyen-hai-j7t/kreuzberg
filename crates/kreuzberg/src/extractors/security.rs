@@ -268,16 +268,6 @@ impl StringGrowthValidator {
             Ok(())
         }
     }
-
-    /// Bytes accounted for so far.
-    pub(crate) fn current_size(&self) -> usize {
-        self.current_size
-    }
-
-    /// Configured upper bound.
-    pub(crate) fn max_size(&self) -> usize {
-        self.max_size
-    }
 }
 
 /// Helper struct for capping iteration counts in parser loops.
@@ -312,16 +302,6 @@ impl IterationValidator {
         } else {
             Ok(())
         }
-    }
-
-    /// Iterations counted so far.
-    pub(crate) fn current_count(&self) -> usize {
-        self.current_count
-    }
-
-    /// Configured upper bound.
-    pub(crate) fn max_iterations(&self) -> usize {
-        self.max_iterations
     }
 }
 
@@ -367,16 +347,6 @@ impl DepthValidator {
             self.current_depth -= 1;
         }
     }
-
-    /// Current nesting depth.
-    pub(crate) fn current_depth(&self) -> usize {
-        self.current_depth
-    }
-
-    /// Configured upper bound.
-    pub(crate) fn max_depth(&self) -> usize {
-        self.max_depth
-    }
 }
 
 /// Helper struct for capping individual entity / attribute string length.
@@ -414,11 +384,6 @@ impl EntityValidator {
     pub(crate) fn check_attr(&self, _name: &str, value: &str) -> Result<(), SecurityError> {
         self.validate(value)
     }
-
-    /// Configured upper bound.
-    pub(crate) fn max_length(&self) -> usize {
-        self.max_length
-    }
 }
 
 /// Helper struct for capping cumulative table-cell counts across a document.
@@ -454,16 +419,6 @@ impl TableValidator {
         } else {
             Ok(())
         }
-    }
-
-    /// Cells accounted for so far.
-    pub(crate) fn current_cells(&self) -> usize {
-        self.current_cells
-    }
-
-    /// Configured upper bound.
-    pub(crate) fn max_cells(&self) -> usize {
-        self.max_cells
     }
 }
 
@@ -571,9 +526,9 @@ mod tests {
     fn test_string_growth_validator_basic() {
         let mut v = StringGrowthValidator::new(100);
         assert!(v.check_append(50).is_ok());
-        assert_eq!(v.current_size(), 50);
+        assert_eq!(v.current_size, 50);
         assert!(v.check_append(50).is_ok());
-        assert_eq!(v.current_size(), 100);
+        assert_eq!(v.current_size, 100);
         assert!(matches!(
             v.check_append(1),
             Err(SecurityError::ContentTooLarge { size: 101, max: 100 })
@@ -604,13 +559,13 @@ mod tests {
         assert!(v.push().is_ok());
         assert!(v.push().is_ok());
         assert!(v.push().is_ok());
-        assert_eq!(v.current_depth(), 3);
+        assert_eq!(v.current_depth, 3);
         assert!(matches!(
             v.push(),
             Err(SecurityError::NestingTooDeep { depth: 4, max: 3 })
         ));
         v.pop();
-        assert_eq!(v.current_depth(), 3);
+        assert_eq!(v.current_depth, 3);
     }
 
     #[test]
@@ -618,7 +573,7 @@ mod tests {
         let mut v = DepthValidator::new(10);
         v.pop();
         v.pop();
-        assert_eq!(v.current_depth(), 0, "underflow is impossible");
+        assert_eq!(v.current_depth, 0, "underflow is impossible");
     }
 
     #[test]
@@ -638,9 +593,9 @@ mod tests {
     fn test_table_validator() {
         let mut v = TableValidator::new(10);
         assert!(v.add_cells(5).is_ok());
-        assert_eq!(v.current_cells(), 5);
+        assert_eq!(v.current_cells, 5);
         assert!(v.add_cells(5).is_ok());
-        assert_eq!(v.current_cells(), 10);
+        assert_eq!(v.current_cells, 10);
         assert!(matches!(
             v.add_cells(1),
             Err(SecurityError::TooManyCells { cells: 11, max: 10 })
