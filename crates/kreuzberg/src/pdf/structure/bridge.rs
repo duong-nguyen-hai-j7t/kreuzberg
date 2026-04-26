@@ -554,16 +554,16 @@ pub(super) fn objects_to_page_data(
             page_image_count += 1;
         }
     }
-    if let Some(cap) = max_images_per_page {
-        if page_image_count > cap {
-            tracing::warn!(
-                page_number,
-                cap,
-                total_images = page_image_count,
-                "PDF page has more image objects than max_images_per_page; \
+    if let Some(cap) = max_images_per_page
+        && page_image_count > cap
+    {
+        tracing::warn!(
+            page_number,
+            cap,
+            total_images = page_image_count,
+            "PDF page has more image objects than max_images_per_page; \
                  excess images skipped to prevent hang"
-            );
-        }
+        );
     }
 
     // Primary extraction: full-text blocks with char-indexed font metadata.
