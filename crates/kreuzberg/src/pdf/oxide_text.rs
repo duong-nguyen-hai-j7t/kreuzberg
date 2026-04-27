@@ -47,7 +47,7 @@ pub(crate) fn extract_segments_with_oxide(page_count: usize) -> Option<Vec<Vec<S
             return None;
         }
     };
-    let mut pdf = match pdf_oxide::PdfDocument::open(&file_path) {
+    let pdf = match pdf_oxide::PdfDocument::open(&file_path) {
         Ok(pdf) => pdf,
         Err(e) => {
             tracing::debug!("pdf_oxide failed to open document: {e}");
