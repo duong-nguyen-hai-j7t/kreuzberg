@@ -60,6 +60,16 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 - Apply `cargo fmt` uniformly across all workspace crates (formatting only, no logic changes).
 - Fix typo `entrys` → `entries` in auto-generated API reference docs.
 
+### Added
+
+- **#788**: Extract images nested inside PDF Form XObjects — PDF image extraction now recursively descends into Form XObjects (up to 8 levels deep) in both the lopdf and pdfium code paths.
+
+### Changed
+
+- Fix `use use` duplicate-import syntax error in alef-generated elixir NIF binding (`kreuzberg_nif/src/lib.rs`).
+- Apply `cargo fmt` uniformly across all workspace crates (formatting only, no logic changes).
+- Fix typo `entrys` → `entries` in auto-generated API reference docs.
+
 ---
 
 ## [4.9.5] - 2026-04-23
