@@ -724,6 +724,7 @@ pub(crate) fn reextract_raw_images_via_pdfium(
 ///
 /// Returns `true` if the target image was found and processed.
 #[cfg(all(feature = "pdf", feature = "tokio-runtime"))]
+#[allow(clippy::too_many_arguments)]
 fn collect_image_from_pdfium_obj(
     obj: &pdfium_render::prelude::PdfPageObject<'_>,
     document: &pdfium_render::prelude::PdfDocument<'_>,
