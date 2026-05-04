@@ -1024,14 +1024,12 @@ upgrade = "cd packages/zig && zig build --fetch"
 [crates.test.python]
 precondition = "command -v uv >/dev/null 2>&1"
 before = "cd packages/python && maturin develop --release"
-command = "cd packages/python && uv run pytest tests/ -v"
-e2e = "cd e2e/python && python3 -m pytest tests/ -q"
+e2e = "cd e2e/python && uv run pytest tests/ -q"
 
 [crates.test.node]
 precondition = "command -v npx >/dev/null 2>&1"
 before = "cd crates/kreuzberg-node && napi build --output-dir . --release"
-command = "npx vitest run --config packages/typescript/vitest.config.ts"
-e2e = "cd e2e/typescript && npx vitest run"
+e2e = "cd e2e/node && pnpm install && pnpm test"
 
 [crates.test.go]
 precondition = "command -v go >/dev/null 2>&1"
@@ -1041,31 +1039,26 @@ e2e = "cd e2e/go && go test ./... -count=1"
 [crates.test.ruby]
 precondition = "command -v bundle >/dev/null 2>&1"
 before = "cd e2e/ruby && bundle install"
-command = "cd e2e/ruby && bundle exec rspec"
 e2e = "cd e2e/ruby && bundle exec rspec"
 
 [crates.test.php]
 precondition = "command -v composer >/dev/null 2>&1"
 before = "cd e2e/php && composer install"
-command = "cd e2e/php && composer test"
 e2e = "cd e2e/php && composer test"
 
 [crates.test.java]
 precondition = "command -v mvn >/dev/null 2>&1"
-before = "cargo build --release -p kreuzberg-ffi"
-command = "cd e2e/java && mvn test -q"
+before = "cargo build --release -p kreuzberg-ffi && cd packages/java && mvn package -DskipTests -q"
 e2e = "cd e2e/java && mvn test -q"
 
 [crates.test.csharp]
 precondition = "command -v dotnet >/dev/null 2>&1"
 before = "cargo build --release -p kreuzberg-ffi"
-command = "dotnet test e2e/csharp"
 e2e = "dotnet test e2e/csharp"
 
 [crates.test.elixir]
 precondition = "command -v mix >/dev/null 2>&1"
 before = "cd packages/elixir && mix deps.get && mix compile"
-command = "cd e2e/elixir && mix test"
 e2e = "cd e2e/elixir && mix test"
 
 [crates.test.r]
