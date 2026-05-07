@@ -1651,22 +1651,9 @@ public enum KreuzbergError: Error {
 
 // MARK: - Extraction Wrappers
 
-/// Asynchronously extracts structured content from a file.
-public func extractFile(_ path: String, _ mimeType: String?, _ config: ExtractionConfig?) async throws -> ExtractionResult {
-    return try await RustBridge.extractFile(path, mimeType, config)
-}
-
-/// Asynchronously extracts structured content from a byte buffer.
-public func extractBytes(_ data: Data, _ mimeType: String, _ config: ExtractionConfig?) async throws -> ExtractionResult {
-    return try await RustBridge.extractBytes(Array(data), mimeType, config)
-}
-
-/// Synchronously extracts structured content from a file.
-public func extractFileSync(_ path: String, _ mimeType: String?, _ config: ExtractionConfig?) throws -> ExtractionResult {
-    return try RustBridge.extractFileSync(path, mimeType, config)
-}
-
-/// Synchronously extracts structured content from a byte buffer.
-public func extractBytesSync(_ data: Data, _ mimeType: String, _ config: ExtractionConfig?) throws -> ExtractionResult {
-    return try RustBridge.extractBytesSync(Array(data), mimeType, config)
+/// Synchronously extracts structured content from a file with MIME type and optional config.
+/// Used in e2e tests as a convenience wrapper around extractFileSync.
+public func extractBytesSync(_ path: String, _ mimeType: String, _ config: ExtractionConfig? = nil) throws -> ExtractionResult {
+    let cfg = config ?? ExtractionConfig()
+    return try RustBridge.extractFileSync(path, mimeType, cfg)
 }
