@@ -267,6 +267,7 @@ fn test_extraction_config_no_unknown_fields_in_default() {
         "max_archive_depth",
         "extraction_timeout_secs",
         "tree_sitter",
+        "use_layout_for_markdown",
     ];
 
     for key in obj.keys() {

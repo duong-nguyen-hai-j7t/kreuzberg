@@ -1418,10 +1418,10 @@ Token-based sizing uses HuggingFace tokenizers loaded at runtime. Any tokenizer
 available on HuggingFace Hub can be used, including OpenAI-compatible tokenizers
 (e.g., `Xenova/gpt-4o`, `Xenova/cl100k_base`).
 
-| Variant | Description |
-|---------|-------------|
-| `Characters` | Size measured in Unicode characters (default). |
-| `Tokenizer` | Size measured in tokens from a HuggingFace tokenizer. — Fields: `model`: `String`, `cache_dir`: `PathBuf` |
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Characters` | `characters` | Size measured in Unicode characters (default). |
+| `Tokenizer` | `tokenizer` | Size measured in tokens from a HuggingFace tokenizer. — Fields: `model`: `String`, `cache_dir`: `PathBuf` |
 
 ---
 
@@ -1442,12 +1442,12 @@ Type of text chunker to use.
   `max_characters` (default 1000). `topic_threshold` has no effect in the
   fallback path. For best results, pair with an embedding model.
 
-| Variant | Description |
-|---------|-------------|
-| `Text` | Text format |
-| `Markdown` | Markdown format |
-| `Yaml` | Yaml format |
-| `Semantic` | Semantic |
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Text` | `text` | Text format |
+| `Markdown` | `markdown` | Markdown format |
+| `Yaml` | `yaml` | Yaml format |
+| `Semantic` | `semantic` | Semantic |
 
 ---
 
@@ -1458,11 +1458,11 @@ Content rendering mode for code extraction.
 Controls how extracted code content is represented in the `content` field
 of `ExtractionResult`.
 
-| Variant | Description |
-|---------|-------------|
-| `Chunks` | Use TSLP semantic chunks as content (default). |
-| `Raw` | Use raw source code as content. |
-| `Structure` | Emit function/class headings + docstrings (no code bodies). |
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Chunks` | `chunks` | Use TSLP semantic chunks as content (default). |
+| `Raw` | `raw` | Use raw source code as content. |
+| `Structure` | `structure` | Emit function/class headings + docstrings (no code bodies). |
 
 ---
 
@@ -1470,12 +1470,12 @@ of `ExtractionResult`.
 
 Embedding model types supported by Kreuzberg.
 
-| Variant | Description |
-|---------|-------------|
-| `Preset` | Use a preset model configuration (recommended) — Fields: `name`: `String` |
-| `Custom` | Use a custom ONNX model from HuggingFace — Fields: `model_id`: `String`, `dimensions`: `usize` |
-| `Llm` | Provider-hosted embedding model via liter-llm. Uses the model specified in the nested `LlmConfig` (e.g., `"openai/text-embedding-3-small"`). — Fields: `llm`: `LlmConfig` |
-| `Plugin` | In-process embedding backend registered via the plugin system. The caller registers an `EmbeddingBackend` once (e.g. a wrapper around an already-loaded `llama-cpp-python`, `sentence-transformers`, or tuned ONNX model), then references it by name in config. Kreuzberg calls back into the registered backend during chunking and standalone embed requests — no HuggingFace download, no ONNX Runtime requirement, no HTTP sidecar. When this variant is selected, only the following `EmbeddingConfig` fields apply: `normalize` (post-call L2 normalization) and `max_embed_duration_secs` (dispatcher timeout). Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. Semantic chunking falls back to `ChunkingConfig.max_characters` when this variant is used, since there is no preset to look a chunk-size ceiling up against — size your context window via `max_characters` directly. See `register_embedding_backend`. — Fields: `name`: `String` |
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Preset` | `preset` | Use a preset model configuration (recommended) — Fields: `name`: `String` |
+| `Custom` | `custom` | Use a custom ONNX model from HuggingFace — Fields: `model_id`: `String`, `dimensions`: `usize` |
+| `Llm` | `llm` | Provider-hosted embedding model via liter-llm. Uses the model specified in the nested `LlmConfig` (e.g., `"openai/text-embedding-3-small"`). — Fields: `llm`: `LlmConfig` |
+| `Plugin` | `plugin` | In-process embedding backend registered via the plugin system. The caller registers an `EmbeddingBackend` once (e.g. a wrapper around an already-loaded `llama-cpp-python`, `sentence-transformers`, or tuned ONNX model), then references it by name in config. Kreuzberg calls back into the registered backend during chunking and standalone embed requests — no HuggingFace download, no ONNX Runtime requirement, no HTTP sidecar. When this variant is selected, only the following `EmbeddingConfig` fields apply: `normalize` (post-call L2 normalization) and `max_embed_duration_secs` (dispatcher timeout). Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. Semantic chunking falls back to `ChunkingConfig.max_characters` when this variant is used, since there is no preset to look a chunk-size ceiling up against — size your context window via `max_characters` directly. See `register_embedding_backend`. — Fields: `name`: `String` |
 
 ---
 
@@ -1486,13 +1486,13 @@ ONNX Runtime execution provider type.
 Determines which hardware backend is used for model inference.
 `Auto` (default) selects the best available provider per platform.
 
-| Variant | Description |
-|---------|-------------|
-| `Auto` | Auto-select: CoreML on macOS, CUDA on Linux, CPU elsewhere. |
-| `Cpu` | CPU execution provider (always available). |
-| `CoreMl` | Apple CoreML (macOS/iOS Neural Engine + GPU). |
-| `Cuda` | NVIDIA CUDA GPU acceleration. |
-| `TensorRt` | NVIDIA TensorRT (optimized CUDA inference). |
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Auto` | `auto` | Auto-select: CoreML on macOS, CUDA on Linux, CPU elsewhere. |
+| `Cpu` | `cpu` | CPU execution provider (always available). |
+| `CoreMl` | `coreml` | Apple CoreML (macOS/iOS Neural Engine + GPU). |
+| `Cuda` | `cuda` | NVIDIA CUDA GPU acceleration. |
+| `TensorRt` | `tensorrt` | NVIDIA TensorRT (optimized CUDA inference). |
 
 ---
 
@@ -1500,11 +1500,11 @@ Determines which hardware backend is used for model inference.
 
 How the extracted text was produced.
 
-| Variant | Description |
-|---------|-------------|
-| `Native` | Native |
-| `Ocr` | Ocr |
-| `Mixed` | Mixed |
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Native` | `native` | Native |
+| `Ocr` | `ocr` | Ocr |
+| `Mixed` | `mixed` | Mixed |
 
 ---
 
@@ -1515,28 +1515,28 @@ Format-specific metadata (discriminated union).
 Only one format type can exist per extraction result. This provides
 type-safe, clean metadata without nested optionals.
 
-| Variant | Description |
-|---------|-------------|
-| `Pdf` | Pdf format — Fields: `_0`: `PdfMetadata` |
-| `Docx` | Docx format — Fields: `_0`: `DocxMetadata` |
-| `Excel` | Excel — Fields: `_0`: `ExcelMetadata` |
-| `Email` | Email — Fields: `_0`: `EmailMetadata` |
-| `Pptx` | Pptx format — Fields: `_0`: `PptxMetadata` |
-| `Archive` | Archive — Fields: `_0`: `ArchiveMetadata` |
-| `Image` | Image element — Fields: `_0`: `ImageMetadata` |
-| `Xml` | Xml format — Fields: `_0`: `XmlMetadata` |
-| `Text` | Text format — Fields: `_0`: `TextMetadata` |
-| `Html` | Preserve as HTML `<mark>` tags — Fields: `_0`: `HtmlMetadata` |
-| `Ocr` | Ocr — Fields: `_0`: `OcrMetadata` |
-| `Csv` | Csv format — Fields: `_0`: `CsvMetadata` |
-| `Bibtex` | Bibtex — Fields: `_0`: `BibtexMetadata` |
-| `Citation` | Citation — Fields: `_0`: `CitationMetadata` |
-| `FictionBook` | Fiction book — Fields: `_0`: `FictionBookMetadata` |
-| `Dbf` | Dbf — Fields: `_0`: `DbfMetadata` |
-| `Jats` | Jats — Fields: `_0`: `JatsMetadata` |
-| `Epub` | Epub format — Fields: `_0`: `EpubMetadata` |
-| `Pst` | Pst — Fields: `_0`: `PstMetadata` |
-| `Code` | Code — Fields: `_0`: `String` |
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Pdf` | `pdf` | Pdf format — Fields: `_0`: `PdfMetadata` |
+| `Docx` | `docx` | Docx format — Fields: `_0`: `DocxMetadata` |
+| `Excel` | `excel` | Excel — Fields: `_0`: `ExcelMetadata` |
+| `Email` | `email` | Email — Fields: `_0`: `EmailMetadata` |
+| `Pptx` | `pptx` | Pptx format — Fields: `_0`: `PptxMetadata` |
+| `Archive` | `archive` | Archive — Fields: `_0`: `ArchiveMetadata` |
+| `Image` | `image` | Image element — Fields: `_0`: `ImageMetadata` |
+| `Xml` | `xml` | Xml format — Fields: `_0`: `XmlMetadata` |
+| `Text` | `text` | Text format — Fields: `_0`: `TextMetadata` |
+| `Html` | `html` | Preserve as HTML `<mark>` tags — Fields: `_0`: `HtmlMetadata` |
+| `Ocr` | `ocr` | Ocr — Fields: `_0`: `OcrMetadata` |
+| `Csv` | `csv` | Csv format — Fields: `_0`: `CsvMetadata` |
+| `Bibtex` | `bibtex` | Bibtex — Fields: `_0`: `BibtexMetadata` |
+| `Citation` | `citation` | Citation — Fields: `_0`: `CitationMetadata` |
+| `FictionBook` | `fiction_book` | Fiction book — Fields: `_0`: `FictionBookMetadata` |
+| `Dbf` | `dbf` | Dbf — Fields: `_0`: `DbfMetadata` |
+| `Jats` | `jats` | Jats — Fields: `_0`: `JatsMetadata` |
+| `Epub` | `epub` | Epub format — Fields: `_0`: `EpubMetadata` |
+| `Pst` | `pst` | Pst — Fields: `_0`: `PstMetadata` |
+| `Code` | `code` | Code — Fields: `_0`: `String` |
 
 ---
 
@@ -1544,13 +1544,13 @@ type-safe, clean metadata without nested optionals.
 
 Built-in HTML theme selection.
 
-| Variant | Description |
-|---------|-------------|
-| `Default` | Sensible defaults: system font stack, neutral colours, readable line measure. CSS custom properties (`--kb-*`) are all defined so user CSS can override individual values. |
-| `GitHub` | GitHub Markdown-inspired palette and spacing. |
-| `Dark` | Dark background, light text. |
-| `Light` | Minimal light theme with generous whitespace. |
-| `Unstyled` | No built-in stylesheet emitted. CSS custom properties are still defined on `:root` so user stylesheets can reference `var(--kb-*)` tokens. |
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Default` | `default` | Sensible defaults: system font stack, neutral colours, readable line measure. CSS custom properties (`--kb-*`) are all defined so user CSS can override individual values. |
+| `GitHub` | `github` | GitHub Markdown-inspired palette and spacing. |
+| `Dark` | `dark` | Dark background, light text. |
+| `Light` | `light` | Minimal light theme with generous whitespace. |
+| `Unstyled` | `unstyled` | No built-in stylesheet emitted. CSS custom properties are still defined on `:root` so user stylesheets can reference `var(--kb-*)` tokens. |
 
 ---
 
@@ -1558,10 +1558,10 @@ Built-in HTML theme selection.
 
 Keyword algorithm selection.
 
-| Variant | Description |
-|---------|-------------|
-| `Yake` | YAKE (Yet Another Keyword Extractor) - statistical approach |
-| `Rake` | RAKE (Rapid Automatic Keyword Extraction) - co-occurrence based |
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Yake` | `yake` | YAKE (Yet Another Keyword Extractor) - statistical approach |
+| `Rake` | `rake` | RAKE (Rapid Automatic Keyword Extraction) - co-occurrence based |
 
 ---
 
@@ -1572,10 +1572,10 @@ Bounding geometry for an OCR element.
 Supports both axis-aligned rectangles (from Tesseract) and 4-point quadrilaterals
 (from PaddleOCR and rotated text detection).
 
-| Variant | Description |
-|---------|-------------|
-| `Rectangle` | Axis-aligned bounding box (typical for Tesseract output). — Fields: `left`: `u32`, `top`: `u32`, `width`: `u32`, `height`: `u32` |
-| `Quadrilateral` | 4-point quadrilateral for rotated/skewed text (PaddleOCR). Points are in clockwise order starting from top-left: `[top_left, top_right, bottom_right, bottom_left]` — Fields: `points`: `String` |
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Rectangle` | `rectangle` | Axis-aligned bounding box (typical for Tesseract output). — Fields: `left`: `u32`, `top`: `u32`, `width`: `u32`, `height`: `u32` |
+| `Quadrilateral` | `quadrilateral` | 4-point quadrilateral for rotated/skewed text (PaddleOCR). Points are in clockwise order starting from top-left: `[top_left, top_right, bottom_right, bottom_left]` — Fields: `points`: `String` |
 
 ---
 
@@ -1586,12 +1586,12 @@ Hierarchical level of an OCR element.
 Maps to Tesseract's page segmentation hierarchy and provides
 equivalent semantics for PaddleOCR.
 
-| Variant | Description |
-|---------|-------------|
-| `Word` | Individual word |
-| `Line` | Line of text (default for PaddleOCR) |
-| `Block` | Paragraph or text block |
-| `Page` | Page-level element |
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Word` | `word` | Individual word |
+| `Line` | `line` | Line of text (default for PaddleOCR) |
+| `Block` | `block` | Paragraph or text block |
+| `Page` | `page` | Page-level element |
 
 ---
 
@@ -1605,15 +1605,15 @@ accordingly. `Plain` returns the raw extracted text.
 `Structured` returns JSON with full OCR element data including bounding
 boxes and confidence scores.
 
-| Variant | Description |
-|---------|-------------|
-| `Plain` | Plain text content only (default) |
-| `Markdown` | Markdown format |
-| `Djot` | Djot markup format |
-| `Html` | HTML format |
-| `Json` | JSON tree format with heading-driven sections. |
-| `Structured` | Structured JSON format with full OCR element metadata. |
-| `Custom` | Custom renderer registered via the RendererRegistry. The string is the renderer name (e.g., "docx", "latex"). — Fields: `_0`: `String` |
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Plain` | `plain` | Plain text content only (default) |
+| `Markdown` | `markdown` | Markdown format |
+| `Djot` | `djot` | Djot markup format |
+| `Html` | `html` | HTML format |
+| `Json` | `json` | JSON tree format with heading-driven sections. |
+| `Structured` | `structured` | Structured JSON format with full OCR element metadata. |
+| `Custom` | `custom` | Custom renderer registered via the RendererRegistry. The string is the renderer name (e.g., "docx", "latex"). — Fields: `_0`: `String` |
 
 ---
 
@@ -1637,10 +1637,10 @@ Distinct from `OutputFormat` (which controls rendering — Plain, Markdown,
 HTML, etc.). `ResultFormat` controls the *shape* of the result: a unified content
 blob vs. an element-based decomposition.
 
-| Variant | Description |
-|---------|-------------|
-| `Unified` | Unified format with all content in `content` field |
-| `ElementBased` | Element-based format with semantic element extraction |
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `Unified` | `unified` | Unified format with all content in `content` field |
+| `ElementBased` | `element_based` | Element-based format with semantic element extraction |
 
 ---
 
@@ -1666,10 +1666,10 @@ table regions.
 
 Text direction enumeration for HTML documents.
 
-| Variant | Description |
-|---------|-------------|
-| `LeftToRight` | Left-to-right text direction |
-| `RightToLeft` | Right-to-left text direction |
-| `Auto` | Automatic text direction detection |
+| Variant | Wire value | Description |
+|---------|------------|-------------|
+| `LeftToRight` | `ltr` | Left-to-right text direction |
+| `RightToLeft` | `rtl` | Right-to-left text direction |
+| `Auto` | `auto` | Automatic text direction detection |
 
 ---
