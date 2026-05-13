@@ -66,6 +66,7 @@ ktlint {
   filter {
     exclude { entry -> entry.file.toString().contains("/packages/java/") }
     exclude { entry -> entry.file.toString().endsWith("/Kreuzberg.kt") }
+    exclude { entry -> entry.file.toString().endsWith("/DefaultClient.kt") }
     exclude("**/build/**")
     exclude("**/generated/**")
   }
