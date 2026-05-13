@@ -101,7 +101,7 @@ pub mod ort_discovery;
 #[cfg(any(feature = "paddle-ocr", feature = "layout-detection", feature = "auto-rotate"))]
 pub(crate) mod model_download;
 
-#[cfg(feature = "paddle-ocr")]
+#[cfg(any(feature = "paddle-ocr", feature = "paddle-ocr-types"))]
 pub mod paddle_ocr;
 
 #[cfg(feature = "auto-rotate-types")]
@@ -153,8 +153,11 @@ pub use core::config::{HtmlOutputConfig, HtmlTheme};
 #[cfg(feature = "html")]
 pub use rendering::StyledHtmlRenderer;
 
+#[cfg(feature = "paddle-ocr-types")]
+pub use paddle_ocr::{ModelPaths, PaddleLanguage, PaddleOcrConfig};
+
 #[cfg(feature = "paddle-ocr")]
-pub use paddle_ocr::{CacheStats, ModelManager, ModelPaths, PaddleLanguage, PaddleOcrBackend, PaddleOcrConfig};
+pub use paddle_ocr::{CacheStats, ModelManager, ModelManifestEntry, PaddleOcrBackend};
 
 #[cfg(feature = "layout-types")]
 pub use core::config::{LayoutDetectionConfig, TableModel};

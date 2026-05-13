@@ -96,9 +96,13 @@ ocr-wasm = [
     "dep:hayro-jpeg2000",
     "dep:hayro-jbig2",
 ]
+# PaddleOCR type definitions only — pure-Rust config structs, no ORT dependency.
+# Exposes PaddleOcrConfig, PaddleLanguage, ModelPaths. Safe on Android/WASM.
+paddle-ocr-types = []
 # PaddleOCR via ONNX Runtime
 # Requires 'ocr' feature for shared conversion utilities and table reconstruction
 paddle-ocr = [
+    "paddle-ocr-types",
     "dep:kreuzberg-paddle-ocr",
     "dep:sha2",
     "dep:image",
@@ -209,6 +213,7 @@ no-ort-target = [
     "office",
     "iwork",
     "hwp",
+    "hwpx",
     "mdx",
     "archives",
     "liter-llm",
@@ -216,6 +221,7 @@ no-ort-target = [
     "embedding-presets",
     "layout-types",
     "auto-rotate-types",
+    "paddle-ocr-types",
 ]
 # wasm-target: no-ort-target plus WASM-specific overrides (excel-wasm, tree-sitter-wasm, ocr-wasm).
 wasm-target = [

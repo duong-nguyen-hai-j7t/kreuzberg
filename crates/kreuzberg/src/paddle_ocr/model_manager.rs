@@ -28,16 +28,24 @@
 ///     │   └── dict.txt
 ///     └── ...
 /// ```
-use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
+#[cfg(feature = "paddle-ocr")]
+use std::fs;
+#[cfg(feature = "paddle-ocr")]
+use std::path::Path;
+
+#[cfg(feature = "paddle-ocr")]
 use crate::error::KreuzbergError;
+#[cfg(feature = "paddle-ocr")]
 use crate::model_download;
 
 /// HuggingFace repository containing PaddleOCR ONNX models.
+#[cfg(feature = "paddle-ocr")]
 const HF_REPO_ID: &str = "Kreuzberg/paddleocr-onnx-models";
 
 /// Shared model definition (detection and classification).
+#[cfg(feature = "paddle-ocr")]
 #[derive(Debug, Clone)]
 struct SharedModelDefinition {
     model_type: &'static str,
@@ -47,6 +55,7 @@ struct SharedModelDefinition {
 }
 
 /// Recognition model definition (per script family).
+#[cfg(feature = "paddle-ocr")]
 #[derive(Debug, Clone)]
 struct RecModelDefinition {
     script_family: &'static str,
@@ -54,6 +63,7 @@ struct RecModelDefinition {
     dict_sha256: &'static str,
 }
 
+#[cfg(feature = "paddle-ocr")]
 const SHARED_MODELS: &[SharedModelDefinition] = &[
     SharedModelDefinition {
         model_type: "det",
@@ -73,6 +83,7 @@ const SHARED_MODELS: &[SharedModelDefinition] = &[
 ///
 /// English and Chinese families are handled by v2 unified models.
 /// These 9 families use per-script models for scripts not covered by the unified model.
+#[cfg(feature = "paddle-ocr")]
 const REC_MODELS: &[RecModelDefinition] = &[
     RecModelDefinition {
         script_family: "latin",
@@ -126,6 +137,7 @@ const REC_MODELS: &[RecModelDefinition] = &[
 // ============================================================================
 
 /// V2 detection model definition (tier-aware).
+#[cfg(feature = "paddle-ocr")]
 #[derive(Debug, Clone)]
 struct V2DetModelDefinition {
     tier: &'static str,
@@ -134,6 +146,7 @@ struct V2DetModelDefinition {
 }
 
 /// V2 recognition model definition (unified multilingual models).
+#[cfg(feature = "paddle-ocr")]
 #[derive(Debug, Clone)]
 struct V2RecModelDefinition {
     /// Engine pool key (e.g. "unified_server", "unified_mobile", "en_mobile").
@@ -145,6 +158,7 @@ struct V2RecModelDefinition {
 }
 
 /// V2 detection models: server (PP-OCRv5, 88MB) and mobile (PP-OCRv5, 4.7MB).
+#[cfg(feature = "paddle-ocr")]
 const V2_DET_MODELS: &[V2DetModelDefinition] = &[
     V2DetModelDefinition {
         tier: "server",
@@ -163,6 +177,7 @@ const V2_DET_MODELS: &[V2DetModelDefinition] = &[
 /// Note: `en_mobile` is kept for backward compatibility (direct `ensure_v2_rec_model("en_mobile")`
 /// callers) but is not used by the default resolution matrix — both English and Chinese mobile
 /// resolve to `unified_mobile`.
+#[cfg(feature = "paddle-ocr")]
 const V2_REC_MODELS: &[V2RecModelDefinition] = &[
     V2RecModelDefinition {
         model_key: "unified_server",
@@ -188,6 +203,7 @@ const V2_REC_MODELS: &[V2RecModelDefinition] = &[
 ];
 
 /// V2 text line orientation model (PP-LCNet, replaces old PPOCRv2 angle classifier).
+#[cfg(feature = "paddle-ocr")]
 const V2_CLS_MODEL: SharedModelDefinition = SharedModelDefinition {
     model_type: "cls",
     remote_filename: "v2/classifiers/PP-LCNet_x1_0_textline_ori.onnx",
@@ -196,6 +212,7 @@ const V2_CLS_MODEL: SharedModelDefinition = SharedModelDefinition {
 };
 
 /// V2 document orientation model (PP-LCNet, for page-level auto_rotate).
+#[cfg(feature = "paddle-ocr")]
 const V2_DOC_ORI_MODEL: SharedModelDefinition = SharedModelDefinition {
     model_type: "doc_ori",
     remote_filename: "v2/classifiers/PP-LCNet_x1_0_doc_ori.onnx",
@@ -276,11 +293,13 @@ pub struct CacheStats {
 /// The model manager ensures that PaddleOCR models are available locally,
 /// organized by model type. Shared models (det, cls) are downloaded once,
 /// while recognition models are downloaded per-script-family on demand.
+#[cfg(feature = "paddle-ocr")]
 #[derive(Debug, Clone)]
 pub struct ModelManager {
     cache_dir: PathBuf,
 }
 
+#[cfg(feature = "paddle-ocr")]
 impl ModelManager {
     /// Creates a new model manager with the specified cache directory.
     pub fn new(cache_dir: PathBuf) -> Self {
@@ -731,7 +750,7 @@ impl ModelManager {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "paddle-ocr"))]
 mod tests {
     use super::*;
     use tempfile::TempDir;

@@ -36,15 +36,18 @@
 //! println!("Extracted: {}", result.content);
 //! ```
 
+#[cfg(feature = "paddle-ocr")]
 mod backend;
 mod config;
 mod model_manager;
 
+#[cfg(feature = "paddle-ocr")]
 pub use backend::PaddleOcrBackend;
 pub use config::{PaddleLanguage, PaddleOcrConfig};
-pub use model_manager::{
-    CacheStats, ModelManager, ModelManifestEntry, ModelPaths, RecModelPaths, ResolvedRecModel, SharedModelPaths,
-};
+pub use model_manager::{ModelPaths, RecModelPaths, ResolvedRecModel, SharedModelPaths};
+
+#[cfg(feature = "paddle-ocr")]
+pub use model_manager::{CacheStats, ModelManager, ModelManifestEntry};
 
 /// Supported languages for PaddleOCR.
 ///
