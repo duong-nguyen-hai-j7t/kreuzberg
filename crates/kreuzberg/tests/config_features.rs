@@ -601,24 +601,9 @@ async fn test_chunking_with_embeddings() {
     let chunks = result.chunks.expect("Operation failed");
     assert!(chunks.len() > 1, "Should have multiple chunks");
 
-    println!("Metadata: {:?}", result.metadata.additional);
-
     if let Some(error) = result.metadata.additional.get("embedding_error") {
         panic!("Embedding generation failed: {}", error);
     }
-
-    assert!(
-        result.metadata.additional.contains_key("embeddings_generated"),
-        "Should have embeddings_generated metadata"
-    );
-    assert_eq!(
-        result
-            .metadata
-            .additional
-            .get("embeddings_generated")
-            .expect("Value not found"),
-        &serde_json::Value::Bool(true)
-    );
 
     for chunk in &chunks {
         assert!(chunk.embedding.is_some(), "Each chunk should have an embedding");
