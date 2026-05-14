@@ -125,7 +125,6 @@ pub const ExtractionConfig = struct {
     result_format: ResultFormat,
     security_limits: ?SecurityLimits,
     output_format: OutputFormat,
-    layout: ?LayoutDetectionConfig,
     use_layout_for_markdown: bool,
     include_document_structure: bool,
     acceleration: ?AccelerationConfig,
@@ -173,7 +172,6 @@ pub const FileExtractionConfig = struct {
     result_format: ?ResultFormat,
     output_format: ?OutputFormat,
     include_document_structure: ?bool,
-    layout: ?LayoutDetectionConfig,
     timeout_secs: ?u64,
     tree_sitter: ?TreeSitterConfig,
     structured_extraction: ?StructuredExtractionConfig,
@@ -1760,13 +1758,6 @@ pub const Keyword = struct {
     positions: ?[]const u64,
 };
 
-/// Pre-computed table markdown for a table detection region.
-pub const RecognizedTable = struct {
-    detection_bbox: BBox,
-    cells: []const []const [:0]const u8,
-    markdown: [:0]const u8,
-};
-
 /// Configuration for PaddleOCR backend.
 ///
 /// Configures PaddleOCR text detection and recognition with multi-language support.
@@ -1813,6 +1804,18 @@ pub const LayoutDetection = struct {
     class_name: LayoutClass,
     confidence: f32,
     bbox: BBox,
+};
+
+/// Pre-computed table markdown for a table detection region.
+///
+/// Produced by the TATR-based table structure recognizer and surfaced as part of
+/// layout-aware OCR results.  The struct lives here (under `layout-types`, pure-Rust)
+/// so that consumers who do not enable `layout-detection` (ORT) can still reference
+/// the type in their own code.
+pub const RecognizedTable = struct {
+    detection_bbox: BBox,
+    cells: []const []const [:0]const u8,
+    markdown: [:0]const u8,
 };
 
 /// Page-level detection result containing all detections and page metadata.
@@ -4355,7 +4358,8 @@ pub const TessdataManager = struct {
     ///
     /// Skips files that already exist. Returns the count of newly downloaded files.
     ///
-    /// Requires the `paddle-ocr` feature for HTTP download support (ureq).
+    /// When the `paddle-ocr` feature is not enabled, no download URLs are available
+    /// and this method always returns `Ok(0)`.
     pub fn ensure_all_languages(self: *TessdataManager) (KreuzbergError||error{OutOfMemory})!u64 {
         const _result = c.kreuzberg_tessdata_manager_ensure_all_languages(@as(*c.KREUZBERGTessdataManager, @ptrCast(self._handle)));
         if (c.kreuzberg_last_error_code() != 0) {

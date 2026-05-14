@@ -143,7 +143,7 @@ public final class RendererBridge implements AutoCloseable {
     public static void registerRenderer(final IRenderer impl) throws Exception {
         var bridge = new RendererBridge(impl);
         try {
-            try (var nameArena = Arena.ofConfined()) {
+            try (var nameArena = Arena.ofShared()) {
                 var nameCs = nameArena.allocateFrom(impl.name());
                 MemorySegment outErr = nameArena.allocate(ValueLayout.ADDRESS);
                 int rc = (int) NativeLib.KREUZBERG_REGISTER_RENDERER.invoke(nameCs, bridge.vtableSegment(), MemorySegment.NULL, outErr);
@@ -169,7 +169,7 @@ public final class RendererBridge implements AutoCloseable {
     /** Unregister a Renderer implementation by name. */
     public static void unregisterRenderer(String name) throws Exception {
         try {
-            try (var nameArena = Arena.ofConfined()) {
+            try (var nameArena = Arena.ofShared()) {
                 var nameCs = nameArena.allocateFrom(name);
                 MemorySegment outErr = nameArena.allocate(ValueLayout.ADDRESS);
                 int rc = (int) NativeLib.KREUZBERG_UNREGISTER_RENDERER.invoke(nameCs, outErr);
@@ -194,7 +194,7 @@ public final class RendererBridge implements AutoCloseable {
     /** Clear all registered Renderer implementations. */
     public static void clearAllRenderer() throws Exception {
         try {
-            try (var arena = Arena.ofConfined()) {
+            try (var arena = Arena.ofShared()) {
                 MemorySegment outErr = arena.allocate(ValueLayout.ADDRESS);
                 int rc = (int) NativeLib.KREUZBERG_CLEAR_RENDERER.invoke(outErr);
                 if (rc != 0) {

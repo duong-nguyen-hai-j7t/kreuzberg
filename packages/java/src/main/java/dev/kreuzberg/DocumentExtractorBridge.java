@@ -313,7 +313,7 @@ public final class DocumentExtractorBridge implements AutoCloseable {
     public static void registerDocumentExtractor(final IDocumentExtractor impl) throws Exception {
         var bridge = new DocumentExtractorBridge(impl);
         try {
-            try (var nameArena = Arena.ofConfined()) {
+            try (var nameArena = Arena.ofShared()) {
                 var nameCs = nameArena.allocateFrom(impl.name());
                 MemorySegment outErr = nameArena.allocate(ValueLayout.ADDRESS);
                 int rc = (int) NativeLib.KREUZBERG_REGISTER_DOCUMENT_EXTRACTOR.invoke(
@@ -344,7 +344,7 @@ public final class DocumentExtractorBridge implements AutoCloseable {
     /** Unregister a DocumentExtractor implementation by name. */
     public static void unregisterDocumentExtractor(String name) throws Exception {
         try {
-            try (var nameArena = Arena.ofConfined()) {
+            try (var nameArena = Arena.ofShared()) {
                 var nameCs = nameArena.allocateFrom(name);
                 MemorySegment outErr = nameArena.allocate(ValueLayout.ADDRESS);
                 int rc = (int) NativeLib.KREUZBERG_UNREGISTER_DOCUMENT_EXTRACTOR.invoke(nameCs, outErr);
@@ -369,7 +369,7 @@ public final class DocumentExtractorBridge implements AutoCloseable {
     /** Clear all registered DocumentExtractor implementations. */
     public static void clearAllDocumentExtractor() throws Exception {
         try {
-            try (var arena = Arena.ofConfined()) {
+            try (var arena = Arena.ofShared()) {
                 MemorySegment outErr = arena.allocate(ValueLayout.ADDRESS);
                 int rc = (int) NativeLib.KREUZBERG_CLEAR_DOCUMENT_EXTRACTOR.invoke(outErr);
                 if (rc != 0) {

@@ -353,7 +353,7 @@ public final class OcrBackendBridge implements AutoCloseable {
     public static void registerOcrBackend(final IOcrBackend impl) throws Exception {
         var bridge = new OcrBackendBridge(impl);
         try {
-            try (var nameArena = Arena.ofConfined()) {
+            try (var nameArena = Arena.ofShared()) {
                 var nameCs = nameArena.allocateFrom(impl.name());
                 MemorySegment outErr = nameArena.allocate(ValueLayout.ADDRESS);
                 int rc = (int) NativeLib.KREUZBERG_REGISTER_OCR_BACKEND.invoke(nameCs, bridge.vtableSegment(), MemorySegment.NULL, outErr);
@@ -379,7 +379,7 @@ public final class OcrBackendBridge implements AutoCloseable {
     /** Unregister a OcrBackend implementation by name. */
     public static void unregisterOcrBackend(String name) throws Exception {
         try {
-            try (var nameArena = Arena.ofConfined()) {
+            try (var nameArena = Arena.ofShared()) {
                 var nameCs = nameArena.allocateFrom(name);
                 MemorySegment outErr = nameArena.allocate(ValueLayout.ADDRESS);
                 int rc = (int) NativeLib.KREUZBERG_UNREGISTER_OCR_BACKEND.invoke(nameCs, outErr);
@@ -404,7 +404,7 @@ public final class OcrBackendBridge implements AutoCloseable {
     /** Clear all registered OcrBackend implementations. */
     public static void clearAllOcrBackend() throws Exception {
         try {
-            try (var arena = Arena.ofConfined()) {
+            try (var arena = Arena.ofShared()) {
                 MemorySegment outErr = arena.allocate(ValueLayout.ADDRESS);
                 int rc = (int) NativeLib.KREUZBERG_CLEAR_OCR_BACKEND.invoke(outErr);
                 if (rc != 0) {

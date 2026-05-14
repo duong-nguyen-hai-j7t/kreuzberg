@@ -260,7 +260,7 @@ public final class PostProcessorBridge implements AutoCloseable {
     public static void registerPostProcessor(final IPostProcessor impl) throws Exception {
         var bridge = new PostProcessorBridge(impl);
         try {
-            try (var nameArena = Arena.ofConfined()) {
+            try (var nameArena = Arena.ofShared()) {
                 var nameCs = nameArena.allocateFrom(impl.name());
                 MemorySegment outErr = nameArena.allocate(ValueLayout.ADDRESS);
                 int rc = (int) NativeLib.KREUZBERG_REGISTER_POST_PROCESSOR.invoke(
@@ -291,7 +291,7 @@ public final class PostProcessorBridge implements AutoCloseable {
     /** Unregister a PostProcessor implementation by name. */
     public static void unregisterPostProcessor(String name) throws Exception {
         try {
-            try (var nameArena = Arena.ofConfined()) {
+            try (var nameArena = Arena.ofShared()) {
                 var nameCs = nameArena.allocateFrom(name);
                 MemorySegment outErr = nameArena.allocate(ValueLayout.ADDRESS);
                 int rc = (int) NativeLib.KREUZBERG_UNREGISTER_POST_PROCESSOR.invoke(nameCs, outErr);
@@ -316,7 +316,7 @@ public final class PostProcessorBridge implements AutoCloseable {
     /** Clear all registered PostProcessor implementations. */
     public static void clearAllPostProcessor() throws Exception {
         try {
-            try (var arena = Arena.ofConfined()) {
+            try (var arena = Arena.ofShared()) {
                 MemorySegment outErr = arena.allocate(ValueLayout.ADDRESS);
                 int rc = (int) NativeLib.KREUZBERG_CLEAR_POST_PROCESSOR.invoke(outErr);
                 if (rc != 0) {

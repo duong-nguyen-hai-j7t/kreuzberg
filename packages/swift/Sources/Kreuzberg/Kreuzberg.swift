@@ -861,9 +861,6 @@ public typealias Keyword = RustBridge.Keyword
 
 public typealias OcrCacheStats = RustBridge.OcrCacheStats
 
-/// Pre-computed table markdown for a table detection region.
-public typealias RecognizedTable = RustBridge.RecognizedTable
-
 /// Configuration for PaddleOCR backend.
 ///
 /// Configures PaddleOCR text detection and recognition with multi-language support.
@@ -898,6 +895,14 @@ public typealias BBox = RustBridge.BBox
 
 /// A single layout detection result.
 public typealias LayoutDetection = RustBridge.LayoutDetection
+
+/// Pre-computed table markdown for a table detection region.
+///
+/// Produced by the TATR-based table structure recognizer and surfaced as part of
+/// layout-aware OCR results.  The struct lives here (under `layout-types`, pure-Rust)
+/// so that consumers who do not enable `layout-detection` (ORT) can still reference
+/// the type in their own code.
+public typealias RecognizedTable = RustBridge.RecognizedTable
 
 /// Page-level detection result containing all detections and page metadata.
 public typealias DetectionResult = RustBridge.DetectionResult

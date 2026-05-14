@@ -165,7 +165,7 @@ public final class EmbeddingBackendBridge implements AutoCloseable {
     public static void registerEmbeddingBackend(final IEmbeddingBackend impl) throws Exception {
         var bridge = new EmbeddingBackendBridge(impl);
         try {
-            try (var nameArena = Arena.ofConfined()) {
+            try (var nameArena = Arena.ofShared()) {
                 var nameCs = nameArena.allocateFrom(impl.name());
                 MemorySegment outErr = nameArena.allocate(ValueLayout.ADDRESS);
                 int rc = (int) NativeLib.KREUZBERG_REGISTER_EMBEDDING_BACKEND.invoke(
@@ -196,7 +196,7 @@ public final class EmbeddingBackendBridge implements AutoCloseable {
     /** Unregister a EmbeddingBackend implementation by name. */
     public static void unregisterEmbeddingBackend(String name) throws Exception {
         try {
-            try (var nameArena = Arena.ofConfined()) {
+            try (var nameArena = Arena.ofShared()) {
                 var nameCs = nameArena.allocateFrom(name);
                 MemorySegment outErr = nameArena.allocate(ValueLayout.ADDRESS);
                 int rc = (int) NativeLib.KREUZBERG_UNREGISTER_EMBEDDING_BACKEND.invoke(nameCs, outErr);
@@ -221,7 +221,7 @@ public final class EmbeddingBackendBridge implements AutoCloseable {
     /** Clear all registered EmbeddingBackend implementations. */
     public static void clearAllEmbeddingBackend() throws Exception {
         try {
-            try (var arena = Arena.ofConfined()) {
+            try (var arena = Arena.ofShared()) {
                 MemorySegment outErr = arena.allocate(ValueLayout.ADDRESS);
                 int rc = (int) NativeLib.KREUZBERG_CLEAR_EMBEDDING_BACKEND.invoke(outErr);
                 if (rc != 0) {

@@ -207,7 +207,7 @@ public final class ValidatorBridge implements AutoCloseable {
     public static void registerValidator(final IValidator impl) throws Exception {
         var bridge = new ValidatorBridge(impl);
         try {
-            try (var nameArena = Arena.ofConfined()) {
+            try (var nameArena = Arena.ofShared()) {
                 var nameCs = nameArena.allocateFrom(impl.name());
                 MemorySegment outErr = nameArena.allocate(ValueLayout.ADDRESS);
                 int rc = (int) NativeLib.KREUZBERG_REGISTER_VALIDATOR.invoke(nameCs, bridge.vtableSegment(), MemorySegment.NULL, outErr);
@@ -233,7 +233,7 @@ public final class ValidatorBridge implements AutoCloseable {
     /** Unregister a Validator implementation by name. */
     public static void unregisterValidator(String name) throws Exception {
         try {
-            try (var nameArena = Arena.ofConfined()) {
+            try (var nameArena = Arena.ofShared()) {
                 var nameCs = nameArena.allocateFrom(name);
                 MemorySegment outErr = nameArena.allocate(ValueLayout.ADDRESS);
                 int rc = (int) NativeLib.KREUZBERG_UNREGISTER_VALIDATOR.invoke(nameCs, outErr);
@@ -258,7 +258,7 @@ public final class ValidatorBridge implements AutoCloseable {
     /** Clear all registered Validator implementations. */
     public static void clearAllValidator() throws Exception {
         try {
-            try (var arena = Arena.ofConfined()) {
+            try (var arena = Arena.ofShared()) {
                 MemorySegment outErr = arena.allocate(ValueLayout.ADDRESS);
                 int rc = (int) NativeLib.KREUZBERG_CLEAR_VALIDATOR.invoke(outErr);
                 if (rc != 0) {

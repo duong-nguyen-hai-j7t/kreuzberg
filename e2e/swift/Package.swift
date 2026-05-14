@@ -8,12 +8,12 @@ let package = Package(
         .iOS(.v14),
     ],
     dependencies: [
-        .package(path: "../../packages/swift"),
+        .package(name: "Kreuzberg", path: "../../packages/swift"),
     ],
     targets: [
         .testTarget(
-            name: "KreuzbergTests",
-            dependencies: [.product(name: "Kreuzberg", package: "swift")]
+            name: "KreuzbergE2ETests",
+            dependencies: [.product(name: "Kreuzberg", package: "Kreuzberg")]
         ),
     ]
 )

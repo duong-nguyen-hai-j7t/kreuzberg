@@ -11,7 +11,9 @@
     clippy::unnecessary_cast,
     clippy::manual_flatten,
     clippy::match_single_binding,
-    clippy::redundant_closure
+    clippy::redundant_closure,
+    clippy::useless_conversion,
+    clippy::inherent_to_string
 )]
 
 #[swift_bridge::bridge]
@@ -72,7 +74,6 @@ mod ffi {
             result_format: ResultFormat,
             security_limits: Option<SecurityLimits>,
             output_format: OutputFormat,
-            layout: Option<LayoutDetectionConfig>,
             use_layout_for_markdown: bool,
             include_document_structure: bool,
             acceleration: Option<AccelerationConfig>,
@@ -107,7 +108,6 @@ mod ffi {
         fn result_format(&self) -> String;
         fn security_limits(&self) -> Option<SecurityLimits>;
         fn output_format(&self) -> String;
-        fn layout(&self) -> Option<LayoutDetectionConfig>;
         fn use_layout_for_markdown(&self) -> bool;
         fn include_document_structure(&self) -> bool;
         fn acceleration(&self) -> Option<AccelerationConfig>;
@@ -143,7 +143,6 @@ mod ffi {
             result_format: Option<ResultFormat>,
             output_format: Option<OutputFormat>,
             include_document_structure: Option<bool>,
-            layout: Option<LayoutDetectionConfig>,
             timeout_secs: Option<u64>,
             tree_sitter: Option<TreeSitterConfig>,
             structured_extraction: Option<StructuredExtractionConfig>,
@@ -166,7 +165,6 @@ mod ffi {
         fn result_format(&self) -> Option<String>;
         fn output_format(&self) -> Option<String>;
         fn include_document_structure(&self) -> Option<bool>;
-        fn layout(&self) -> Option<LayoutDetectionConfig>;
         fn timeout_secs(&self) -> Option<u64>;
         fn tree_sitter(&self) -> Option<TreeSitterConfig>;
         fn structured_extraction(&self) -> Option<StructuredExtractionConfig>;
@@ -2204,13 +2202,6 @@ mod ffi {
     }
 
     extern "Rust" {
-        type RecognizedTable;
-        fn detection_bbox(&self) -> BBox;
-        fn cells(&self) -> String;
-        fn markdown(&self) -> String;
-    }
-
-    extern "Rust" {
         type TessdataManager;
     }
 
@@ -2281,6 +2272,13 @@ mod ffi {
         fn class_name(&self) -> String;
         fn confidence(&self) -> f32;
         fn bbox(&self) -> BBox;
+    }
+
+    extern "Rust" {
+        type RecognizedTable;
+        fn detection_bbox(&self) -> BBox;
+        fn cells(&self) -> String;
+        fn markdown(&self) -> String;
     }
 
     extern "Rust" {
@@ -2888,7 +2886,6 @@ impl ExtractionConfig {
         result_format: ResultFormat,
         security_limits: Option<SecurityLimits>,
         output_format: OutputFormat,
-        layout: Option<LayoutDetectionConfig>,
         use_layout_for_markdown: bool,
         include_document_structure: bool,
         acceleration: Option<AccelerationConfig>,
@@ -2958,9 +2955,6 @@ impl ExtractionConfig {
             __target.security_limits = Some(w.0);
         }
         // alef: output_format (OutputFormat) is an enum; reverse From not generated — left at default
-        if let Some(w) = layout {
-            __target.layout = Some(w.0);
-        }
         __target.use_layout_for_markdown = use_layout_for_markdown;
         __target.include_document_structure = include_document_structure;
         if let Some(w) = acceleration {
@@ -3090,9 +3084,6 @@ impl ExtractionConfig {
     pub fn output_format(&self) -> String {
         OutputFormat::from(self.0.output_format.clone()).to_string()
     }
-    pub fn layout(&self) -> Option<LayoutDetectionConfig> {
-        self.0.layout.clone().map(LayoutDetectionConfig)
-    }
     pub fn use_layout_for_markdown(&self) -> bool {
         ::serde_json::to_value(&self.0.use_layout_for_markdown)
             .ok()
@@ -3162,7 +3153,6 @@ impl FileExtractionConfig {
         result_format: Option<ResultFormat>,
         output_format: Option<OutputFormat>,
         include_document_structure: Option<bool>,
-        layout: Option<LayoutDetectionConfig>,
         timeout_secs: Option<u64>,
         tree_sitter: Option<TreeSitterConfig>,
         structured_extraction: Option<StructuredExtractionConfig>,
@@ -3216,9 +3206,6 @@ impl FileExtractionConfig {
         // alef: result_format (ResultFormat) is an enum; reverse From not generated — left at default
         // alef: output_format (OutputFormat) is an enum; reverse From not generated — left at default
         __target.include_document_structure = include_document_structure;
-        if let Some(w) = layout {
-            __target.layout = Some(w.0);
-        }
         __target.timeout_secs = timeout_secs;
         if let Some(w) = tree_sitter {
             __target.tree_sitter = Some(w.0);
@@ -3301,9 +3288,6 @@ impl FileExtractionConfig {
                 .ok()
                 .and_then(|j| ::serde_json::from_value(j).ok())
         })
-    }
-    pub fn layout(&self) -> Option<LayoutDetectionConfig> {
-        self.0.layout.clone().map(LayoutDetectionConfig)
     }
     pub fn timeout_secs(&self) -> Option<u64> {
         self.0.timeout_secs.as_ref().and_then(|v| {
@@ -9784,19 +9768,6 @@ impl OcrCacheStats {
     }
 }
 
-pub struct RecognizedTable(pub kreuzberg::RecognizedTable);
-impl RecognizedTable {
-    pub fn detection_bbox(&self) -> BBox {
-        BBox(self.0.detection_bbox.clone())
-    }
-    pub fn cells(&self) -> String {
-        serde_json::to_string(&self.0.cells).expect("serializable cells")
-    }
-    pub fn markdown(&self) -> String {
-        self.0.markdown.clone()
-    }
-}
-
 pub struct TessdataManager(pub kreuzberg::ocr::TessdataManager);
 
 pub fn tessdata_manager_cache_dir(client: &TessdataManager) -> String {
@@ -9992,6 +9963,19 @@ impl LayoutDetection {
     }
     pub fn bbox(&self) -> BBox {
         BBox(self.0.bbox.clone())
+    }
+}
+
+pub struct RecognizedTable(pub kreuzberg::RecognizedTable);
+impl RecognizedTable {
+    pub fn detection_bbox(&self) -> BBox {
+        BBox(self.0.detection_bbox.clone())
+    }
+    pub fn cells(&self) -> String {
+        serde_json::to_string(&self.0.cells).expect("serializable cells")
+    }
+    pub fn markdown(&self) -> String {
+        self.0.markdown.clone()
     }
 }
 

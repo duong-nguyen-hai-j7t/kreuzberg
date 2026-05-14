@@ -56,7 +56,8 @@ class TessdataManager internal constructor(internal val inner: dev.kreuzberg.Tes
     //
     // Skips files that already exist. Returns the count of newly downloaded files.
     //
-    // Requires the `paddle-ocr` feature for HTTP download support (ureq).
+    // When the `paddle-ocr` feature is not enabled, no download URLs are available
+    // and this method always returns `Ok(0)`.
     fun ensureAllLanguages(): Long {
         return inner.ensureAllLanguages()
     }
