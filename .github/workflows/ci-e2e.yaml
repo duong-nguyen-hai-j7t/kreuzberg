@@ -151,7 +151,7 @@ jobs:
             r-version: "4.3"
             test-cmd: "cd e2e/r && Rscript run_tests.R"
           - lang: dart
-            dart-version: "3.5"
+            dart-version: "3.7"
             test-cmd: "cd packages/dart && dart pub get && cd ../../e2e/dart && dart pub get && dart test"
           - lang: kotlin
             java-version: "25"
