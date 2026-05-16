@@ -7,5 +7,5 @@ package dev.kreuzberg
  */
 data class HeadingLevel(
     val level: Byte,
-    val text: String
+    val text: String,
 )

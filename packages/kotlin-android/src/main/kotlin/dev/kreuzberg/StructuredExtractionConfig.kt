@@ -14,5 +14,5 @@ data class StructuredExtractionConfig(
     val schemaDescription: String?,
     val strict: Boolean,
     val prompt: String?,
-    val llm: LlmConfig
+    val llm: LlmConfig,
 )

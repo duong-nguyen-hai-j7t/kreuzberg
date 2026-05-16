@@ -23,5 +23,5 @@ enum class PaddleLanguage {
     ARABIC,
     DEVANAGARI,
     TAMIL,
-    TELUGU;
+    TELUGU,
 }

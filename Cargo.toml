@@ -79,7 +79,7 @@ ort = { version = "2.0.0-rc.12", default-features = false, features = [
   "api-18",
 ] }
 parking_lot = "0.12.5"
-pdf_oxide = { version = "0.3.47", default-features = false, features = [
+pdf_oxide = { version = "0.3.49", default-features = false, features = [
   "rendering",
   "legacy-crypto",
 ] }

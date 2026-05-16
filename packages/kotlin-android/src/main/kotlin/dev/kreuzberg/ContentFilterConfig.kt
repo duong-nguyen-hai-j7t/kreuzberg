@@ -17,5 +17,5 @@ data class ContentFilterConfig(
     val includeHeaders: Boolean,
     val includeFooters: Boolean,
     val stripRepeatingText: Boolean,
-    val includeWatermarks: Boolean
+    val includeWatermarks: Boolean,
 )

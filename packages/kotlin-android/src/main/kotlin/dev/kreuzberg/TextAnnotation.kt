@@ -11,5 +11,5 @@ package dev.kreuzberg
 data class TextAnnotation(
     val start: Int,
     val end: Int,
-    val kind: AnnotationKind
+    val kind: AnnotationKind,
 )

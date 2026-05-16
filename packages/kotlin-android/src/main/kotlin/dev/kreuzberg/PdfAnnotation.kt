@@ -9,5 +9,5 @@ data class PdfAnnotation(
     val annotationType: PdfAnnotationType,
     val content: String?,
     val pageNumber: Int,
-    val boundingBox: String?
+    val boundingBox: String?,
 )

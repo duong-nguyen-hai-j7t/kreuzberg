@@ -8,5 +8,5 @@ package dev.kreuzberg
 data class StructuredData(
     val dataType: StructuredDataType,
     val rawJson: String,
-    val schemaType: String?
+    val schemaType: String?,
 )

@@ -22,5 +22,5 @@ data class PaddleOcrConfig(
     val recBatchNum: Int,
     val padding: Int,
     val dropScore: Float,
-    val modelTier: String
+    val modelTier: String,
 )

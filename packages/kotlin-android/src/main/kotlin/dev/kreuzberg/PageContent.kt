@@ -25,5 +25,5 @@ data class PageContent(
     val imageIndices: List<Int>,
     val hierarchy: PageHierarchy?,
     val isBlank: Boolean?,
-    val layoutRegions: List<LayoutRegion>?
+    val layoutRegions: List<LayoutRegion>?,
 )

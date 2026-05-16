@@ -14,5 +14,5 @@ data class FormattedBlock(
     val attributes: String?,
     val language: String?,
     val code: String?,
-    val children: List<FormattedBlock>
+    val children: List<FormattedBlock>,
 )

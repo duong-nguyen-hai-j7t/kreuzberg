@@ -7,5 +7,5 @@ package dev.kreuzberg
  */
 data class RakeParams(
     val minWordLength: Long,
-    val maxWordsPerPhrase: Long
+    val maxWordsPerPhrase: Long,
 )

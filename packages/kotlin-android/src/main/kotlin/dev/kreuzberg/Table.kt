@@ -12,5 +12,5 @@ data class Table(
     val cells: List<List<String>>,
     val markdown: String,
     val pageNumber: Int,
-    val boundingBox: String?
+    val boundingBox: String?,
 )

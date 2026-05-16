@@ -30,5 +30,5 @@ data class TesseractConfig(
     val tesseditCharBlacklist: String,
     val tesseditUsePrimaryParamsModel: Boolean,
     val textordSpaceSizeIsVariable: Boolean,
-    val thresholdingMethod: Boolean
+    val thresholdingMethod: Boolean,
 )

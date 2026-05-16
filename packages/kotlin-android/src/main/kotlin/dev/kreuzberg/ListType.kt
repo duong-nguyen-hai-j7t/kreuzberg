@@ -9,5 +9,5 @@ enum class ListType {
     BULLET,
     NUMBERED,
     LETTERED,
-    INDENTED;
+    INDENTED,
 }

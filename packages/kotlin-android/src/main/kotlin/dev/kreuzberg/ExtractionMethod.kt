@@ -8,5 +8,5 @@ package dev.kreuzberg
 enum class ExtractionMethod {
     NATIVE,
     OCR,
-    MIXED;
+    MIXED,
 }

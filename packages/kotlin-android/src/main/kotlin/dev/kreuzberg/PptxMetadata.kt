@@ -11,5 +11,5 @@ data class PptxMetadata(
     val slideCount: Int,
     val slideNames: List<String>,
     val imageCount: Int?,
-    val tableCount: Int?
+    val tableCount: Int?,
 )

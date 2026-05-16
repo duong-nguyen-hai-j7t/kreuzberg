@@ -30,5 +30,5 @@ data class Metadata(
     val abstractText: String?,
     val outputFormat: String?,
     val ocrUsed: Boolean,
-    val additional: Map<String, String>
+    val additional: Map<String, String>,
 )

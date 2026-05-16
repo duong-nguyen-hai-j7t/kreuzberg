@@ -10,5 +10,5 @@ data class BibtexMetadata(
     val citationKeys: List<String>,
     val authors: List<String>,
     val yearRange: YearRange?,
-    val entryTypes: Map<String, Long>?
+    val entryTypes: Map<String, Long>?,
 )

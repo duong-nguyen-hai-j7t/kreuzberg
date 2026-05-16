@@ -25,5 +25,5 @@ data class ExtractedImage(
     val sourcePath: String?,
     val imageKind: ImageKind?,
     val kindConfidence: Float?,
-    val clusterId: Int?
+    val clusterId: Int?,
 )

@@ -11,5 +11,5 @@ package dev.kreuzberg
 data class BatchBytesItem(
     val content: ByteArray,
     val mimeType: String,
-    val config: FileExtractionConfig?
+    val config: FileExtractionConfig?,
 )

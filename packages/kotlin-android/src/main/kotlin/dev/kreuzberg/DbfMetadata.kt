@@ -8,5 +8,5 @@ package dev.kreuzberg
 data class DbfMetadata(
     val recordCount: Long,
     val fieldCount: Long,
-    val fields: List<DbfFieldInfo>
+    val fields: List<DbfFieldInfo>,
 )

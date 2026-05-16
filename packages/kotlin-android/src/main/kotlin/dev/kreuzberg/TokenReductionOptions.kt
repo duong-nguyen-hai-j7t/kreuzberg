@@ -7,5 +7,5 @@ package dev.kreuzberg
  */
 data class TokenReductionOptions(
     val mode: String,
-    val preserveImportantWords: Boolean
+    val preserveImportantWords: Boolean,
 )

@@ -14,5 +14,5 @@ package dev.kreuzberg
 data class PageConfig(
     val extractPages: Boolean,
     val insertPageMarkers: Boolean,
-    val markerFormat: String
+    val markerFormat: String,
 )

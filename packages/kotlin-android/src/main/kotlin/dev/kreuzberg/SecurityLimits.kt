@@ -17,5 +17,5 @@ data class SecurityLimits(
     val maxContentSize: Long,
     val maxIterations: Long,
     val maxXmlDepth: Long,
-    val maxTableCells: Long
+    val maxTableCells: Long,
 )

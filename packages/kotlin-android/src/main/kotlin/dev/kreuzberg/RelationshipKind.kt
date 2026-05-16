@@ -12,5 +12,5 @@ enum class RelationshipKind {
     CAPTION,
     LABEL,
     TOC_ENTRY,
-    CROSS_REFERENCE;
+    CROSS_REFERENCE,
 }

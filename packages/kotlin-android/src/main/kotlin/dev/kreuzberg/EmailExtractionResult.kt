@@ -20,5 +20,5 @@ data class EmailExtractionResult(
     val htmlContent: String?,
     val content: String,
     val attachments: List<EmailAttachment>,
-    val metadata: Map<String, String>
+    val metadata: Map<String, String>,
 )

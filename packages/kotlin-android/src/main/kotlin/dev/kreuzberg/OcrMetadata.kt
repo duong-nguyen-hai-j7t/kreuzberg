@@ -13,5 +13,5 @@ data class OcrMetadata(
     val outputFormat: String,
     val tableCount: Int,
     val tableRows: Int?,
-    val tableCols: Int?
+    val tableCols: Int?,
 )

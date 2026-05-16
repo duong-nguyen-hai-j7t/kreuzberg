@@ -13,12 +13,18 @@ package dev.kreuzberg
  */
 sealed class OutputFormat {
     object Plain : OutputFormat()
+
     object Markdown : OutputFormat()
+
     object Djot : OutputFormat()
+
     object Html : OutputFormat()
+
     object Json : OutputFormat()
+
     object Structured : OutputFormat()
+
     data class Custom(
-        val value: String
+        val value: String,
     ) : OutputFormat()
 }

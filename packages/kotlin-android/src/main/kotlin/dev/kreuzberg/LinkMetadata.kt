@@ -11,5 +11,5 @@ data class LinkMetadata(
     val title: String?,
     val linkType: LinkType,
     val rel: List<String>,
-    val attributes: List<String>
+    val attributes: List<String>,
 )

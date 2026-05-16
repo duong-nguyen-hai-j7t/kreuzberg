@@ -28,7 +28,8 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun extractBytes(content: ByteArray, mimeType: String, config: ExtractionConfig): ExtractionResult
 ```
 **Parameters:**
 
@@ -67,7 +68,8 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun extractFile(path: Path, mimeType: String? = null, config: ExtractionConfig): ExtractionResult
 ```
 **Parameters:**
 
@@ -98,7 +100,8 @@ use a truly synchronous extraction approach instead.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun extractFileSync(path: Path, mimeType: String? = null, config: ExtractionConfig): ExtractionResult
 ```
 **Parameters:**
 
@@ -126,7 +129,8 @@ Tokio runtime. Without it (WASM), this calls a truly synchronous implementation.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun extractBytesSync(content: ByteArray, mimeType: String, config: ExtractionConfig): ExtractionResult
 ```
 **Parameters:**
 
@@ -151,7 +155,8 @@ Only available with `tokio-runtime` (WASM has no filesystem).
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun batchExtractFilesSync(items: List<BatchFileItem>, config: ExtractionConfig): List<ExtractionResult>
 ```
 **Parameters:**
 
@@ -177,7 +182,8 @@ that iterates through items and calls `extract_bytes_sync()`.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun batchExtractBytesSync(items: List<BatchBytesItem>, config: ExtractionConfig): List<ExtractionResult>
 ```
 **Parameters:**
 
@@ -225,7 +231,8 @@ Per-file configuration overrides:
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun batchExtractFiles(items: List<BatchFileItem>, config: ExtractionConfig): List<ExtractionResult>
 ```
 **Parameters:**
 
@@ -267,7 +274,8 @@ Per-item configuration overrides:
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun batchExtractBytes(items: List<BatchBytesItem>, config: ExtractionConfig): List<ExtractionResult>
 ```
 **Parameters:**
 
@@ -302,7 +310,8 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type cannot be determined.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun detectMimeTypeFromBytes(content: ByteArray): String
 ```
 **Parameters:**
 
@@ -328,7 +337,8 @@ A vector of file extensions (without leading dot) for the MIME type.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun getExtensionsForMime(mimeType: String): List<String>
 ```
 **Parameters:**
 
@@ -351,7 +361,8 @@ language bindings via `alef.toml [exclude].functions`.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun listEmbeddingBackends(): List<String>
 ```
 **Returns:** `List<String>`
 **Errors:** Throws `Error`.
@@ -365,7 +376,8 @@ List names of all registered document extractors.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun listDocumentExtractors(): List<String>
 ```
 **Returns:** `List<String>`
 **Errors:** Throws `Error`.
@@ -385,7 +397,8 @@ A vector of OCR backend names.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun listOcrBackends(): List<String>
 ```
 **Returns:** `List<String>`
 **Errors:** Throws `Error`.
@@ -407,7 +420,8 @@ global registry.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun listPostProcessors(): List<String>
 ```
 **Returns:** `List<String>`
 **Errors:** Throws `Error`.
@@ -425,7 +439,8 @@ Returns an error if the registry lock is poisoned.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun listRenderers(): List<String>
 ```
 **Returns:** `List<String>`
 **Errors:** Throws `Error`.
@@ -439,7 +454,8 @@ List names of all registered validators.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun listValidators(): List<String>
 ```
 **Returns:** `List<String>`
 **Errors:** Throws `Error`.
@@ -465,7 +481,8 @@ Returns one embedding vector per input text in the same order.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun embedTextsAsync(texts: List<String>, config: EmbeddingConfig): List<List<Float>>
 ```
 **Parameters:**
 
@@ -494,7 +511,8 @@ or rendered, or if `page_index` is out of range.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun renderPdfPageToPng(pdfBytes: ByteArray, pageIndex: Long, dpi: Int? = null, password: String? = null): ByteArray
 ```
 **Parameters:**
 
@@ -520,7 +538,8 @@ Set `check_exists` to `true` to verify the file exists before detection.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun detectMimeType(path: String, checkExists: Boolean): String
 ```
 **Parameters:**
 
@@ -543,7 +562,8 @@ Returns a 2D vector where each inner vector is the embedding for the correspondi
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+@Throws(Error::class)
+fun embedTexts(texts: List<String>, config: EmbeddingConfig): List<List<Float>>
 ```
 **Parameters:**
 
@@ -567,7 +587,7 @@ clone so the value is safe to pass across FFI boundaries.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+fun getEmbeddingPreset(name: String): EmbeddingPreset?
 ```
 **Parameters:**
 
@@ -588,7 +608,7 @@ Returns owned `String`s so the values are safe to pass across FFI boundaries.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend signature generation
+fun listEmbeddingPresets(): List<String>
 ```
 **Returns:** `List<String>`
 
@@ -607,32 +627,6 @@ for inference in layout detection and embedding generation.
 |-------|------|---------|-------------|
 | `provider` | `ExecutionProviderType` | `ExecutionProviderType.Auto` | Execution provider to use for ONNX inference. |
 | `deviceId` | `Int` | — | GPU device ID (for CUDA/TensorRT). Ignored for CPU/CoreML/Auto. |
-
-
----
-
-#### AnchorProperties
-
-Properties for anchored drawings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `behindDoc` | `Boolean` | — | Behind doc |
-| `layoutInCell` | `Boolean` | — | Layout in cell |
-| `relativeHeight` | `Long?` | `null` | Relative height |
-| `positionH` | `String?` | `null` | Position h |
-| `positionV` | `String?` | `null` | Position v |
-| `wrapType` | `String` | — | Wrap type |
-
-
----
-
-#### ApiDoc
-
-OpenAPI documentation structure.
-
-Defines all endpoints, request/response schemas, and examples
-for the Kreuzberg document extraction API.
 
 
 ---
@@ -730,36 +724,6 @@ BibTeX bibliography metadata.
 
 ---
 
-#### ByteBufferPool
-
-Convenience type alias for a pooled Vec<u8>.
-
-
----
-
-#### CacheWarmParams
-
-Request parameters for cache warm (model download).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `allEmbeddings` | `Boolean` | — | Download all embedding model presets |
-| `embeddingModel` | `String?` | `null` | Specific embedding preset name to download (e.g. "balanced", "speed", "quality") |
-
-
----
-
-#### CharShape
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `bold` | `Boolean` | — | Bold |
-| `italic` | `Boolean` | — | Italic |
-| `underline` | `Boolean` | — | Underline |
-
-
----
-
 #### Chunk
 
 A text chunk with optional embedding and metadata.
@@ -797,49 +761,6 @@ Metadata about a chunk's position in the original document.
 
 ---
 
-#### ChunkRequest
-
-Chunk request with text and configuration.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `String` | — | Text to chunk (must not be empty) |
-| `config` | `String?` | `null` | Optional chunking configuration |
-| `chunkerType` | `String` | — | Chunker type (text, markdown, yaml, or semantic) |
-
-
----
-
-#### ChunkResponse
-
-Chunk response with chunks and metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `chunks` | `List<String>` | — | List of chunks |
-| `chunkCount` | `Long` | — | Total number of chunks |
-| `config` | `String` | — | Configuration used for chunking |
-| `inputSizeBytes` | `Long` | — | Input text size in bytes |
-| `chunkerType` | `String` | — | Chunker type used for chunking |
-
-
----
-
-#### ChunkTextParams
-
-Request parameters for text chunking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `String` | — | Text content to split into chunks |
-| `maxCharacters` | `Long?` | `null` | Maximum characters per chunk (default: 2000) |
-| `overlap` | `Long?` | `null` | Number of overlapping characters between chunks (default: 100) |
-| `chunkerType` | `String?` | `null` | Chunker type: "text", "markdown", "yaml", or "semantic" (default: "text") |
-| `topicThreshold` | `Float?` | `null` | Topic threshold for semantic chunking (0.0-1.0, default: 0.75) |
-
-
----
-
 #### ChunkingConfig
 
 Chunking configuration.
@@ -868,22 +789,9 @@ Use `..the default constructor` when constructing to allow for future field addi
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): ChunkingConfig
 ```
-
----
-
-#### ChunkingResult
-
-Result of a text chunking operation.
-
-Contains the generated chunks and metadata about the chunking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `chunks` | `List<Chunk>` | — | List of text chunks |
-| `chunkCount` | `Long` | — | Total number of chunks generated |
-
 
 ---
 
@@ -929,7 +837,8 @@ default behavior unchanged.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): ContentFilterConfig
 ```
 
 ---
@@ -946,34 +855,6 @@ JATS contributor with role.
 
 ---
 
-#### CoreProperties
-
-Dublin Core metadata from docProps/core.xml
-
-Contains standard metadata fields defined by the Dublin Core standard
-and Office-specific extensions.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `title` | `String?` | `null` | Document title |
-| `subject` | `String?` | `null` | Document subject/topic |
-| `creator` | `String?` | `null` | Document creator/author |
-| `keywords` | `String?` | `null` | Keywords or tags |
-| `description` | `String?` | `null` | Document description/abstract |
-| `lastModifiedBy` | `String?` | `null` | User who last modified the document |
-| `revision` | `String?` | `null` | Revision number |
-| `created` | `String?` | `null` | Creation timestamp (ISO 8601) |
-| `modified` | `String?` | `null` | Last modification timestamp (ISO 8601) |
-| `category` | `String?` | `null` | Document category |
-| `contentStatus` | `String?` | `null` | Content status (Draft, Final, etc.) |
-| `language` | `String?` | `null` | Document language |
-| `identifier` | `String?` | `null` | Unique identifier |
-| `version` | `String?` | `null` | Document version |
-| `lastPrinted` | `String?` | `null` | Last print timestamp (ISO 8601) |
-
-
----
-
 #### CsvMetadata
 
 CSV/TSV file metadata.
@@ -985,16 +866,6 @@ CSV/TSV file metadata.
 | `delimiter` | `String?` | `null` | Delimiter |
 | `hasHeader` | `Boolean` | — | Whether header |
 | `columnTypes` | `List<String>?` | `[]` | Column types |
-
-
----
-
-#### CustomProperties
-
-Custom properties from docProps/custom.xml
-
-Maps property names to their values. Values are converted to JSON types
-based on the VT (Variant Type) specified in the XML.
 
 
 ---
@@ -1024,18 +895,6 @@ dBASE (DBF) file metadata.
 
 ---
 
-#### DetectMimeTypeParams
-
-Request parameters for MIME type detection.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `path` | `String` | — | Path to the file |
-| `useContent` | `Boolean` | — | Use content-based detection (default: true) |
-
-
----
-
 #### DetectResponse
 
 MIME type detection response.
@@ -1044,18 +903,6 @@ MIME type detection response.
 |-------|------|---------|-------------|
 | `mimeType` | `String` | — | Detected MIME type |
 | `filename` | `String?` | `null` | Original filename (if provided) |
-
-
----
-
-#### DetectedBoundary
-
-A detected structural boundary in the text.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `byteOffset` | `Long` | — | Byte offset of the start of the line in the original text. |
-| `isHeader` | `Boolean` | — | Whether this boundary looks like a header/section title. |
 
 
 ---
@@ -1129,20 +976,6 @@ Link element in Djot.
 
 ---
 
-#### DoclingCompatResponse
-
-OpenWebUI "Docling" engine response format.
-
-Returned by `POST /v1/convert/file` for docling-serve compatibility.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `document` | `String` | — | Converted document content |
-| `status` | `String` | — | Processing status |
-
-
----
-
 #### DocumentExtractor
 
 Trait for document extractor plugins.
@@ -1193,7 +1026,8 @@ The pipeline will convert this into the public `ExtractionResult`.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@Throws(Error::class)
+fun extractBytes(content: ByteArray, mimeType: String, config: ExtractionConfig): InternalDocument
 ```
 ###### extractFile()
 
@@ -1213,7 +1047,8 @@ Same as `extract_bytes`, plus file I/O errors.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@Throws(Error::class)
+fun extractFile(path: Path, mimeType: String, config: ExtractionConfig): InternalDocument
 ```
 ###### supportedMimeTypes()
 
@@ -1230,7 +1065,7 @@ A slice of MIME type strings.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun supportedMimeTypes(): List<String>
 ```
 ###### priority()
 
@@ -1254,7 +1089,7 @@ Priority value (default: 50)
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun priority(): Int
 ```
 ###### canHandle()
 
@@ -1270,7 +1105,7 @@ Defaults to `true` (rely on MIME type matching).
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun canHandle(path: Path, mimeType: String): Boolean
 ```
 ###### asSyncExtractor()
 
@@ -1282,7 +1117,7 @@ This is used for WASM and other sync-only environments.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun asSyncExtractor(): SyncExtractor?
 ```
 
 ---
@@ -1355,7 +1190,7 @@ construction paths (builder, derivation) call this automatically.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun finalizeNodeTypes()
 ```
 ###### isEmpty()
 
@@ -1364,43 +1199,16 @@ Check if the document structure is empty.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun isEmpty(): Boolean
 ```
 ###### default()
 
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): DocumentStructure
 ```
-
----
-
-#### DocxAppProperties
-
-Application properties from docProps/app.xml for DOCX
-
-Contains Word-specific document statistics and metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `application` | `String?` | `null` | Application name (e.g., "Microsoft Office Word") |
-| `appVersion` | `String?` | `null` | Application version |
-| `template` | `String?` | `null` | Template filename |
-| `totalTime` | `Int?` | `null` | Total editing time in minutes |
-| `pages` | `Int?` | `null` | Number of pages |
-| `words` | `Int?` | `null` | Number of words |
-| `characters` | `Int?` | `null` | Number of characters (excluding spaces) |
-| `charactersWithSpaces` | `Int?` | `null` | Number of characters (including spaces) |
-| `lines` | `Int?` | `null` | Number of lines |
-| `paragraphs` | `Int?` | `null` | Number of paragraphs |
-| `company` | `String?` | `null` | Company name |
-| `docSecurity` | `Int?` | `null` | Document security level |
-| `scaleCrop` | `Boolean?` | `null` | Scale crop flag |
-| `linksUpToDate` | `Boolean?` | `null` | Links up to date flag |
-| `sharedDoc` | `Boolean?` | `null` | Shared document flag |
-| `hyperlinksChanged` | `Boolean?` | `null` | Hyperlinks changed flag |
-
 
 ---
 
@@ -1413,23 +1221,9 @@ Integrates with `office_metadata` module for core/app/custom properties.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `coreProperties` | `CoreProperties?` | `null` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
-| `appProperties` | `DocxAppProperties?` | `null` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
+| `coreProperties` | `String?` | `null` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
+| `appProperties` | `String?` | `null` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
 | `customProperties` | `Map<String, Any>?` | `{}` | Custom properties from docProps/custom.xml (user-defined properties) Contains key-value pairs defined by users or applications. Values can be strings, numbers, booleans, or dates. |
-
-
----
-
-#### Drawing
-
-A drawing object extracted from `<w:drawing>`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `drawingType` | `String` | — | Drawing type |
-| `extent` | `String?` | `null` | Extent |
-| `docProperties` | `String?` | `null` | Doc properties |
-| `imageRef` | `String?` | `null` | Image ref |
 
 
 ---
@@ -1539,47 +1333,6 @@ Includes sender/recipient information, message ID, and attachment list.
 
 ---
 
-#### EmbedRequest
-
-Embedding request for generating embeddings from text.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `texts` | `List<String>` | — | Text strings to generate embeddings for (at least one non-empty string required) |
-| `config` | `EmbeddingConfig?` | `null` | Optional embedding configuration (model, batch size, etc.) |
-
-
----
-
-#### EmbedResponse
-
-Embedding response containing generated embeddings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `embeddings` | `List<List<Float>>` | — | Generated embeddings (one per input text) |
-| `model` | `String` | — | Model used for embedding generation |
-| `dimensions` | `Long` | — | Dimensionality of the embeddings |
-| `count` | `Long` | — | Number of embeddings generated |
-
-
----
-
-#### EmbedTextParams
-
-Request parameters for embedding generation.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `texts` | `List<String>` | — | List of text strings to generate embeddings for |
-| `preset` | `String?` | `null` | Embedding preset name (default: "balanced"). Available: "speed", "balanced", "quality" |
-| `model` | `String?` | `null` | LLM model for provider-hosted embeddings (e.g., "openai/text-embedding-3-small"). When set, overrides preset and uses liter-llm for embedding generation. |
-| `apiKey` | `String?` | `null` | API key for the LLM provider (optional, falls back to env). |
-| `embeddingPlugin` | `String?` | `null` | Name of a pre-registered in-process embedding plugin backend. When set, overrides both preset and model and dispatches to the registered callback. Requires a prior call to `kreuzberg.plugins.register_embedding_backend`. |
-
-
----
-
 #### EmbeddedFile
 
 Embedded file descriptor extracted from the PDF name tree.
@@ -1651,7 +1404,7 @@ every vector returned by `embed`.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun dimensions(): Long
 ```
 ###### embed()
 
@@ -1666,7 +1419,8 @@ backend-specific failures. The dispatcher layers its own validation
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@Throws(Error::class)
+fun embed(texts: List<String>): List<List<Float>>
 ```
 
 ---
@@ -1695,7 +1449,8 @@ Requires the `embeddings` feature to be enabled.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): EmbeddingConfig
 ```
 
 ---
@@ -1801,31 +1556,6 @@ extracted content and metadata.
 
 ---
 
-#### ExtractResponse
-
-Extraction response (list of results).
-
-
----
-
-#### ExtractStructuredParams
-
-Request parameters for LLM-based structured extraction.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `path` | `String` | — | File path to extract from |
-| `schema` | `Any` | — | JSON schema for structured output |
-| `model` | `String` | — | LLM model (e.g., "openai/gpt-4o") |
-| `schemaName` | `String` | — | Schema name (default: "extraction") |
-| `schemaDescription` | `String?` | `null` | Schema description for the LLM |
-| `prompt` | `String?` | `null` | Custom Jinja2 prompt template |
-| `apiKey` | `String?` | `null` | API key (optional, falls back to env) |
-| `strict` | `Boolean` | — | Enable strict mode |
-
-
----
-
 #### ExtractedImage
 
 Extracted image from a document.
@@ -1852,22 +1582,6 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `imageKind` | `ImageKind?` | `null` | Heuristic classification of what this image likely depicts. `null` if classification was disabled or inconclusive. |
 | `kindConfidence` | `Float?` | `null` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
 | `clusterId` | `Int?` | `null` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `null` for singletons. |
-
-
----
-
-#### ExtractedInlineImage
-
-Extracted inline image with metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `data` | `ByteArray` | — | Uses `bytes.Bytes` for cheap cloning of large buffers. |
-| `format` | `String` | — | Format |
-| `filename` | `String?` | `null` | Filename |
-| `description` | `String?` | `null` | Human-readable description |
-| `dimensions` | `List<Int>?` | `null` | Dimensions |
-| `attributes` | `List<String>` | — | Attributes |
 
 
 ---
@@ -1923,7 +1637,8 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): ExtractionConfig
 ```
 ###### needsImageProcessing()
 
@@ -1942,7 +1657,7 @@ image I/O and processing when results won't be used.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun needsImageProcessing(): Boolean
 ```
 
 ---
@@ -1989,7 +1704,8 @@ Convert from an OCR result.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun fromOcr(ocr: OcrExtractionResult): ExtractionResult
 ```
 
 ---
@@ -2180,21 +1896,9 @@ included in page content.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): HierarchyConfig
 ```
-
----
-
-#### HtmlExtractionResult
-
-Result of HTML extraction with optional images and warnings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `markdown` | `String` | — | Markdown |
-| `images` | `List<ExtractedInlineImage>` | — | Images extracted from the document |
-| `warnings` | `List<String>` | — | Warnings |
-
 
 ---
 
@@ -2230,7 +1934,8 @@ and extracted structural elements (headers, links, images, structured data).
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun from(metadata: HtmlMetadata): HtmlMetadata
 ```
 
 ---
@@ -2259,98 +1964,8 @@ the plain comrak-based renderer.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
-```
-
----
-
-#### HwpImage
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `name` | `String` | — | The name |
-| `data` | `ByteArray` | — | Data |
-
-
----
-
-#### HwpxExtractor
-
-Extractor for Hangul Word Processor XML (.hwpx) files.
-
-Supports HWPX (Open HWPML), the ZIP-based XML successor to the binary HWP 5.0 format.
-
-##### Methods
-
-###### default()
-
-**Signature:**
-
-```kotlin
-// Phase 1: kotlin_android backend method signature generation
-```
-###### name()
-
-**Signature:**
-
-```kotlin
-// Phase 1: kotlin_android backend method signature generation
-```
-###### version()
-
-**Signature:**
-
-```kotlin
-// Phase 1: kotlin_android backend method signature generation
-```
-###### initialize()
-
-**Signature:**
-
-```kotlin
-// Phase 1: kotlin_android backend method signature generation
-```
-###### shutdown()
-
-**Signature:**
-
-```kotlin
-// Phase 1: kotlin_android backend method signature generation
-```
-###### description()
-
-**Signature:**
-
-```kotlin
-// Phase 1: kotlin_android backend method signature generation
-```
-###### author()
-
-**Signature:**
-
-```kotlin
-// Phase 1: kotlin_android backend method signature generation
-```
-###### extractBytes()
-
-**Signature:**
-
-```kotlin
-// Phase 1: kotlin_android backend method signature generation
-```
-###### supportedMimeTypes()
-
-**Signature:**
-
-```kotlin
-// Phase 1: kotlin_android backend method signature generation
-```
-###### priority()
-
-**Signature:**
-
-```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): HtmlOutputConfig
 ```
 
 ---
@@ -2378,7 +1993,8 @@ Image extraction configuration.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): ImageExtractionConfig
 ```
 
 ---
@@ -2415,19 +2031,6 @@ Image element metadata.
 
 ---
 
-#### ImageOcrResult
-
-Result of OCR extraction from an image with optional page tracking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `content` | `String` | — | Extracted text content |
-| `boundaries` | `List<PageBoundary>?` | `null` | Character byte boundaries per frame (for multi-frame TIFFs) |
-| `pageContents` | `List<PageContent>?` | `null` | Per-frame content information |
-
-
----
-
 #### ImagePreprocessingConfig
 
 Image preprocessing configuration for OCR.
@@ -2453,7 +2056,8 @@ for different document types.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): ImagePreprocessingConfig
 ```
 
 ---
@@ -2479,18 +2083,6 @@ including DPI normalization, resizing, and resampling.
 | `calculatedDpi` | `Int?` | `null` | Calculated optimal DPI (if auto_adjust_dpi enabled) |
 | `skippedResize` | `Boolean` | — | Whether resize was skipped (dimensions already optimal) |
 | `resizeError` | `String?` | `null` | Error message if resize failed |
-
-
----
-
-#### InfoResponse
-
-Server information response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `version` | `String` | — | API version |
-| `rustBackend` | `Boolean` | — | Whether using Rust backend |
 
 
 ---
@@ -2560,7 +2152,8 @@ Keyword extraction configuration.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): KeywordConfig
 ```
 
 ---
@@ -2582,7 +2175,8 @@ Language detection configuration.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): LanguageDetectionConfig
 ```
 
 ---
@@ -2622,7 +2216,8 @@ is enabled for PDF extraction.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): LayoutDetectionConfig
 ```
 
 ---
@@ -2702,47 +2297,6 @@ within one extraction (e.g. VLM OCR + structured extraction).
 
 ---
 
-#### ManifestEntryResponse
-
-Model manifest entry for cache management.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `relativePath` | `String` | — | Relative path within the cache directory |
-| `sha256` | `String` | — | SHA256 checksum of the model file |
-| `sizeBytes` | `Long` | — | Expected file size in bytes |
-| `sourceUrl` | `String` | — | HuggingFace source URL for downloading |
-
-
----
-
-#### ManifestResponse
-
-Model manifest response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `kreuzbergVersion` | `String` | — | Kreuzberg version |
-| `totalSizeBytes` | `Long` | — | Total size of all models in bytes |
-| `modelCount` | `Long` | — | Number of models in the manifest |
-| `models` | `List<ManifestEntryResponse>` | — | Individual model entries |
-
-
----
-
-#### MergedChunk
-
-A merged chunk produced by `merge_segments`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `String` | — | Text |
-| `byteStart` | `Long` | — | Byte start |
-| `byteEnd` | `Long` | — | Byte end |
-
-
----
-
 #### Metadata
 
 Extraction result metadata.
@@ -2785,7 +2339,7 @@ additional postprocessor fields are populated.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun isEmpty(): Boolean
 ```
 
 ---
@@ -2842,7 +2396,8 @@ so multiple backends can coexist in a pipeline without key conflicts.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@Throws(Error::class)
+fun processImage(imageBytes: ByteArray, config: OcrConfig): ExtractionResult
 ```
 ###### processImageFile()
 
@@ -2858,7 +2413,8 @@ Same as `process_image`, plus file I/O errors.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@Throws(Error::class)
+fun processImageFile(path: Path, config: OcrConfig): ExtractionResult
 ```
 ###### supportsLanguage()
 
@@ -2871,7 +2427,7 @@ Check if this backend supports a given language code.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun supportsLanguage(lang: String): Boolean
 ```
 ###### backendType()
 
@@ -2884,7 +2440,7 @@ The backend type enum value.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun backendType(): OcrBackendType
 ```
 ###### supportedLanguages()
 
@@ -2895,7 +2451,7 @@ Defaults to empty list. Override to provide comprehensive language support info.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun supportedLanguages(): List<String>
 ```
 ###### supportsTableDetection()
 
@@ -2906,7 +2462,7 @@ Defaults to `false`. Override if your backend can detect and extract tables.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun supportsTableDetection(): Boolean
 ```
 ###### supportsDocumentProcessing()
 
@@ -2917,7 +2473,7 @@ Defaults to `false`. Override if the backend has optimized document processing.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun supportsDocumentProcessing(): Boolean
 ```
 ###### processDocument()
 
@@ -2928,7 +2484,8 @@ Only called if `supports_document_processing` returns `true`.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@Throws(Error::class)
+fun processDocument(path: Path, config: OcrConfig): ExtractionResult
 ```
 
 ---
@@ -2987,7 +2544,8 @@ OCR configuration.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): OcrConfig
 ```
 
 ---
@@ -3132,7 +2690,8 @@ so `OcrQualityThresholds.default()` preserves existing semantics exactly.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): OcrQualityThresholds
 ```
 
 ---
@@ -3175,51 +2734,6 @@ Bounding box for an OCR-detected table in pixel coordinates.
 | `top` | `Int` | — | Top y-coordinate (pixels) |
 | `right` | `Int` | — | Right x-coordinate (pixels) |
 | `bottom` | `Int` | — | Bottom y-coordinate (pixels) |
-
-
----
-
-#### OdtProperties
-
-OpenDocument metadata from meta.xml
-
-Contains metadata fields defined by the OASIS OpenDocument Format standard.
-Uses Dublin Core elements (dc:) and OpenDocument meta elements (meta:).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `title` | `String?` | `null` | Document title (dc:title) |
-| `subject` | `String?` | `null` | Document subject/topic (dc:subject) |
-| `creator` | `String?` | `null` | Current document creator/author (dc:creator) |
-| `initialCreator` | `String?` | `null` | Initial creator of the document (meta:initial-creator) |
-| `keywords` | `String?` | `null` | Keywords or tags (meta:keyword) |
-| `description` | `String?` | `null` | Document description (dc:description) |
-| `date` | `String?` | `null` | Current modification date (dc:date) |
-| `creationDate` | `String?` | `null` | Initial creation date (meta:creation-date) |
-| `language` | `String?` | `null` | Document language (dc:language) |
-| `generator` | `String?` | `null` | Generator/application that created the document (meta:generator) |
-| `editingDuration` | `String?` | `null` | Editing duration in ISO 8601 format (meta:editing-duration) |
-| `editingCycles` | `String?` | `null` | Number of edits/revisions (meta:editing-cycles) |
-| `pageCount` | `Int?` | `null` | Document statistics - page count (meta:page-count) |
-| `wordCount` | `Int?` | `null` | Document statistics - word count (meta:word-count) |
-| `characterCount` | `Int?` | `null` | Document statistics - character count (meta:character-count) |
-| `paragraphCount` | `Int?` | `null` | Document statistics - paragraph count (meta:paragraph-count) |
-| `tableCount` | `Int?` | `null` | Document statistics - table count (meta:table-count) |
-| `imageCount` | `Int?` | `null` | Document statistics - image count (meta:image-count) |
-
-
----
-
-#### OpenWebDocumentResponse
-
-OpenWebUI "External" engine response format.
-
-Returned by `PUT /process` for the OpenWebUI external document loader.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `pageContent` | `String` | — | Extracted text content |
-| `metadata` | `String` | — | Document metadata |
 
 
 ---
@@ -3267,7 +2781,7 @@ Sets a custom cache directory for model files.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun withCacheDir(path: Path): PaddleOcrConfig
 ```
 ###### withTableDetection()
 
@@ -3276,7 +2790,7 @@ Enables or disables table structure detection.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun withTableDetection(enable: Boolean): PaddleOcrConfig
 ```
 ###### withAngleCls()
 
@@ -3285,7 +2799,7 @@ Enables or disables angle classification for rotated text.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun withAngleCls(enable: Boolean): PaddleOcrConfig
 ```
 ###### withDetDbThresh()
 
@@ -3294,7 +2808,7 @@ Sets the database threshold for text detection.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun withDetDbThresh(threshold: Float): PaddleOcrConfig
 ```
 ###### withDetDbBoxThresh()
 
@@ -3303,7 +2817,7 @@ Sets the box threshold for text bounding box refinement.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun withDetDbBoxThresh(threshold: Float): PaddleOcrConfig
 ```
 ###### withDetDbUnclipRatio()
 
@@ -3312,7 +2826,7 @@ Sets the unclip ratio for expanding text bounding boxes.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun withDetDbUnclipRatio(ratio: Float): PaddleOcrConfig
 ```
 ###### withDetLimitSideLen()
 
@@ -3321,7 +2835,7 @@ Sets the maximum side length for detection images.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun withDetLimitSideLen(length: Int): PaddleOcrConfig
 ```
 ###### withRecBatchNum()
 
@@ -3330,7 +2844,7 @@ Sets the batch size for recognition inference.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun withRecBatchNum(batchSize: Int): PaddleOcrConfig
 ```
 ###### withDropScore()
 
@@ -3339,7 +2853,7 @@ Sets the minimum recognition confidence threshold.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun withDropScore(score: Float): PaddleOcrConfig
 ```
 ###### withPadding()
 
@@ -3348,7 +2862,7 @@ Sets padding in pixels added around images before detection.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun withPadding(padding: Int): PaddleOcrConfig
 ```
 ###### withModelTier()
 
@@ -3357,7 +2871,7 @@ Sets the model tier controlling detection/recognition model size.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun withModelTier(tier: String): PaddleOcrConfig
 ```
 ###### default()
 
@@ -3366,7 +2880,8 @@ Creates a default configuration with English language support.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): PaddleOcrConfig
 ```
 
 ---
@@ -3415,7 +2930,8 @@ when page boundaries are available and chunking is configured.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): PageConfig
 ```
 
 ---
@@ -3486,23 +3002,6 @@ and visibility state (for presentations).
 
 ---
 
-#### PageMarginsPoints
-
-Page margins converted to points (1/72 inch).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `top` | `Double?` | `null` | Top |
-| `right` | `Double?` | `null` | Right |
-| `bottom` | `Double?` | `null` | Bottom |
-| `left` | `Double?` | `null` | Left |
-| `header` | `Double?` | `null` | Header |
-| `footer` | `Double?` | `null` | Footer |
-| `gutter` | `Double?` | `null` | Gutter |
-
-
----
-
 #### PageStructure
 
 Unified page structure for documents.
@@ -3558,7 +3057,8 @@ PDF-specific configuration.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): PdfConfig
 ```
 
 ---
@@ -3608,7 +3108,7 @@ The name should be:
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun name(): String
 ```
 ###### version()
 
@@ -3621,7 +3121,7 @@ Defaults to the kreuzberg crate version.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun version(): String
 ```
 ###### initialize()
 
@@ -3648,7 +3148,8 @@ Defaults to a no-op for stateless plugins.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@Throws(Error::class)
+fun initialize()
 ```
 ###### shutdown()
 
@@ -3675,7 +3176,8 @@ Defaults to a no-op for stateless plugins.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@Throws(Error::class)
+fun shutdown()
 ```
 ###### description()
 
@@ -3686,7 +3188,7 @@ Defaults to empty string if not overridden.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun description(): String
 ```
 ###### author()
 
@@ -3697,7 +3199,7 @@ Defaults to empty string if not overridden.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun author(): String
 ```
 
 ---
@@ -3780,7 +3282,8 @@ async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@Throws(Error::class)
+fun process(result: ExtractionResult, config: ExtractionConfig)
 ```
 ###### processingStage()
 
@@ -3795,7 +3298,7 @@ The `ProcessingStage` (Early, Middle, or Late).
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun processingStage(): ProcessingStage
 ```
 ###### shouldProcess()
 
@@ -3811,7 +3314,7 @@ Defaults to `true` (always run).
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun shouldProcess(result: ExtractionResult, config: ExtractionConfig): Boolean
 ```
 ###### estimatedDurationMs()
 
@@ -3826,7 +3329,7 @@ Estimated processing time in milliseconds.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun estimatedDurationMs(result: ExtractionResult): Long
 ```
 ###### priority()
 
@@ -3839,7 +3342,7 @@ for high-priority processors that should run early in their stage.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun priority(): Int
 ```
 
 ---
@@ -3863,35 +3366,9 @@ Post-processor configuration.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): PostProcessorConfig
 ```
-
----
-
-#### PptxAppProperties
-
-Application properties from docProps/app.xml for PPTX
-
-Contains PowerPoint-specific document metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `application` | `String?` | `null` | Application name (e.g., "Microsoft Office PowerPoint") |
-| `appVersion` | `String?` | `null` | Application version |
-| `totalTime` | `Int?` | `null` | Total editing time in minutes |
-| `company` | `String?` | `null` | Company name |
-| `docSecurity` | `Int?` | `null` | Document security level |
-| `scaleCrop` | `Boolean?` | `null` | Scale crop flag |
-| `linksUpToDate` | `Boolean?` | `null` | Links up to date flag |
-| `sharedDoc` | `Boolean?` | `null` | Shared document flag |
-| `hyperlinksChanged` | `Boolean?` | `null` | Hyperlinks changed flag |
-| `slides` | `Int?` | `null` | Number of slides |
-| `notes` | `Int?` | `null` | Number of notes |
-| `hiddenSlides` | `Int?` | `null` | Number of hidden slides |
-| `multimediaClips` | `Int?` | `null` | Number of multimedia clips |
-| `presentationFormat` | `String?` | `null` | Presentation format (e.g., "Widescreen", "Standard") |
-| `slideTitles` | `List<String>` | `[]` | Slide titles |
-
 
 ---
 
@@ -3976,7 +3453,8 @@ RAKE-specific parameters.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): RakeParams
 ```
 
 ---
@@ -3996,30 +3474,6 @@ the type in their own code.
 | `cells` | `List<List<String>>` | — | Table cells as a 2D vector (rows × columns). |
 | `markdown` | `String` | — | Rendered markdown table. |
 
-
----
-
-#### Recyclable
-
-Trait for types that can be pooled and reused.
-
-Implementing this trait allows a type to be used with `Pool<T>`.
-The `reset()` method should clear the object's state for reuse.
-
-##### Methods
-
-###### reset()
-
-Reset the object to a reusable state.
-
-This is called when returning an object to the pool.
-Should clear any internal data while preserving capacity.
-
-**Signature:**
-
-```kotlin
-// Phase 1: kotlin_android backend method signature generation
-```
 
 ---
 
@@ -4058,20 +3512,9 @@ Returns an error if rendering fails.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@Throws(Error::class)
+fun render(doc: InternalDocument): String
 ```
-
----
-
-#### ResolvedStyle
-
-Fully resolved (flattened) style after walking the inheritance chain.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `paragraphProperties` | `String` | — | Paragraph properties |
-| `runProperties` | `String` | — | Run properties |
-
 
 ---
 
@@ -4101,7 +3544,8 @@ while still supporting legitimate documents.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): SecurityLimits
 ```
 
 ---
@@ -4136,7 +3580,8 @@ including host/port settings, CORS configuration, and upload limits.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): ServerConfig
 ```
 ###### listenAddr()
 
@@ -4145,7 +3590,7 @@ Get the server listen address (host:port).
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun listenAddr(): String
 ```
 ###### corsAllowsAll()
 
@@ -4157,7 +3602,7 @@ are allowed. Returns `false` if specific origins are configured.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun corsAllowsAll(): Boolean
 ```
 ###### isOriginAllowed()
 
@@ -4170,7 +3615,7 @@ Returns `true` if:
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun isOriginAllowed(origin: String): Boolean
 ```
 ###### maxRequestBodyMb()
 
@@ -4179,7 +3624,7 @@ Get maximum request body size in megabytes (rounded up).
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun maxRequestBodyMb(): Long
 ```
 ###### maxMultipartFieldMb()
 
@@ -4188,20 +3633,8 @@ Get maximum multipart field size in megabytes (rounded up).
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun maxMultipartFieldMb(): Long
 ```
-
----
-
-#### StreamReader
-
-
----
-
-#### StringBufferPool
-
-Convenience type alias for a pooled String.
-
 
 ---
 
@@ -4249,37 +3682,6 @@ returning structured data that conforms to the schema.
 
 ---
 
-#### StructuredExtractionResponse
-
-Response from structured extraction endpoint.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `structuredOutput` | `Any` | — | Structured data conforming to the provided JSON schema |
-| `content` | `String` | — | Extracted document text content |
-| `mimeType` | `String` | — | Detected MIME type of the input file |
-
-
----
-
-#### StyleDefinition
-
-A single style definition parsed from `<w:style>` in `word/styles.xml`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `id` | `String` | — | The style ID (`w:styleId` attribute). |
-| `name` | `String?` | `null` | Human-readable name (`<w:name w:val="..."/>`). |
-| `styleType` | `String` | — | Style type: paragraph, character, table, or numbering. |
-| `basedOn` | `String?` | `null` | ID of the parent style (`<w:basedOn w:val="..."/>`). |
-| `nextStyle` | `String?` | `null` | ID of the style to apply to the next paragraph (`<w:next w:val="..."/>`). |
-| `isDefault` | `Boolean` | — | Whether this is the default style for its type. |
-| `paragraphProperties` | `String` | — | Paragraph properties defined directly on this style. |
-| `runProperties` | `String` | — | Run properties defined directly on this style. |
-
-
----
-
 #### SupportedFormat
 
 A supported document format entry.
@@ -4291,44 +3693,6 @@ Represents a file extension and its corresponding MIME type that Kreuzberg can p
 | `extension` | `String` | — | File extension (without leading dot), e.g., "pdf", "docx" |
 | `mimeType` | `String` | — | MIME type string, e.g., "application/pdf" |
 
-
----
-
-#### SyncExtractor
-
-Trait for extractors that can work synchronously (WASM-compatible).
-
-This trait defines the synchronous extraction interface for WASM targets and other
-environments where async/tokio runtimes are not available or desirable.
-
-# Implementation
-
-Extractors that need to support WASM should implement this trait in addition to
-the async `DocumentExtractor` trait. This allows the same extractor to work in both
-environments by delegating to the sync implementation.
-
-# MIME Type Validation
-
-The `mime_type` parameter is guaranteed to be already validated.
-
-##### Methods
-
-###### extractSync()
-
-Extract content from a byte array synchronously.
-
-This method performs extraction without requiring an async runtime.
-It is called by `extract_bytes_sync()` when the `tokio-runtime` feature is disabled.
-
-**Returns:**
-
-An `InternalDocument` containing the extracted elements, metadata, and tables.
-
-**Signature:**
-
-```kotlin
-// Phase 1: kotlin_android backend method signature generation
-```
 
 ---
 
@@ -4380,66 +3744,6 @@ Stores row/column dimensions and a flat list of cells with position info.
 
 ---
 
-#### TableProperties
-
-Table-level properties from `<w:tblPr>`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `styleId` | `String?` | `null` | Style id |
-| `width` | `String?` | `null` | Width |
-| `alignment` | `String?` | `null` | Alignment |
-| `layout` | `String?` | `null` | Layout |
-| `look` | `String?` | `null` | Look |
-| `borders` | `String?` | `null` | Borders |
-| `cellMargins` | `String?` | `null` | Cell margins |
-| `indent` | `String?` | `null` | Indent |
-| `caption` | `String?` | `null` | Caption |
-
-
----
-
-#### TessdataManager
-
-Manages tessdata file downloading, caching, and manifest generation.
-
-##### Methods
-
-###### cacheDir()
-
-Get the cache directory path.
-
-**Signature:**
-
-```kotlin
-// Phase 1: kotlin_android backend method signature generation
-```
-###### isLanguageCached()
-
-Check if a specific language traineddata file is cached.
-
-**Signature:**
-
-```kotlin
-// Phase 1: kotlin_android backend method signature generation
-```
-###### ensureAllLanguages()
-
-Downloads all tessdata_fast traineddata files to the cache directory.
-
-Skips files that already exist. Returns the count of newly downloaded files.
-
-When the `paddle-ocr` feature is not enabled, no download URLs are available
-and this method always returns `Ok(0)`.
-
-**Signature:**
-
-```kotlin
-// Phase 1: kotlin_android backend method signature generation
-```
-
----
-
 #### TesseractConfig
 
 Tesseract OCR configuration.
@@ -4479,7 +3783,8 @@ for specific document types (invoices, handwriting, etc.).
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): TesseractConfig
 ```
 
 ---
@@ -4562,7 +3867,8 @@ for Markdown, structural elements like headers and links.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): TokenReductionConfig
 ```
 
 ---
@@ -4583,15 +3889,9 @@ Token reduction configuration.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): TokenReductionOptions
 ```
-
----
-
-#### TracingLayer
-
-A `tower.Layer` that wraps each extraction in a semantic tracing span.
-
 
 ---
 
@@ -4629,7 +3929,8 @@ docstrings = true
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): TreeSitterConfig
 ```
 
 ---
@@ -4659,7 +3960,8 @@ Controls which analysis features are enabled when extracting code files.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): TreeSitterProcessConfig
 ```
 
 ---
@@ -4798,7 +4100,8 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@Throws(Error::class)
+fun validate(result: ExtractionResult, config: ExtractionConfig)
 ```
 ###### shouldValidate()
 
@@ -4814,7 +4117,7 @@ Defaults to `true` (always run).
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun shouldValidate(result: ExtractionResult, config: ExtractionConfig): Boolean
 ```
 ###### priority()
 
@@ -4832,42 +4135,8 @@ Priority value (higher = runs earlier).
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+fun priority(): Int
 ```
-
----
-
-#### WarmResponse
-
-Cache warm response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `cacheDir` | `String` | — | Cache directory used |
-| `downloaded` | `List<String>` | — | Models that were downloaded |
-| `alreadyCached` | `List<String>` | — | Models that were already cached |
-
-
----
-
-#### XlsxAppProperties
-
-Application properties from docProps/app.xml for XLSX
-
-Contains Excel-specific document metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `application` | `String?` | `null` | Application name (e.g., "Microsoft Excel") |
-| `appVersion` | `String?` | `null` | Application version |
-| `docSecurity` | `Int?` | `null` | Document security level |
-| `scaleCrop` | `Boolean?` | `null` | Scale crop flag |
-| `linksUpToDate` | `Boolean?` | `null` | Links up to date flag |
-| `sharedDoc` | `Boolean?` | `null` | Shared document flag |
-| `hyperlinksChanged` | `Boolean?` | `null` | Hyperlinks changed flag |
-| `company` | `String?` | `null` | Company name |
-| `worksheetNames` | `List<String>` | `[]` | Worksheet names |
-
 
 ---
 
@@ -4916,7 +4185,8 @@ YAKE-specific parameters.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin_android backend method signature generation
+@JvmStatic
+fun default(): YakeParams
 ```
 
 ---
@@ -4930,13 +4200,6 @@ Year range for bibliographic metadata.
 | `min` | `Int?` | `null` | Min |
 | `max` | `Int?` | `null` | Max |
 | `years` | `List<Int>` | — | Years |
-
-
----
-
-#### ZipBombValidator
-
-Helper struct for validating ZIP archives for security issues.
 
 
 ---
@@ -5091,6 +4354,32 @@ of `ExtractionResult`.
 | `Chunks` | Use TSLP semantic chunks as content (default). |
 | `Raw` | Use raw source code as content. |
 | `Structure` | Emit function/class headings + docstrings (no code bodies). |
+
+
+---
+
+#### ListType
+
+Type of list detection.
+
+| Value | Description |
+|-------|-------------|
+| `Bullet` | Bullet points (-, *, •, etc.) |
+| `Numbered` | Numbered lists (1., 2., etc.) |
+| `Lettered` | Lettered lists (a., b., A., B., etc.) |
+| `Indented` | Indented items |
+
+
+---
+
+#### DrawingType
+
+Whether the drawing is inline or anchored.
+
+| Value | Description |
+|-------|-------------|
+| `Inline` | Inline |
+| `Anchored` | Anchored — Fields: `0`: `String` |
 
 
 ---
@@ -5556,17 +4845,6 @@ Semantic classification of an extracted URI.
 | `Citation` | A citation or bibliographic reference (DOI, academic ref). |
 | `Reference` | A general reference (e.g. `\ref{}` in LaTeX, `:ref:` in RST). |
 | `Email` | An email address (`mailto:` link or bare email). |
-
-
----
-
-#### PoolError
-
-Error type for pool operations.
-
-| Value | Description |
-|-------|-------------|
-| `LockPoisoned` | The pool's internal mutex was poisoned. This indicates a panic occurred while holding the lock. The pool is in a locked state and cannot be recovered. |
 
 
 ---

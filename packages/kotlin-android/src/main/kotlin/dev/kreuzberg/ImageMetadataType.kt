@@ -11,5 +11,5 @@ data class ImageMetadataType(
     val title: String?,
     val dimensions: List<Int>?,
     val imageType: ImageType,
-    val attributes: List<String>
+    val attributes: List<String>,
 )

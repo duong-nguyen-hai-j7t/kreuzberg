@@ -12,5 +12,5 @@ data class OcrPipelineStage(
     val tesseractConfig: TesseractConfig?,
     val paddleOcrConfig: String?,
     val vlmConfig: LlmConfig?,
-    val backendOptions: String?
+    val backendOptions: String?,
 )

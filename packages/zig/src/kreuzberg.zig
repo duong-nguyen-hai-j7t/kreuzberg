@@ -119,7 +119,7 @@ pub const ExtractionConfig = struct {
     pages: ?PageConfig,
     keywords: ?KeywordConfig,
     postprocessor: ?PostProcessorConfig,
-    html_options: ?[:0]const u8,
+    html_options: ?[]const u8,
     html_output: ?HtmlOutputConfig,
     extraction_timeout_secs: ?u64,
     max_concurrent_extractions: ?u64,
@@ -130,14 +130,14 @@ pub const ExtractionConfig = struct {
     use_layout_for_markdown: bool,
     include_document_structure: bool,
     acceleration: ?AccelerationConfig,
-    cache_namespace: ?[:0]const u8,
+    cache_namespace: ?[]const u8,
     cache_ttl_secs: ?u64,
     email: ?EmailConfig,
-    concurrency: ?[:0]const u8,
+    concurrency: ?[]const u8,
     max_archive_depth: u64,
     tree_sitter: ?TreeSitterConfig,
     structured_extraction: ?StructuredExtractionConfig,
-    cancel_token: ?[:0]const u8,
+    cancel_token: ?[]const u8,
 };
 
 /// Per-file extraction configuration overrides for batch processing.
@@ -170,7 +170,7 @@ pub const FileExtractionConfig = struct {
     pages: ?PageConfig,
     keywords: ?KeywordConfig,
     postprocessor: ?PostProcessorConfig,
-    html_options: ?[:0]const u8,
+    html_options: ?[]const u8,
     result_format: ?ResultFormat,
     output_format: ?OutputFormat,
     include_document_structure: ?bool,
@@ -186,7 +186,7 @@ pub const FileExtractionConfig = struct {
 /// to represent a single item in a batch extraction job.
 pub const BatchBytesItem = struct {
     content: []const u8,
-    mime_type: [:0]const u8,
+    mime_type: []const u8,
     config: ?FileExtractionConfig,
 };
 
@@ -195,7 +195,7 @@ pub const BatchBytesItem = struct {
 /// Used with `batch_extract_files` and `batch_extract_files_sync`
 /// to represent a single file in a batch extraction job.
 pub const BatchFileItem = struct {
-    path: [:0]const u8,
+    path: []const u8,
     config: ?FileExtractionConfig,
 };
 
@@ -214,7 +214,7 @@ pub const ImageExtractionConfig = struct {
 
 /// Token reduction configuration.
 pub const TokenReductionOptions = struct {
-    mode: [:0]const u8,
+    mode: []const u8,
     preserve_important_words: bool,
 };
 
@@ -232,10 +232,10 @@ pub const LanguageDetectionConfig = struct {
 /// `StyledHtmlRenderer` instead of
 /// the plain comrak-based renderer.
 pub const HtmlOutputConfig = struct {
-    css: ?[:0]const u8,
-    css_file: ?[:0]const u8,
+    css: ?[]const u8,
+    css_file: ?[]const u8,
     theme: HtmlTheme,
-    class_prefix: [:0]const u8,
+    class_prefix: []const u8,
     embed_css: bool,
 };
 
@@ -256,9 +256,9 @@ pub const LayoutDetectionConfig = struct {
 /// Each feature (VLM OCR, VLM embeddings, structured extraction) carries
 /// its own `LlmConfig`, allowing different providers per feature.
 pub const LlmConfig = struct {
-    model: [:0]const u8,
-    api_key: ?[:0]const u8,
-    base_url: ?[:0]const u8,
+    model: []const u8,
+    api_key: ?[]const u8,
+    base_url: ?[]const u8,
     timeout_secs: ?u64,
     max_retries: ?u32,
     temperature: ?f64,
@@ -270,11 +270,11 @@ pub const LlmConfig = struct {
 /// Sends extracted document content to a VLM with a JSON schema,
 /// returning structured data that conforms to the schema.
 pub const StructuredExtractionConfig = struct {
-    schema: [:0]const u8,
-    schema_name: [:0]const u8,
-    schema_description: ?[:0]const u8,
+    schema: []const u8,
+    schema_name: []const u8,
+    schema_description: ?[]const u8,
     strict: bool,
-    prompt: ?[:0]const u8,
+    prompt: ?[]const u8,
     llm: LlmConfig,
 };
 
@@ -303,13 +303,13 @@ pub const OcrQualityThresholds = struct {
 
 /// A single backend stage in the OCR pipeline.
 pub const OcrPipelineStage = struct {
-    backend: [:0]const u8,
+    backend: []const u8,
     priority: u32,
-    language: ?[:0]const u8,
+    language: ?[]const u8,
     tesseract_config: ?TesseractConfig,
-    paddle_ocr_config: ?[:0]const u8,
+    paddle_ocr_config: ?[]const u8,
     vlm_config: ?LlmConfig,
-    backend_options: ?[:0]const u8,
+    backend_options: ?[]const u8,
 };
 
 /// Multi-backend OCR pipeline with quality-based fallback.
@@ -325,18 +325,18 @@ pub const OcrPipelineConfig = struct {
 /// OCR configuration.
 pub const OcrConfig = struct {
     enabled: bool,
-    backend: [:0]const u8,
-    language: [:0]const u8,
+    backend: []const u8,
+    language: []const u8,
     tesseract_config: ?TesseractConfig,
     output_format: ?OutputFormat,
-    paddle_ocr_config: ?[:0]const u8,
-    backend_options: ?[:0]const u8,
+    paddle_ocr_config: ?[]const u8,
+    backend_options: ?[]const u8,
     element_config: ?OcrElementConfig,
     quality_thresholds: ?OcrQualityThresholds,
     pipeline: ?OcrPipelineConfig,
     auto_rotate: bool,
     vlm_config: ?LlmConfig,
-    vlm_prompt: ?[:0]const u8,
+    vlm_prompt: ?[]const u8,
     acceleration: ?AccelerationConfig,
     tessdata_bytes: ?std.StringHashMap([]const u8),
 };
@@ -351,14 +351,14 @@ pub const OcrConfig = struct {
 pub const PageConfig = struct {
     extract_pages: bool,
     insert_page_markers: bool,
-    marker_format: [:0]const u8,
+    marker_format: []const u8,
 };
 
 /// PDF-specific configuration.
 pub const PdfConfig = struct {
     extract_images: bool,
     extract_tables: bool,
-    passwords: ?[]const [:0]const u8,
+    passwords: ?[]const []const u8,
     extract_metadata: bool,
     hierarchy: ?HierarchyConfig,
     extract_annotations: bool,
@@ -383,10 +383,10 @@ pub const HierarchyConfig = struct {
 /// Post-processor configuration.
 pub const PostProcessorConfig = struct {
     enabled: bool,
-    enabled_processors: ?[]const [:0]const u8,
-    disabled_processors: ?[]const [:0]const u8,
-    enabled_set: ?[:0]const u8,
-    disabled_set: ?[:0]const u8,
+    enabled_processors: ?[]const []const u8,
+    disabled_processors: ?[]const []const u8,
+    enabled_set: ?[]const u8,
+    disabled_set: ?[]const u8,
 };
 
 /// Chunking configuration.
@@ -401,7 +401,7 @@ pub const ChunkingConfig = struct {
     trim: bool,
     chunker_type: ChunkerType,
     embedding: ?EmbeddingConfig,
-    preset: ?[:0]const u8,
+    preset: ?[]const u8,
     sizing: ChunkSizing,
     prepend_heading_context: bool,
     topic_threshold: ?f32,
@@ -416,7 +416,7 @@ pub const EmbeddingConfig = struct {
     normalize: bool,
     batch_size: u64,
     show_download_progress: bool,
-    cache_dir: ?[:0]const u8,
+    cache_dir: ?[]const u8,
     acceleration: ?AccelerationConfig,
     max_embed_duration_secs: ?u64,
 };
@@ -439,9 +439,9 @@ pub const EmbeddingConfig = struct {
 /// ```
 pub const TreeSitterConfig = struct {
     enabled: bool,
-    cache_dir: ?[:0]const u8,
-    languages: ?[]const [:0]const u8,
-    groups: ?[]const [:0]const u8,
+    cache_dir: ?[]const u8,
+    languages: ?[]const []const u8,
+    groups: ?[]const []const u8,
     process: TreeSitterProcessConfig,
 };
 
@@ -464,8 +464,8 @@ pub const TreeSitterProcessConfig = struct {
 ///
 /// Represents a file extension and its corresponding MIME type that Kreuzberg can process.
 pub const SupportedFormat = struct {
-    extension: [:0]const u8,
-    mime_type: [:0]const u8,
+    extension: []const u8,
+    mime_type: []const u8,
 };
 
 /// API server configuration.
@@ -481,18 +481,18 @@ pub const SupportedFormat = struct {
 /// - `max_request_body_bytes`: 104_857_600 (100 MB)
 /// - `max_multipart_field_bytes`: 104_857_600 (100 MB)
 pub const ServerConfig = struct {
-    host: [:0]const u8,
+    host: []const u8,
     port: u16,
-    cors_origins: []const [:0]const u8,
+    cors_origins: []const []const u8,
     max_request_body_bytes: u64,
     max_multipart_field_bytes: u64,
 };
 
 pub const StructuredDataResult = struct {
-    content: [:0]const u8,
-    format: [:0]const u8,
-    metadata: std.StringHashMap([:0]const u8),
-    text_fields: []const [:0]const u8,
+    content: []const u8,
+    format: []const u8,
+    metadata: std.StringHashMap([]const u8),
+    text_fields: []const []const u8,
 };
 
 /// Configuration for security limits across extractors.
@@ -513,14 +513,14 @@ pub const SecurityLimits = struct {
 
 pub const TokenReductionConfig = struct {
     level: ReductionLevel,
-    language_hint: ?[:0]const u8,
+    language_hint: ?[]const u8,
     preserve_markdown: bool,
     preserve_code: bool,
     semantic_threshold: f32,
     enable_parallel: bool,
     use_simd: bool,
-    custom_stopwords: ?std.StringHashMap([]const [:0]const u8),
-    preserve_patterns: []const [:0]const u8,
+    custom_stopwords: ?std.StringHashMap([]const []const u8),
+    preserve_patterns: []const []const u8,
     target_reduction: ?f32,
     enable_semantic_clustering: bool,
 };
@@ -528,9 +528,9 @@ pub const TokenReductionConfig = struct {
 /// A PDF annotation extracted from a document page.
 pub const PdfAnnotation = struct {
     annotation_type: PdfAnnotationType,
-    content: ?[:0]const u8,
+    content: ?[]const u8,
     page_number: u32,
-    bounding_box: ?[:0]const u8,
+    bounding_box: ?[]const u8,
 };
 
 /// Comprehensive Djot document structure with semantic preservation.
@@ -545,14 +545,14 @@ pub const PdfAnnotation = struct {
 ///
 /// Available when the `djot` feature is enabled.
 pub const DjotContent = struct {
-    plain_text: [:0]const u8,
+    plain_text: []const u8,
     blocks: []const FormattedBlock,
     metadata: Metadata,
     tables: []const Table,
     images: []const DjotImage,
     links: []const DjotLink,
     footnotes: []const Footnote,
-    attributes: []const [:0]const u8,
+    attributes: []const []const u8,
 };
 
 /// Block-level element in a Djot document.
@@ -562,9 +562,9 @@ pub const FormattedBlock = struct {
     block_type: BlockType,
     level: ?u64,
     inline_content: []const InlineElement,
-    attributes: ?[:0]const u8,
-    language: ?[:0]const u8,
-    code: ?[:0]const u8,
+    attributes: ?[]const u8,
+    language: ?[]const u8,
+    code: ?[]const u8,
     children: []const FormattedBlock,
 };
 
@@ -573,30 +573,30 @@ pub const FormattedBlock = struct {
 /// Represents text with formatting, links, images, etc.
 pub const InlineElement = struct {
     element_type: InlineType,
-    content: [:0]const u8,
-    attributes: ?[:0]const u8,
-    metadata: ?std.StringHashMap([:0]const u8),
+    content: []const u8,
+    attributes: ?[]const u8,
+    metadata: ?std.StringHashMap([]const u8),
 };
 
 /// Image element in Djot.
 pub const DjotImage = struct {
-    src: [:0]const u8,
-    alt: [:0]const u8,
-    title: ?[:0]const u8,
-    attributes: ?[:0]const u8,
+    src: []const u8,
+    alt: []const u8,
+    title: ?[]const u8,
+    attributes: ?[]const u8,
 };
 
 /// Link element in Djot.
 pub const DjotLink = struct {
-    url: [:0]const u8,
-    text: [:0]const u8,
-    title: ?[:0]const u8,
-    attributes: ?[:0]const u8,
+    url: []const u8,
+    text: []const u8,
+    title: ?[]const u8,
+    attributes: ?[]const u8,
 };
 
 /// Footnote in Djot.
 pub const Footnote = struct {
-    label: [:0]const u8,
+    label: []const u8,
     content: []const FormattedBlock,
 };
 
@@ -612,9 +612,9 @@ pub const Footnote = struct {
 /// and parent-child relationships are bidirectionally consistent.
 pub const DocumentStructure = struct {
     nodes: []const DocumentNode,
-    source_format: ?[:0]const u8,
+    source_format: ?[]const u8,
     relationships: []const DocumentRelationship,
-    node_types: []const [:0]const u8,
+    node_types: []const []const u8,
 };
 
 /// A resolved relationship between two nodes in the document tree.
@@ -629,16 +629,16 @@ pub const DocumentRelationship = struct {
 /// Each node has deterministic `id`, typed `content`, optional `parent`/`children`
 /// for tree structure, and metadata like page number, bounding box, and content layer.
 pub const DocumentNode = struct {
-    id: [:0]const u8,
+    id: []const u8,
     content: NodeContent,
     parent: ?u32,
     children: []const u32,
     content_layer: ContentLayer,
     page: ?u32,
     page_end: ?u32,
-    bbox: ?[:0]const u8,
+    bbox: ?[]const u8,
     annotations: []const TextAnnotation,
-    attributes: ?std.StringHashMap([:0]const u8),
+    attributes: ?std.StringHashMap([]const u8),
 };
 
 /// Structured table grid with cell-level metadata.
@@ -652,13 +652,13 @@ pub const TableGrid = struct {
 
 /// Individual grid cell with position and span metadata.
 pub const GridCell = struct {
-    content: [:0]const u8,
+    content: []const u8,
     row: u32,
     col: u32,
     row_span: u32,
     col_span: u32,
     is_header: bool,
-    bbox: ?[:0]const u8,
+    bbox: ?[]const u8,
 };
 
 /// Inline text annotation — byte-range based formatting and links.
@@ -675,12 +675,12 @@ pub const TextAnnotation = struct {
 ///
 /// This is the main result type returned by all extraction functions.
 pub const ExtractionResult = struct {
-    content: [:0]const u8,
-    mime_type: [:0]const u8,
+    content: []const u8,
+    mime_type: []const u8,
     metadata: Metadata,
     extraction_method: ?ExtractionMethod,
     tables: []const Table,
-    detected_languages: ?[]const [:0]const u8,
+    detected_languages: ?[]const []const u8,
     chunks: ?[]const Chunk,
     images: ?[]const ExtractedImage,
     pages: ?[]const PageContent,
@@ -694,11 +694,11 @@ pub const ExtractionResult = struct {
     annotations: ?[]const PdfAnnotation,
     children: ?[]const ArchiveEntry,
     uris: ?[]const Uri,
-    structured_output: ?[:0]const u8,
-    code_intelligence: ?[:0]const u8,
+    structured_output: ?[]const u8,
+    code_intelligence: ?[]const u8,
     llm_usage: ?[]const LlmUsage,
-    formatted_content: ?[:0]const u8,
-    ocr_internal_document: ?[:0]const u8,
+    formatted_content: ?[]const u8,
+    ocr_internal_document: ?[]const u8,
 };
 
 /// A single file extracted from an archive.
@@ -706,8 +706,8 @@ pub const ExtractionResult = struct {
 /// When archives (ZIP, TAR, 7Z, GZIP) are extracted with recursive extraction
 /// enabled, each processable file produces its own full `ExtractionResult`.
 pub const ArchiveEntry = struct {
-    path: [:0]const u8,
-    mime_type: [:0]const u8,
+    path: []const u8,
+    mime_type: []const u8,
     result: ExtractionResult,
 };
 
@@ -716,8 +716,8 @@ pub const ArchiveEntry = struct {
 /// Captures errors from optional features that don't prevent extraction
 /// but may indicate degraded results.
 pub const ProcessingWarning = struct {
-    source: [:0]const u8,
-    message: [:0]const u8,
+    source: []const u8,
+    message: []const u8,
 };
 
 /// Token usage and cost data for a single LLM call made during extraction.
@@ -726,13 +726,13 @@ pub const ProcessingWarning = struct {
 /// are used. Multiple entries may be present when multiple LLM calls occur
 /// within one extraction (e.g. VLM OCR + structured extraction).
 pub const LlmUsage = struct {
-    model: [:0]const u8,
-    source: [:0]const u8,
+    model: []const u8,
+    source: []const u8,
     input_tokens: ?u64,
     output_tokens: ?u64,
     total_tokens: ?u64,
     estimated_cost: ?f64,
-    finish_reason: ?[:0]const u8,
+    finish_reason: ?[]const u8,
 };
 
 /// A text chunk with optional embedding and metadata.
@@ -741,7 +741,7 @@ pub const LlmUsage = struct {
 /// contains the text content, optional embedding vector (if embedding generation
 /// is configured), and metadata about its position in the document.
 pub const Chunk = struct {
-    content: [:0]const u8,
+    content: []const u8,
     chunk_type: ChunkType,
     embedding: ?[]const f32,
     metadata: ChunkMetadata,
@@ -757,7 +757,7 @@ pub const HeadingContext = struct {
 /// A single heading in the hierarchy.
 pub const HeadingLevel = struct {
     level: u8,
-    text: [:0]const u8,
+    text: []const u8,
 };
 
 /// Metadata about a chunk's position in the original document.
@@ -780,18 +780,18 @@ pub const ChunkMetadata = struct {
 /// PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 pub const ExtractedImage = struct {
     data: []const u8,
-    format: [:0]const u8,
+    format: []const u8,
     image_index: u32,
     page_number: ?u32,
     width: ?u32,
     height: ?u32,
-    colorspace: ?[:0]const u8,
+    colorspace: ?[]const u8,
     bits_per_component: ?u32,
     is_mask: bool,
-    description: ?[:0]const u8,
+    description: ?[]const u8,
     ocr_result: ?ExtractionResult,
-    bounding_box: ?[:0]const u8,
-    source_path: ?[:0]const u8,
+    bounding_box: ?[]const u8,
+    source_path: ?[]const u8,
     image_kind: ?ImageKind,
     kind_confidence: ?f32,
     cluster_id: ?u32,
@@ -800,10 +800,10 @@ pub const ExtractedImage = struct {
 /// Metadata for a semantic element.
 pub const ElementMetadata = struct {
     page_number: ?u32,
-    filename: ?[:0]const u8,
-    coordinates: ?[:0]const u8,
+    filename: ?[]const u8,
+    coordinates: ?[]const u8,
     element_index: ?u64,
-    additional: std.StringHashMap([:0]const u8),
+    additional: std.StringHashMap([]const u8),
 };
 
 /// Semantic element extracted from document.
@@ -811,9 +811,9 @@ pub const ElementMetadata = struct {
 /// Represents a logical unit of content with semantic classification,
 /// unique identifier, and metadata for tracking origin and position.
 pub const Element = struct {
-    element_id: [:0]const u8,
+    element_id: []const u8,
     element_type: ElementType,
-    text: [:0]const u8,
+    text: []const u8,
     metadata: ElementMetadata,
 };
 
@@ -823,7 +823,7 @@ pub const Element = struct {
 /// extracted content and metadata.
 pub const ExcelWorkbook = struct {
     sheets: []const ExcelSheet,
-    metadata: std.StringHashMap([:0]const u8),
+    metadata: std.StringHashMap([]const u8),
 };
 
 /// Single Excel worksheet.
@@ -831,12 +831,12 @@ pub const ExcelWorkbook = struct {
 /// Represents one sheet from an Excel workbook with its content
 /// converted to Markdown format and dimensional statistics.
 pub const ExcelSheet = struct {
-    name: [:0]const u8,
-    markdown: [:0]const u8,
+    name: []const u8,
+    markdown: []const u8,
     row_count: u64,
     col_count: u64,
     cell_count: u64,
-    table_cells: ?[]const []const [:0]const u8,
+    table_cells: ?[]const []const []const u8,
 };
 
 /// XML extraction result.
@@ -844,9 +844,9 @@ pub const ExcelSheet = struct {
 /// Contains extracted text content from XML files along with
 /// structural statistics about the XML document.
 pub const XmlExtractionResult = struct {
-    content: [:0]const u8,
+    content: []const u8,
     element_count: u64,
-    unique_elements: []const [:0]const u8,
+    unique_elements: []const []const u8,
 };
 
 /// Plain text and Markdown extraction result.
@@ -854,20 +854,20 @@ pub const XmlExtractionResult = struct {
 /// Contains the extracted text along with statistics and,
 /// for Markdown files, structural elements like headers and links.
 pub const TextExtractionResult = struct {
-    content: [:0]const u8,
+    content: []const u8,
     line_count: u64,
     word_count: u64,
     character_count: u64,
-    headers: ?[]const [:0]const u8,
-    links: ?[]const [:0]const u8,
-    code_blocks: ?[]const [:0]const u8,
+    headers: ?[]const []const u8,
+    links: ?[]const []const u8,
+    code_blocks: ?[]const []const u8,
 };
 
 /// PowerPoint (PPTX) extraction result.
 ///
 /// Contains extracted slide content, metadata, and embedded images/tables.
 pub const PptxExtractionResult = struct {
-    content: [:0]const u8,
+    content: []const u8,
     metadata: PptxMetadata,
     slide_count: u64,
     image_count: u64,
@@ -876,8 +876,8 @@ pub const PptxExtractionResult = struct {
     page_structure: ?PageStructure,
     page_contents: ?[]const PageContent,
     document: ?DocumentStructure,
-    hyperlinks: []const [:0]const u8,
-    office_metadata: std.StringHashMap([:0]const u8),
+    hyperlinks: []const []const u8,
+    office_metadata: std.StringHashMap([]const u8),
 };
 
 /// Email extraction result.
@@ -885,27 +885,27 @@ pub const PptxExtractionResult = struct {
 /// Complete representation of an extracted email message (.eml or .msg)
 /// including headers, body content, and attachments.
 pub const EmailExtractionResult = struct {
-    subject: ?[:0]const u8,
-    from_email: ?[:0]const u8,
-    to_emails: []const [:0]const u8,
-    cc_emails: []const [:0]const u8,
-    bcc_emails: []const [:0]const u8,
-    date: ?[:0]const u8,
-    message_id: ?[:0]const u8,
-    plain_text: ?[:0]const u8,
-    html_content: ?[:0]const u8,
-    content: [:0]const u8,
+    subject: ?[]const u8,
+    from_email: ?[]const u8,
+    to_emails: []const []const u8,
+    cc_emails: []const []const u8,
+    bcc_emails: []const []const u8,
+    date: ?[]const u8,
+    message_id: ?[]const u8,
+    plain_text: ?[]const u8,
+    html_content: ?[]const u8,
+    content: []const u8,
     attachments: []const EmailAttachment,
-    metadata: std.StringHashMap([:0]const u8),
+    metadata: std.StringHashMap([]const u8),
 };
 
 /// Email attachment representation.
 ///
 /// Contains metadata and optionally the content of an email attachment.
 pub const EmailAttachment = struct {
-    name: ?[:0]const u8,
-    filename: ?[:0]const u8,
-    mime_type: ?[:0]const u8,
+    name: ?[]const u8,
+    filename: ?[]const u8,
+    mime_type: ?[]const u8,
     size: ?u64,
     is_image: bool,
     data: ?[]const u8,
@@ -916,20 +916,20 @@ pub const EmailAttachment = struct {
 /// Result of performing OCR on an image or scanned document,
 /// including recognized text and detected tables.
 pub const OcrExtractionResult = struct {
-    content: [:0]const u8,
-    mime_type: [:0]const u8,
-    metadata: std.StringHashMap([:0]const u8),
+    content: []const u8,
+    mime_type: []const u8,
+    metadata: std.StringHashMap([]const u8),
     tables: []const OcrTable,
     ocr_elements: ?[]const OcrElement,
-    internal_document: ?[:0]const u8,
+    internal_document: ?[]const u8,
 };
 
 /// Table detected via OCR.
 ///
 /// Represents a table structure recognized during OCR processing.
 pub const OcrTable = struct {
-    cells: []const []const [:0]const u8,
-    markdown: [:0]const u8,
+    cells: []const []const []const u8,
+    markdown: []const u8,
     page_number: u32,
     bounding_box: ?OcrTableBoundingBox,
 };
@@ -953,7 +953,7 @@ pub const ImagePreprocessingConfig = struct {
     deskew: bool,
     denoise: bool,
     contrast_enhance: bool,
-    binarization_method: [:0]const u8,
+    binarization_method: []const u8,
     invert_colors: bool,
 };
 
@@ -963,9 +963,9 @@ pub const ImagePreprocessingConfig = struct {
 /// Most users can use the defaults, but these settings allow optimization
 /// for specific document types (invoices, handwriting, etc.).
 pub const TesseractConfig = struct {
-    language: [:0]const u8,
+    language: []const u8,
     psm: i32,
-    output_format: [:0]const u8,
+    output_format: []const u8,
     oem: i32,
     min_confidence: f64,
     preprocessing: ?ImagePreprocessingConfig,
@@ -979,8 +979,8 @@ pub const TesseractConfig = struct {
     tessedit_dont_blkrej_good_wds: bool,
     tessedit_dont_rowrej_good_wds: bool,
     tessedit_enable_dict_correction: bool,
-    tessedit_char_whitelist: [:0]const u8,
-    tessedit_char_blacklist: [:0]const u8,
+    tessedit_char_whitelist: []const u8,
+    tessedit_char_blacklist: []const u8,
     tessedit_use_primary_params_model: bool,
     textord_space_size_is_variable: bool,
     thresholding_method: bool,
@@ -998,11 +998,11 @@ pub const ImagePreprocessingMetadata = struct {
     auto_adjusted: bool,
     final_dpi: i32,
     new_dimensions: ?[]const u64,
-    resample_method: [:0]const u8,
+    resample_method: []const u8,
     dimension_clamped: bool,
     calculated_dpi: ?i32,
     skipped_resize: bool,
-    resize_error: ?[:0]const u8,
+    resize_error: ?[]const u8,
 };
 
 /// Extraction result metadata.
@@ -1010,28 +1010,28 @@ pub const ImagePreprocessingMetadata = struct {
 /// Contains common fields applicable to all formats, format-specific metadata
 /// via a discriminated union, and additional custom fields from postprocessors.
 pub const Metadata = struct {
-    title: ?[:0]const u8,
-    subject: ?[:0]const u8,
-    authors: ?[]const [:0]const u8,
-    keywords: ?[]const [:0]const u8,
-    language: ?[:0]const u8,
-    created_at: ?[:0]const u8,
-    modified_at: ?[:0]const u8,
-    created_by: ?[:0]const u8,
-    modified_by: ?[:0]const u8,
+    title: ?[]const u8,
+    subject: ?[]const u8,
+    authors: ?[]const []const u8,
+    keywords: ?[]const []const u8,
+    language: ?[]const u8,
+    created_at: ?[]const u8,
+    modified_at: ?[]const u8,
+    created_by: ?[]const u8,
+    modified_by: ?[]const u8,
     pages: ?PageStructure,
     format: ?FormatMetadata,
     image_preprocessing: ?ImagePreprocessingMetadata,
-    json_schema: ?[:0]const u8,
+    json_schema: ?[]const u8,
     error_: ?ErrorMetadata,
     extraction_duration_ms: ?u64,
-    category: ?[:0]const u8,
-    tags: ?[]const [:0]const u8,
-    document_version: ?[:0]const u8,
-    abstract_text: ?[:0]const u8,
-    output_format: ?[:0]const u8,
+    category: ?[]const u8,
+    tags: ?[]const []const u8,
+    document_version: ?[]const u8,
+    abstract_text: ?[]const u8,
+    output_format: ?[]const u8,
     ocr_used: bool,
-    additional: std.StringHashMap([:0]const u8),
+    additional: std.StringHashMap([]const u8),
 };
 
 /// Excel/spreadsheet format metadata.
@@ -1040,29 +1040,29 @@ pub const Metadata = struct {
 /// discriminant. Sheet count and sheet names are stored inside this struct.
 pub const ExcelMetadata = struct {
     sheet_count: ?u32,
-    sheet_names: ?[]const [:0]const u8,
+    sheet_names: ?[]const []const u8,
 };
 
 /// Email metadata extracted from .eml and .msg files.
 ///
 /// Includes sender/recipient information, message ID, and attachment list.
 pub const EmailMetadata = struct {
-    from_email: ?[:0]const u8,
-    from_name: ?[:0]const u8,
-    to_emails: []const [:0]const u8,
-    cc_emails: []const [:0]const u8,
-    bcc_emails: []const [:0]const u8,
-    message_id: ?[:0]const u8,
-    attachments: []const [:0]const u8,
+    from_email: ?[]const u8,
+    from_name: ?[]const u8,
+    to_emails: []const []const u8,
+    cc_emails: []const []const u8,
+    bcc_emails: []const []const u8,
+    message_id: ?[]const u8,
+    attachments: []const []const u8,
 };
 
 /// Archive (ZIP/TAR/7Z) metadata.
 ///
 /// Extracted from compressed archive files containing file lists and size information.
 pub const ArchiveMetadata = struct {
-    format: [:0]const u8,
+    format: []const u8,
     file_count: u32,
-    file_list: []const [:0]const u8,
+    file_list: []const []const u8,
     total_size: u64,
     compressed_size: ?u64,
 };
@@ -1073,8 +1073,8 @@ pub const ArchiveMetadata = struct {
 pub const ImageMetadata = struct {
     width: u32,
     height: u32,
-    format: [:0]const u8,
-    exif: std.StringHashMap([:0]const u8),
+    format: []const u8,
+    exif: std.StringHashMap([]const u8),
 };
 
 /// XML metadata extracted during XML parsing.
@@ -1082,7 +1082,7 @@ pub const ImageMetadata = struct {
 /// Provides statistics about XML document structure.
 pub const XmlMetadata = struct {
     element_count: u32,
-    unique_elements: []const [:0]const u8,
+    unique_elements: []const []const u8,
 };
 
 /// Text/Markdown metadata.
@@ -1093,45 +1093,45 @@ pub const TextMetadata = struct {
     line_count: u32,
     word_count: u32,
     character_count: u32,
-    headers: ?[]const [:0]const u8,
-    links: ?[]const [:0]const u8,
-    code_blocks: ?[]const [:0]const u8,
+    headers: ?[]const []const u8,
+    links: ?[]const []const u8,
+    code_blocks: ?[]const []const u8,
 };
 
 /// Header/heading element metadata.
 pub const HeaderMetadata = struct {
     level: u8,
-    text: [:0]const u8,
-    id: ?[:0]const u8,
+    text: []const u8,
+    id: ?[]const u8,
     depth: u32,
     html_offset: u32,
 };
 
 /// Link element metadata.
 pub const LinkMetadata = struct {
-    href: [:0]const u8,
-    text: [:0]const u8,
-    title: ?[:0]const u8,
+    href: []const u8,
+    text: []const u8,
+    title: ?[]const u8,
     link_type: LinkType,
-    rel: []const [:0]const u8,
-    attributes: []const [:0]const u8,
+    rel: []const []const u8,
+    attributes: []const []const u8,
 };
 
 /// Image element metadata.
 pub const ImageMetadataType = struct {
-    src: [:0]const u8,
-    alt: ?[:0]const u8,
-    title: ?[:0]const u8,
+    src: []const u8,
+    alt: ?[]const u8,
+    title: ?[]const u8,
     dimensions: ?[]const u32,
     image_type: ImageType,
-    attributes: []const [:0]const u8,
+    attributes: []const []const u8,
 };
 
 /// Structured data (Schema.org, microdata, RDFa) block.
 pub const StructuredData = struct {
     data_type: StructuredDataType,
-    raw_json: [:0]const u8,
-    schema_type: ?[:0]const u8,
+    raw_json: []const u8,
+    schema_type: ?[]const u8,
 };
 
 /// HTML metadata extracted from HTML documents.
@@ -1139,17 +1139,17 @@ pub const StructuredData = struct {
 /// Includes document-level metadata, Open Graph data, Twitter Card metadata,
 /// and extracted structural elements (headers, links, images, structured data).
 pub const HtmlMetadata = struct {
-    title: ?[:0]const u8,
-    description: ?[:0]const u8,
-    keywords: []const [:0]const u8,
-    author: ?[:0]const u8,
-    canonical_url: ?[:0]const u8,
-    base_href: ?[:0]const u8,
-    language: ?[:0]const u8,
+    title: ?[]const u8,
+    description: ?[]const u8,
+    keywords: []const []const u8,
+    author: ?[]const u8,
+    canonical_url: ?[]const u8,
+    base_href: ?[]const u8,
+    language: ?[]const u8,
     text_direction: ?TextDirection,
-    open_graph: std.StringHashMap([:0]const u8),
-    twitter_card: std.StringHashMap([:0]const u8),
-    meta_tags: std.StringHashMap([:0]const u8),
+    open_graph: std.StringHashMap([]const u8),
+    twitter_card: std.StringHashMap([]const u8),
+    meta_tags: std.StringHashMap([]const u8),
     headers: []const HeaderMetadata,
     links: []const LinkMetadata,
     images: []const ImageMetadataType,
@@ -1160,9 +1160,9 @@ pub const HtmlMetadata = struct {
 ///
 /// Captures information about OCR processing configuration and results.
 pub const OcrMetadata = struct {
-    language: [:0]const u8,
+    language: []const u8,
     psm: i32,
-    output_format: [:0]const u8,
+    output_format: []const u8,
     table_count: u32,
     table_rows: ?u32,
     table_cols: ?u32,
@@ -1170,8 +1170,8 @@ pub const OcrMetadata = struct {
 
 /// Error metadata (for batch operations).
 pub const ErrorMetadata = struct {
-    error_type: [:0]const u8,
-    message: [:0]const u8,
+    error_type: []const u8,
+    message: []const u8,
 };
 
 /// PowerPoint presentation metadata.
@@ -1179,7 +1179,7 @@ pub const ErrorMetadata = struct {
 /// Extracted from PPTX files containing slide counts and presentation details.
 pub const PptxMetadata = struct {
     slide_count: u32,
-    slide_names: []const [:0]const u8,
+    slide_names: []const []const u8,
     image_count: ?u32,
     table_count: ?u32,
 };
@@ -1189,25 +1189,25 @@ pub const PptxMetadata = struct {
 /// Extracted from DOCX files using shared Office Open XML metadata extraction.
 /// Integrates with `office_metadata` module for core/app/custom properties.
 pub const DocxMetadata = struct {
-    core_properties: ?[:0]const u8,
-    app_properties: ?[:0]const u8,
-    custom_properties: ?std.StringHashMap([:0]const u8),
+    core_properties: ?[]const u8,
+    app_properties: ?[]const u8,
+    custom_properties: ?std.StringHashMap([]const u8),
 };
 
 /// CSV/TSV file metadata.
 pub const CsvMetadata = struct {
     row_count: u32,
     column_count: u32,
-    delimiter: ?[:0]const u8,
+    delimiter: ?[]const u8,
     has_header: bool,
-    column_types: ?[]const [:0]const u8,
+    column_types: ?[]const []const u8,
 };
 
 /// BibTeX bibliography metadata.
 pub const BibtexMetadata = struct {
     entry_count: u64,
-    citation_keys: []const [:0]const u8,
-    authors: []const [:0]const u8,
+    citation_keys: []const []const u8,
+    authors: []const []const u8,
     year_range: ?YearRange,
     entry_types: ?std.StringHashMap(u64),
 };
@@ -1215,11 +1215,11 @@ pub const BibtexMetadata = struct {
 /// Citation file metadata (RIS, PubMed, EndNote).
 pub const CitationMetadata = struct {
     citation_count: u64,
-    format: ?[:0]const u8,
-    authors: []const [:0]const u8,
+    format: ?[]const u8,
+    authors: []const []const u8,
     year_range: ?YearRange,
-    dois: []const [:0]const u8,
-    keywords: []const [:0]const u8,
+    dois: []const []const u8,
+    keywords: []const []const u8,
 };
 
 /// Year range for bibliographic metadata.
@@ -1231,9 +1231,9 @@ pub const YearRange = struct {
 
 /// FictionBook (FB2) metadata.
 pub const FictionBookMetadata = struct {
-    genres: []const [:0]const u8,
-    sequences: []const [:0]const u8,
-    annotation: ?[:0]const u8,
+    genres: []const []const u8,
+    sequences: []const []const u8,
+    annotation: ?[]const u8,
 };
 
 /// dBASE (DBF) file metadata.
@@ -1245,32 +1245,32 @@ pub const DbfMetadata = struct {
 
 /// dBASE field information.
 pub const DbfFieldInfo = struct {
-    name: [:0]const u8,
-    field_type: [:0]const u8,
+    name: []const u8,
+    field_type: []const u8,
 };
 
 /// JATS (Journal Article Tag Suite) metadata.
 pub const JatsMetadata = struct {
-    copyright: ?[:0]const u8,
-    license: ?[:0]const u8,
-    history_dates: std.StringHashMap([:0]const u8),
+    copyright: ?[]const u8,
+    license: ?[]const u8,
+    history_dates: std.StringHashMap([]const u8),
     contributor_roles: []const ContributorRole,
 };
 
 /// JATS contributor with role.
 pub const ContributorRole = struct {
-    name: [:0]const u8,
-    role: ?[:0]const u8,
+    name: []const u8,
+    role: ?[]const u8,
 };
 
 /// EPUB metadata (Dublin Core extensions).
 pub const EpubMetadata = struct {
-    coverage: ?[:0]const u8,
-    dc_format: ?[:0]const u8,
-    relation: ?[:0]const u8,
-    source: ?[:0]const u8,
-    dc_type: ?[:0]const u8,
-    cover_image: ?[:0]const u8,
+    coverage: ?[]const u8,
+    dc_format: ?[]const u8,
+    relation: ?[]const u8,
+    source: ?[]const u8,
+    dc_type: ?[]const u8,
+    cover_image: ?[]const u8,
 };
 
 /// Outlook PST archive metadata.
@@ -1298,14 +1298,14 @@ pub const OcrRotation = struct {
 /// This is the primary type for structured OCR output, preserving all information
 /// from both Tesseract and PaddleOCR backends.
 pub const OcrElement = struct {
-    text: [:0]const u8,
+    text: []const u8,
     geometry: OcrBoundingGeometry,
     confidence: OcrConfidence,
     level: OcrElementLevel,
     rotation: ?OcrRotation,
     page_number: u32,
-    parent_id: ?[:0]const u8,
-    backend_metadata: std.StringHashMap([:0]const u8),
+    parent_id: ?[]const u8,
+    backend_metadata: std.StringHashMap([]const u8),
 };
 
 /// Configuration for OCR element extraction.
@@ -1346,7 +1346,7 @@ pub const PageBoundary = struct {
 /// and visibility state (for presentations).
 pub const PageInfo = struct {
     number: u32,
-    title: ?[:0]const u8,
+    title: ?[]const u8,
     dimensions: ?[]const f64,
     image_count: ?u32,
     table_count: ?u32,
@@ -1371,7 +1371,7 @@ pub const PageInfo = struct {
 /// by avoiding redundant copies during serialization.
 pub const PageContent = struct {
     page_number: u32,
-    content: [:0]const u8,
+    content: []const u8,
     tables: []const Table,
     image_indices: []const u32,
     hierarchy: ?PageHierarchy,
@@ -1385,9 +1385,9 @@ pub const PageContent = struct {
 /// identifying different content types (text, pictures, tables, etc.)
 /// with confidence scores and spatial positions.
 pub const LayoutRegion = struct {
-    class_name: [:0]const u8,
+    class_name: []const u8,
     confidence: f64,
-    bounding_box: [:0]const u8,
+    bounding_box: []const u8,
     area_fraction: f64,
 };
 
@@ -1405,9 +1405,9 @@ pub const PageHierarchy = struct {
 /// Represents a block of text with semantic heading information extracted from
 /// font size clustering and hierarchical analysis.
 pub const HierarchicalBlock = struct {
-    text: [:0]const u8,
+    text: []const u8,
     font_size: f32,
-    level: [:0]const u8,
+    level: []const u8,
     bbox: ?[]const f32,
 };
 
@@ -1416,17 +1416,17 @@ pub const HierarchicalBlock = struct {
 /// Represents a table detected and extracted from a document (PDF, image, etc.).
 /// Tables are converted to both structured cell data and Markdown format.
 pub const Table = struct {
-    cells: []const []const [:0]const u8,
-    markdown: [:0]const u8,
+    cells: []const []const []const u8,
+    markdown: []const u8,
     page_number: u32,
-    bounding_box: ?[:0]const u8,
+    bounding_box: ?[]const u8,
 };
 
 /// Individual table cell with content and optional styling.
 ///
 /// Future extension point for rich table support with cell-level metadata.
 pub const TableCell = struct {
-    content: [:0]const u8,
+    content: []const u8,
     row_span: u32,
     col_span: u32,
     is_header: bool,
@@ -1438,16 +1438,16 @@ pub const TableCell = struct {
 /// The `kind` field classifies the URI semantically, while `label` carries
 /// optional human-readable display text.
 pub const Uri = struct {
-    url: [:0]const u8,
-    label: ?[:0]const u8,
+    url: []const u8,
+    label: ?[]const u8,
     page: ?u32,
     kind: UriKind,
 };
 
 /// MIME type detection response.
 pub const DetectResponse = struct {
-    mime_type: [:0]const u8,
-    filename: ?[:0]const u8,
+    mime_type: []const u8,
+    filename: ?[]const u8,
 };
 
 /// Preset configurations for common RAG use cases.
@@ -1458,14 +1458,14 @@ pub const DetectResponse = struct {
 /// All string fields are owned `String` for FFI compatibility — instances
 /// are safe to clone and pass across language boundaries.
 pub const EmbeddingPreset = struct {
-    name: [:0]const u8,
+    name: []const u8,
     chunk_size: u64,
     overlap: u64,
-    model_repo: [:0]const u8,
-    pooling: [:0]const u8,
-    model_file: [:0]const u8,
+    model_repo: []const u8,
+    pooling: []const u8,
+    model_file: []const u8,
     dimensions: u64,
-    description: [:0]const u8,
+    description: []const u8,
 };
 
 /// YAKE-specific parameters.
@@ -1485,14 +1485,14 @@ pub const KeywordConfig = struct {
     max_keywords: u64,
     min_score: f32,
     ngram_range: []const u64,
-    language: ?[:0]const u8,
+    language: ?[]const u8,
     yake_params: ?YakeParams,
     rake_params: ?RakeParams,
 };
 
 /// Extracted keyword with metadata.
 pub const Keyword = struct {
-    text: [:0]const u8,
+    text: []const u8,
     score: f32,
     algorithm: KeywordAlgorithm,
     positions: ?[]const u64,
@@ -1503,8 +1503,8 @@ pub const Keyword = struct {
 /// Configures PaddleOCR text detection and recognition with multi-language support.
 /// Uses a builder pattern for convenient configuration.
 pub const PaddleOcrConfig = struct {
-    language: [:0]const u8,
-    cache_dir: ?[:0]const u8,
+    language: []const u8,
+    cache_dir: ?[]const u8,
     use_angle_cls: bool,
     enable_table_detection: bool,
     det_db_thresh: f32,
@@ -1514,15 +1514,15 @@ pub const PaddleOcrConfig = struct {
     rec_batch_num: u32,
     padding: u32,
     drop_score: f32,
-    model_tier: [:0]const u8,
+    model_tier: []const u8,
 };
 
 /// Combined paths to all models needed for OCR (backward compatibility).
 pub const ModelPaths = struct {
-    det_model: [:0]const u8,
-    cls_model: [:0]const u8,
-    rec_model: [:0]const u8,
-    dict_file: [:0]const u8,
+    det_model: []const u8,
+    cls_model: []const u8,
+    rec_model: []const u8,
+    dict_file: []const u8,
 };
 
 /// Document orientation detection result.
@@ -1554,8 +1554,8 @@ pub const LayoutDetection = struct {
 /// the type in their own code.
 pub const RecognizedTable = struct {
     detection_bbox: BBox,
-    cells: []const []const [:0]const u8,
-    markdown: [:0]const u8,
+    cells: []const []const []const u8,
+    markdown: []const u8,
 };
 
 /// Page-level detection result containing all detections and page metadata.
@@ -1567,9 +1567,9 @@ pub const DetectionResult = struct {
 
 /// Embedded file descriptor extracted from the PDF name tree.
 pub const EmbeddedFile = struct {
-    name: [:0]const u8,
+    name: []const u8,
     data: []const u8,
-    mime_type: ?[:0]const u8,
+    mime_type: ?[]const u8,
 };
 
 /// PDF-specific metadata.
@@ -1578,8 +1578,8 @@ pub const EmbeddedFile = struct {
 /// `Metadata` structure. Common fields like title, authors, keywords, and dates
 /// are at the `Metadata` level.
 pub const PdfMetadata = struct {
-    pdf_version: ?[:0]const u8,
-    producer: ?[:0]const u8,
+    pdf_version: ?[]const u8,
+    producer: ?[]const u8,
     is_encrypted: ?bool,
     width: ?i64,
     height: ?i64,
@@ -1612,7 +1612,7 @@ pub const OutputFormat = union(enum) {
     html: void,
     json: void,
     structured: void,
-    custom: [:0]const u8,
+    custom: []const u8,
 };
 
 /// Built-in HTML theme selection.
@@ -1670,20 +1670,20 @@ pub const ChunkerType = enum {
 pub const ChunkSizing = union(enum) {
     characters: void,
     tokenizer: struct {
-        model: [:0]const u8,
-        cache_dir: ?[:0]const u8,
+        model: []const u8,
+        cache_dir: ?[]const u8,
     },
 };
 
 /// Embedding model types supported by Kreuzberg.
 pub const EmbeddingModelType = union(enum) {
-    preset: [:0]const u8,
+    preset: []const u8,
     custom: struct {
-        model_id: [:0]const u8,
+        model_id: []const u8,
         dimensions: u64,
     },
     llm: LlmConfig,
-    plugin: [:0]const u8,
+    plugin: []const u8,
 };
 
 /// Content rendering mode for code extraction.
@@ -1707,7 +1707,7 @@ pub const ListType = enum {
 /// Whether the drawing is inline or anchored.
 pub const DrawingType = union(enum) {
     inline_: void,
-    anchored: [:0]const u8,
+    anchored: []const u8,
 };
 
 pub const FracType = enum {
@@ -1820,55 +1820,55 @@ pub const ContentLayer = enum {
 /// Uses `#[serde(tag = "node_type")]` to avoid "type" keyword collision in
 /// Go/Java/TypeScript bindings.
 pub const NodeContent = union(enum) {
-    title: [:0]const u8,
+    title: []const u8,
     heading: struct {
         level: u8,
-        text: [:0]const u8,
+        text: []const u8,
     },
-    paragraph: [:0]const u8,
+    paragraph: []const u8,
     list: bool,
-    list_item: [:0]const u8,
+    list_item: []const u8,
     table: TableGrid,
     image: struct {
-        description: ?[:0]const u8,
+        description: ?[]const u8,
         image_index: ?u32,
-        src: ?[:0]const u8,
+        src: ?[]const u8,
     },
     code: struct {
-        text: [:0]const u8,
-        language: ?[:0]const u8,
+        text: []const u8,
+        language: ?[]const u8,
     },
     quote: void,
-    formula: [:0]const u8,
-    footnote: [:0]const u8,
+    formula: []const u8,
+    footnote: []const u8,
     group: struct {
-        label: ?[:0]const u8,
+        label: ?[]const u8,
         heading_level: ?u8,
-        heading_text: ?[:0]const u8,
+        heading_text: ?[]const u8,
     },
     page_break: void,
     slide: struct {
         number: u32,
-        title: ?[:0]const u8,
+        title: ?[]const u8,
     },
     definition_list: void,
     definition_item: struct {
-        term: [:0]const u8,
-        definition: [:0]const u8,
+        term: []const u8,
+        definition: []const u8,
     },
     citation: struct {
-        key: [:0]const u8,
-        text: [:0]const u8,
+        key: []const u8,
+        text: []const u8,
     },
     admonition: struct {
-        kind: [:0]const u8,
-        title: ?[:0]const u8,
+        kind: []const u8,
+        title: ?[]const u8,
     },
     raw_block: struct {
-        format: [:0]const u8,
-        content: [:0]const u8,
+        format: []const u8,
+        content: []const u8,
     },
-    metadata_block: []const [:0]const u8,
+    metadata_block: []const []const u8,
 };
 
 /// Types of inline text annotations.
@@ -1881,15 +1881,15 @@ pub const AnnotationKind = union(enum) {
     subscript: void,
     superscript: void,
     link: struct {
-        url: [:0]const u8,
-        title: ?[:0]const u8,
+        url: []const u8,
+        title: ?[]const u8,
     },
     highlight: void,
-    color: [:0]const u8,
-    font_size: [:0]const u8,
+    color: []const u8,
+    font_size: []const u8,
     custom: struct {
-        name: [:0]const u8,
-        value: ?[:0]const u8,
+        name: []const u8,
+        value: ?[]const u8,
     },
 };
 
@@ -1988,7 +1988,7 @@ pub const FormatMetadata = union(enum) {
     jats: JatsMetadata,
     epub: EpubMetadata,
     pst: PstMetadata,
-    code: [:0]const u8,
+    code: []const u8,
 };
 
 /// Text direction enumeration for HTML documents.
@@ -2034,7 +2034,7 @@ pub const OcrBoundingGeometry = union(enum) {
         width: u32,
         height: u32,
     },
-    quadrilateral: [:0]const u8,
+    quadrilateral: []const u8,
 };
 
 /// Hierarchical level of an OCR element.
@@ -2305,12 +2305,13 @@ pub fn batch_extract_files_sync(items: []const u8, config: []const u8) Kreuzberg
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
     const _result = c.kreuzberg_batch_extract_files_sync(items_z, config_handle);
+    const _result_len = c.kreuzberg_batch_extract_files_sync_len(items_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return blk: {
-        const slice = std.mem.sliceTo(_result, 0);
+        const slice = _result[0.._result_len];
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         _free_string(_result);
         break :blk owned;
@@ -2333,12 +2334,13 @@ pub fn batch_extract_bytes_sync(items: []const u8, config: []const u8) Kreuzberg
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
     const _result = c.kreuzberg_batch_extract_bytes_sync(items_z, config_handle);
+    const _result_len = c.kreuzberg_batch_extract_bytes_sync_len(items_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return blk: {
-        const slice = std.mem.sliceTo(_result, 0);
+        const slice = _result[0.._result_len];
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         _free_string(_result);
         break :blk owned;
@@ -2383,12 +2385,13 @@ pub fn batch_extract_files(items: []const u8, config: []const u8) KreuzbergError
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
     const _result = c.kreuzberg_batch_extract_files(items_z, config_handle);
+    const _result_len = c.kreuzberg_batch_extract_files_len(items_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return blk: {
-        const slice = std.mem.sliceTo(_result, 0);
+        const slice = _result[0.._result_len];
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         _free_string(_result);
         break :blk owned;
@@ -2427,12 +2430,13 @@ pub fn batch_extract_bytes(items: []const u8, config: []const u8) KreuzbergError
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_extraction_config_from_json(config_z);
     const _result = c.kreuzberg_batch_extract_bytes(items_z, config_handle);
+    const _result_len = c.kreuzberg_batch_extract_bytes_len(items_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     if (config_handle) |h| c.kreuzberg_extraction_config_free(h);
     return blk: {
-        const slice = std.mem.sliceTo(_result, 0);
+        const slice = _result[0.._result_len];
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         _free_string(_result);
         break :blk owned;
@@ -2456,11 +2460,12 @@ pub fn batch_extract_bytes(items: []const u8, config: []const u8) KreuzbergError
 /// Returns `KreuzbergError.UnsupportedFormat` if MIME type cannot be determined.
 pub fn detect_mime_type_from_bytes(content: []const u8) KreuzbergError![]u8 {
     const _result = c.kreuzberg_detect_mime_type_from_bytes(content.ptr, content.len);
+    const _result_len = c.kreuzberg_detect_mime_type_from_bytes_len(content.ptr, content.len);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     return blk: {
-        const slice = std.mem.sliceTo(_result, 0);
+        const slice = _result[0.._result_len];
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         _free_string(_result);
         break :blk owned;
@@ -2479,11 +2484,12 @@ pub fn get_extensions_for_mime(mime_type: []const u8) KreuzbergError![]u8 {
         std.heap.c_allocator, "{s}", .{mime_type}, 0);
     defer std.heap.c_allocator.free(mime_type_z);
     const _result = c.kreuzberg_get_extensions_for_mime(mime_type_z);
+    const _result_len = c.kreuzberg_get_extensions_for_mime_len(mime_type_z);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     return blk: {
-        const slice = std.mem.sliceTo(_result, 0);
+        const slice = _result[0.._result_len];
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         _free_string(_result);
         break :blk owned;
@@ -2496,11 +2502,12 @@ pub fn get_extensions_for_mime(mime_type: []const u8) KreuzbergError![]u8 {
 /// language bindings via `alef.toml [exclude].functions`.
 pub fn list_embedding_backends() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_embedding_backends();
+    const _result_len = c.kreuzberg_list_embedding_backends_len();
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     return blk: {
-        const slice = std.mem.sliceTo(_result, 0);
+        const slice = _result[0.._result_len];
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         _free_string(_result);
         break :blk owned;
@@ -2510,11 +2517,12 @@ pub fn list_embedding_backends() KreuzbergError![]u8 {
 /// List names of all registered document extractors.
 pub fn list_document_extractors() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_document_extractors();
+    const _result_len = c.kreuzberg_list_document_extractors_len();
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     return blk: {
-        const slice = std.mem.sliceTo(_result, 0);
+        const slice = _result[0.._result_len];
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         _free_string(_result);
         break :blk owned;
@@ -2530,11 +2538,12 @@ pub fn list_document_extractors() KreuzbergError![]u8 {
 /// A vector of OCR backend names.
 pub fn list_ocr_backends() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_ocr_backends();
+    const _result_len = c.kreuzberg_list_ocr_backends_len();
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     return blk: {
-        const slice = std.mem.sliceTo(_result, 0);
+        const slice = _result[0.._result_len];
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         _free_string(_result);
         break :blk owned;
@@ -2552,11 +2561,12 @@ pub fn list_ocr_backends() KreuzbergError![]u8 {
 /// - `Err(...)` if the registry lock is poisoned
 pub fn list_post_processors() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_post_processors();
+    const _result_len = c.kreuzberg_list_post_processors_len();
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     return blk: {
-        const slice = std.mem.sliceTo(_result, 0);
+        const slice = _result[0.._result_len];
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         _free_string(_result);
         break :blk owned;
@@ -2570,11 +2580,12 @@ pub fn list_post_processors() KreuzbergError![]u8 {
 /// Returns an error if the registry lock is poisoned.
 pub fn list_renderers() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_renderers();
+    const _result_len = c.kreuzberg_list_renderers_len();
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     return blk: {
-        const slice = std.mem.sliceTo(_result, 0);
+        const slice = _result[0.._result_len];
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         _free_string(_result);
         break :blk owned;
@@ -2584,11 +2595,12 @@ pub fn list_renderers() KreuzbergError![]u8 {
 /// List names of all registered validators.
 pub fn list_validators() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_validators();
+    const _result_len = c.kreuzberg_list_validators_len();
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     return blk: {
-        const slice = std.mem.sliceTo(_result, 0);
+        const slice = _result[0.._result_len];
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         _free_string(_result);
         break :blk owned;
@@ -2618,12 +2630,13 @@ pub fn embed_texts_async(texts: []const u8, config: []const u8) KreuzbergError![
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_embedding_config_from_json(config_z);
     const _result = c.kreuzberg_embed_texts_async(texts_z, config_handle);
+    const _result_len = c.kreuzberg_embed_texts_async_len(texts_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     if (config_handle) |h| c.kreuzberg_embedding_config_free(h);
     return blk: {
-        const slice = std.mem.sliceTo(_result, 0);
+        const slice = _result[0.._result_len];
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         _free_string(_result);
         break :blk owned;
@@ -2664,11 +2677,12 @@ pub fn detect_mime_type(path: []const u8, check_exists: bool) KreuzbergError![]u
         std.heap.c_allocator, "{s}", .{path}, 0);
     defer std.heap.c_allocator.free(path_z);
     const _result = c.kreuzberg_detect_mime_type(path_z, check_exists);
+    const _result_len = c.kreuzberg_detect_mime_type_len(path_z, check_exists);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     return blk: {
-        const slice = std.mem.sliceTo(_result, 0);
+        const slice = _result[0.._result_len];
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         _free_string(_result);
         break :blk owned;
@@ -2688,12 +2702,13 @@ pub fn embed_texts(texts: []const u8, config: []const u8) KreuzbergError![]u8 {
     defer std.heap.c_allocator.free(config_z);
     const config_handle = c.kreuzberg_embedding_config_from_json(config_z);
     const _result = c.kreuzberg_embed_texts(texts_z, config_handle);
+    const _result_len = c.kreuzberg_embed_texts_len(texts_z, config_handle);
     if (c.kreuzberg_last_error_code() != 0) {
         return _first_error(KreuzbergError);
     }
     if (config_handle) |h| c.kreuzberg_embedding_config_free(h);
     return blk: {
-        const slice = std.mem.sliceTo(_result, 0);
+        const slice = _result[0.._result_len];
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         _free_string(_result);
         break :blk owned;
@@ -2725,8 +2740,9 @@ pub fn get_embedding_preset(name: []const u8) error{OutOfMemory}!?[]u8 {
 /// Returns owned `String`s so the values are safe to pass across FFI boundaries.
 pub fn list_embedding_presets() error{OutOfMemory}![]u8 {
     const _result = c.kreuzberg_list_embedding_presets();
+    const _result_len = c.kreuzberg_list_embedding_presets_len();
     return blk: {
-        const slice = std.mem.sliceTo(_result, 0);
+        const slice = _result[0.._result_len];
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         _free_string(_result);
         break :blk owned;

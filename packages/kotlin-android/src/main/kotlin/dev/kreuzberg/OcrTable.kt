@@ -11,5 +11,5 @@ data class OcrTable(
     val cells: List<List<String>>,
     val markdown: String,
     val pageNumber: Int,
-    val boundingBox: OcrTableBoundingBox?
+    val boundingBox: OcrTableBoundingBox?,
 )

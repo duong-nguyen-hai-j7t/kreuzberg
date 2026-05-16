@@ -12,5 +12,5 @@ data class GridCell(
     val rowSpan: Int,
     val colSpan: Int,
     val isHeader: Boolean,
-    val bbox: String?
+    val bbox: String?,
 )

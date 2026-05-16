@@ -10,5 +10,5 @@ package dev.kreuzberg
  */
 data class AccelerationConfig(
     val provider: ExecutionProviderType,
-    val deviceId: Int
+    val deviceId: Int,
 )

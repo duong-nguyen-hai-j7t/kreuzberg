@@ -11,5 +11,5 @@ data class InlineElement(
     val elementType: InlineType,
     val content: String,
     val attributes: String?,
-    val metadata: Map<String, String>?
+    val metadata: Map<String, String>?,
 )

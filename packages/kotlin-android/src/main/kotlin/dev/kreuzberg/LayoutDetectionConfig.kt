@@ -13,5 +13,5 @@ data class LayoutDetectionConfig(
     val confidenceThreshold: Float?,
     val applyHeuristics: Boolean,
     val tableModel: TableModel,
-    val acceleration: AccelerationConfig?
+    val acceleration: AccelerationConfig?,
 )

@@ -13,5 +13,5 @@ data class HierarchyConfig(
     val enabled: Boolean,
     val kClusters: Long,
     val includeBbox: Boolean,
-    val ocrCoverageThreshold: Float?
+    val ocrCoverageThreshold: Float?,
 )

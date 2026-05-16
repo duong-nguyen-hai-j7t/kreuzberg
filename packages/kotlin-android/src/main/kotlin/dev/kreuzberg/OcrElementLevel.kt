@@ -12,5 +12,5 @@ enum class OcrElementLevel {
     WORD,
     LINE,
     BLOCK,
-    PAGE;
+    PAGE,
 }

@@ -14,5 +14,5 @@ data class EmailMetadata(
     val ccEmails: List<String>,
     val bccEmails: List<String>,
     val messageId: String?,
-    val attachments: List<String>
+    val attachments: List<String>,
 )

@@ -9,5 +9,5 @@ enum class OcrBackendType {
     TESSERACT,
     EASY_O_C_R,
     PADDLE_O_C_R,
-    CUSTOM;
+    CUSTOM,
 }

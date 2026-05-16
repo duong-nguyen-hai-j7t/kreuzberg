@@ -22,5 +22,5 @@ enum class ChunkType {
     IMAGE,
     ORG_CHART,
     DIAGRAM,
-    UNKNOWN;
+    UNKNOWN,
 }

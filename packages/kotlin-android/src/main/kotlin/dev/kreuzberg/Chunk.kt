@@ -13,5 +13,5 @@ data class Chunk(
     val content: String,
     val chunkType: ChunkType,
     val embedding: List<Float>?,
-    val metadata: ChunkMetadata
+    val metadata: ChunkMetadata,
 )

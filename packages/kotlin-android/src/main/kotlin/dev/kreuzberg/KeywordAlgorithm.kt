@@ -7,5 +7,5 @@ package dev.kreuzberg
  */
 enum class KeywordAlgorithm {
     YAKE,
-    RAKE;
+    RAKE,
 }

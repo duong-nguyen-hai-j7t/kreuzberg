@@ -8,5 +8,5 @@ package dev.kreuzberg
 data class DocumentRelationship(
     val source: Int,
     val target: Int,
-    val kind: RelationshipKind
+    val kind: RelationshipKind,
 )

@@ -6,5 +6,5 @@ package dev.kreuzberg
  * YAKE-specific parameters.
  */
 data class YakeParams(
-    val windowSize: Long
+    val windowSize: Long,
 )

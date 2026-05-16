@@ -8,5 +8,5 @@ package dev.kreuzberg
 data class DetectionResult(
     val pageWidth: Int,
     val pageHeight: Int,
-    val detections: List<LayoutDetection>
+    val detections: List<LayoutDetection>,
 )

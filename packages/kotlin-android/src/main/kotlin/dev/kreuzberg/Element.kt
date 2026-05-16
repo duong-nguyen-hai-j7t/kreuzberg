@@ -12,5 +12,5 @@ data class Element(
     val elementId: String,
     val elementType: ElementType,
     val text: String,
-    val metadata: ElementMetadata
+    val metadata: ElementMetadata,
 )

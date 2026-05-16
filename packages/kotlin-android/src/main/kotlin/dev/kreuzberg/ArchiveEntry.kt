@@ -11,5 +11,5 @@ package dev.kreuzberg
 data class ArchiveEntry(
     val path: String,
     val mimeType: String,
-    val result: ExtractionResult
+    val result: ExtractionResult,
 )

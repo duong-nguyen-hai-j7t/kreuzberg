@@ -13,5 +13,5 @@ data class LayoutRegion(
     val className: String,
     val confidence: Double,
     val boundingBox: String,
-    val areaFraction: Double
+    val areaFraction: Double,
 )

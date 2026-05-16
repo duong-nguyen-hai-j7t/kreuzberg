@@ -11,5 +11,5 @@ data class ImageMetadata(
     val width: Int,
     val height: Int,
     val format: String,
-    val exif: Map<String, String>
+    val exif: Map<String, String>,
 )

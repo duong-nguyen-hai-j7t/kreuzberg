@@ -12,5 +12,5 @@ data class KeywordConfig(
     val ngramRange: List<Long>,
     val language: String?,
     val yakeParams: YakeParams?,
-    val rakeParams: RakeParams?
+    val rakeParams: RakeParams?,
 )

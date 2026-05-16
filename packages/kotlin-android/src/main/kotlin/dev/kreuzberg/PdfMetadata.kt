@@ -15,5 +15,5 @@ data class PdfMetadata(
     val isEncrypted: Boolean?,
     val width: Long?,
     val height: Long?,
-    val pageCount: Int?
+    val pageCount: Int?,
 )

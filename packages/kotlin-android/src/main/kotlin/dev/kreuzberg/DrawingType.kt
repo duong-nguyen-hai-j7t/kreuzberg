@@ -7,7 +7,8 @@ package dev.kreuzberg
  */
 sealed class DrawingType {
     object Inline : DrawingType()
+
     data class Anchored(
-        val value: String
+        val value: String,
     ) : DrawingType()
 }

@@ -41,5 +41,5 @@ data class FileExtractionConfig(
     val layout: LayoutDetectionConfig?,
     val timeoutSecs: Long?,
     val treeSitter: TreeSitterConfig?,
-    val structuredExtraction: StructuredExtractionConfig?
+    val structuredExtraction: StructuredExtractionConfig?,
 )

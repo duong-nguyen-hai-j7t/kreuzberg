@@ -13,5 +13,5 @@ data class Uri(
     val url: String,
     val label: String?,
     val page: Int?,
-    val kind: UriKind
+    val kind: UriKind,
 )

@@ -8,5 +8,5 @@ package dev.kreuzberg
  * Contains the heading hierarchy from document root to this chunk's section.
  */
 data class HeadingContext(
-    val headings: List<HeadingLevel>
+    val headings: List<HeadingLevel>,
 )

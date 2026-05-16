@@ -24,5 +24,5 @@ data class OcrQualityThresholds(
     val substantiveMinChars: Long,
     val nonTextMinChars: Long,
     val alnumWsRatioThreshold: Double,
-    val pipelineMinQuality: Double
+    val pipelineMinQuality: Double,
 )

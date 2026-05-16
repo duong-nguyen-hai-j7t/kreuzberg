@@ -8,5 +8,5 @@ package dev.kreuzberg
 data class LayoutDetection(
     val className: LayoutClass,
     val confidence: Float,
-    val bbox: BBox
+    val bbox: BBox,
 )

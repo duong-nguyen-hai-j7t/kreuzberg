@@ -12,5 +12,5 @@ enum class PdfAnnotationType {
     STAMP,
     UNDERLINE,
     STRIKE_OUT,
-    OTHER;
+    OTHER,
 }

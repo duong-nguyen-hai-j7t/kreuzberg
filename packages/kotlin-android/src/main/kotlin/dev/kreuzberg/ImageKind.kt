@@ -16,5 +16,5 @@ enum class ImageKind {
     ICON,
     TILE_FRAGMENT,
     MASK,
-    UNKNOWN;
+    UNKNOWN,
 }

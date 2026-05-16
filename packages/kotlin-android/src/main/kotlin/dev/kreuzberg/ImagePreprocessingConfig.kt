@@ -16,5 +16,5 @@ data class ImagePreprocessingConfig(
     val denoise: Boolean,
     val contrastEnhance: Boolean,
     val binarizationMethod: String,
-    val invertColors: Boolean
+    val invertColors: Boolean,
 )

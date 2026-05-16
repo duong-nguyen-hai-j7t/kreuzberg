@@ -10,5 +10,5 @@ package dev.kreuzberg
  */
 data class PageHierarchy(
     val blockCount: Int,
-    val blocks: List<HierarchicalBlock>
+    val blocks: List<HierarchicalBlock>,
 )

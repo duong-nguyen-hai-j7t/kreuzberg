@@ -7,5 +7,5 @@ package dev.kreuzberg
  */
 data class OrientationResult(
     val degrees: Int,
-    val confidence: Float
+    val confidence: Float,
 )

@@ -8,5 +8,5 @@ package dev.kreuzberg
 data class FictionBookMetadata(
     val genres: List<String>,
     val sequences: List<String>,
-    val annotation: String?
+    val annotation: String?,
 )

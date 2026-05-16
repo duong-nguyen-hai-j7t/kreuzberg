@@ -11,5 +11,5 @@ package dev.kreuzberg
 enum class ProcessingStage {
     EARLY,
     MIDDLE,
-    LATE;
+    LATE,
 }

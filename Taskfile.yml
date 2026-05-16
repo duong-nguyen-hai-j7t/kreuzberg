@@ -174,12 +174,13 @@ tasks:
       - prek autoupdate
 
   upgrade:
-    desc: "Upgrade dependencies aggressively (cargo upgrade --incompatible, pnpm up --latest, uv sync --upgrade, etc.)"
+    desc: "Upgrade dependencies aggressively (cargo upgrade --incompatible, pnpm up --latest, uv sync --upgrade, GitHub Actions, etc.)"
     cmds:
       - rustup update stable
       - task: rust:upgrade
       - alef update --latest
       - prek autoupdate
+      - npx --yes actions-up@latest --yes --style preserve
 
   # === Coverage ===
   cov:rust:

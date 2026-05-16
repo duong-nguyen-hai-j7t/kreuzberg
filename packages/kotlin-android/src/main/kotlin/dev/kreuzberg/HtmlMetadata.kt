@@ -23,5 +23,5 @@ data class HtmlMetadata(
     val headers: List<HeaderMetadata>,
     val links: List<LinkMetadata>,
     val images: List<ImageMetadataType>,
-    val structuredData: List<StructuredData>
+    val structuredData: List<StructuredData>,
 )

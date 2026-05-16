@@ -9,5 +9,5 @@ data class DjotLink(
     val url: String,
     val text: String,
     val title: String?,
-    val attributes: String?
+    val attributes: String?,
 )

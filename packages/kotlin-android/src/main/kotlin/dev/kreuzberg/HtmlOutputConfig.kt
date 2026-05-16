@@ -17,5 +17,5 @@ data class HtmlOutputConfig(
     val cssFile: Path?,
     val theme: HtmlTheme,
     val classPrefix: String,
-    val embedCss: Boolean
+    val embedCss: Boolean,
 )

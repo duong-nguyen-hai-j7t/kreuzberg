@@ -11,5 +11,5 @@ data class CitationMetadata(
     val authors: List<String>,
     val yearRange: YearRange?,
     val dois: List<String>,
-    val keywords: List<String>
+    val keywords: List<String>,
 )

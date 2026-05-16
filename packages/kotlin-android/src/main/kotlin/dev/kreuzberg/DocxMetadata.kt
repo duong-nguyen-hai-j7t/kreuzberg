@@ -11,5 +11,5 @@ package dev.kreuzberg
 data class DocxMetadata(
     val coreProperties: String?,
     val appProperties: String?,
-    val customProperties: Map<String, String>?
+    val customProperties: Map<String, String>?,
 )

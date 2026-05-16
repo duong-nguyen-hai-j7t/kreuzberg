@@ -19,5 +19,5 @@ enum class ElementType {
     CODE_BLOCK,
     BLOCK_QUOTE,
     FOOTER,
-    HEADER;
+    HEADER,
 }

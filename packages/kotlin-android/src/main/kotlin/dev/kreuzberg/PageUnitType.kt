@@ -10,5 +10,5 @@ package dev.kreuzberg
 enum class PageUnitType {
     PAGE,
     SLIDE,
-    SHEET;
+    SHEET,
 }

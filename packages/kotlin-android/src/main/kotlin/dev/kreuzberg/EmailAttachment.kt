@@ -13,5 +13,5 @@ data class EmailAttachment(
     val mimeType: String?,
     val size: Long?,
     val isImage: Boolean,
-    val data: ByteArray?
+    val data: ByteArray?,
 )

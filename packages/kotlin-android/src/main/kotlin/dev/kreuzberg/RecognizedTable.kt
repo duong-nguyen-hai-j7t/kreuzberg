@@ -13,5 +13,5 @@ package dev.kreuzberg
 data class RecognizedTable(
     val detectionBbox: BBox,
     val cells: List<List<String>>,
-    val markdown: String
+    val markdown: String,
 )

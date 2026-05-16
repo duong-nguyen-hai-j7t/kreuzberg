@@ -6,5 +6,5 @@ package dev.kreuzberg
  * Configuration for email extraction.
  */
 data class EmailConfig(
-    val msgFallbackCodepage: Int?
+    val msgFallbackCodepage: Int?,
 )

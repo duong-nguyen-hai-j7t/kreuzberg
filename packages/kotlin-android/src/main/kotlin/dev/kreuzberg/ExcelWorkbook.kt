@@ -10,5 +10,5 @@ package dev.kreuzberg
  */
 data class ExcelWorkbook(
     val sheets: List<ExcelSheet>,
-    val metadata: Map<String, String>
+    val metadata: Map<String, String>,
 )

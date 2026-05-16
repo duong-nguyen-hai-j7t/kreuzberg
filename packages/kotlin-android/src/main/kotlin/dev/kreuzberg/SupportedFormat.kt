@@ -9,5 +9,5 @@ package dev.kreuzberg
  */
 data class SupportedFormat(
     val extension: String,
-    val mimeType: String
+    val mimeType: String,
 )

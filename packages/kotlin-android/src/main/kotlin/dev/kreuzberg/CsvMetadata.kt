@@ -10,5 +10,5 @@ data class CsvMetadata(
     val columnCount: Int,
     val delimiter: String?,
     val hasHeader: Boolean,
-    val columnTypes: List<String>?
+    val columnTypes: List<String>?,
 )

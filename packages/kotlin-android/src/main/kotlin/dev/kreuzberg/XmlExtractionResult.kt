@@ -11,5 +11,5 @@ package dev.kreuzberg
 data class XmlExtractionResult(
     val content: String,
     val elementCount: Long,
-    val uniqueElements: List<String>
+    val uniqueElements: List<String>,
 )

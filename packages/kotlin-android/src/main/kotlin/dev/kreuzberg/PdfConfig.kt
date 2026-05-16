@@ -15,5 +15,5 @@ data class PdfConfig(
     val topMarginFraction: Float?,
     val bottomMarginFraction: Float?,
     val allowSingleColumnTables: Boolean,
-    val ocrInlineImages: Boolean
+    val ocrInlineImages: Boolean,
 )

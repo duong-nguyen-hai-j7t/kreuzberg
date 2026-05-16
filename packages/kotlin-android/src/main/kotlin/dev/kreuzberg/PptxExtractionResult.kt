@@ -18,5 +18,5 @@ data class PptxExtractionResult(
     val pageContents: List<PageContent>?,
     val document: DocumentStructure?,
     val hyperlinks: List<String>,
-    val officeMetadata: Map<String, String>
+    val officeMetadata: Map<String, String>,
 )

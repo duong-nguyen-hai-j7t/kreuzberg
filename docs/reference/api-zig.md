@@ -28,7 +28,7 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn extract_bytes(content: []const u8, mime_type: [:0]const u8, config: ExtractionConfig) Error!ExtractionResult
 ```
 **Parameters:**
 
@@ -67,7 +67,7 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn extract_file(path: [:0]const u8, mime_type: ?[:0]const u8, config: ExtractionConfig) Error!ExtractionResult
 ```
 **Parameters:**
 
@@ -98,7 +98,7 @@ use a truly synchronous extraction approach instead.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn extract_file_sync(path: [:0]const u8, mime_type: ?[:0]const u8, config: ExtractionConfig) Error!ExtractionResult
 ```
 **Parameters:**
 
@@ -126,7 +126,7 @@ Tokio runtime. Without it (WASM), this calls a truly synchronous implementation.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn extract_bytes_sync(content: []const u8, mime_type: [:0]const u8, config: ExtractionConfig) Error!ExtractionResult
 ```
 **Parameters:**
 
@@ -151,7 +151,7 @@ Only available with `tokio-runtime` (WASM has no filesystem).
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn batch_extract_files_sync(items: []const BatchFileItem, config: ExtractionConfig) Error![]const ExtractionResult
 ```
 **Parameters:**
 
@@ -177,7 +177,7 @@ that iterates through items and calls `extract_bytes_sync()`.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn batch_extract_bytes_sync(items: []const BatchBytesItem, config: ExtractionConfig) Error![]const ExtractionResult
 ```
 **Parameters:**
 
@@ -225,7 +225,7 @@ Per-file configuration overrides:
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn batch_extract_files(items: []const BatchFileItem, config: ExtractionConfig) Error![]const ExtractionResult
 ```
 **Parameters:**
 
@@ -267,7 +267,7 @@ Per-item configuration overrides:
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn batch_extract_bytes(items: []const BatchBytesItem, config: ExtractionConfig) Error![]const ExtractionResult
 ```
 **Parameters:**
 
@@ -302,7 +302,7 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type cannot be determined.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn detect_mime_type_from_bytes(content: []const u8) Error![:0]const u8
 ```
 **Parameters:**
 
@@ -328,7 +328,7 @@ A vector of file extensions (without leading dot) for the MIME type.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn get_extensions_for_mime(mime_type: [:0]const u8) Error![]const [:0]const u8
 ```
 **Parameters:**
 
@@ -351,7 +351,7 @@ language bindings via `alef.toml [exclude].functions`.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn list_embedding_backends() Error![]const [:0]const u8
 ```
 **Returns:** `[]const [:0]const u8`
 **Errors:** Throws `Error`.
@@ -365,7 +365,7 @@ List names of all registered document extractors.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn list_document_extractors() Error![]const [:0]const u8
 ```
 **Returns:** `[]const [:0]const u8`
 **Errors:** Throws `Error`.
@@ -385,7 +385,7 @@ A vector of OCR backend names.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn list_ocr_backends() Error![]const [:0]const u8
 ```
 **Returns:** `[]const [:0]const u8`
 **Errors:** Throws `Error`.
@@ -407,7 +407,7 @@ global registry.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn list_post_processors() Error![]const [:0]const u8
 ```
 **Returns:** `[]const [:0]const u8`
 **Errors:** Throws `Error`.
@@ -425,7 +425,7 @@ Returns an error if the registry lock is poisoned.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn list_renderers() Error![]const [:0]const u8
 ```
 **Returns:** `[]const [:0]const u8`
 **Errors:** Throws `Error`.
@@ -439,7 +439,7 @@ List names of all registered validators.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn list_validators() Error![]const [:0]const u8
 ```
 **Returns:** `[]const [:0]const u8`
 **Errors:** Throws `Error`.
@@ -465,7 +465,7 @@ Returns one embedding vector per input text in the same order.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn embed_texts_async(texts: []const [:0]const u8, config: EmbeddingConfig) Error![]const []const f32
 ```
 **Parameters:**
 
@@ -494,7 +494,7 @@ or rendered, or if `page_index` is out of range.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn render_pdf_page_to_png(pdf_bytes: []const u8, page_index: u64, dpi: ?i32, password: ?[:0]const u8) Error![]const u8
 ```
 **Parameters:**
 
@@ -520,7 +520,7 @@ Set `check_exists` to `true` to verify the file exists before detection.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn detect_mime_type(path: [:0]const u8, check_exists: bool) Error![:0]const u8
 ```
 **Parameters:**
 
@@ -543,7 +543,7 @@ Returns a 2D vector where each inner vector is the embedding for the correspondi
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn embed_texts(texts: []const [:0]const u8, config: EmbeddingConfig) Error![]const []const f32
 ```
 **Parameters:**
 
@@ -567,7 +567,7 @@ clone so the value is safe to pass across FFI boundaries.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn get_embedding_preset(name: [:0]const u8) ?EmbeddingPreset
 ```
 **Parameters:**
 
@@ -588,7 +588,7 @@ Returns owned `String`s so the values are safe to pass across FFI boundaries.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend signature generation
+pub fn list_embedding_presets() []const [:0]const u8
 ```
 **Returns:** `[]const [:0]const u8`
 
@@ -607,32 +607,6 @@ for inference in layout detection and embedding generation.
 |-------|------|---------|-------------|
 | `provider` | `ExecutionProviderType` | `ExecutionProviderType.Auto` | Execution provider to use for ONNX inference. |
 | `deviceId` | `u32` | — | GPU device ID (for CUDA/TensorRT). Ignored for CPU/CoreML/Auto. |
-
-
----
-
-#### AnchorProperties
-
-Properties for anchored drawings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `behindDoc` | `bool` | — | Behind doc |
-| `layoutInCell` | `bool` | — | Layout in cell |
-| `relativeHeight` | `i64?` | `null` | Relative height |
-| `positionH` | `[:0]const u8?` | `null` | Position h |
-| `positionV` | `[:0]const u8?` | `null` | Position v |
-| `wrapType` | `[:0]const u8` | — | Wrap type |
-
-
----
-
-#### ApiDoc
-
-OpenAPI documentation structure.
-
-Defines all endpoints, request/response schemas, and examples
-for the Kreuzberg document extraction API.
 
 
 ---
@@ -730,36 +704,6 @@ BibTeX bibliography metadata.
 
 ---
 
-#### ByteBufferPool
-
-Convenience type alias for a pooled Vec<u8>.
-
-
----
-
-#### CacheWarmParams
-
-Request parameters for cache warm (model download).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `allEmbeddings` | `bool` | — | Download all embedding model presets |
-| `embeddingModel` | `[:0]const u8?` | `null` | Specific embedding preset name to download (e.g. "balanced", "speed", "quality") |
-
-
----
-
-#### CharShape
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `bold` | `bool` | — | Bold |
-| `italic` | `bool` | — | Italic |
-| `underline` | `bool` | — | Underline |
-
-
----
-
 #### Chunk
 
 A text chunk with optional embedding and metadata.
@@ -797,49 +741,6 @@ Metadata about a chunk's position in the original document.
 
 ---
 
-#### ChunkRequest
-
-Chunk request with text and configuration.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `[:0]const u8` | — | Text to chunk (must not be empty) |
-| `config` | `[:0]const u8?` | `null` | Optional chunking configuration |
-| `chunkerType` | `[:0]const u8` | — | Chunker type (text, markdown, yaml, or semantic) |
-
-
----
-
-#### ChunkResponse
-
-Chunk response with chunks and metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `chunks` | `[]const [:0]const u8` | — | List of chunks |
-| `chunkCount` | `u64` | — | Total number of chunks |
-| `config` | `[:0]const u8` | — | Configuration used for chunking |
-| `inputSizeBytes` | `u64` | — | Input text size in bytes |
-| `chunkerType` | `[:0]const u8` | — | Chunker type used for chunking |
-
-
----
-
-#### ChunkTextParams
-
-Request parameters for text chunking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `[:0]const u8` | — | Text content to split into chunks |
-| `maxCharacters` | `u64?` | `null` | Maximum characters per chunk (default: 2000) |
-| `overlap` | `u64?` | `null` | Number of overlapping characters between chunks (default: 100) |
-| `chunkerType` | `[:0]const u8?` | `null` | Chunker type: "text", "markdown", "yaml", or "semantic" (default: "text") |
-| `topicThreshold` | `f32?` | `null` | Topic threshold for semantic chunking (0.0-1.0, default: 0.75) |
-
-
----
-
 #### ChunkingConfig
 
 Chunking configuration.
@@ -868,22 +769,8 @@ Use `..the default constructor` when constructing to allow for future field addi
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() ChunkingConfig
 ```
-
----
-
-#### ChunkingResult
-
-Result of a text chunking operation.
-
-Contains the generated chunks and metadata about the chunking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `chunks` | `[]const Chunk` | — | List of text chunks |
-| `chunkCount` | `u64` | — | Total number of chunks generated |
-
 
 ---
 
@@ -929,7 +816,7 @@ default behavior unchanged.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() ContentFilterConfig
 ```
 
 ---
@@ -946,34 +833,6 @@ JATS contributor with role.
 
 ---
 
-#### CoreProperties
-
-Dublin Core metadata from docProps/core.xml
-
-Contains standard metadata fields defined by the Dublin Core standard
-and Office-specific extensions.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `title` | `[:0]const u8?` | `null` | Document title |
-| `subject` | `[:0]const u8?` | `null` | Document subject/topic |
-| `creator` | `[:0]const u8?` | `null` | Document creator/author |
-| `keywords` | `[:0]const u8?` | `null` | Keywords or tags |
-| `description` | `[:0]const u8?` | `null` | Document description/abstract |
-| `lastModifiedBy` | `[:0]const u8?` | `null` | User who last modified the document |
-| `revision` | `[:0]const u8?` | `null` | Revision number |
-| `created` | `[:0]const u8?` | `null` | Creation timestamp (ISO 8601) |
-| `modified` | `[:0]const u8?` | `null` | Last modification timestamp (ISO 8601) |
-| `category` | `[:0]const u8?` | `null` | Document category |
-| `contentStatus` | `[:0]const u8?` | `null` | Content status (Draft, Final, etc.) |
-| `language` | `[:0]const u8?` | `null` | Document language |
-| `identifier` | `[:0]const u8?` | `null` | Unique identifier |
-| `version` | `[:0]const u8?` | `null` | Document version |
-| `lastPrinted` | `[:0]const u8?` | `null` | Last print timestamp (ISO 8601) |
-
-
----
-
 #### CsvMetadata
 
 CSV/TSV file metadata.
@@ -985,16 +844,6 @@ CSV/TSV file metadata.
 | `delimiter` | `[:0]const u8?` | `null` | Delimiter |
 | `hasHeader` | `bool` | — | Whether header |
 | `columnTypes` | `[]const [:0]const u8?` | `[]` | Column types |
-
-
----
-
-#### CustomProperties
-
-Custom properties from docProps/custom.xml
-
-Maps property names to their values. Values are converted to JSON types
-based on the VT (Variant Type) specified in the XML.
 
 
 ---
@@ -1024,18 +873,6 @@ dBASE (DBF) file metadata.
 
 ---
 
-#### DetectMimeTypeParams
-
-Request parameters for MIME type detection.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `path` | `[:0]const u8` | — | Path to the file |
-| `useContent` | `bool` | — | Use content-based detection (default: true) |
-
-
----
-
 #### DetectResponse
 
 MIME type detection response.
@@ -1044,18 +881,6 @@ MIME type detection response.
 |-------|------|---------|-------------|
 | `mimeType` | `[:0]const u8` | — | Detected MIME type |
 | `filename` | `[:0]const u8?` | `null` | Original filename (if provided) |
-
-
----
-
-#### DetectedBoundary
-
-A detected structural boundary in the text.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `byteOffset` | `u64` | — | Byte offset of the start of the line in the original text. |
-| `isHeader` | `bool` | — | Whether this boundary looks like a header/section title. |
 
 
 ---
@@ -1129,20 +954,6 @@ Link element in Djot.
 
 ---
 
-#### DoclingCompatResponse
-
-OpenWebUI "Docling" engine response format.
-
-Returned by `POST /v1/convert/file` for docling-serve compatibility.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `document` | `[:0]const u8` | — | Converted document content |
-| `status` | `[:0]const u8` | — | Processing status |
-
-
----
-
 #### DocumentExtractor
 
 Trait for document extractor plugins.
@@ -1193,7 +1004,7 @@ The pipeline will convert this into the public `ExtractionResult`.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn extractBytes(self: *const DocumentExtractor, content: []const u8, mime_type: [:0]const u8, config: ExtractionConfig) Error!InternalDocument
 ```
 ###### extractFile()
 
@@ -1213,7 +1024,7 @@ Same as `extract_bytes`, plus file I/O errors.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn extractFile(self: *const DocumentExtractor, path: [:0]const u8, mime_type: [:0]const u8, config: ExtractionConfig) Error!InternalDocument
 ```
 ###### supportedMimeTypes()
 
@@ -1230,7 +1041,7 @@ A slice of MIME type strings.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn supportedMimeTypes(self: *const DocumentExtractor) []const [:0]const u8
 ```
 ###### priority()
 
@@ -1254,7 +1065,7 @@ Priority value (default: 50)
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn priority(self: *const DocumentExtractor) i32
 ```
 ###### canHandle()
 
@@ -1270,7 +1081,7 @@ Defaults to `true` (rely on MIME type matching).
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn canHandle(self: *const DocumentExtractor, path: [:0]const u8, mime_type: [:0]const u8) bool
 ```
 ###### asSyncExtractor()
 
@@ -1282,7 +1093,7 @@ This is used for WASM and other sync-only environments.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn asSyncExtractor(self: *const DocumentExtractor) ?SyncExtractor
 ```
 
 ---
@@ -1355,7 +1166,7 @@ construction paths (builder, derivation) call this automatically.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn finalizeNodeTypes(self: *const DocumentStructure) void
 ```
 ###### isEmpty()
 
@@ -1364,43 +1175,15 @@ Check if the document structure is empty.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn isEmpty(self: *const DocumentStructure) bool
 ```
 ###### default()
 
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() DocumentStructure
 ```
-
----
-
-#### DocxAppProperties
-
-Application properties from docProps/app.xml for DOCX
-
-Contains Word-specific document statistics and metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `application` | `[:0]const u8?` | `null` | Application name (e.g., "Microsoft Office Word") |
-| `appVersion` | `[:0]const u8?` | `null` | Application version |
-| `template` | `[:0]const u8?` | `null` | Template filename |
-| `totalTime` | `i32?` | `null` | Total editing time in minutes |
-| `pages` | `i32?` | `null` | Number of pages |
-| `words` | `i32?` | `null` | Number of words |
-| `characters` | `i32?` | `null` | Number of characters (excluding spaces) |
-| `charactersWithSpaces` | `i32?` | `null` | Number of characters (including spaces) |
-| `lines` | `i32?` | `null` | Number of lines |
-| `paragraphs` | `i32?` | `null` | Number of paragraphs |
-| `company` | `[:0]const u8?` | `null` | Company name |
-| `docSecurity` | `i32?` | `null` | Document security level |
-| `scaleCrop` | `bool?` | `null` | Scale crop flag |
-| `linksUpToDate` | `bool?` | `null` | Links up to date flag |
-| `sharedDoc` | `bool?` | `null` | Shared document flag |
-| `hyperlinksChanged` | `bool?` | `null` | Hyperlinks changed flag |
-
 
 ---
 
@@ -1413,23 +1196,9 @@ Integrates with `office_metadata` module for core/app/custom properties.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `coreProperties` | `CoreProperties?` | `null` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
-| `appProperties` | `DocxAppProperties?` | `null` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
+| `coreProperties` | `[:0]const u8?` | `null` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
+| `appProperties` | `[:0]const u8?` | `null` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
 | `customProperties` | `std.StringHashMap([:0]const u8)?` | `{}` | Custom properties from docProps/custom.xml (user-defined properties) Contains key-value pairs defined by users or applications. Values can be strings, numbers, booleans, or dates. |
-
-
----
-
-#### Drawing
-
-A drawing object extracted from `<w:drawing>`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `drawingType` | `[:0]const u8` | — | Drawing type |
-| `extent` | `[:0]const u8?` | `null` | Extent |
-| `docProperties` | `[:0]const u8?` | `null` | Doc properties |
-| `imageRef` | `[:0]const u8?` | `null` | Image ref |
 
 
 ---
@@ -1539,47 +1308,6 @@ Includes sender/recipient information, message ID, and attachment list.
 
 ---
 
-#### EmbedRequest
-
-Embedding request for generating embeddings from text.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `texts` | `[]const [:0]const u8` | — | Text strings to generate embeddings for (at least one non-empty string required) |
-| `config` | `EmbeddingConfig?` | `null` | Optional embedding configuration (model, batch size, etc.) |
-
-
----
-
-#### EmbedResponse
-
-Embedding response containing generated embeddings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `embeddings` | `[]const []const f32` | — | Generated embeddings (one per input text) |
-| `model` | `[:0]const u8` | — | Model used for embedding generation |
-| `dimensions` | `u64` | — | Dimensionality of the embeddings |
-| `count` | `u64` | — | Number of embeddings generated |
-
-
----
-
-#### EmbedTextParams
-
-Request parameters for embedding generation.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `texts` | `[]const [:0]const u8` | — | List of text strings to generate embeddings for |
-| `preset` | `[:0]const u8?` | `null` | Embedding preset name (default: "balanced"). Available: "speed", "balanced", "quality" |
-| `model` | `[:0]const u8?` | `null` | LLM model for provider-hosted embeddings (e.g., "openai/text-embedding-3-small"). When set, overrides preset and uses liter-llm for embedding generation. |
-| `apiKey` | `[:0]const u8?` | `null` | API key for the LLM provider (optional, falls back to env). |
-| `embeddingPlugin` | `[:0]const u8?` | `null` | Name of a pre-registered in-process embedding plugin backend. When set, overrides both preset and model and dispatches to the registered callback. Requires a prior call to `kreuzberg.plugins.register_embedding_backend`. |
-
-
----
-
 #### EmbeddedFile
 
 Embedded file descriptor extracted from the PDF name tree.
@@ -1651,7 +1379,7 @@ every vector returned by `embed`.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn dimensions(self: *const EmbeddingBackend) u64
 ```
 ###### embed()
 
@@ -1666,7 +1394,7 @@ backend-specific failures. The dispatcher layers its own validation
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn embed(self: *const EmbeddingBackend, texts: []const [:0]const u8) Error![]const []const f32
 ```
 
 ---
@@ -1695,7 +1423,7 @@ Requires the `embeddings` feature to be enabled.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() EmbeddingConfig
 ```
 
 ---
@@ -1801,31 +1529,6 @@ extracted content and metadata.
 
 ---
 
-#### ExtractResponse
-
-Extraction response (list of results).
-
-
----
-
-#### ExtractStructuredParams
-
-Request parameters for LLM-based structured extraction.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `path` | `[:0]const u8` | — | File path to extract from |
-| `schema` | `[:0]const u8` | — | JSON schema for structured output |
-| `model` | `[:0]const u8` | — | LLM model (e.g., "openai/gpt-4o") |
-| `schemaName` | `[:0]const u8` | — | Schema name (default: "extraction") |
-| `schemaDescription` | `[:0]const u8?` | `null` | Schema description for the LLM |
-| `prompt` | `[:0]const u8?` | `null` | Custom Jinja2 prompt template |
-| `apiKey` | `[:0]const u8?` | `null` | API key (optional, falls back to env) |
-| `strict` | `bool` | — | Enable strict mode |
-
-
----
-
 #### ExtractedImage
 
 Extracted image from a document.
@@ -1852,22 +1555,6 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `imageKind` | `ImageKind?` | `null` | Heuristic classification of what this image likely depicts. `null` if classification was disabled or inconclusive. |
 | `kindConfidence` | `f32?` | `null` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
 | `clusterId` | `u32?` | `null` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `null` for singletons. |
-
-
----
-
-#### ExtractedInlineImage
-
-Extracted inline image with metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `data` | `[]const u8` | — | Uses `bytes.Bytes` for cheap cloning of large buffers. |
-| `format` | `[:0]const u8` | — | Format |
-| `filename` | `[:0]const u8?` | `null` | Filename |
-| `description` | `[:0]const u8?` | `null` | Human-readable description |
-| `dimensions` | `[]const u32?` | `null` | Dimensions |
-| `attributes` | `[]const [:0]const u8` | — | Attributes |
 
 
 ---
@@ -1923,7 +1610,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() ExtractionConfig
 ```
 ###### needsImageProcessing()
 
@@ -1942,7 +1629,7 @@ image I/O and processing when results won't be used.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn needsImageProcessing(self: *const ExtractionConfig) bool
 ```
 
 ---
@@ -1989,7 +1676,7 @@ Convert from an OCR result.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn fromOcr(ocr: OcrExtractionResult) ExtractionResult
 ```
 
 ---
@@ -2180,21 +1867,8 @@ included in page content.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() HierarchyConfig
 ```
-
----
-
-#### HtmlExtractionResult
-
-Result of HTML extraction with optional images and warnings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `markdown` | `[:0]const u8` | — | Markdown |
-| `images` | `[]const ExtractedInlineImage` | — | Images extracted from the document |
-| `warnings` | `[]const [:0]const u8` | — | Warnings |
-
 
 ---
 
@@ -2230,7 +1904,7 @@ and extracted structural elements (headers, links, images, structured data).
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn from(metadata: HtmlMetadata) HtmlMetadata
 ```
 
 ---
@@ -2259,98 +1933,7 @@ the plain comrak-based renderer.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
-```
-
----
-
-#### HwpImage
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `name` | `[:0]const u8` | — | The name |
-| `data` | `[]const u8` | — | Data |
-
-
----
-
-#### HwpxExtractor
-
-Extractor for Hangul Word Processor XML (.hwpx) files.
-
-Supports HWPX (Open HWPML), the ZIP-based XML successor to the binary HWP 5.0 format.
-
-##### Methods
-
-###### default()
-
-**Signature:**
-
-```zig
-// Phase 1: zig backend method signature generation
-```
-###### name()
-
-**Signature:**
-
-```zig
-// Phase 1: zig backend method signature generation
-```
-###### version()
-
-**Signature:**
-
-```zig
-// Phase 1: zig backend method signature generation
-```
-###### initialize()
-
-**Signature:**
-
-```zig
-// Phase 1: zig backend method signature generation
-```
-###### shutdown()
-
-**Signature:**
-
-```zig
-// Phase 1: zig backend method signature generation
-```
-###### description()
-
-**Signature:**
-
-```zig
-// Phase 1: zig backend method signature generation
-```
-###### author()
-
-**Signature:**
-
-```zig
-// Phase 1: zig backend method signature generation
-```
-###### extractBytes()
-
-**Signature:**
-
-```zig
-// Phase 1: zig backend method signature generation
-```
-###### supportedMimeTypes()
-
-**Signature:**
-
-```zig
-// Phase 1: zig backend method signature generation
-```
-###### priority()
-
-**Signature:**
-
-```zig
-// Phase 1: zig backend method signature generation
+pub fn default() HtmlOutputConfig
 ```
 
 ---
@@ -2378,7 +1961,7 @@ Image extraction configuration.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() ImageExtractionConfig
 ```
 
 ---
@@ -2415,19 +1998,6 @@ Image element metadata.
 
 ---
 
-#### ImageOcrResult
-
-Result of OCR extraction from an image with optional page tracking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `content` | `[:0]const u8` | — | Extracted text content |
-| `boundaries` | `[]const PageBoundary?` | `null` | Character byte boundaries per frame (for multi-frame TIFFs) |
-| `pageContents` | `[]const PageContent?` | `null` | Per-frame content information |
-
-
----
-
 #### ImagePreprocessingConfig
 
 Image preprocessing configuration for OCR.
@@ -2453,7 +2023,7 @@ for different document types.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() ImagePreprocessingConfig
 ```
 
 ---
@@ -2479,18 +2049,6 @@ including DPI normalization, resizing, and resampling.
 | `calculatedDpi` | `i32?` | `null` | Calculated optimal DPI (if auto_adjust_dpi enabled) |
 | `skippedResize` | `bool` | — | Whether resize was skipped (dimensions already optimal) |
 | `resizeError` | `[:0]const u8?` | `null` | Error message if resize failed |
-
-
----
-
-#### InfoResponse
-
-Server information response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `version` | `[:0]const u8` | — | API version |
-| `rustBackend` | `bool` | — | Whether using Rust backend |
 
 
 ---
@@ -2560,7 +2118,7 @@ Keyword extraction configuration.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() KeywordConfig
 ```
 
 ---
@@ -2582,7 +2140,7 @@ Language detection configuration.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() LanguageDetectionConfig
 ```
 
 ---
@@ -2622,7 +2180,7 @@ is enabled for PDF extraction.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() LayoutDetectionConfig
 ```
 
 ---
@@ -2702,47 +2260,6 @@ within one extraction (e.g. VLM OCR + structured extraction).
 
 ---
 
-#### ManifestEntryResponse
-
-Model manifest entry for cache management.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `relativePath` | `[:0]const u8` | — | Relative path within the cache directory |
-| `sha256` | `[:0]const u8` | — | SHA256 checksum of the model file |
-| `sizeBytes` | `u64` | — | Expected file size in bytes |
-| `sourceUrl` | `[:0]const u8` | — | HuggingFace source URL for downloading |
-
-
----
-
-#### ManifestResponse
-
-Model manifest response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `kreuzbergVersion` | `[:0]const u8` | — | Kreuzberg version |
-| `totalSizeBytes` | `u64` | — | Total size of all models in bytes |
-| `modelCount` | `u64` | — | Number of models in the manifest |
-| `models` | `[]const ManifestEntryResponse` | — | Individual model entries |
-
-
----
-
-#### MergedChunk
-
-A merged chunk produced by `merge_segments`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `[:0]const u8` | — | Text |
-| `byteStart` | `u64` | — | Byte start |
-| `byteEnd` | `u64` | — | Byte end |
-
-
----
-
 #### Metadata
 
 Extraction result metadata.
@@ -2785,7 +2302,7 @@ additional postprocessor fields are populated.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn isEmpty(self: *const Metadata) bool
 ```
 
 ---
@@ -2842,7 +2359,7 @@ so multiple backends can coexist in a pipeline without key conflicts.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn processImage(self: *const OcrBackend, image_bytes: []const u8, config: OcrConfig) Error!ExtractionResult
 ```
 ###### processImageFile()
 
@@ -2858,7 +2375,7 @@ Same as `process_image`, plus file I/O errors.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn processImageFile(self: *const OcrBackend, path: [:0]const u8, config: OcrConfig) Error!ExtractionResult
 ```
 ###### supportsLanguage()
 
@@ -2871,7 +2388,7 @@ Check if this backend supports a given language code.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn supportsLanguage(self: *const OcrBackend, lang: [:0]const u8) bool
 ```
 ###### backendType()
 
@@ -2884,7 +2401,7 @@ The backend type enum value.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn backendType(self: *const OcrBackend) OcrBackendType
 ```
 ###### supportedLanguages()
 
@@ -2895,7 +2412,7 @@ Defaults to empty list. Override to provide comprehensive language support info.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn supportedLanguages(self: *const OcrBackend) []const [:0]const u8
 ```
 ###### supportsTableDetection()
 
@@ -2906,7 +2423,7 @@ Defaults to `false`. Override if your backend can detect and extract tables.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn supportsTableDetection(self: *const OcrBackend) bool
 ```
 ###### supportsDocumentProcessing()
 
@@ -2917,7 +2434,7 @@ Defaults to `false`. Override if the backend has optimized document processing.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn supportsDocumentProcessing(self: *const OcrBackend) bool
 ```
 ###### processDocument()
 
@@ -2928,7 +2445,7 @@ Only called if `supports_document_processing` returns `true`.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn processDocument(self: *const OcrBackend, path: [:0]const u8, config: OcrConfig) Error!ExtractionResult
 ```
 
 ---
@@ -2987,7 +2504,7 @@ OCR configuration.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() OcrConfig
 ```
 
 ---
@@ -3132,7 +2649,7 @@ so `OcrQualityThresholds.default()` preserves existing semantics exactly.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() OcrQualityThresholds
 ```
 
 ---
@@ -3175,51 +2692,6 @@ Bounding box for an OCR-detected table in pixel coordinates.
 | `top` | `u32` | — | Top y-coordinate (pixels) |
 | `right` | `u32` | — | Right x-coordinate (pixels) |
 | `bottom` | `u32` | — | Bottom y-coordinate (pixels) |
-
-
----
-
-#### OdtProperties
-
-OpenDocument metadata from meta.xml
-
-Contains metadata fields defined by the OASIS OpenDocument Format standard.
-Uses Dublin Core elements (dc:) and OpenDocument meta elements (meta:).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `title` | `[:0]const u8?` | `null` | Document title (dc:title) |
-| `subject` | `[:0]const u8?` | `null` | Document subject/topic (dc:subject) |
-| `creator` | `[:0]const u8?` | `null` | Current document creator/author (dc:creator) |
-| `initialCreator` | `[:0]const u8?` | `null` | Initial creator of the document (meta:initial-creator) |
-| `keywords` | `[:0]const u8?` | `null` | Keywords or tags (meta:keyword) |
-| `description` | `[:0]const u8?` | `null` | Document description (dc:description) |
-| `date` | `[:0]const u8?` | `null` | Current modification date (dc:date) |
-| `creationDate` | `[:0]const u8?` | `null` | Initial creation date (meta:creation-date) |
-| `language` | `[:0]const u8?` | `null` | Document language (dc:language) |
-| `generator` | `[:0]const u8?` | `null` | Generator/application that created the document (meta:generator) |
-| `editingDuration` | `[:0]const u8?` | `null` | Editing duration in ISO 8601 format (meta:editing-duration) |
-| `editingCycles` | `[:0]const u8?` | `null` | Number of edits/revisions (meta:editing-cycles) |
-| `pageCount` | `i32?` | `null` | Document statistics - page count (meta:page-count) |
-| `wordCount` | `i32?` | `null` | Document statistics - word count (meta:word-count) |
-| `characterCount` | `i32?` | `null` | Document statistics - character count (meta:character-count) |
-| `paragraphCount` | `i32?` | `null` | Document statistics - paragraph count (meta:paragraph-count) |
-| `tableCount` | `i32?` | `null` | Document statistics - table count (meta:table-count) |
-| `imageCount` | `i32?` | `null` | Document statistics - image count (meta:image-count) |
-
-
----
-
-#### OpenWebDocumentResponse
-
-OpenWebUI "External" engine response format.
-
-Returned by `PUT /process` for the OpenWebUI external document loader.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `pageContent` | `[:0]const u8` | — | Extracted text content |
-| `metadata` | `[:0]const u8` | — | Document metadata |
 
 
 ---
@@ -3267,7 +2739,7 @@ Sets a custom cache directory for model files.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn withCacheDir(self: *const PaddleOcrConfig, path: [:0]const u8) PaddleOcrConfig
 ```
 ###### withTableDetection()
 
@@ -3276,7 +2748,7 @@ Enables or disables table structure detection.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn withTableDetection(self: *const PaddleOcrConfig, enable: bool) PaddleOcrConfig
 ```
 ###### withAngleCls()
 
@@ -3285,7 +2757,7 @@ Enables or disables angle classification for rotated text.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn withAngleCls(self: *const PaddleOcrConfig, enable: bool) PaddleOcrConfig
 ```
 ###### withDetDbThresh()
 
@@ -3294,7 +2766,7 @@ Sets the database threshold for text detection.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn withDetDbThresh(self: *const PaddleOcrConfig, threshold: f32) PaddleOcrConfig
 ```
 ###### withDetDbBoxThresh()
 
@@ -3303,7 +2775,7 @@ Sets the box threshold for text bounding box refinement.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn withDetDbBoxThresh(self: *const PaddleOcrConfig, threshold: f32) PaddleOcrConfig
 ```
 ###### withDetDbUnclipRatio()
 
@@ -3312,7 +2784,7 @@ Sets the unclip ratio for expanding text bounding boxes.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn withDetDbUnclipRatio(self: *const PaddleOcrConfig, ratio: f32) PaddleOcrConfig
 ```
 ###### withDetLimitSideLen()
 
@@ -3321,7 +2793,7 @@ Sets the maximum side length for detection images.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn withDetLimitSideLen(self: *const PaddleOcrConfig, length: u32) PaddleOcrConfig
 ```
 ###### withRecBatchNum()
 
@@ -3330,7 +2802,7 @@ Sets the batch size for recognition inference.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn withRecBatchNum(self: *const PaddleOcrConfig, batch_size: u32) PaddleOcrConfig
 ```
 ###### withDropScore()
 
@@ -3339,7 +2811,7 @@ Sets the minimum recognition confidence threshold.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn withDropScore(self: *const PaddleOcrConfig, score: f32) PaddleOcrConfig
 ```
 ###### withPadding()
 
@@ -3348,7 +2820,7 @@ Sets padding in pixels added around images before detection.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn withPadding(self: *const PaddleOcrConfig, padding: u32) PaddleOcrConfig
 ```
 ###### withModelTier()
 
@@ -3357,7 +2829,7 @@ Sets the model tier controlling detection/recognition model size.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn withModelTier(self: *const PaddleOcrConfig, tier: [:0]const u8) PaddleOcrConfig
 ```
 ###### default()
 
@@ -3366,7 +2838,7 @@ Creates a default configuration with English language support.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() PaddleOcrConfig
 ```
 
 ---
@@ -3415,7 +2887,7 @@ when page boundaries are available and chunking is configured.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() PageConfig
 ```
 
 ---
@@ -3486,23 +2958,6 @@ and visibility state (for presentations).
 
 ---
 
-#### PageMarginsPoints
-
-Page margins converted to points (1/72 inch).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `top` | `f64?` | `null` | Top |
-| `right` | `f64?` | `null` | Right |
-| `bottom` | `f64?` | `null` | Bottom |
-| `left` | `f64?` | `null` | Left |
-| `header` | `f64?` | `null` | Header |
-| `footer` | `f64?` | `null` | Footer |
-| `gutter` | `f64?` | `null` | Gutter |
-
-
----
-
 #### PageStructure
 
 Unified page structure for documents.
@@ -3558,7 +3013,7 @@ PDF-specific configuration.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() PdfConfig
 ```
 
 ---
@@ -3608,7 +3063,7 @@ The name should be:
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn name(self: *const Plugin) [:0]const u8
 ```
 ###### version()
 
@@ -3621,7 +3076,7 @@ Defaults to the kreuzberg crate version.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn version(self: *const Plugin) [:0]const u8
 ```
 ###### initialize()
 
@@ -3648,7 +3103,7 @@ Defaults to a no-op for stateless plugins.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn initialize(self: *const Plugin) Error!void
 ```
 ###### shutdown()
 
@@ -3675,7 +3130,7 @@ Defaults to a no-op for stateless plugins.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn shutdown(self: *const Plugin) Error!void
 ```
 ###### description()
 
@@ -3686,7 +3141,7 @@ Defaults to empty string if not overridden.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn description(self: *const Plugin) [:0]const u8
 ```
 ###### author()
 
@@ -3697,7 +3152,7 @@ Defaults to empty string if not overridden.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn author(self: *const Plugin) [:0]const u8
 ```
 
 ---
@@ -3780,7 +3235,7 @@ async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn process(self: *const PostProcessor, result: ExtractionResult, config: ExtractionConfig) Error!void
 ```
 ###### processingStage()
 
@@ -3795,7 +3250,7 @@ The `ProcessingStage` (Early, Middle, or Late).
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn processingStage(self: *const PostProcessor) ProcessingStage
 ```
 ###### shouldProcess()
 
@@ -3811,7 +3266,7 @@ Defaults to `true` (always run).
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn shouldProcess(self: *const PostProcessor, result: ExtractionResult, config: ExtractionConfig) bool
 ```
 ###### estimatedDurationMs()
 
@@ -3826,7 +3281,7 @@ Estimated processing time in milliseconds.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn estimatedDurationMs(self: *const PostProcessor, result: ExtractionResult) u64
 ```
 ###### priority()
 
@@ -3839,7 +3294,7 @@ for high-priority processors that should run early in their stage.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn priority(self: *const PostProcessor) i32
 ```
 
 ---
@@ -3863,35 +3318,8 @@ Post-processor configuration.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() PostProcessorConfig
 ```
-
----
-
-#### PptxAppProperties
-
-Application properties from docProps/app.xml for PPTX
-
-Contains PowerPoint-specific document metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `application` | `[:0]const u8?` | `null` | Application name (e.g., "Microsoft Office PowerPoint") |
-| `appVersion` | `[:0]const u8?` | `null` | Application version |
-| `totalTime` | `i32?` | `null` | Total editing time in minutes |
-| `company` | `[:0]const u8?` | `null` | Company name |
-| `docSecurity` | `i32?` | `null` | Document security level |
-| `scaleCrop` | `bool?` | `null` | Scale crop flag |
-| `linksUpToDate` | `bool?` | `null` | Links up to date flag |
-| `sharedDoc` | `bool?` | `null` | Shared document flag |
-| `hyperlinksChanged` | `bool?` | `null` | Hyperlinks changed flag |
-| `slides` | `i32?` | `null` | Number of slides |
-| `notes` | `i32?` | `null` | Number of notes |
-| `hiddenSlides` | `i32?` | `null` | Number of hidden slides |
-| `multimediaClips` | `i32?` | `null` | Number of multimedia clips |
-| `presentationFormat` | `[:0]const u8?` | `null` | Presentation format (e.g., "Widescreen", "Standard") |
-| `slideTitles` | `[]const [:0]const u8` | `[]` | Slide titles |
-
 
 ---
 
@@ -3976,7 +3404,7 @@ RAKE-specific parameters.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() RakeParams
 ```
 
 ---
@@ -3996,30 +3424,6 @@ the type in their own code.
 | `cells` | `[]const []const [:0]const u8` | — | Table cells as a 2D vector (rows × columns). |
 | `markdown` | `[:0]const u8` | — | Rendered markdown table. |
 
-
----
-
-#### Recyclable
-
-Trait for types that can be pooled and reused.
-
-Implementing this trait allows a type to be used with `Pool<T>`.
-The `reset()` method should clear the object's state for reuse.
-
-##### Methods
-
-###### reset()
-
-Reset the object to a reusable state.
-
-This is called when returning an object to the pool.
-Should clear any internal data while preserving capacity.
-
-**Signature:**
-
-```zig
-// Phase 1: zig backend method signature generation
-```
 
 ---
 
@@ -4058,20 +3462,8 @@ Returns an error if rendering fails.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn render(self: *const Renderer, doc: InternalDocument) Error![:0]const u8
 ```
-
----
-
-#### ResolvedStyle
-
-Fully resolved (flattened) style after walking the inheritance chain.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `paragraphProperties` | `[:0]const u8` | — | Paragraph properties |
-| `runProperties` | `[:0]const u8` | — | Run properties |
-
 
 ---
 
@@ -4101,7 +3493,7 @@ while still supporting legitimate documents.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() SecurityLimits
 ```
 
 ---
@@ -4136,7 +3528,7 @@ including host/port settings, CORS configuration, and upload limits.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() ServerConfig
 ```
 ###### listenAddr()
 
@@ -4145,7 +3537,7 @@ Get the server listen address (host:port).
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn listenAddr(self: *const ServerConfig) [:0]const u8
 ```
 ###### corsAllowsAll()
 
@@ -4157,7 +3549,7 @@ are allowed. Returns `false` if specific origins are configured.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn corsAllowsAll(self: *const ServerConfig) bool
 ```
 ###### isOriginAllowed()
 
@@ -4170,7 +3562,7 @@ Returns `true` if:
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn isOriginAllowed(self: *const ServerConfig, origin: [:0]const u8) bool
 ```
 ###### maxRequestBodyMb()
 
@@ -4179,7 +3571,7 @@ Get maximum request body size in megabytes (rounded up).
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn maxRequestBodyMb(self: *const ServerConfig) u64
 ```
 ###### maxMultipartFieldMb()
 
@@ -4188,20 +3580,8 @@ Get maximum multipart field size in megabytes (rounded up).
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn maxMultipartFieldMb(self: *const ServerConfig) u64
 ```
-
----
-
-#### StreamReader
-
-
----
-
-#### StringBufferPool
-
-Convenience type alias for a pooled String.
-
 
 ---
 
@@ -4249,37 +3629,6 @@ returning structured data that conforms to the schema.
 
 ---
 
-#### StructuredExtractionResponse
-
-Response from structured extraction endpoint.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `structuredOutput` | `[:0]const u8` | — | Structured data conforming to the provided JSON schema |
-| `content` | `[:0]const u8` | — | Extracted document text content |
-| `mimeType` | `[:0]const u8` | — | Detected MIME type of the input file |
-
-
----
-
-#### StyleDefinition
-
-A single style definition parsed from `<w:style>` in `word/styles.xml`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `id` | `[:0]const u8` | — | The style ID (`w:styleId` attribute). |
-| `name` | `[:0]const u8?` | `null` | Human-readable name (`<w:name w:val="..."/>`). |
-| `styleType` | `[:0]const u8` | — | Style type: paragraph, character, table, or numbering. |
-| `basedOn` | `[:0]const u8?` | `null` | ID of the parent style (`<w:basedOn w:val="..."/>`). |
-| `nextStyle` | `[:0]const u8?` | `null` | ID of the style to apply to the next paragraph (`<w:next w:val="..."/>`). |
-| `isDefault` | `bool` | — | Whether this is the default style for its type. |
-| `paragraphProperties` | `[:0]const u8` | — | Paragraph properties defined directly on this style. |
-| `runProperties` | `[:0]const u8` | — | Run properties defined directly on this style. |
-
-
----
-
 #### SupportedFormat
 
 A supported document format entry.
@@ -4291,44 +3640,6 @@ Represents a file extension and its corresponding MIME type that Kreuzberg can p
 | `extension` | `[:0]const u8` | — | File extension (without leading dot), e.g., "pdf", "docx" |
 | `mimeType` | `[:0]const u8` | — | MIME type string, e.g., "application/pdf" |
 
-
----
-
-#### SyncExtractor
-
-Trait for extractors that can work synchronously (WASM-compatible).
-
-This trait defines the synchronous extraction interface for WASM targets and other
-environments where async/tokio runtimes are not available or desirable.
-
-# Implementation
-
-Extractors that need to support WASM should implement this trait in addition to
-the async `DocumentExtractor` trait. This allows the same extractor to work in both
-environments by delegating to the sync implementation.
-
-# MIME Type Validation
-
-The `mime_type` parameter is guaranteed to be already validated.
-
-##### Methods
-
-###### extractSync()
-
-Extract content from a byte array synchronously.
-
-This method performs extraction without requiring an async runtime.
-It is called by `extract_bytes_sync()` when the `tokio-runtime` feature is disabled.
-
-**Returns:**
-
-An `InternalDocument` containing the extracted elements, metadata, and tables.
-
-**Signature:**
-
-```zig
-// Phase 1: zig backend method signature generation
-```
 
 ---
 
@@ -4380,66 +3691,6 @@ Stores row/column dimensions and a flat list of cells with position info.
 
 ---
 
-#### TableProperties
-
-Table-level properties from `<w:tblPr>`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `styleId` | `[:0]const u8?` | `null` | Style id |
-| `width` | `[:0]const u8?` | `null` | Width |
-| `alignment` | `[:0]const u8?` | `null` | Alignment |
-| `layout` | `[:0]const u8?` | `null` | Layout |
-| `look` | `[:0]const u8?` | `null` | Look |
-| `borders` | `[:0]const u8?` | `null` | Borders |
-| `cellMargins` | `[:0]const u8?` | `null` | Cell margins |
-| `indent` | `[:0]const u8?` | `null` | Indent |
-| `caption` | `[:0]const u8?` | `null` | Caption |
-
-
----
-
-#### TessdataManager
-
-Manages tessdata file downloading, caching, and manifest generation.
-
-##### Methods
-
-###### cacheDir()
-
-Get the cache directory path.
-
-**Signature:**
-
-```zig
-// Phase 1: zig backend method signature generation
-```
-###### isLanguageCached()
-
-Check if a specific language traineddata file is cached.
-
-**Signature:**
-
-```zig
-// Phase 1: zig backend method signature generation
-```
-###### ensureAllLanguages()
-
-Downloads all tessdata_fast traineddata files to the cache directory.
-
-Skips files that already exist. Returns the count of newly downloaded files.
-
-When the `paddle-ocr` feature is not enabled, no download URLs are available
-and this method always returns `Ok(0)`.
-
-**Signature:**
-
-```zig
-// Phase 1: zig backend method signature generation
-```
-
----
-
 #### TesseractConfig
 
 Tesseract OCR configuration.
@@ -4479,7 +3730,7 @@ for specific document types (invoices, handwriting, etc.).
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() TesseractConfig
 ```
 
 ---
@@ -4562,7 +3813,7 @@ for Markdown, structural elements like headers and links.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() TokenReductionConfig
 ```
 
 ---
@@ -4583,15 +3834,8 @@ Token reduction configuration.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() TokenReductionOptions
 ```
-
----
-
-#### TracingLayer
-
-A `tower.Layer` that wraps each extraction in a semantic tracing span.
-
 
 ---
 
@@ -4629,7 +3873,7 @@ docstrings = true
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() TreeSitterConfig
 ```
 
 ---
@@ -4659,7 +3903,7 @@ Controls which analysis features are enabled when extracting code files.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() TreeSitterProcessConfig
 ```
 
 ---
@@ -4798,7 +4042,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn validate(self: *const Validator, result: ExtractionResult, config: ExtractionConfig) Error!void
 ```
 ###### shouldValidate()
 
@@ -4814,7 +4058,7 @@ Defaults to `true` (always run).
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn shouldValidate(self: *const Validator, result: ExtractionResult, config: ExtractionConfig) bool
 ```
 ###### priority()
 
@@ -4832,42 +4076,8 @@ Priority value (higher = runs earlier).
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn priority(self: *const Validator) i32
 ```
-
----
-
-#### WarmResponse
-
-Cache warm response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `cacheDir` | `[:0]const u8` | — | Cache directory used |
-| `downloaded` | `[]const [:0]const u8` | — | Models that were downloaded |
-| `alreadyCached` | `[]const [:0]const u8` | — | Models that were already cached |
-
-
----
-
-#### XlsxAppProperties
-
-Application properties from docProps/app.xml for XLSX
-
-Contains Excel-specific document metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `application` | `[:0]const u8?` | `null` | Application name (e.g., "Microsoft Excel") |
-| `appVersion` | `[:0]const u8?` | `null` | Application version |
-| `docSecurity` | `i32?` | `null` | Document security level |
-| `scaleCrop` | `bool?` | `null` | Scale crop flag |
-| `linksUpToDate` | `bool?` | `null` | Links up to date flag |
-| `sharedDoc` | `bool?` | `null` | Shared document flag |
-| `hyperlinksChanged` | `bool?` | `null` | Hyperlinks changed flag |
-| `company` | `[:0]const u8?` | `null` | Company name |
-| `worksheetNames` | `[]const [:0]const u8` | `[]` | Worksheet names |
-
 
 ---
 
@@ -4916,7 +4126,7 @@ YAKE-specific parameters.
 **Signature:**
 
 ```zig
-// Phase 1: zig backend method signature generation
+pub fn default() YakeParams
 ```
 
 ---
@@ -4930,13 +4140,6 @@ Year range for bibliographic metadata.
 | `min` | `u32?` | `null` | Min |
 | `max` | `u32?` | `null` | Max |
 | `years` | `[]const u32` | — | Years |
-
-
----
-
-#### ZipBombValidator
-
-Helper struct for validating ZIP archives for security issues.
 
 
 ---
@@ -5091,6 +4294,32 @@ of `ExtractionResult`.
 | `Chunks` | Use TSLP semantic chunks as content (default). |
 | `Raw` | Use raw source code as content. |
 | `Structure` | Emit function/class headings + docstrings (no code bodies). |
+
+
+---
+
+#### ListType
+
+Type of list detection.
+
+| Value | Description |
+|-------|-------------|
+| `Bullet` | Bullet points (-, *, •, etc.) |
+| `Numbered` | Numbered lists (1., 2., etc.) |
+| `Lettered` | Lettered lists (a., b., A., B., etc.) |
+| `Indented` | Indented items |
+
+
+---
+
+#### DrawingType
+
+Whether the drawing is inline or anchored.
+
+| Value | Description |
+|-------|-------------|
+| `Inline` | Inline |
+| `Anchored` | Anchored — Fields: `0`: `[:0]const u8` |
 
 
 ---
@@ -5556,17 +4785,6 @@ Semantic classification of an extracted URI.
 | `Citation` | A citation or bibliographic reference (DOI, academic ref). |
 | `Reference` | A general reference (e.g. `\ref{}` in LaTeX, `:ref:` in RST). |
 | `Email` | An email address (`mailto:` link or bare email). |
-
-
----
-
-#### PoolError
-
-Error type for pool operations.
-
-| Value | Description |
-|-------|-------------|
-| `LockPoisoned` | The pool's internal mutex was poisoned. This indicates a panic occurred while holding the lock. The pool is in a locked state and cannot be recovered. |
 
 
 ---

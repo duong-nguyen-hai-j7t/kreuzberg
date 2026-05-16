@@ -11,5 +11,5 @@ data class TableCell(
     val content: String,
     val rowSpan: Int,
     val colSpan: Int,
-    val isHeader: Boolean
+    val isHeader: Boolean,
 )

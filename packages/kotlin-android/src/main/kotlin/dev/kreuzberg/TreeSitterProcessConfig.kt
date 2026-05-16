@@ -16,5 +16,5 @@ data class TreeSitterProcessConfig(
     val symbols: Boolean,
     val diagnostics: Boolean,
     val chunkMaxSize: Long?,
-    val contentMode: CodeContentMode
+    val contentMode: CodeContentMode,
 )

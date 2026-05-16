@@ -17,5 +17,5 @@ data class EmbeddingConfig(
     val showDownloadProgress: Boolean,
     val cacheDir: Path?,
     val acceleration: AccelerationConfig?,
-    val maxEmbedDurationSecs: Long?
+    val maxEmbedDurationSecs: Long?,
 )

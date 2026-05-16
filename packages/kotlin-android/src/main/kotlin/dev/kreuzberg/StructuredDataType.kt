@@ -8,5 +8,5 @@ package dev.kreuzberg
 enum class StructuredDataType {
     JSON_LD,
     MICRODATA,
-    R_D_FA;
+    R_D_FA,
 }

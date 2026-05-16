@@ -9,6 +9,12 @@ keywords = ["document", "extraction", "pdf", "ocr", "text"]
 categories = ["text-processing"]
 repository = "https://github.com/kreuzberg-dev/kreuzberg"
 
+[package.metadata.cargo-machete]
+# tokio is pulled in for its runtime/macros at link time and futures-util for
+# stream helpers, but the generated FFI source may not `use` them directly
+# — cargo-machete would otherwise flag them.
+ignored = ["tokio", "futures-util"]
+
 [lib]
 crate-type = ["cdylib", "staticlib"]
 
@@ -17,15 +23,7 @@ default = []
 
 [dependencies]
 async-trait = "0.1"
-serde_json = "1"
-tokio = { version = "1", features = ["full"] }
-
-[target.'cfg(all(target_os = "android", target_arch = "x86_64"))'.dependencies]
-kreuzberg = { path = "../kreuzberg", default-features = false, features = [
-  "android-target",
-] }
-
-[target.'cfg(not(all(target_os = "android", target_arch = "x86_64")))'.dependencies]
+futures-util = "0.3"
 kreuzberg = { path = "../kreuzberg", features = [
   "full",
   "pdf",
@@ -54,6 +52,8 @@ kreuzberg = { path = "../kreuzberg", features = [
   "liter-llm",
   "quality",
 ] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
 
 [build-dependencies]
 cbindgen = "0.29"

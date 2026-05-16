@@ -11,5 +11,5 @@ package dev.kreuzberg
  */
 enum class ResultFormat {
     UNIFIED,
-    ELEMENT_BASED;
+    ELEMENT_BASED,
 }

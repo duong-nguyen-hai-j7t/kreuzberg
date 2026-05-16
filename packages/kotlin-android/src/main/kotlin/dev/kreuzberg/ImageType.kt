@@ -9,5 +9,5 @@ enum class ImageType {
     DATA_URI,
     INLINE_SVG,
     EXTERNAL,
-    RELATIVE;
+    RELATIVE,
 }

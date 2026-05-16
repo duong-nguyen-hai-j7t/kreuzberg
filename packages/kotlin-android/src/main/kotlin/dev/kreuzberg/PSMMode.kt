@@ -16,5 +16,5 @@ enum class PSMMode {
     SINGLE_LINE,
     SINGLE_WORD,
     CIRCLE_WORD,
-    SINGLE_CHAR;
+    SINGLE_CHAR,
 }

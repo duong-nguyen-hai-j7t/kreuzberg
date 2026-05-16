@@ -20,5 +20,5 @@ data class OcrConfig(
     val vlmConfig: LlmConfig?,
     val vlmPrompt: String?,
     val acceleration: AccelerationConfig?,
-    val tessdataBytes: Map<String, ByteArray>?
+    val tessdataBytes: Map<String, ByteArray>?,
 )

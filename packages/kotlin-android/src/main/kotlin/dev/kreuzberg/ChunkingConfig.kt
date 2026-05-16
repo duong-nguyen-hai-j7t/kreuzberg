@@ -19,5 +19,5 @@ data class ChunkingConfig(
     val preset: String?,
     val sizing: ChunkSizing,
     val prependHeadingContext: Boolean,
-    val topicThreshold: Float?
+    val topicThreshold: Float?,
 )

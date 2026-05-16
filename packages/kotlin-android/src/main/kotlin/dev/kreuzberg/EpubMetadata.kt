@@ -11,5 +11,5 @@ data class EpubMetadata(
     val relation: String?,
     val source: String?,
     val dcType: String?,
-    val coverImage: String?
+    val coverImage: String?,
 )

@@ -42,5 +42,5 @@ data class ExtractionConfig(
     val maxArchiveDepth: Long,
     val treeSitter: TreeSitterConfig?,
     val structuredExtraction: StructuredExtractionConfig?,
-    val cancelToken: String?
+    val cancelToken: String?,
 )

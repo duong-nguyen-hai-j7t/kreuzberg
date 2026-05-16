@@ -8,5 +8,5 @@ package dev.kreuzberg
 data class YearRange(
     val min: Int?,
     val max: Int?,
-    val years: List<Int>
+    val years: List<Int>,
 )

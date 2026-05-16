@@ -28,5 +28,5 @@ enum class LayoutClass {
     CHECKBOX_SELECTED,
     CHECKBOX_UNSELECTED,
     FORM,
-    KEY_VALUE_REGION;
+    KEY_VALUE_REGION,
 }

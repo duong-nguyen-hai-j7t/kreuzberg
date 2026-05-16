@@ -8,5 +8,5 @@ package dev.kreuzberg
 data class EmbeddedFile(
     val name: String,
     val data: ByteArray,
-    val mimeType: String?
+    val mimeType: String?,
 )

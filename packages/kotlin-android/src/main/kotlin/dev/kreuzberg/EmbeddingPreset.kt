@@ -19,5 +19,5 @@ data class EmbeddingPreset(
     val pooling: String,
     val modelFile: String,
     val dimensions: Long,
-    val description: String
+    val description: String,
 )

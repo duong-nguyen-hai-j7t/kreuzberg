@@ -13,5 +13,5 @@ enum class ExecutionProviderType {
     CPU,
     CORE_ML,
     CUDA,
-    TENSOR_RT;
+    TENSOR_RT,
 }

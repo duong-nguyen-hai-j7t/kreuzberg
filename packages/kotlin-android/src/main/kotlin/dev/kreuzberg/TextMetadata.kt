@@ -14,5 +14,5 @@ data class TextMetadata(
     val characterCount: Int,
     val headers: List<String>?,
     val links: List<String>?,
-    val codeBlocks: List<String>?
+    val codeBlocks: List<String>?,
 )

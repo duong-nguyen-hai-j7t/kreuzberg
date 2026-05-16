@@ -15,5 +15,5 @@ data class LlmConfig(
     val timeoutSecs: Long?,
     val maxRetries: Int?,
     val temperature: Double?,
-    val maxTokens: Long?
+    val maxTokens: Long?,
 )

@@ -16,5 +16,5 @@ data class PageInfo(
     val tableCount: Int?,
     val hidden: Boolean?,
     val isBlank: Boolean?,
-    val hasVectorGraphics: Boolean
+    val hasVectorGraphics: Boolean,
 )

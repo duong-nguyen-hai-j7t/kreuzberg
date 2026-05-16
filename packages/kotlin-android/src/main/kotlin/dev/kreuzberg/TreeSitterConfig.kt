@@ -27,5 +27,5 @@ data class TreeSitterConfig(
     val cacheDir: Path?,
     val languages: List<String>?,
     val groups: List<String>?,
-    val process: TreeSitterProcessConfig
+    val process: TreeSitterProcessConfig,
 )

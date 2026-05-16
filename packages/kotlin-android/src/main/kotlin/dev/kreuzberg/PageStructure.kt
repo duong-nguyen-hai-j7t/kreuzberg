@@ -12,5 +12,5 @@ data class PageStructure(
     val totalCount: Int,
     val unitType: PageUnitType,
     val boundaries: List<PageBoundary>?,
-    val pages: List<PageInfo>?
+    val pages: List<PageInfo>?,
 )

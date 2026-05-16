@@ -11,5 +11,5 @@ package dev.kreuzberg
  */
 data class OcrPipelineConfig(
     val stages: List<OcrPipelineStage>,
-    val qualityThresholds: OcrQualityThresholds
+    val qualityThresholds: OcrQualityThresholds,
 )

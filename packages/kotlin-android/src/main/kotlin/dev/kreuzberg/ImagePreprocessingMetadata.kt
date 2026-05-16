@@ -20,5 +20,5 @@ data class ImagePreprocessingMetadata(
     val dimensionClamped: Boolean,
     val calculatedDpi: Int?,
     val skippedResize: Boolean,
-    val resizeError: String?
+    val resizeError: String?,
 )

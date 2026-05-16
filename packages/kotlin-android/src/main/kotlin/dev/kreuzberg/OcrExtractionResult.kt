@@ -14,5 +14,5 @@ data class OcrExtractionResult(
     val metadata: Map<String, String>,
     val tables: List<OcrTable>,
     val ocrElements: List<OcrElement>?,
-    val internalDocument: String?
+    val internalDocument: String?,
 )

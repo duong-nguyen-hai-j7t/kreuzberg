@@ -12,5 +12,5 @@ data class ArchiveMetadata(
     val fileCount: Int,
     val fileList: List<String>,
     val totalSize: Long,
-    val compressedSize: Long?
+    val compressedSize: Long?,
 )

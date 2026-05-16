@@ -11,5 +11,5 @@ data class OcrElementConfig(
     val includeElements: Boolean,
     val minLevel: OcrElementLevel,
     val minConfidence: Double,
-    val buildHierarchy: Boolean
+    val buildHierarchy: Boolean,
 )

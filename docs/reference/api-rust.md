@@ -611,32 +611,6 @@ for inference in layout detection and embedding generation.
 
 ---
 
-#### AnchorProperties
-
-Properties for anchored drawings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `behind_doc` | `bool` | — | Behind doc |
-| `layout_in_cell` | `bool` | — | Layout in cell |
-| `relative_height` | `Option<i64>` | `Default::default()` | Relative height |
-| `position_h` | `Option<String>` | `Default::default()` | Position h |
-| `position_v` | `Option<String>` | `Default::default()` | Position v |
-| `wrap_type` | `String` | — | Wrap type |
-
-
----
-
-#### ApiDoc
-
-OpenAPI documentation structure.
-
-Defines all endpoints, request/response schemas, and examples
-for the Kreuzberg document extraction API.
-
-
----
-
 #### ArchiveEntry
 
 A single file extracted from an archive.
@@ -730,36 +704,6 @@ BibTeX bibliography metadata.
 
 ---
 
-#### ByteBufferPool
-
-Convenience type alias for a pooled Vec<u8>.
-
-
----
-
-#### CacheWarmParams
-
-Request parameters for cache warm (model download).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `all_embeddings` | `bool` | — | Download all embedding model presets |
-| `embedding_model` | `Option<String>` | `None` | Specific embedding preset name to download (e.g. "balanced", "speed", "quality") |
-
-
----
-
-#### CharShape
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `bold` | `bool` | — | Bold |
-| `italic` | `bool` | — | Italic |
-| `underline` | `bool` | — | Underline |
-
-
----
-
 #### Chunk
 
 A text chunk with optional embedding and metadata.
@@ -797,49 +741,6 @@ Metadata about a chunk's position in the original document.
 
 ---
 
-#### ChunkRequest
-
-Chunk request with text and configuration.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `String` | — | Text to chunk (must not be empty) |
-| `config` | `Option<String>` | `None` | Optional chunking configuration |
-| `chunker_type` | `String` | — | Chunker type (text, markdown, yaml, or semantic) |
-
-
----
-
-#### ChunkResponse
-
-Chunk response with chunks and metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `chunks` | `Vec<String>` | — | List of chunks |
-| `chunk_count` | `usize` | — | Total number of chunks |
-| `config` | `String` | — | Configuration used for chunking |
-| `input_size_bytes` | `usize` | — | Input text size in bytes |
-| `chunker_type` | `String` | — | Chunker type used for chunking |
-
-
----
-
-#### ChunkTextParams
-
-Request parameters for text chunking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `String` | — | Text content to split into chunks |
-| `max_characters` | `Option<usize>` | `None` | Maximum characters per chunk (default: 2000) |
-| `overlap` | `Option<usize>` | `None` | Number of overlapping characters between chunks (default: 100) |
-| `chunker_type` | `Option<String>` | `None` | Chunker type: "text", "markdown", "yaml", or "semantic" (default: "text") |
-| `topic_threshold` | `Option<f32>` | `None` | Topic threshold for semantic chunking (0.0-1.0, default: 0.75) |
-
-
----
-
 #### ChunkingConfig
 
 Chunking configuration.
@@ -870,20 +771,6 @@ Use `..the default constructor` when constructing to allow for future field addi
 ```rust
 pub fn default() -> ChunkingConfig
 ```
-
----
-
-#### ChunkingResult
-
-Result of a text chunking operation.
-
-Contains the generated chunks and metadata about the chunking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `chunks` | `Vec<Chunk>` | — | List of text chunks |
-| `chunk_count` | `usize` | — | Total number of chunks generated |
-
 
 ---
 
@@ -946,34 +833,6 @@ JATS contributor with role.
 
 ---
 
-#### CoreProperties
-
-Dublin Core metadata from docProps/core.xml
-
-Contains standard metadata fields defined by the Dublin Core standard
-and Office-specific extensions.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `title` | `Option<String>` | `Default::default()` | Document title |
-| `subject` | `Option<String>` | `Default::default()` | Document subject/topic |
-| `creator` | `Option<String>` | `Default::default()` | Document creator/author |
-| `keywords` | `Option<String>` | `Default::default()` | Keywords or tags |
-| `description` | `Option<String>` | `Default::default()` | Document description/abstract |
-| `last_modified_by` | `Option<String>` | `Default::default()` | User who last modified the document |
-| `revision` | `Option<String>` | `Default::default()` | Revision number |
-| `created` | `Option<String>` | `Default::default()` | Creation timestamp (ISO 8601) |
-| `modified` | `Option<String>` | `Default::default()` | Last modification timestamp (ISO 8601) |
-| `category` | `Option<String>` | `Default::default()` | Document category |
-| `content_status` | `Option<String>` | `Default::default()` | Content status (Draft, Final, etc.) |
-| `language` | `Option<String>` | `Default::default()` | Document language |
-| `identifier` | `Option<String>` | `Default::default()` | Unique identifier |
-| `version` | `Option<String>` | `Default::default()` | Document version |
-| `last_printed` | `Option<String>` | `Default::default()` | Last print timestamp (ISO 8601) |
-
-
----
-
 #### CsvMetadata
 
 CSV/TSV file metadata.
@@ -985,16 +844,6 @@ CSV/TSV file metadata.
 | `delimiter` | `Option<String>` | `Default::default()` | Delimiter |
 | `has_header` | `bool` | — | Whether header |
 | `column_types` | `Option<Vec<String>>` | `vec![]` | Column types |
-
-
----
-
-#### CustomProperties
-
-Custom properties from docProps/custom.xml
-
-Maps property names to their values. Values are converted to JSON types
-based on the VT (Variant Type) specified in the XML.
 
 
 ---
@@ -1024,18 +873,6 @@ dBASE (DBF) file metadata.
 
 ---
 
-#### DetectMimeTypeParams
-
-Request parameters for MIME type detection.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `path` | `String` | — | Path to the file |
-| `use_content` | `bool` | — | Use content-based detection (default: true) |
-
-
----
-
 #### DetectResponse
 
 MIME type detection response.
@@ -1044,18 +881,6 @@ MIME type detection response.
 |-------|------|---------|-------------|
 | `mime_type` | `String` | — | Detected MIME type |
 | `filename` | `Option<String>` | `None` | Original filename (if provided) |
-
-
----
-
-#### DetectedBoundary
-
-A detected structural boundary in the text.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `byte_offset` | `usize` | — | Byte offset of the start of the line in the original text. |
-| `is_header` | `bool` | — | Whether this boundary looks like a header/section title. |
 
 
 ---
@@ -1125,20 +950,6 @@ Link element in Djot.
 | `text` | `String` | — | Link text content |
 | `title` | `Option<String>` | `None` | Optional title |
 | `attributes` | `Option<String>` | `None` | Element attributes |
-
-
----
-
-#### DoclingCompatResponse
-
-OpenWebUI "Docling" engine response format.
-
-Returned by `POST /v1/convert/file` for docling-serve compatibility.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `document` | `String` | — | Converted document content |
-| `status` | `String` | — | Processing status |
 
 
 ---
@@ -1376,34 +1187,6 @@ pub fn default() -> DocumentStructure
 
 ---
 
-#### DocxAppProperties
-
-Application properties from docProps/app.xml for DOCX
-
-Contains Word-specific document statistics and metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `application` | `Option<String>` | `Default::default()` | Application name (e.g., "Microsoft Office Word") |
-| `app_version` | `Option<String>` | `Default::default()` | Application version |
-| `template` | `Option<String>` | `Default::default()` | Template filename |
-| `total_time` | `Option<i32>` | `Default::default()` | Total editing time in minutes |
-| `pages` | `Option<i32>` | `Default::default()` | Number of pages |
-| `words` | `Option<i32>` | `Default::default()` | Number of words |
-| `characters` | `Option<i32>` | `Default::default()` | Number of characters (excluding spaces) |
-| `characters_with_spaces` | `Option<i32>` | `Default::default()` | Number of characters (including spaces) |
-| `lines` | `Option<i32>` | `Default::default()` | Number of lines |
-| `paragraphs` | `Option<i32>` | `Default::default()` | Number of paragraphs |
-| `company` | `Option<String>` | `Default::default()` | Company name |
-| `doc_security` | `Option<i32>` | `Default::default()` | Document security level |
-| `scale_crop` | `Option<bool>` | `Default::default()` | Scale crop flag |
-| `links_up_to_date` | `Option<bool>` | `Default::default()` | Links up to date flag |
-| `shared_doc` | `Option<bool>` | `Default::default()` | Shared document flag |
-| `hyperlinks_changed` | `Option<bool>` | `Default::default()` | Hyperlinks changed flag |
-
-
----
-
 #### DocxMetadata
 
 Word document metadata.
@@ -1413,23 +1196,9 @@ Integrates with `office_metadata` module for core/app/custom properties.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `core_properties` | `Option<CoreProperties>` | `Default::default()` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
-| `app_properties` | `Option<DocxAppProperties>` | `Default::default()` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
+| `core_properties` | `Option<String>` | `Default::default()` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
+| `app_properties` | `Option<String>` | `Default::default()` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
 | `custom_properties` | `Option<HashMap<String, serde_json::Value>>` | `HashMap::new()` | Custom properties from docProps/custom.xml (user-defined properties) Contains key-value pairs defined by users or applications. Values can be strings, numbers, booleans, or dates. |
-
-
----
-
-#### Drawing
-
-A drawing object extracted from `<w:drawing>`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `drawing_type` | `String` | — | Drawing type |
-| `extent` | `Option<String>` | `Default::default()` | Extent |
-| `doc_properties` | `Option<String>` | `Default::default()` | Doc properties |
-| `image_ref` | `Option<String>` | `Default::default()` | Image ref |
 
 
 ---
@@ -1535,47 +1304,6 @@ Includes sender/recipient information, message ID, and attachment list.
 | `bcc_emails` | `Vec<String>` | `vec![]` | BCC recipients |
 | `message_id` | `Option<String>` | `Default::default()` | Message-ID header value |
 | `attachments` | `Vec<String>` | `vec![]` | List of attachment filenames |
-
-
----
-
-#### EmbedRequest
-
-Embedding request for generating embeddings from text.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `texts` | `Vec<String>` | — | Text strings to generate embeddings for (at least one non-empty string required) |
-| `config` | `Option<EmbeddingConfig>` | `None` | Optional embedding configuration (model, batch size, etc.) |
-
-
----
-
-#### EmbedResponse
-
-Embedding response containing generated embeddings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `embeddings` | `Vec<Vec<f32>>` | — | Generated embeddings (one per input text) |
-| `model` | `String` | — | Model used for embedding generation |
-| `dimensions` | `usize` | — | Dimensionality of the embeddings |
-| `count` | `usize` | — | Number of embeddings generated |
-
-
----
-
-#### EmbedTextParams
-
-Request parameters for embedding generation.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `texts` | `Vec<String>` | — | List of text strings to generate embeddings for |
-| `preset` | `Option<String>` | `None` | Embedding preset name (default: "balanced"). Available: "speed", "balanced", "quality" |
-| `model` | `Option<String>` | `None` | LLM model for provider-hosted embeddings (e.g., "openai/text-embedding-3-small"). When set, overrides preset and uses liter-llm for embedding generation. |
-| `api_key` | `Option<String>` | `None` | API key for the LLM provider (optional, falls back to env). |
-| `embedding_plugin` | `Option<String>` | `None` | Name of a pre-registered in-process embedding plugin backend. When set, overrides both preset and model and dispatches to the registered callback. Requires a prior call to `kreuzberg.plugins.register_embedding_backend`. |
 
 
 ---
@@ -1801,31 +1529,6 @@ extracted content and metadata.
 
 ---
 
-#### ExtractResponse
-
-Extraction response (list of results).
-
-
----
-
-#### ExtractStructuredParams
-
-Request parameters for LLM-based structured extraction.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `path` | `String` | — | File path to extract from |
-| `schema` | `serde_json::Value` | — | JSON schema for structured output |
-| `model` | `String` | — | LLM model (e.g., "openai/gpt-4o") |
-| `schema_name` | `String` | — | Schema name (default: "extraction") |
-| `schema_description` | `Option<String>` | `None` | Schema description for the LLM |
-| `prompt` | `Option<String>` | `None` | Custom Jinja2 prompt template |
-| `api_key` | `Option<String>` | `None` | API key (optional, falls back to env) |
-| `strict` | `bool` | — | Enable strict mode |
-
-
----
-
 #### ExtractedImage
 
 Extracted image from a document.
@@ -1852,22 +1555,6 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `image_kind` | `Option<ImageKind>` | `None` | Heuristic classification of what this image likely depicts. `None` if classification was disabled or inconclusive. |
 | `kind_confidence` | `Option<f32>` | `None` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
 | `cluster_id` | `Option<u32>` | `None` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `None` for singletons. |
-
-
----
-
-#### ExtractedInlineImage
-
-Extracted inline image with metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `data` | `Vec<u8>` | — | Uses `bytes.Bytes` for cheap cloning of large buffers. |
-| `format` | `String` | — | Format |
-| `filename` | `Option<String>` | `None` | Filename |
-| `description` | `Option<String>` | `None` | Human-readable description |
-| `dimensions` | `Option<Vec<u32>>` | `None` | Dimensions |
-| `attributes` | `Vec<String>` | — | Attributes |
 
 
 ---
@@ -2185,19 +1872,6 @@ pub fn default() -> HierarchyConfig
 
 ---
 
-#### HtmlExtractionResult
-
-Result of HTML extraction with optional images and warnings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `markdown` | `String` | — | Markdown |
-| `images` | `Vec<ExtractedInlineImage>` | — | Images extracted from the document |
-| `warnings` | `Vec<String>` | — | Warnings |
-
-
----
-
 #### HtmlMetadata
 
 HTML metadata extracted from HTML documents.
@@ -2264,97 +1938,6 @@ pub fn default() -> HtmlOutputConfig
 
 ---
 
-#### HwpImage
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `name` | `String` | — | The name |
-| `data` | `Vec<u8>` | — | Data |
-
-
----
-
-#### HwpxExtractor
-
-Extractor for Hangul Word Processor XML (.hwpx) files.
-
-Supports HWPX (Open HWPML), the ZIP-based XML successor to the binary HWP 5.0 format.
-
-##### Methods
-
-###### default()
-
-**Signature:**
-
-```rust
-pub fn default() -> HwpxExtractor
-```
-###### name()
-
-**Signature:**
-
-```rust
-pub fn name(&self) -> String
-```
-###### version()
-
-**Signature:**
-
-```rust
-pub fn version(&self) -> String
-```
-###### initialize()
-
-**Signature:**
-
-```rust
-pub fn initialize(&self)
-```
-###### shutdown()
-
-**Signature:**
-
-```rust
-pub fn shutdown(&self)
-```
-###### description()
-
-**Signature:**
-
-```rust
-pub fn description(&self) -> String
-```
-###### author()
-
-**Signature:**
-
-```rust
-pub fn author(&self) -> String
-```
-###### extract_bytes()
-
-**Signature:**
-
-```rust
-pub fn extract_bytes(&self, content: &[u8], mime_type: &str, config: ExtractionConfig) -> String
-```
-###### supported_mime_types()
-
-**Signature:**
-
-```rust
-pub fn supported_mime_types(&self) -> Vec<String>
-```
-###### priority()
-
-**Signature:**
-
-```rust
-pub fn priority(&self) -> i32
-```
-
----
-
 #### ImageExtractionConfig
 
 Image extraction configuration.
@@ -2415,19 +1998,6 @@ Image element metadata.
 
 ---
 
-#### ImageOcrResult
-
-Result of OCR extraction from an image with optional page tracking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `content` | `String` | — | Extracted text content |
-| `boundaries` | `Option<Vec<PageBoundary>>` | `None` | Character byte boundaries per frame (for multi-frame TIFFs) |
-| `page_contents` | `Option<Vec<PageContent>>` | `None` | Per-frame content information |
-
-
----
-
 #### ImagePreprocessingConfig
 
 Image preprocessing configuration for OCR.
@@ -2479,18 +2049,6 @@ including DPI normalization, resizing, and resampling.
 | `calculated_dpi` | `Option<i32>` | `None` | Calculated optimal DPI (if auto_adjust_dpi enabled) |
 | `skipped_resize` | `bool` | — | Whether resize was skipped (dimensions already optimal) |
 | `resize_error` | `Option<String>` | `None` | Error message if resize failed |
-
-
----
-
-#### InfoResponse
-
-Server information response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `version` | `String` | — | API version |
-| `rust_backend` | `bool` | — | Whether using Rust backend |
 
 
 ---
@@ -2698,47 +2256,6 @@ within one extraction (e.g. VLM OCR + structured extraction).
 | `total_tokens` | `Option<u64>` | `Default::default()` | Total tokens (input + output). |
 | `estimated_cost` | `Option<f64>` | `Default::default()` | Estimated cost in USD based on the provider's published pricing. |
 | `finish_reason` | `Option<String>` | `Default::default()` | Why the model stopped generating (e.g. "stop", "length", "content_filter"). |
-
-
----
-
-#### ManifestEntryResponse
-
-Model manifest entry for cache management.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `relative_path` | `String` | — | Relative path within the cache directory |
-| `sha256` | `String` | — | SHA256 checksum of the model file |
-| `size_bytes` | `u64` | — | Expected file size in bytes |
-| `source_url` | `String` | — | HuggingFace source URL for downloading |
-
-
----
-
-#### ManifestResponse
-
-Model manifest response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `kreuzberg_version` | `String` | — | Kreuzberg version |
-| `total_size_bytes` | `u64` | — | Total size of all models in bytes |
-| `model_count` | `usize` | — | Number of models in the manifest |
-| `models` | `Vec<ManifestEntryResponse>` | — | Individual model entries |
-
-
----
-
-#### MergedChunk
-
-A merged chunk produced by `merge_segments`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `String` | — | Text |
-| `byte_start` | `usize` | — | Byte start |
-| `byte_end` | `usize` | — | Byte end |
 
 
 ---
@@ -3179,51 +2696,6 @@ Bounding box for an OCR-detected table in pixel coordinates.
 
 ---
 
-#### OdtProperties
-
-OpenDocument metadata from meta.xml
-
-Contains metadata fields defined by the OASIS OpenDocument Format standard.
-Uses Dublin Core elements (dc:) and OpenDocument meta elements (meta:).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `title` | `Option<String>` | `Default::default()` | Document title (dc:title) |
-| `subject` | `Option<String>` | `Default::default()` | Document subject/topic (dc:subject) |
-| `creator` | `Option<String>` | `Default::default()` | Current document creator/author (dc:creator) |
-| `initial_creator` | `Option<String>` | `Default::default()` | Initial creator of the document (meta:initial-creator) |
-| `keywords` | `Option<String>` | `Default::default()` | Keywords or tags (meta:keyword) |
-| `description` | `Option<String>` | `Default::default()` | Document description (dc:description) |
-| `date` | `Option<String>` | `Default::default()` | Current modification date (dc:date) |
-| `creation_date` | `Option<String>` | `Default::default()` | Initial creation date (meta:creation-date) |
-| `language` | `Option<String>` | `Default::default()` | Document language (dc:language) |
-| `generator` | `Option<String>` | `Default::default()` | Generator/application that created the document (meta:generator) |
-| `editing_duration` | `Option<String>` | `Default::default()` | Editing duration in ISO 8601 format (meta:editing-duration) |
-| `editing_cycles` | `Option<String>` | `Default::default()` | Number of edits/revisions (meta:editing-cycles) |
-| `page_count` | `Option<i32>` | `Default::default()` | Document statistics - page count (meta:page-count) |
-| `word_count` | `Option<i32>` | `Default::default()` | Document statistics - word count (meta:word-count) |
-| `character_count` | `Option<i32>` | `Default::default()` | Document statistics - character count (meta:character-count) |
-| `paragraph_count` | `Option<i32>` | `Default::default()` | Document statistics - paragraph count (meta:paragraph-count) |
-| `table_count` | `Option<i32>` | `Default::default()` | Document statistics - table count (meta:table-count) |
-| `image_count` | `Option<i32>` | `Default::default()` | Document statistics - image count (meta:image-count) |
-
-
----
-
-#### OpenWebDocumentResponse
-
-OpenWebUI "External" engine response format.
-
-Returned by `PUT /process` for the OpenWebUI external document loader.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `page_content` | `String` | — | Extracted text content |
-| `metadata` | `String` | — | Document metadata |
-
-
----
-
 #### OrientationResult
 
 Document orientation detection result.
@@ -3482,23 +2954,6 @@ and visibility state (for presentations).
 | `hidden` | `Option<bool>` | `None` | Whether this page is hidden (e.g., in presentations) |
 | `is_blank` | `Option<bool>` | `None` | Whether this page is blank (no meaningful text, no images, no tables) A page is considered blank if it has fewer than 3 non-whitespace characters and contains no tables or images. This is useful for filtering out empty pages in scanned documents or PDFs with blank separator pages. |
 | `has_vector_graphics` | `bool` | — | Whether this page contains non-trivial vector graphics (paths, shapes, curves) Indicates the presence of vector-drawn content such as charts, diagrams, or geometric shapes (e.g., from Adobe InDesign, LaTeX TikZ). These are invisible to `ExtractionResult.images` since they are not embedded as raster XObjects. Set to `true` when path count exceeds a heuristic threshold, signaling that downstream consumers may want to rasterize the page to capture this content. Only populated for PDFs; `None` for other document types. |
-
-
----
-
-#### PageMarginsPoints
-
-Page margins converted to points (1/72 inch).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `top` | `Option<f64>` | `Default::default()` | Top |
-| `right` | `Option<f64>` | `Default::default()` | Right |
-| `bottom` | `Option<f64>` | `Default::default()` | Bottom |
-| `left` | `Option<f64>` | `Default::default()` | Left |
-| `header` | `Option<f64>` | `Default::default()` | Header |
-| `footer` | `Option<f64>` | `Default::default()` | Footer |
-| `gutter` | `Option<f64>` | `Default::default()` | Gutter |
 
 
 ---
@@ -3868,33 +3323,6 @@ pub fn default() -> PostProcessorConfig
 
 ---
 
-#### PptxAppProperties
-
-Application properties from docProps/app.xml for PPTX
-
-Contains PowerPoint-specific document metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `application` | `Option<String>` | `Default::default()` | Application name (e.g., "Microsoft Office PowerPoint") |
-| `app_version` | `Option<String>` | `Default::default()` | Application version |
-| `total_time` | `Option<i32>` | `Default::default()` | Total editing time in minutes |
-| `company` | `Option<String>` | `Default::default()` | Company name |
-| `doc_security` | `Option<i32>` | `Default::default()` | Document security level |
-| `scale_crop` | `Option<bool>` | `Default::default()` | Scale crop flag |
-| `links_up_to_date` | `Option<bool>` | `Default::default()` | Links up to date flag |
-| `shared_doc` | `Option<bool>` | `Default::default()` | Shared document flag |
-| `hyperlinks_changed` | `Option<bool>` | `Default::default()` | Hyperlinks changed flag |
-| `slides` | `Option<i32>` | `Default::default()` | Number of slides |
-| `notes` | `Option<i32>` | `Default::default()` | Number of notes |
-| `hidden_slides` | `Option<i32>` | `Default::default()` | Number of hidden slides |
-| `multimedia_clips` | `Option<i32>` | `Default::default()` | Number of multimedia clips |
-| `presentation_format` | `Option<String>` | `Default::default()` | Presentation format (e.g., "Widescreen", "Standard") |
-| `slide_titles` | `Vec<String>` | `vec![]` | Slide titles |
-
-
----
-
 #### PptxExtractionResult
 
 PowerPoint (PPTX) extraction result.
@@ -3999,30 +3427,6 @@ the type in their own code.
 
 ---
 
-#### Recyclable
-
-Trait for types that can be pooled and reused.
-
-Implementing this trait allows a type to be used with `Pool<T>`.
-The `reset()` method should clear the object's state for reuse.
-
-##### Methods
-
-###### reset()
-
-Reset the object to a reusable state.
-
-This is called when returning an object to the pool.
-Should clear any internal data while preserving capacity.
-
-**Signature:**
-
-```rust
-pub fn reset(&self)
-```
-
----
-
 #### Renderer
 
 Trait for document renderers that convert `InternalDocument` to output strings.
@@ -4060,18 +3464,6 @@ Returns an error if rendering fails.
 ```rust
 pub fn render(&self, doc: InternalDocument) -> String
 ```
-
----
-
-#### ResolvedStyle
-
-Fully resolved (flattened) style after walking the inheritance chain.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `paragraph_properties` | `String` | — | Paragraph properties |
-| `run_properties` | `String` | — | Run properties |
-
 
 ---
 
@@ -4193,18 +3585,6 @@ pub fn max_multipart_field_mb(&self) -> usize
 
 ---
 
-#### StreamReader
-
-
----
-
-#### StringBufferPool
-
-Convenience type alias for a pooled String.
-
-
----
-
 #### StructuredData
 
 Structured data (Schema.org, microdata, RDFa) block.
@@ -4249,37 +3629,6 @@ returning structured data that conforms to the schema.
 
 ---
 
-#### StructuredExtractionResponse
-
-Response from structured extraction endpoint.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `structured_output` | `serde_json::Value` | — | Structured data conforming to the provided JSON schema |
-| `content` | `String` | — | Extracted document text content |
-| `mime_type` | `String` | — | Detected MIME type of the input file |
-
-
----
-
-#### StyleDefinition
-
-A single style definition parsed from `<w:style>` in `word/styles.xml`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `id` | `String` | — | The style ID (`w:styleId` attribute). |
-| `name` | `Option<String>` | `None` | Human-readable name (`<w:name w:val="..."/>`). |
-| `style_type` | `String` | — | Style type: paragraph, character, table, or numbering. |
-| `based_on` | `Option<String>` | `None` | ID of the parent style (`<w:basedOn w:val="..."/>`). |
-| `next_style` | `Option<String>` | `None` | ID of the style to apply to the next paragraph (`<w:next w:val="..."/>`). |
-| `is_default` | `bool` | — | Whether this is the default style for its type. |
-| `paragraph_properties` | `String` | — | Paragraph properties defined directly on this style. |
-| `run_properties` | `String` | — | Run properties defined directly on this style. |
-
-
----
-
 #### SupportedFormat
 
 A supported document format entry.
@@ -4291,44 +3640,6 @@ Represents a file extension and its corresponding MIME type that Kreuzberg can p
 | `extension` | `String` | — | File extension (without leading dot), e.g., "pdf", "docx" |
 | `mime_type` | `String` | — | MIME type string, e.g., "application/pdf" |
 
-
----
-
-#### SyncExtractor
-
-Trait for extractors that can work synchronously (WASM-compatible).
-
-This trait defines the synchronous extraction interface for WASM targets and other
-environments where async/tokio runtimes are not available or desirable.
-
-# Implementation
-
-Extractors that need to support WASM should implement this trait in addition to
-the async `DocumentExtractor` trait. This allows the same extractor to work in both
-environments by delegating to the sync implementation.
-
-# MIME Type Validation
-
-The `mime_type` parameter is guaranteed to be already validated.
-
-##### Methods
-
-###### extract_sync()
-
-Extract content from a byte array synchronously.
-
-This method performs extraction without requiring an async runtime.
-It is called by `extract_bytes_sync()` when the `tokio-runtime` feature is disabled.
-
-**Returns:**
-
-An `InternalDocument` containing the extracted elements, metadata, and tables.
-
-**Signature:**
-
-```rust
-pub fn extract_sync(&self, content: &[u8], mime_type: &str, config: ExtractionConfig) -> InternalDocument
-```
 
 ---
 
@@ -4377,66 +3688,6 @@ Stores row/column dimensions and a flat list of cells with position info.
 | `cols` | `u32` | — | Number of columns in the table. |
 | `cells` | `Vec<GridCell>` | `vec![]` | All cells in row-major order. |
 
-
----
-
-#### TableProperties
-
-Table-level properties from `<w:tblPr>`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `style_id` | `Option<String>` | `Default::default()` | Style id |
-| `width` | `Option<String>` | `Default::default()` | Width |
-| `alignment` | `Option<String>` | `Default::default()` | Alignment |
-| `layout` | `Option<String>` | `Default::default()` | Layout |
-| `look` | `Option<String>` | `Default::default()` | Look |
-| `borders` | `Option<String>` | `Default::default()` | Borders |
-| `cell_margins` | `Option<String>` | `Default::default()` | Cell margins |
-| `indent` | `Option<String>` | `Default::default()` | Indent |
-| `caption` | `Option<String>` | `Default::default()` | Caption |
-
-
----
-
-#### TessdataManager
-
-Manages tessdata file downloading, caching, and manifest generation.
-
-##### Methods
-
-###### cache_dir()
-
-Get the cache directory path.
-
-**Signature:**
-
-```rust
-pub fn cache_dir(&self) -> PathBuf
-```
-###### is_language_cached()
-
-Check if a specific language traineddata file is cached.
-
-**Signature:**
-
-```rust
-pub fn is_language_cached(&self, lang: &str) -> bool
-```
-###### ensure_all_languages()
-
-Downloads all tessdata_fast traineddata files to the cache directory.
-
-Skips files that already exist. Returns the count of newly downloaded files.
-
-When the `paddle-ocr` feature is not enabled, no download URLs are available
-and this method always returns `Ok(0)`.
-
-**Signature:**
-
-```rust
-pub fn ensure_all_languages(&self) -> usize
-```
 
 ---
 
@@ -4585,13 +3836,6 @@ Token reduction configuration.
 ```rust
 pub fn default() -> TokenReductionOptions
 ```
-
----
-
-#### TracingLayer
-
-A `tower.Layer` that wraps each extraction in a semantic tracing span.
-
 
 ---
 
@@ -4837,40 +4081,6 @@ pub fn priority(&self) -> i32
 
 ---
 
-#### WarmResponse
-
-Cache warm response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `cache_dir` | `String` | — | Cache directory used |
-| `downloaded` | `Vec<String>` | — | Models that were downloaded |
-| `already_cached` | `Vec<String>` | — | Models that were already cached |
-
-
----
-
-#### XlsxAppProperties
-
-Application properties from docProps/app.xml for XLSX
-
-Contains Excel-specific document metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `application` | `Option<String>` | `Default::default()` | Application name (e.g., "Microsoft Excel") |
-| `app_version` | `Option<String>` | `Default::default()` | Application version |
-| `doc_security` | `Option<i32>` | `Default::default()` | Document security level |
-| `scale_crop` | `Option<bool>` | `Default::default()` | Scale crop flag |
-| `links_up_to_date` | `Option<bool>` | `Default::default()` | Links up to date flag |
-| `shared_doc` | `Option<bool>` | `Default::default()` | Shared document flag |
-| `hyperlinks_changed` | `Option<bool>` | `Default::default()` | Hyperlinks changed flag |
-| `company` | `Option<String>` | `Default::default()` | Company name |
-| `worksheet_names` | `Vec<String>` | `vec![]` | Worksheet names |
-
-
----
-
 #### XmlExtractionResult
 
 XML extraction result.
@@ -4930,13 +4140,6 @@ Year range for bibliographic metadata.
 | `min` | `Option<u32>` | `None` | Min |
 | `max` | `Option<u32>` | `None` | Max |
 | `years` | `Vec<u32>` | — | Years |
-
-
----
-
-#### ZipBombValidator
-
-Helper struct for validating ZIP archives for security issues.
 
 
 ---
@@ -5091,6 +4294,32 @@ of `ExtractionResult`.
 | `Chunks` | Use TSLP semantic chunks as content (default). |
 | `Raw` | Use raw source code as content. |
 | `Structure` | Emit function/class headings + docstrings (no code bodies). |
+
+
+---
+
+#### ListType
+
+Type of list detection.
+
+| Value | Description |
+|-------|-------------|
+| `Bullet` | Bullet points (-, *, •, etc.) |
+| `Numbered` | Numbered lists (1., 2., etc.) |
+| `Lettered` | Lettered lists (a., b., A., B., etc.) |
+| `Indented` | Indented items |
+
+
+---
+
+#### DrawingType
+
+Whether the drawing is inline or anchored.
+
+| Value | Description |
+|-------|-------------|
+| `Inline` | Inline |
+| `Anchored` | Anchored — Fields: `0`: `String` |
 
 
 ---
@@ -5556,17 +4785,6 @@ Semantic classification of an extracted URI.
 | `Citation` | A citation or bibliographic reference (DOI, academic ref). |
 | `Reference` | A general reference (e.g. `\ref{}` in LaTeX, `:ref:` in RST). |
 | `Email` | An email address (`mailto:` link or bare email). |
-
-
----
-
-#### PoolError
-
-Error type for pool operations.
-
-| Value | Description |
-|-------|-------------|
-| `LockPoisoned` | The pool's internal mutex was poisoned. This indicates a panic occurred while holding the lock. The pool is in a locked state and cannot be recovered. |
 
 
 ---

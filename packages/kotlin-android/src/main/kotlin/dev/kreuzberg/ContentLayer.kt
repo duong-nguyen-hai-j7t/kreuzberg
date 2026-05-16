@@ -11,5 +11,5 @@ enum class ContentLayer {
     BODY,
     HEADER,
     FOOTER,
-    FOOTNOTE;
+    FOOTNOTE,
 }

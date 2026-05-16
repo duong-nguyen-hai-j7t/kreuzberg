@@ -633,32 +633,6 @@ for inference in layout detection and embedding generation.
 
 ---
 
-#### AnchorProperties
-
-Properties for anchored drawings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `behind_doc` | `boolean()` | — | Behind doc |
-| `layout_in_cell` | `boolean()` | — | Layout in cell |
-| `relative_height` | `integer() \| nil` | `nil` | Relative height |
-| `position_h` | `String.t() \| nil` | `nil` | Position h |
-| `position_v` | `String.t() \| nil` | `nil` | Position v |
-| `wrap_type` | `String.t()` | — | Wrap type |
-
-
----
-
-#### ApiDoc
-
-OpenAPI documentation structure.
-
-Defines all endpoints, request/response schemas, and examples
-for the Kreuzberg document extraction API.
-
-
----
-
 #### ArchiveEntry
 
 A single file extracted from an archive.
@@ -752,36 +726,6 @@ BibTeX bibliography metadata.
 
 ---
 
-#### ByteBufferPool
-
-Convenience type alias for a pooled Vec<u8>.
-
-
----
-
-#### CacheWarmParams
-
-Request parameters for cache warm (model download).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `all_embeddings` | `boolean()` | — | Download all embedding model presets |
-| `embedding_model` | `String.t() \| nil` | `nil` | Specific embedding preset name to download (e.g. "balanced", "speed", "quality") |
-
-
----
-
-#### CharShape
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `bold` | `boolean()` | — | Bold |
-| `italic` | `boolean()` | — | Italic |
-| `underline` | `boolean()` | — | Underline |
-
-
----
-
 #### Chunk
 
 A text chunk with optional embedding and metadata.
@@ -819,49 +763,6 @@ Metadata about a chunk's position in the original document.
 
 ---
 
-#### ChunkRequest
-
-Chunk request with text and configuration.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `String.t()` | — | Text to chunk (must not be empty) |
-| `config` | `String.t() \| nil` | `nil` | Optional chunking configuration |
-| `chunker_type` | `String.t()` | — | Chunker type (text, markdown, yaml, or semantic) |
-
-
----
-
-#### ChunkResponse
-
-Chunk response with chunks and metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `chunks` | `list(String.t())` | — | List of chunks |
-| `chunk_count` | `integer()` | — | Total number of chunks |
-| `config` | `String.t()` | — | Configuration used for chunking |
-| `input_size_bytes` | `integer()` | — | Input text size in bytes |
-| `chunker_type` | `String.t()` | — | Chunker type used for chunking |
-
-
----
-
-#### ChunkTextParams
-
-Request parameters for text chunking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `String.t()` | — | Text content to split into chunks |
-| `max_characters` | `integer() \| nil` | `nil` | Maximum characters per chunk (default: 2000) |
-| `overlap` | `integer() \| nil` | `nil` | Number of overlapping characters between chunks (default: 100) |
-| `chunker_type` | `String.t() \| nil` | `nil` | Chunker type: "text", "markdown", "yaml", or "semantic" (default: "text") |
-| `topic_threshold` | `float() \| nil` | `nil` | Topic threshold for semantic chunking (0.0-1.0, default: 0.75) |
-
-
----
-
 #### ChunkingConfig
 
 Chunking configuration.
@@ -892,20 +793,6 @@ Use `..the default constructor` when constructing to allow for future field addi
 ```elixir
 def default()
 ```
-
----
-
-#### ChunkingResult
-
-Result of a text chunking operation.
-
-Contains the generated chunks and metadata about the chunking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `chunks` | `list(Chunk)` | — | List of text chunks |
-| `chunk_count` | `integer()` | — | Total number of chunks generated |
-
 
 ---
 
@@ -968,34 +855,6 @@ JATS contributor with role.
 
 ---
 
-#### CoreProperties
-
-Dublin Core metadata from docProps/core.xml
-
-Contains standard metadata fields defined by the Dublin Core standard
-and Office-specific extensions.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `title` | `String.t() \| nil` | `nil` | Document title |
-| `subject` | `String.t() \| nil` | `nil` | Document subject/topic |
-| `creator` | `String.t() \| nil` | `nil` | Document creator/author |
-| `keywords` | `String.t() \| nil` | `nil` | Keywords or tags |
-| `description` | `String.t() \| nil` | `nil` | Document description/abstract |
-| `last_modified_by` | `String.t() \| nil` | `nil` | User who last modified the document |
-| `revision` | `String.t() \| nil` | `nil` | Revision number |
-| `created` | `String.t() \| nil` | `nil` | Creation timestamp (ISO 8601) |
-| `modified` | `String.t() \| nil` | `nil` | Last modification timestamp (ISO 8601) |
-| `category` | `String.t() \| nil` | `nil` | Document category |
-| `content_status` | `String.t() \| nil` | `nil` | Content status (Draft, Final, etc.) |
-| `language` | `String.t() \| nil` | `nil` | Document language |
-| `identifier` | `String.t() \| nil` | `nil` | Unique identifier |
-| `version` | `String.t() \| nil` | `nil` | Document version |
-| `last_printed` | `String.t() \| nil` | `nil` | Last print timestamp (ISO 8601) |
-
-
----
-
 #### CsvMetadata
 
 CSV/TSV file metadata.
@@ -1007,16 +866,6 @@ CSV/TSV file metadata.
 | `delimiter` | `String.t() \| nil` | `nil` | Delimiter |
 | `has_header` | `boolean()` | — | Whether header |
 | `column_types` | `list(String.t()) \| nil` | `[]` | Column types |
-
-
----
-
-#### CustomProperties
-
-Custom properties from docProps/custom.xml
-
-Maps property names to their values. Values are converted to JSON types
-based on the VT (Variant Type) specified in the XML.
 
 
 ---
@@ -1046,18 +895,6 @@ dBASE (DBF) file metadata.
 
 ---
 
-#### DetectMimeTypeParams
-
-Request parameters for MIME type detection.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `path` | `String.t()` | — | Path to the file |
-| `use_content` | `boolean()` | — | Use content-based detection (default: true) |
-
-
----
-
 #### DetectResponse
 
 MIME type detection response.
@@ -1066,18 +903,6 @@ MIME type detection response.
 |-------|------|---------|-------------|
 | `mime_type` | `String.t()` | — | Detected MIME type |
 | `filename` | `String.t() \| nil` | `nil` | Original filename (if provided) |
-
-
----
-
-#### DetectedBoundary
-
-A detected structural boundary in the text.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `byte_offset` | `integer()` | — | Byte offset of the start of the line in the original text. |
-| `is_header` | `boolean()` | — | Whether this boundary looks like a header/section title. |
 
 
 ---
@@ -1147,20 +972,6 @@ Link element in Djot.
 | `text` | `String.t()` | — | Link text content |
 | `title` | `String.t() \| nil` | `nil` | Optional title |
 | `attributes` | `String.t() \| nil` | `nil` | Element attributes |
-
-
----
-
-#### DoclingCompatResponse
-
-OpenWebUI "Docling" engine response format.
-
-Returned by `POST /v1/convert/file` for docling-serve compatibility.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `document` | `String.t()` | — | Converted document content |
-| `status` | `String.t()` | — | Processing status |
 
 
 ---
@@ -1398,34 +1209,6 @@ def default()
 
 ---
 
-#### DocxAppProperties
-
-Application properties from docProps/app.xml for DOCX
-
-Contains Word-specific document statistics and metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `application` | `String.t() \| nil` | `nil` | Application name (e.g., "Microsoft Office Word") |
-| `app_version` | `String.t() \| nil` | `nil` | Application version |
-| `template` | `String.t() \| nil` | `nil` | Template filename |
-| `total_time` | `integer() \| nil` | `nil` | Total editing time in minutes |
-| `pages` | `integer() \| nil` | `nil` | Number of pages |
-| `words` | `integer() \| nil` | `nil` | Number of words |
-| `characters` | `integer() \| nil` | `nil` | Number of characters (excluding spaces) |
-| `characters_with_spaces` | `integer() \| nil` | `nil` | Number of characters (including spaces) |
-| `lines` | `integer() \| nil` | `nil` | Number of lines |
-| `paragraphs` | `integer() \| nil` | `nil` | Number of paragraphs |
-| `company` | `String.t() \| nil` | `nil` | Company name |
-| `doc_security` | `integer() \| nil` | `nil` | Document security level |
-| `scale_crop` | `boolean() \| nil` | `nil` | Scale crop flag |
-| `links_up_to_date` | `boolean() \| nil` | `nil` | Links up to date flag |
-| `shared_doc` | `boolean() \| nil` | `nil` | Shared document flag |
-| `hyperlinks_changed` | `boolean() \| nil` | `nil` | Hyperlinks changed flag |
-
-
----
-
 #### DocxMetadata
 
 Word document metadata.
@@ -1435,23 +1218,9 @@ Integrates with `office_metadata` module for core/app/custom properties.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `core_properties` | `CoreProperties \| nil` | `nil` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
-| `app_properties` | `DocxAppProperties \| nil` | `nil` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
+| `core_properties` | `String.t() \| nil` | `nil` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
+| `app_properties` | `String.t() \| nil` | `nil` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
 | `custom_properties` | `map() \| nil` | `%{}` | Custom properties from docProps/custom.xml (user-defined properties) Contains key-value pairs defined by users or applications. Values can be strings, numbers, booleans, or dates. |
-
-
----
-
-#### Drawing
-
-A drawing object extracted from `<w:drawing>`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `drawing_type` | `String.t()` | — | Drawing type |
-| `extent` | `String.t() \| nil` | `nil` | Extent |
-| `doc_properties` | `String.t() \| nil` | `nil` | Doc properties |
-| `image_ref` | `String.t() \| nil` | `nil` | Image ref |
 
 
 ---
@@ -1557,47 +1326,6 @@ Includes sender/recipient information, message ID, and attachment list.
 | `bcc_emails` | `list(String.t())` | `[]` | BCC recipients |
 | `message_id` | `String.t() \| nil` | `nil` | Message-ID header value |
 | `attachments` | `list(String.t())` | `[]` | List of attachment filenames |
-
-
----
-
-#### EmbedRequest
-
-Embedding request for generating embeddings from text.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `texts` | `list(String.t())` | — | Text strings to generate embeddings for (at least one non-empty string required) |
-| `config` | `EmbeddingConfig \| nil` | `nil` | Optional embedding configuration (model, batch size, etc.) |
-
-
----
-
-#### EmbedResponse
-
-Embedding response containing generated embeddings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `embeddings` | `list(list(float()))` | — | Generated embeddings (one per input text) |
-| `model` | `String.t()` | — | Model used for embedding generation |
-| `dimensions` | `integer()` | — | Dimensionality of the embeddings |
-| `count` | `integer()` | — | Number of embeddings generated |
-
-
----
-
-#### EmbedTextParams
-
-Request parameters for embedding generation.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `texts` | `list(String.t())` | — | List of text strings to generate embeddings for |
-| `preset` | `String.t() \| nil` | `nil` | Embedding preset name (default: "balanced"). Available: "speed", "balanced", "quality" |
-| `model` | `String.t() \| nil` | `nil` | LLM model for provider-hosted embeddings (e.g., "openai/text-embedding-3-small"). When set, overrides preset and uses liter-llm for embedding generation. |
-| `api_key` | `String.t() \| nil` | `nil` | API key for the LLM provider (optional, falls back to env). |
-| `embedding_plugin` | `String.t() \| nil` | `nil` | Name of a pre-registered in-process embedding plugin backend. When set, overrides both preset and model and dispatches to the registered callback. Requires a prior call to `kreuzberg.plugins.register_embedding_backend`. |
 
 
 ---
@@ -1823,31 +1551,6 @@ extracted content and metadata.
 
 ---
 
-#### ExtractResponse
-
-Extraction response (list of results).
-
-
----
-
-#### ExtractStructuredParams
-
-Request parameters for LLM-based structured extraction.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `path` | `String.t()` | — | File path to extract from |
-| `schema` | `term()` | — | JSON schema for structured output |
-| `model` | `String.t()` | — | LLM model (e.g., "openai/gpt-4o") |
-| `schema_name` | `String.t()` | — | Schema name (default: "extraction") |
-| `schema_description` | `String.t() \| nil` | `nil` | Schema description for the LLM |
-| `prompt` | `String.t() \| nil` | `nil` | Custom Jinja2 prompt template |
-| `api_key` | `String.t() \| nil` | `nil` | API key (optional, falls back to env) |
-| `strict` | `boolean()` | — | Enable strict mode |
-
-
----
-
 #### ExtractedImage
 
 Extracted image from a document.
@@ -1874,22 +1577,6 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `image_kind` | `ImageKind \| nil` | `nil` | Heuristic classification of what this image likely depicts. `nil` if classification was disabled or inconclusive. |
 | `kind_confidence` | `float() \| nil` | `nil` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
 | `cluster_id` | `integer() \| nil` | `nil` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `nil` for singletons. |
-
-
----
-
-#### ExtractedInlineImage
-
-Extracted inline image with metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `data` | `binary()` | — | Uses `bytes.Bytes` for cheap cloning of large buffers. |
-| `format` | `String.t()` | — | Format |
-| `filename` | `String.t() \| nil` | `nil` | Filename |
-| `description` | `String.t() \| nil` | `nil` | Human-readable description |
-| `dimensions` | `list(integer()) \| nil` | `nil` | Dimensions |
-| `attributes` | `list(String.t())` | — | Attributes |
 
 
 ---
@@ -2207,19 +1894,6 @@ def default()
 
 ---
 
-#### HtmlExtractionResult
-
-Result of HTML extraction with optional images and warnings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `markdown` | `String.t()` | — | Markdown |
-| `images` | `list(ExtractedInlineImage)` | — | Images extracted from the document |
-| `warnings` | `list(String.t())` | — | Warnings |
-
-
----
-
 #### HtmlMetadata
 
 HTML metadata extracted from HTML documents.
@@ -2286,97 +1960,6 @@ def default()
 
 ---
 
-#### HwpImage
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `name` | `String.t()` | — | The name |
-| `data` | `binary()` | — | Data |
-
-
----
-
-#### HwpxExtractor
-
-Extractor for Hangul Word Processor XML (.hwpx) files.
-
-Supports HWPX (Open HWPML), the ZIP-based XML successor to the binary HWP 5.0 format.
-
-##### Functions
-
-###### default()
-
-**Signature:**
-
-```elixir
-def default()
-```
-###### name()
-
-**Signature:**
-
-```elixir
-def name()
-```
-###### version()
-
-**Signature:**
-
-```elixir
-def version()
-```
-###### initialize()
-
-**Signature:**
-
-```elixir
-def initialize()
-```
-###### shutdown()
-
-**Signature:**
-
-```elixir
-def shutdown()
-```
-###### description()
-
-**Signature:**
-
-```elixir
-def description()
-```
-###### author()
-
-**Signature:**
-
-```elixir
-def author()
-```
-###### extract_bytes()
-
-**Signature:**
-
-```elixir
-def extract_bytes(content, mime_type, config)
-```
-###### supported_mime_types()
-
-**Signature:**
-
-```elixir
-def supported_mime_types()
-```
-###### priority()
-
-**Signature:**
-
-```elixir
-def priority()
-```
-
----
-
 #### ImageExtractionConfig
 
 Image extraction configuration.
@@ -2437,19 +2020,6 @@ Image element metadata.
 
 ---
 
-#### ImageOcrResult
-
-Result of OCR extraction from an image with optional page tracking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `content` | `String.t()` | — | Extracted text content |
-| `boundaries` | `list(PageBoundary) \| nil` | `nil` | Character byte boundaries per frame (for multi-frame TIFFs) |
-| `page_contents` | `list(PageContent) \| nil` | `nil` | Per-frame content information |
-
-
----
-
 #### ImagePreprocessingConfig
 
 Image preprocessing configuration for OCR.
@@ -2501,18 +2071,6 @@ including DPI normalization, resizing, and resampling.
 | `calculated_dpi` | `integer() \| nil` | `nil` | Calculated optimal DPI (if auto_adjust_dpi enabled) |
 | `skipped_resize` | `boolean()` | — | Whether resize was skipped (dimensions already optimal) |
 | `resize_error` | `String.t() \| nil` | `nil` | Error message if resize failed |
-
-
----
-
-#### InfoResponse
-
-Server information response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `version` | `String.t()` | — | API version |
-| `rust_backend` | `boolean()` | — | Whether using Rust backend |
 
 
 ---
@@ -2720,47 +2278,6 @@ within one extraction (e.g. VLM OCR + structured extraction).
 | `total_tokens` | `integer() \| nil` | `nil` | Total tokens (input + output). |
 | `estimated_cost` | `float() \| nil` | `nil` | Estimated cost in USD based on the provider's published pricing. |
 | `finish_reason` | `String.t() \| nil` | `nil` | Why the model stopped generating (e.g. "stop", "length", "content_filter"). |
-
-
----
-
-#### ManifestEntryResponse
-
-Model manifest entry for cache management.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `relative_path` | `String.t()` | — | Relative path within the cache directory |
-| `sha256` | `String.t()` | — | SHA256 checksum of the model file |
-| `size_bytes` | `integer()` | — | Expected file size in bytes |
-| `source_url` | `String.t()` | — | HuggingFace source URL for downloading |
-
-
----
-
-#### ManifestResponse
-
-Model manifest response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `kreuzberg_version` | `String.t()` | — | Kreuzberg version |
-| `total_size_bytes` | `integer()` | — | Total size of all models in bytes |
-| `model_count` | `integer()` | — | Number of models in the manifest |
-| `models` | `list(ManifestEntryResponse)` | — | Individual model entries |
-
-
----
-
-#### MergedChunk
-
-A merged chunk produced by `merge_segments`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `String.t()` | — | Text |
-| `byte_start` | `integer()` | — | Byte start |
-| `byte_end` | `integer()` | — | Byte end |
 
 
 ---
@@ -3201,51 +2718,6 @@ Bounding box for an OCR-detected table in pixel coordinates.
 
 ---
 
-#### OdtProperties
-
-OpenDocument metadata from meta.xml
-
-Contains metadata fields defined by the OASIS OpenDocument Format standard.
-Uses Dublin Core elements (dc:) and OpenDocument meta elements (meta:).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `title` | `String.t() \| nil` | `nil` | Document title (dc:title) |
-| `subject` | `String.t() \| nil` | `nil` | Document subject/topic (dc:subject) |
-| `creator` | `String.t() \| nil` | `nil` | Current document creator/author (dc:creator) |
-| `initial_creator` | `String.t() \| nil` | `nil` | Initial creator of the document (meta:initial-creator) |
-| `keywords` | `String.t() \| nil` | `nil` | Keywords or tags (meta:keyword) |
-| `description` | `String.t() \| nil` | `nil` | Document description (dc:description) |
-| `date` | `String.t() \| nil` | `nil` | Current modification date (dc:date) |
-| `creation_date` | `String.t() \| nil` | `nil` | Initial creation date (meta:creation-date) |
-| `language` | `String.t() \| nil` | `nil` | Document language (dc:language) |
-| `generator` | `String.t() \| nil` | `nil` | Generator/application that created the document (meta:generator) |
-| `editing_duration` | `String.t() \| nil` | `nil` | Editing duration in ISO 8601 format (meta:editing-duration) |
-| `editing_cycles` | `String.t() \| nil` | `nil` | Number of edits/revisions (meta:editing-cycles) |
-| `page_count` | `integer() \| nil` | `nil` | Document statistics - page count (meta:page-count) |
-| `word_count` | `integer() \| nil` | `nil` | Document statistics - word count (meta:word-count) |
-| `character_count` | `integer() \| nil` | `nil` | Document statistics - character count (meta:character-count) |
-| `paragraph_count` | `integer() \| nil` | `nil` | Document statistics - paragraph count (meta:paragraph-count) |
-| `table_count` | `integer() \| nil` | `nil` | Document statistics - table count (meta:table-count) |
-| `image_count` | `integer() \| nil` | `nil` | Document statistics - image count (meta:image-count) |
-
-
----
-
-#### OpenWebDocumentResponse
-
-OpenWebUI "External" engine response format.
-
-Returned by `PUT /process` for the OpenWebUI external document loader.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `page_content` | `String.t()` | — | Extracted text content |
-| `metadata` | `String.t()` | — | Document metadata |
-
-
----
-
 #### OrientationResult
 
 Document orientation detection result.
@@ -3504,23 +2976,6 @@ and visibility state (for presentations).
 | `hidden` | `boolean() \| nil` | `nil` | Whether this page is hidden (e.g., in presentations) |
 | `is_blank` | `boolean() \| nil` | `nil` | Whether this page is blank (no meaningful text, no images, no tables) A page is considered blank if it has fewer than 3 non-whitespace characters and contains no tables or images. This is useful for filtering out empty pages in scanned documents or PDFs with blank separator pages. |
 | `has_vector_graphics` | `boolean()` | — | Whether this page contains non-trivial vector graphics (paths, shapes, curves) Indicates the presence of vector-drawn content such as charts, diagrams, or geometric shapes (e.g., from Adobe InDesign, LaTeX TikZ). These are invisible to `ExtractionResult.images` since they are not embedded as raster XObjects. Set to `true` when path count exceeds a heuristic threshold, signaling that downstream consumers may want to rasterize the page to capture this content. Only populated for PDFs; `nil` for other document types. |
-
-
----
-
-#### PageMarginsPoints
-
-Page margins converted to points (1/72 inch).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `top` | `float() \| nil` | `nil` | Top |
-| `right` | `float() \| nil` | `nil` | Right |
-| `bottom` | `float() \| nil` | `nil` | Bottom |
-| `left` | `float() \| nil` | `nil` | Left |
-| `header` | `float() \| nil` | `nil` | Header |
-| `footer` | `float() \| nil` | `nil` | Footer |
-| `gutter` | `float() \| nil` | `nil` | Gutter |
 
 
 ---
@@ -3890,33 +3345,6 @@ def default()
 
 ---
 
-#### PptxAppProperties
-
-Application properties from docProps/app.xml for PPTX
-
-Contains PowerPoint-specific document metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `application` | `String.t() \| nil` | `nil` | Application name (e.g., "Microsoft Office PowerPoint") |
-| `app_version` | `String.t() \| nil` | `nil` | Application version |
-| `total_time` | `integer() \| nil` | `nil` | Total editing time in minutes |
-| `company` | `String.t() \| nil` | `nil` | Company name |
-| `doc_security` | `integer() \| nil` | `nil` | Document security level |
-| `scale_crop` | `boolean() \| nil` | `nil` | Scale crop flag |
-| `links_up_to_date` | `boolean() \| nil` | `nil` | Links up to date flag |
-| `shared_doc` | `boolean() \| nil` | `nil` | Shared document flag |
-| `hyperlinks_changed` | `boolean() \| nil` | `nil` | Hyperlinks changed flag |
-| `slides` | `integer() \| nil` | `nil` | Number of slides |
-| `notes` | `integer() \| nil` | `nil` | Number of notes |
-| `hidden_slides` | `integer() \| nil` | `nil` | Number of hidden slides |
-| `multimedia_clips` | `integer() \| nil` | `nil` | Number of multimedia clips |
-| `presentation_format` | `String.t() \| nil` | `nil` | Presentation format (e.g., "Widescreen", "Standard") |
-| `slide_titles` | `list(String.t())` | `[]` | Slide titles |
-
-
----
-
 #### PptxExtractionResult
 
 PowerPoint (PPTX) extraction result.
@@ -4021,30 +3449,6 @@ the type in their own code.
 
 ---
 
-#### Recyclable
-
-Trait for types that can be pooled and reused.
-
-Implementing this trait allows a type to be used with `Pool<T>`.
-The `reset()` method should clear the object's state for reuse.
-
-##### Functions
-
-###### reset()
-
-Reset the object to a reusable state.
-
-This is called when returning an object to the pool.
-Should clear any internal data while preserving capacity.
-
-**Signature:**
-
-```elixir
-def reset()
-```
-
----
-
 #### Renderer
 
 Trait for document renderers that convert `InternalDocument` to output strings.
@@ -4082,18 +3486,6 @@ Returns an error if rendering fails.
 ```elixir
 def render(doc)
 ```
-
----
-
-#### ResolvedStyle
-
-Fully resolved (flattened) style after walking the inheritance chain.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `paragraph_properties` | `String.t()` | — | Paragraph properties |
-| `run_properties` | `String.t()` | — | Run properties |
-
 
 ---
 
@@ -4215,18 +3607,6 @@ def max_multipart_field_mb()
 
 ---
 
-#### StreamReader
-
-
----
-
-#### StringBufferPool
-
-Convenience type alias for a pooled String.
-
-
----
-
 #### StructuredData
 
 Structured data (Schema.org, microdata, RDFa) block.
@@ -4271,37 +3651,6 @@ returning structured data that conforms to the schema.
 
 ---
 
-#### StructuredExtractionResponse
-
-Response from structured extraction endpoint.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `structured_output` | `term()` | — | Structured data conforming to the provided JSON schema |
-| `content` | `String.t()` | — | Extracted document text content |
-| `mime_type` | `String.t()` | — | Detected MIME type of the input file |
-
-
----
-
-#### StyleDefinition
-
-A single style definition parsed from `<w:style>` in `word/styles.xml`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `id` | `String.t()` | — | The style ID (`w:styleId` attribute). |
-| `name` | `String.t() \| nil` | `nil` | Human-readable name (`<w:name w:val="..."/>`). |
-| `style_type` | `String.t()` | — | Style type: paragraph, character, table, or numbering. |
-| `based_on` | `String.t() \| nil` | `nil` | ID of the parent style (`<w:basedOn w:val="..."/>`). |
-| `next_style` | `String.t() \| nil` | `nil` | ID of the style to apply to the next paragraph (`<w:next w:val="..."/>`). |
-| `is_default` | `boolean()` | — | Whether this is the default style for its type. |
-| `paragraph_properties` | `String.t()` | — | Paragraph properties defined directly on this style. |
-| `run_properties` | `String.t()` | — | Run properties defined directly on this style. |
-
-
----
-
 #### SupportedFormat
 
 A supported document format entry.
@@ -4313,44 +3662,6 @@ Represents a file extension and its corresponding MIME type that Kreuzberg can p
 | `extension` | `String.t()` | — | File extension (without leading dot), e.g., "pdf", "docx" |
 | `mime_type` | `String.t()` | — | MIME type string, e.g., "application/pdf" |
 
-
----
-
-#### SyncExtractor
-
-Trait for extractors that can work synchronously (WASM-compatible).
-
-This trait defines the synchronous extraction interface for WASM targets and other
-environments where async/tokio runtimes are not available or desirable.
-
-# Implementation
-
-Extractors that need to support WASM should implement this trait in addition to
-the async `DocumentExtractor` trait. This allows the same extractor to work in both
-environments by delegating to the sync implementation.
-
-# MIME Type Validation
-
-The `mime_type` parameter is guaranteed to be already validated.
-
-##### Functions
-
-###### extract_sync()
-
-Extract content from a byte array synchronously.
-
-This method performs extraction without requiring an async runtime.
-It is called by `extract_bytes_sync()` when the `tokio-runtime` feature is disabled.
-
-**Returns:**
-
-An `InternalDocument` containing the extracted elements, metadata, and tables.
-
-**Signature:**
-
-```elixir
-def extract_sync(content, mime_type, config)
-```
 
 ---
 
@@ -4399,66 +3710,6 @@ Stores row/column dimensions and a flat list of cells with position info.
 | `cols` | `integer()` | — | Number of columns in the table. |
 | `cells` | `list(GridCell)` | `[]` | All cells in row-major order. |
 
-
----
-
-#### TableProperties
-
-Table-level properties from `<w:tblPr>`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `style_id` | `String.t() \| nil` | `nil` | Style id |
-| `width` | `String.t() \| nil` | `nil` | Width |
-| `alignment` | `String.t() \| nil` | `nil` | Alignment |
-| `layout` | `String.t() \| nil` | `nil` | Layout |
-| `look` | `String.t() \| nil` | `nil` | Look |
-| `borders` | `String.t() \| nil` | `nil` | Borders |
-| `cell_margins` | `String.t() \| nil` | `nil` | Cell margins |
-| `indent` | `String.t() \| nil` | `nil` | Indent |
-| `caption` | `String.t() \| nil` | `nil` | Caption |
-
-
----
-
-#### TessdataManager
-
-Manages tessdata file downloading, caching, and manifest generation.
-
-##### Functions
-
-###### cache_dir()
-
-Get the cache directory path.
-
-**Signature:**
-
-```elixir
-def cache_dir()
-```
-###### is_language_cached()
-
-Check if a specific language traineddata file is cached.
-
-**Signature:**
-
-```elixir
-def is_language_cached(lang)
-```
-###### ensure_all_languages()
-
-Downloads all tessdata_fast traineddata files to the cache directory.
-
-Skips files that already exist. Returns the count of newly downloaded files.
-
-When the `paddle-ocr` feature is not enabled, no download URLs are available
-and this method always returns `Ok(0)`.
-
-**Signature:**
-
-```elixir
-def ensure_all_languages()
-```
 
 ---
 
@@ -4607,13 +3858,6 @@ Token reduction configuration.
 ```elixir
 def default()
 ```
-
----
-
-#### TracingLayer
-
-A `tower.Layer` that wraps each extraction in a semantic tracing span.
-
 
 ---
 
@@ -4859,40 +4103,6 @@ def priority()
 
 ---
 
-#### WarmResponse
-
-Cache warm response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `cache_dir` | `String.t()` | — | Cache directory used |
-| `downloaded` | `list(String.t())` | — | Models that were downloaded |
-| `already_cached` | `list(String.t())` | — | Models that were already cached |
-
-
----
-
-#### XlsxAppProperties
-
-Application properties from docProps/app.xml for XLSX
-
-Contains Excel-specific document metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `application` | `String.t() \| nil` | `nil` | Application name (e.g., "Microsoft Excel") |
-| `app_version` | `String.t() \| nil` | `nil` | Application version |
-| `doc_security` | `integer() \| nil` | `nil` | Document security level |
-| `scale_crop` | `boolean() \| nil` | `nil` | Scale crop flag |
-| `links_up_to_date` | `boolean() \| nil` | `nil` | Links up to date flag |
-| `shared_doc` | `boolean() \| nil` | `nil` | Shared document flag |
-| `hyperlinks_changed` | `boolean() \| nil` | `nil` | Hyperlinks changed flag |
-| `company` | `String.t() \| nil` | `nil` | Company name |
-| `worksheet_names` | `list(String.t())` | `[]` | Worksheet names |
-
-
----
-
 #### XmlExtractionResult
 
 XML extraction result.
@@ -4952,13 +4162,6 @@ Year range for bibliographic metadata.
 | `min` | `integer() \| nil` | `nil` | Min |
 | `max` | `integer() \| nil` | `nil` | Max |
 | `years` | `list(integer())` | — | Years |
-
-
----
-
-#### ZipBombValidator
-
-Helper struct for validating ZIP archives for security issues.
 
 
 ---
@@ -5113,6 +4316,32 @@ of `ExtractionResult`.
 | `chunks` | Use TSLP semantic chunks as content (default). |
 | `raw` | Use raw source code as content. |
 | `structure` | Emit function/class headings + docstrings (no code bodies). |
+
+
+---
+
+#### ListType
+
+Type of list detection.
+
+| Value | Description |
+|-------|-------------|
+| `bullet` | Bullet points (-, *, •, etc.) |
+| `numbered` | Numbered lists (1., 2., etc.) |
+| `lettered` | Lettered lists (a., b., A., B., etc.) |
+| `indented` | Indented items |
+
+
+---
+
+#### DrawingType
+
+Whether the drawing is inline or anchored.
+
+| Value | Description |
+|-------|-------------|
+| `inline` | Inline |
+| `anchored` | Anchored — Fields: `0`: `String.t()` |
 
 
 ---
@@ -5578,17 +4807,6 @@ Semantic classification of an extracted URI.
 | `citation` | A citation or bibliographic reference (DOI, academic ref). |
 | `reference` | A general reference (e.g. `\ref{}` in LaTeX, `:ref:` in RST). |
 | `email` | An email address (`mailto:` link or bare email). |
-
-
----
-
-#### PoolError
-
-Error type for pool operations.
-
-| Value | Description |
-|-------|-------------|
-| `lock_poisoned` | The pool's internal mutex was poisoned. This indicates a panic occurred while holding the lock. The pool is in a locked state and cannot be recovered. |
 
 
 ---

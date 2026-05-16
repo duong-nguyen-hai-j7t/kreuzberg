@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.16.15"
+alef_version = "0.16.16"
 languages = [
   "python",
   "node",
@@ -486,7 +486,7 @@ zig = "packages/zig/src/"
 types = [
   # Fully-qualified path exclusions — cannot use source-level alef(skip) because the
   # simple name clashes with a public type that must remain in the IR.
-  "kreuzberg::extraction::image::ImageMetadata", # internal; kreuzberg::types::ImageMetadata is the public API type
+  "kreuzberg::extraction::image::ImageMetadata",    # internal; kreuzberg::types::ImageMetadata is the public API type
   "kreuzberg::core::config::formats::OutputFormat", # internal; kreuzberg::types::OutputFormat is the public API type
 
   # Generic types — alef(skip) source annotation not picked up for generic structs

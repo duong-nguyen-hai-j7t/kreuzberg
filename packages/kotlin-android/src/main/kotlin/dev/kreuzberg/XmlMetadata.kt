@@ -9,5 +9,5 @@ package dev.kreuzberg
  */
 data class XmlMetadata(
     val elementCount: Int,
-    val uniqueElements: List<String>
+    val uniqueElements: List<String>,
 )

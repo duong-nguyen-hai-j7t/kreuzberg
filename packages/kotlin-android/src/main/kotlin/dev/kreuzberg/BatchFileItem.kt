@@ -12,5 +12,5 @@ import java.nio.file.Path
  */
 data class BatchFileItem(
     val path: Path,
-    val config: FileExtractionConfig?
+    val config: FileExtractionConfig?,
 )

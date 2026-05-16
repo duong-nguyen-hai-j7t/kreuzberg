@@ -7,5 +7,5 @@ package dev.kreuzberg
  */
 data class DbfFieldInfo(
     val name: String,
-    val fieldType: String
+    val fieldType: String,
 )

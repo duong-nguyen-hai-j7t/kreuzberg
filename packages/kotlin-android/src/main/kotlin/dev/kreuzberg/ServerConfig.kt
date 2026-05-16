@@ -21,5 +21,5 @@ data class ServerConfig(
     val port: Short,
     val corsOrigins: List<String>,
     val maxRequestBodyBytes: Long,
-    val maxMultipartFieldBytes: Long
+    val maxMultipartFieldBytes: Long,
 )

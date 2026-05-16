@@ -14,5 +14,5 @@ data class ExcelSheet(
     val rowCount: Long,
     val colCount: Long,
     val cellCount: Long,
-    val tableCells: List<List<String>>?
+    val tableCells: List<List<String>>?,
 )

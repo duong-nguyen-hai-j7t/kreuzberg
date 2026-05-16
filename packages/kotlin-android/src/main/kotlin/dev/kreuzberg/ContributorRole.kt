@@ -7,5 +7,5 @@ package dev.kreuzberg
  */
 data class ContributorRole(
     val name: String,
-    val role: String?
+    val role: String?,
 )

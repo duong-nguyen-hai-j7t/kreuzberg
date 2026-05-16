@@ -10,5 +10,5 @@ package dev.kreuzberg
  */
 data class OcrConfidence(
     val detection: Double?,
-    val recognition: Double
+    val recognition: Double,
 )

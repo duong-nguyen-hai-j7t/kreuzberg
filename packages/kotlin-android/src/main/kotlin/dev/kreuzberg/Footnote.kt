@@ -7,5 +7,5 @@ package dev.kreuzberg
  */
 data class Footnote(
     val label: String,
-    val content: List<FormattedBlock>
+    val content: List<FormattedBlock>,
 )

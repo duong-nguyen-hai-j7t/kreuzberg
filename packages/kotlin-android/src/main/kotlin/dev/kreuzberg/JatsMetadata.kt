@@ -9,5 +9,5 @@ data class JatsMetadata(
     val copyright: String?,
     val license: String?,
     val historyDates: Map<String, String>,
-    val contributorRoles: List<ContributorRole>
+    val contributorRoles: List<ContributorRole>,
 )

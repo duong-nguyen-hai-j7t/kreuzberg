@@ -6,5 +6,5 @@ data class StructuredDataResult(
     val content: String,
     val format: String,
     val metadata: Map<String, String>,
-    val textFields: List<String>
+    val textFields: List<String>,
 )

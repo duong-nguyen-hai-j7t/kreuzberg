@@ -7,5 +7,5 @@ enum class ReductionLevel {
     LIGHT,
     MODERATE,
     AGGRESSIVE,
-    MAXIMUM;
+    MAXIMUM,
 }

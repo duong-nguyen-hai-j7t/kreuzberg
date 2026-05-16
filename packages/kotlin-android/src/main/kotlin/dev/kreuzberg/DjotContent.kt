@@ -23,5 +23,5 @@ data class DjotContent(
     val images: List<DjotImage>,
     val links: List<DjotLink>,
     val footnotes: List<Footnote>,
-    val attributes: List<String>
+    val attributes: List<String>,
 )

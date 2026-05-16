@@ -7,5 +7,5 @@ package dev.kreuzberg
  */
 data class OcrRotation(
     val angleDegrees: Double,
-    val confidence: Double?
+    val confidence: Double?,
 )

@@ -6,5 +6,5 @@ enum class FracType {
     BAR,
     NO_BAR,
     LINEAR,
-    SKEWED;
+    SKEWED,
 }

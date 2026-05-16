@@ -12,5 +12,5 @@ package dev.kreuzberg
 data class PageBoundary(
     val byteStart: Long,
     val byteEnd: Long,
-    val pageNumber: Int
+    val pageNumber: Int,
 )

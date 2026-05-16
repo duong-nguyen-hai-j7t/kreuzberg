@@ -11,5 +11,5 @@ data class ModelPaths(
     val detModel: Path,
     val clsModel: Path,
     val recModel: Path,
-    val dictFile: Path
+    val dictFile: Path,
 )

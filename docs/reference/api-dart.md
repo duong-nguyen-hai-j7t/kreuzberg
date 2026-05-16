@@ -28,7 +28,7 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+ExtractionResult extractBytes(Uint8List content, String mimeType, ExtractionConfig config)
 ```
 **Parameters:**
 
@@ -67,7 +67,7 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+ExtractionResult extractFile(String path, ExtractionConfig config, [String? mimeType])
 ```
 **Parameters:**
 
@@ -98,7 +98,7 @@ use a truly synchronous extraction approach instead.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+ExtractionResult extractFileSync(String path, ExtractionConfig config, [String? mimeType])
 ```
 **Parameters:**
 
@@ -126,7 +126,7 @@ Tokio runtime. Without it (WASM), this calls a truly synchronous implementation.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+ExtractionResult extractBytesSync(Uint8List content, String mimeType, ExtractionConfig config)
 ```
 **Parameters:**
 
@@ -151,7 +151,7 @@ Only available with `tokio-runtime` (WASM has no filesystem).
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+List<ExtractionResult> batchExtractFilesSync(List<BatchFileItem> items, ExtractionConfig config)
 ```
 **Parameters:**
 
@@ -177,7 +177,7 @@ that iterates through items and calls `extract_bytes_sync()`.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+List<ExtractionResult> batchExtractBytesSync(List<BatchBytesItem> items, ExtractionConfig config)
 ```
 **Parameters:**
 
@@ -225,7 +225,7 @@ Per-file configuration overrides:
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+List<ExtractionResult> batchExtractFiles(List<BatchFileItem> items, ExtractionConfig config)
 ```
 **Parameters:**
 
@@ -267,7 +267,7 @@ Per-item configuration overrides:
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+List<ExtractionResult> batchExtractBytes(List<BatchBytesItem> items, ExtractionConfig config)
 ```
 **Parameters:**
 
@@ -302,7 +302,7 @@ Returns `KreuzbergError.UnsupportedFormat` if MIME type cannot be determined.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+String detectMimeTypeFromBytes(Uint8List content)
 ```
 **Parameters:**
 
@@ -328,7 +328,7 @@ A vector of file extensions (without leading dot) for the MIME type.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+List<String> getExtensionsForMime(String mimeType)
 ```
 **Parameters:**
 
@@ -351,7 +351,7 @@ language bindings via `alef.toml [exclude].functions`.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+List<String> listEmbeddingBackends()
 ```
 **Returns:** `List<String>`
 **Errors:** Throws `Error`.
@@ -365,7 +365,7 @@ List names of all registered document extractors.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+List<String> listDocumentExtractors()
 ```
 **Returns:** `List<String>`
 **Errors:** Throws `Error`.
@@ -385,7 +385,7 @@ A vector of OCR backend names.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+List<String> listOcrBackends()
 ```
 **Returns:** `List<String>`
 **Errors:** Throws `Error`.
@@ -407,7 +407,7 @@ global registry.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+List<String> listPostProcessors()
 ```
 **Returns:** `List<String>`
 **Errors:** Throws `Error`.
@@ -425,7 +425,7 @@ Returns an error if the registry lock is poisoned.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+List<String> listRenderers()
 ```
 **Returns:** `List<String>`
 **Errors:** Throws `Error`.
@@ -439,7 +439,7 @@ List names of all registered validators.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+List<String> listValidators()
 ```
 **Returns:** `List<String>`
 **Errors:** Throws `Error`.
@@ -465,7 +465,7 @@ Returns one embedding vector per input text in the same order.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+List<List<double>> embedTextsAsync(List<String> texts, EmbeddingConfig config)
 ```
 **Parameters:**
 
@@ -494,7 +494,7 @@ or rendered, or if `page_index` is out of range.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+Uint8List renderPdfPageToPng(Uint8List pdfBytes, int pageIndex, [int? dpi, String? password])
 ```
 **Parameters:**
 
@@ -520,7 +520,7 @@ Set `check_exists` to `true` to verify the file exists before detection.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+String detectMimeType(String path, bool checkExists)
 ```
 **Parameters:**
 
@@ -543,7 +543,7 @@ Returns a 2D vector where each inner vector is the embedding for the correspondi
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+List<List<double>> embedTexts(List<String> texts, EmbeddingConfig config)
 ```
 **Parameters:**
 
@@ -567,7 +567,7 @@ clone so the value is safe to pass across FFI boundaries.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+EmbeddingPreset? getEmbeddingPreset(String name)
 ```
 **Parameters:**
 
@@ -588,7 +588,7 @@ Returns owned `String`s so the values are safe to pass across FFI boundaries.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend signature generation
+List<String> listEmbeddingPresets()
 ```
 **Returns:** `List<String>`
 
@@ -607,32 +607,6 @@ for inference in layout detection and embedding generation.
 |-------|------|---------|-------------|
 | `provider` | `ExecutionProviderType` | `ExecutionProviderType.Auto` | Execution provider to use for ONNX inference. |
 | `deviceId` | `int` | — | GPU device ID (for CUDA/TensorRT). Ignored for CPU/CoreML/Auto. |
-
-
----
-
-#### AnchorProperties
-
-Properties for anchored drawings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `behindDoc` | `bool` | — | Behind doc |
-| `layoutInCell` | `bool` | — | Layout in cell |
-| `relativeHeight` | `int?` | `null` | Relative height |
-| `positionH` | `String?` | `null` | Position h |
-| `positionV` | `String?` | `null` | Position v |
-| `wrapType` | `String` | — | Wrap type |
-
-
----
-
-#### ApiDoc
-
-OpenAPI documentation structure.
-
-Defines all endpoints, request/response schemas, and examples
-for the Kreuzberg document extraction API.
 
 
 ---
@@ -730,36 +704,6 @@ BibTeX bibliography metadata.
 
 ---
 
-#### ByteBufferPool
-
-Convenience type alias for a pooled Vec<u8>.
-
-
----
-
-#### CacheWarmParams
-
-Request parameters for cache warm (model download).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `allEmbeddings` | `bool` | — | Download all embedding model presets |
-| `embeddingModel` | `String?` | `null` | Specific embedding preset name to download (e.g. "balanced", "speed", "quality") |
-
-
----
-
-#### CharShape
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `bold` | `bool` | — | Bold |
-| `italic` | `bool` | — | Italic |
-| `underline` | `bool` | — | Underline |
-
-
----
-
 #### Chunk
 
 A text chunk with optional embedding and metadata.
@@ -797,49 +741,6 @@ Metadata about a chunk's position in the original document.
 
 ---
 
-#### ChunkRequest
-
-Chunk request with text and configuration.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `String` | — | Text to chunk (must not be empty) |
-| `config` | `String?` | `null` | Optional chunking configuration |
-| `chunkerType` | `String` | — | Chunker type (text, markdown, yaml, or semantic) |
-
-
----
-
-#### ChunkResponse
-
-Chunk response with chunks and metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `chunks` | `List<String>` | — | List of chunks |
-| `chunkCount` | `int` | — | Total number of chunks |
-| `config` | `String` | — | Configuration used for chunking |
-| `inputSizeBytes` | `int` | — | Input text size in bytes |
-| `chunkerType` | `String` | — | Chunker type used for chunking |
-
-
----
-
-#### ChunkTextParams
-
-Request parameters for text chunking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `String` | — | Text content to split into chunks |
-| `maxCharacters` | `int?` | `null` | Maximum characters per chunk (default: 2000) |
-| `overlap` | `int?` | `null` | Number of overlapping characters between chunks (default: 100) |
-| `chunkerType` | `String?` | `null` | Chunker type: "text", "markdown", "yaml", or "semantic" (default: "text") |
-| `topicThreshold` | `double?` | `null` | Topic threshold for semantic chunking (0.0-1.0, default: 0.75) |
-
-
----
-
 #### ChunkingConfig
 
 Chunking configuration.
@@ -868,22 +769,8 @@ Use `..the default constructor` when constructing to allow for future field addi
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static ChunkingConfig default()
 ```
-
----
-
-#### ChunkingResult
-
-Result of a text chunking operation.
-
-Contains the generated chunks and metadata about the chunking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `chunks` | `List<Chunk>` | — | List of text chunks |
-| `chunkCount` | `int` | — | Total number of chunks generated |
-
 
 ---
 
@@ -929,7 +816,7 @@ default behavior unchanged.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static ContentFilterConfig default()
 ```
 
 ---
@@ -946,34 +833,6 @@ JATS contributor with role.
 
 ---
 
-#### CoreProperties
-
-Dublin Core metadata from docProps/core.xml
-
-Contains standard metadata fields defined by the Dublin Core standard
-and Office-specific extensions.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `title` | `String?` | `null` | Document title |
-| `subject` | `String?` | `null` | Document subject/topic |
-| `creator` | `String?` | `null` | Document creator/author |
-| `keywords` | `String?` | `null` | Keywords or tags |
-| `description` | `String?` | `null` | Document description/abstract |
-| `lastModifiedBy` | `String?` | `null` | User who last modified the document |
-| `revision` | `String?` | `null` | Revision number |
-| `created` | `String?` | `null` | Creation timestamp (ISO 8601) |
-| `modified` | `String?` | `null` | Last modification timestamp (ISO 8601) |
-| `category` | `String?` | `null` | Document category |
-| `contentStatus` | `String?` | `null` | Content status (Draft, Final, etc.) |
-| `language` | `String?` | `null` | Document language |
-| `identifier` | `String?` | `null` | Unique identifier |
-| `version` | `String?` | `null` | Document version |
-| `lastPrinted` | `String?` | `null` | Last print timestamp (ISO 8601) |
-
-
----
-
 #### CsvMetadata
 
 CSV/TSV file metadata.
@@ -985,16 +844,6 @@ CSV/TSV file metadata.
 | `delimiter` | `String?` | `null` | Delimiter |
 | `hasHeader` | `bool` | — | Whether header |
 | `columnTypes` | `List<String>?` | `[]` | Column types |
-
-
----
-
-#### CustomProperties
-
-Custom properties from docProps/custom.xml
-
-Maps property names to their values. Values are converted to JSON types
-based on the VT (Variant Type) specified in the XML.
 
 
 ---
@@ -1024,18 +873,6 @@ dBASE (DBF) file metadata.
 
 ---
 
-#### DetectMimeTypeParams
-
-Request parameters for MIME type detection.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `path` | `String` | — | Path to the file |
-| `useContent` | `bool` | — | Use content-based detection (default: true) |
-
-
----
-
 #### DetectResponse
 
 MIME type detection response.
@@ -1044,18 +881,6 @@ MIME type detection response.
 |-------|------|---------|-------------|
 | `mimeType` | `String` | — | Detected MIME type |
 | `filename` | `String?` | `null` | Original filename (if provided) |
-
-
----
-
-#### DetectedBoundary
-
-A detected structural boundary in the text.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `byteOffset` | `int` | — | Byte offset of the start of the line in the original text. |
-| `isHeader` | `bool` | — | Whether this boundary looks like a header/section title. |
 
 
 ---
@@ -1129,20 +954,6 @@ Link element in Djot.
 
 ---
 
-#### DoclingCompatResponse
-
-OpenWebUI "Docling" engine response format.
-
-Returned by `POST /v1/convert/file` for docling-serve compatibility.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `document` | `String` | — | Converted document content |
-| `status` | `String` | — | Processing status |
-
-
----
-
 #### DocumentExtractor
 
 Trait for document extractor plugins.
@@ -1193,7 +1004,7 @@ The pipeline will convert this into the public `ExtractionResult`.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+InternalDocument extractBytes(Uint8List content, String mimeType, ExtractionConfig config)
 ```
 ###### extractFile()
 
@@ -1213,7 +1024,7 @@ Same as `extract_bytes`, plus file I/O errors.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+InternalDocument extractFile(String path, String mimeType, ExtractionConfig config)
 ```
 ###### supportedMimeTypes()
 
@@ -1230,7 +1041,7 @@ A slice of MIME type strings.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+List<String> supportedMimeTypes()
 ```
 ###### priority()
 
@@ -1254,7 +1065,7 @@ Priority value (default: 50)
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+int priority()
 ```
 ###### canHandle()
 
@@ -1270,7 +1081,7 @@ Defaults to `true` (rely on MIME type matching).
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+bool canHandle(String path, String mimeType)
 ```
 ###### asSyncExtractor()
 
@@ -1282,7 +1093,7 @@ This is used for WASM and other sync-only environments.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+SyncExtractor? asSyncExtractor()
 ```
 
 ---
@@ -1355,7 +1166,7 @@ construction paths (builder, derivation) call this automatically.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+void finalizeNodeTypes()
 ```
 ###### isEmpty()
 
@@ -1364,43 +1175,15 @@ Check if the document structure is empty.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+bool isEmpty()
 ```
 ###### default()
 
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static DocumentStructure default()
 ```
-
----
-
-#### DocxAppProperties
-
-Application properties from docProps/app.xml for DOCX
-
-Contains Word-specific document statistics and metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `application` | `String?` | `null` | Application name (e.g., "Microsoft Office Word") |
-| `appVersion` | `String?` | `null` | Application version |
-| `template` | `String?` | `null` | Template filename |
-| `totalTime` | `int?` | `null` | Total editing time in minutes |
-| `pages` | `int?` | `null` | Number of pages |
-| `words` | `int?` | `null` | Number of words |
-| `characters` | `int?` | `null` | Number of characters (excluding spaces) |
-| `charactersWithSpaces` | `int?` | `null` | Number of characters (including spaces) |
-| `lines` | `int?` | `null` | Number of lines |
-| `paragraphs` | `int?` | `null` | Number of paragraphs |
-| `company` | `String?` | `null` | Company name |
-| `docSecurity` | `int?` | `null` | Document security level |
-| `scaleCrop` | `bool?` | `null` | Scale crop flag |
-| `linksUpToDate` | `bool?` | `null` | Links up to date flag |
-| `sharedDoc` | `bool?` | `null` | Shared document flag |
-| `hyperlinksChanged` | `bool?` | `null` | Hyperlinks changed flag |
-
 
 ---
 
@@ -1413,23 +1196,9 @@ Integrates with `office_metadata` module for core/app/custom properties.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `coreProperties` | `CoreProperties?` | `null` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
-| `appProperties` | `DocxAppProperties?` | `null` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
+| `coreProperties` | `String?` | `null` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
+| `appProperties` | `String?` | `null` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
 | `customProperties` | `Map<String, String>?` | `{}` | Custom properties from docProps/custom.xml (user-defined properties) Contains key-value pairs defined by users or applications. Values can be strings, numbers, booleans, or dates. |
-
-
----
-
-#### Drawing
-
-A drawing object extracted from `<w:drawing>`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `drawingType` | `String` | — | Drawing type |
-| `extent` | `String?` | `null` | Extent |
-| `docProperties` | `String?` | `null` | Doc properties |
-| `imageRef` | `String?` | `null` | Image ref |
 
 
 ---
@@ -1539,47 +1308,6 @@ Includes sender/recipient information, message ID, and attachment list.
 
 ---
 
-#### EmbedRequest
-
-Embedding request for generating embeddings from text.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `texts` | `List<String>` | — | Text strings to generate embeddings for (at least one non-empty string required) |
-| `config` | `EmbeddingConfig?` | `null` | Optional embedding configuration (model, batch size, etc.) |
-
-
----
-
-#### EmbedResponse
-
-Embedding response containing generated embeddings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `embeddings` | `List<List<double>>` | — | Generated embeddings (one per input text) |
-| `model` | `String` | — | Model used for embedding generation |
-| `dimensions` | `int` | — | Dimensionality of the embeddings |
-| `count` | `int` | — | Number of embeddings generated |
-
-
----
-
-#### EmbedTextParams
-
-Request parameters for embedding generation.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `texts` | `List<String>` | — | List of text strings to generate embeddings for |
-| `preset` | `String?` | `null` | Embedding preset name (default: "balanced"). Available: "speed", "balanced", "quality" |
-| `model` | `String?` | `null` | LLM model for provider-hosted embeddings (e.g., "openai/text-embedding-3-small"). When set, overrides preset and uses liter-llm for embedding generation. |
-| `apiKey` | `String?` | `null` | API key for the LLM provider (optional, falls back to env). |
-| `embeddingPlugin` | `String?` | `null` | Name of a pre-registered in-process embedding plugin backend. When set, overrides both preset and model and dispatches to the registered callback. Requires a prior call to `kreuzberg.plugins.register_embedding_backend`. |
-
-
----
-
 #### EmbeddedFile
 
 Embedded file descriptor extracted from the PDF name tree.
@@ -1651,7 +1379,7 @@ every vector returned by `embed`.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+int dimensions()
 ```
 ###### embed()
 
@@ -1666,7 +1394,7 @@ backend-specific failures. The dispatcher layers its own validation
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+List<List<double>> embed(List<String> texts)
 ```
 
 ---
@@ -1695,7 +1423,7 @@ Requires the `embeddings` feature to be enabled.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static EmbeddingConfig default()
 ```
 
 ---
@@ -1801,31 +1529,6 @@ extracted content and metadata.
 
 ---
 
-#### ExtractResponse
-
-Extraction response (list of results).
-
-
----
-
-#### ExtractStructuredParams
-
-Request parameters for LLM-based structured extraction.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `path` | `String` | — | File path to extract from |
-| `schema` | `String` | — | JSON schema for structured output |
-| `model` | `String` | — | LLM model (e.g., "openai/gpt-4o") |
-| `schemaName` | `String` | — | Schema name (default: "extraction") |
-| `schemaDescription` | `String?` | `null` | Schema description for the LLM |
-| `prompt` | `String?` | `null` | Custom Jinja2 prompt template |
-| `apiKey` | `String?` | `null` | API key (optional, falls back to env) |
-| `strict` | `bool` | — | Enable strict mode |
-
-
----
-
 #### ExtractedImage
 
 Extracted image from a document.
@@ -1852,22 +1555,6 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `imageKind` | `ImageKind?` | `null` | Heuristic classification of what this image likely depicts. `null` if classification was disabled or inconclusive. |
 | `kindConfidence` | `double?` | `null` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
 | `clusterId` | `int?` | `null` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `null` for singletons. |
-
-
----
-
-#### ExtractedInlineImage
-
-Extracted inline image with metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `data` | `Uint8List` | — | Uses `bytes.Bytes` for cheap cloning of large buffers. |
-| `format` | `String` | — | Format |
-| `filename` | `String?` | `null` | Filename |
-| `description` | `String?` | `null` | Human-readable description |
-| `dimensions` | `List<int>?` | `null` | Dimensions |
-| `attributes` | `List<String>` | — | Attributes |
 
 
 ---
@@ -1923,7 +1610,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static ExtractionConfig default()
 ```
 ###### needsImageProcessing()
 
@@ -1942,7 +1629,7 @@ image I/O and processing when results won't be used.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+bool needsImageProcessing()
 ```
 
 ---
@@ -1989,7 +1676,7 @@ Convert from an OCR result.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static ExtractionResult fromOcr(OcrExtractionResult ocr)
 ```
 
 ---
@@ -2180,21 +1867,8 @@ included in page content.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static HierarchyConfig default()
 ```
-
----
-
-#### HtmlExtractionResult
-
-Result of HTML extraction with optional images and warnings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `markdown` | `String` | — | Markdown |
-| `images` | `List<ExtractedInlineImage>` | — | Images extracted from the document |
-| `warnings` | `List<String>` | — | Warnings |
-
 
 ---
 
@@ -2230,7 +1904,7 @@ and extracted structural elements (headers, links, images, structured data).
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static HtmlMetadata from(HtmlMetadata metadata)
 ```
 
 ---
@@ -2259,98 +1933,7 @@ the plain comrak-based renderer.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
-```
-
----
-
-#### HwpImage
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `name` | `String` | — | The name |
-| `data` | `Uint8List` | — | Data |
-
-
----
-
-#### HwpxExtractor
-
-Extractor for Hangul Word Processor XML (.hwpx) files.
-
-Supports HWPX (Open HWPML), the ZIP-based XML successor to the binary HWP 5.0 format.
-
-##### Methods
-
-###### default()
-
-**Signature:**
-
-```dart
-// Phase 1: dart backend method signature generation
-```
-###### name()
-
-**Signature:**
-
-```dart
-// Phase 1: dart backend method signature generation
-```
-###### version()
-
-**Signature:**
-
-```dart
-// Phase 1: dart backend method signature generation
-```
-###### initialize()
-
-**Signature:**
-
-```dart
-// Phase 1: dart backend method signature generation
-```
-###### shutdown()
-
-**Signature:**
-
-```dart
-// Phase 1: dart backend method signature generation
-```
-###### description()
-
-**Signature:**
-
-```dart
-// Phase 1: dart backend method signature generation
-```
-###### author()
-
-**Signature:**
-
-```dart
-// Phase 1: dart backend method signature generation
-```
-###### extractBytes()
-
-**Signature:**
-
-```dart
-// Phase 1: dart backend method signature generation
-```
-###### supportedMimeTypes()
-
-**Signature:**
-
-```dart
-// Phase 1: dart backend method signature generation
-```
-###### priority()
-
-**Signature:**
-
-```dart
-// Phase 1: dart backend method signature generation
+static HtmlOutputConfig default()
 ```
 
 ---
@@ -2378,7 +1961,7 @@ Image extraction configuration.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static ImageExtractionConfig default()
 ```
 
 ---
@@ -2415,19 +1998,6 @@ Image element metadata.
 
 ---
 
-#### ImageOcrResult
-
-Result of OCR extraction from an image with optional page tracking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `content` | `String` | — | Extracted text content |
-| `boundaries` | `List<PageBoundary>?` | `null` | Character byte boundaries per frame (for multi-frame TIFFs) |
-| `pageContents` | `List<PageContent>?` | `null` | Per-frame content information |
-
-
----
-
 #### ImagePreprocessingConfig
 
 Image preprocessing configuration for OCR.
@@ -2453,7 +2023,7 @@ for different document types.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static ImagePreprocessingConfig default()
 ```
 
 ---
@@ -2479,18 +2049,6 @@ including DPI normalization, resizing, and resampling.
 | `calculatedDpi` | `int?` | `null` | Calculated optimal DPI (if auto_adjust_dpi enabled) |
 | `skippedResize` | `bool` | — | Whether resize was skipped (dimensions already optimal) |
 | `resizeError` | `String?` | `null` | Error message if resize failed |
-
-
----
-
-#### InfoResponse
-
-Server information response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `version` | `String` | — | API version |
-| `rustBackend` | `bool` | — | Whether using Rust backend |
 
 
 ---
@@ -2560,7 +2118,7 @@ Keyword extraction configuration.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static KeywordConfig default()
 ```
 
 ---
@@ -2582,7 +2140,7 @@ Language detection configuration.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static LanguageDetectionConfig default()
 ```
 
 ---
@@ -2622,7 +2180,7 @@ is enabled for PDF extraction.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static LayoutDetectionConfig default()
 ```
 
 ---
@@ -2702,47 +2260,6 @@ within one extraction (e.g. VLM OCR + structured extraction).
 
 ---
 
-#### ManifestEntryResponse
-
-Model manifest entry for cache management.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `relativePath` | `String` | — | Relative path within the cache directory |
-| `sha256` | `String` | — | SHA256 checksum of the model file |
-| `sizeBytes` | `int` | — | Expected file size in bytes |
-| `sourceUrl` | `String` | — | HuggingFace source URL for downloading |
-
-
----
-
-#### ManifestResponse
-
-Model manifest response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `kreuzbergVersion` | `String` | — | Kreuzberg version |
-| `totalSizeBytes` | `int` | — | Total size of all models in bytes |
-| `modelCount` | `int` | — | Number of models in the manifest |
-| `models` | `List<ManifestEntryResponse>` | — | Individual model entries |
-
-
----
-
-#### MergedChunk
-
-A merged chunk produced by `merge_segments`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `String` | — | Text |
-| `byteStart` | `int` | — | Byte start |
-| `byteEnd` | `int` | — | Byte end |
-
-
----
-
 #### Metadata
 
 Extraction result metadata.
@@ -2785,7 +2302,7 @@ additional postprocessor fields are populated.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+bool isEmpty()
 ```
 
 ---
@@ -2842,7 +2359,7 @@ so multiple backends can coexist in a pipeline without key conflicts.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+ExtractionResult processImage(Uint8List imageBytes, OcrConfig config)
 ```
 ###### processImageFile()
 
@@ -2858,7 +2375,7 @@ Same as `process_image`, plus file I/O errors.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+ExtractionResult processImageFile(String path, OcrConfig config)
 ```
 ###### supportsLanguage()
 
@@ -2871,7 +2388,7 @@ Check if this backend supports a given language code.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+bool supportsLanguage(String lang)
 ```
 ###### backendType()
 
@@ -2884,7 +2401,7 @@ The backend type enum value.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+OcrBackendType backendType()
 ```
 ###### supportedLanguages()
 
@@ -2895,7 +2412,7 @@ Defaults to empty list. Override to provide comprehensive language support info.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+List<String> supportedLanguages()
 ```
 ###### supportsTableDetection()
 
@@ -2906,7 +2423,7 @@ Defaults to `false`. Override if your backend can detect and extract tables.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+bool supportsTableDetection()
 ```
 ###### supportsDocumentProcessing()
 
@@ -2917,7 +2434,7 @@ Defaults to `false`. Override if the backend has optimized document processing.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+bool supportsDocumentProcessing()
 ```
 ###### processDocument()
 
@@ -2928,7 +2445,7 @@ Only called if `supports_document_processing` returns `true`.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+ExtractionResult processDocument(String path, OcrConfig config)
 ```
 
 ---
@@ -2987,7 +2504,7 @@ OCR configuration.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static OcrConfig default()
 ```
 
 ---
@@ -3132,7 +2649,7 @@ so `OcrQualityThresholds.default()` preserves existing semantics exactly.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static OcrQualityThresholds default()
 ```
 
 ---
@@ -3175,51 +2692,6 @@ Bounding box for an OCR-detected table in pixel coordinates.
 | `top` | `int` | — | Top y-coordinate (pixels) |
 | `right` | `int` | — | Right x-coordinate (pixels) |
 | `bottom` | `int` | — | Bottom y-coordinate (pixels) |
-
-
----
-
-#### OdtProperties
-
-OpenDocument metadata from meta.xml
-
-Contains metadata fields defined by the OASIS OpenDocument Format standard.
-Uses Dublin Core elements (dc:) and OpenDocument meta elements (meta:).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `title` | `String?` | `null` | Document title (dc:title) |
-| `subject` | `String?` | `null` | Document subject/topic (dc:subject) |
-| `creator` | `String?` | `null` | Current document creator/author (dc:creator) |
-| `initialCreator` | `String?` | `null` | Initial creator of the document (meta:initial-creator) |
-| `keywords` | `String?` | `null` | Keywords or tags (meta:keyword) |
-| `description` | `String?` | `null` | Document description (dc:description) |
-| `date` | `String?` | `null` | Current modification date (dc:date) |
-| `creationDate` | `String?` | `null` | Initial creation date (meta:creation-date) |
-| `language` | `String?` | `null` | Document language (dc:language) |
-| `generator` | `String?` | `null` | Generator/application that created the document (meta:generator) |
-| `editingDuration` | `String?` | `null` | Editing duration in ISO 8601 format (meta:editing-duration) |
-| `editingCycles` | `String?` | `null` | Number of edits/revisions (meta:editing-cycles) |
-| `pageCount` | `int?` | `null` | Document statistics - page count (meta:page-count) |
-| `wordCount` | `int?` | `null` | Document statistics - word count (meta:word-count) |
-| `characterCount` | `int?` | `null` | Document statistics - character count (meta:character-count) |
-| `paragraphCount` | `int?` | `null` | Document statistics - paragraph count (meta:paragraph-count) |
-| `tableCount` | `int?` | `null` | Document statistics - table count (meta:table-count) |
-| `imageCount` | `int?` | `null` | Document statistics - image count (meta:image-count) |
-
-
----
-
-#### OpenWebDocumentResponse
-
-OpenWebUI "External" engine response format.
-
-Returned by `PUT /process` for the OpenWebUI external document loader.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `pageContent` | `String` | — | Extracted text content |
-| `metadata` | `String` | — | Document metadata |
 
 
 ---
@@ -3267,7 +2739,7 @@ Sets a custom cache directory for model files.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+PaddleOcrConfig withCacheDir(String path)
 ```
 ###### withTableDetection()
 
@@ -3276,7 +2748,7 @@ Enables or disables table structure detection.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+PaddleOcrConfig withTableDetection(bool enable)
 ```
 ###### withAngleCls()
 
@@ -3285,7 +2757,7 @@ Enables or disables angle classification for rotated text.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+PaddleOcrConfig withAngleCls(bool enable)
 ```
 ###### withDetDbThresh()
 
@@ -3294,7 +2766,7 @@ Sets the database threshold for text detection.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+PaddleOcrConfig withDetDbThresh(double threshold)
 ```
 ###### withDetDbBoxThresh()
 
@@ -3303,7 +2775,7 @@ Sets the box threshold for text bounding box refinement.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+PaddleOcrConfig withDetDbBoxThresh(double threshold)
 ```
 ###### withDetDbUnclipRatio()
 
@@ -3312,7 +2784,7 @@ Sets the unclip ratio for expanding text bounding boxes.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+PaddleOcrConfig withDetDbUnclipRatio(double ratio)
 ```
 ###### withDetLimitSideLen()
 
@@ -3321,7 +2793,7 @@ Sets the maximum side length for detection images.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+PaddleOcrConfig withDetLimitSideLen(int length)
 ```
 ###### withRecBatchNum()
 
@@ -3330,7 +2802,7 @@ Sets the batch size for recognition inference.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+PaddleOcrConfig withRecBatchNum(int batchSize)
 ```
 ###### withDropScore()
 
@@ -3339,7 +2811,7 @@ Sets the minimum recognition confidence threshold.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+PaddleOcrConfig withDropScore(double score)
 ```
 ###### withPadding()
 
@@ -3348,7 +2820,7 @@ Sets padding in pixels added around images before detection.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+PaddleOcrConfig withPadding(int padding)
 ```
 ###### withModelTier()
 
@@ -3357,7 +2829,7 @@ Sets the model tier controlling detection/recognition model size.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+PaddleOcrConfig withModelTier(String tier)
 ```
 ###### default()
 
@@ -3366,7 +2838,7 @@ Creates a default configuration with English language support.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static PaddleOcrConfig default()
 ```
 
 ---
@@ -3415,7 +2887,7 @@ when page boundaries are available and chunking is configured.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static PageConfig default()
 ```
 
 ---
@@ -3486,23 +2958,6 @@ and visibility state (for presentations).
 
 ---
 
-#### PageMarginsPoints
-
-Page margins converted to points (1/72 inch).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `top` | `double?` | `null` | Top |
-| `right` | `double?` | `null` | Right |
-| `bottom` | `double?` | `null` | Bottom |
-| `left` | `double?` | `null` | Left |
-| `header` | `double?` | `null` | Header |
-| `footer` | `double?` | `null` | Footer |
-| `gutter` | `double?` | `null` | Gutter |
-
-
----
-
 #### PageStructure
 
 Unified page structure for documents.
@@ -3558,7 +3013,7 @@ PDF-specific configuration.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static PdfConfig default()
 ```
 
 ---
@@ -3608,7 +3063,7 @@ The name should be:
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+String name()
 ```
 ###### version()
 
@@ -3621,7 +3076,7 @@ Defaults to the kreuzberg crate version.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+String version()
 ```
 ###### initialize()
 
@@ -3648,7 +3103,7 @@ Defaults to a no-op for stateless plugins.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+void initialize()
 ```
 ###### shutdown()
 
@@ -3675,7 +3130,7 @@ Defaults to a no-op for stateless plugins.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+void shutdown()
 ```
 ###### description()
 
@@ -3686,7 +3141,7 @@ Defaults to empty string if not overridden.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+String description()
 ```
 ###### author()
 
@@ -3697,7 +3152,7 @@ Defaults to empty string if not overridden.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+String author()
 ```
 
 ---
@@ -3780,7 +3235,7 @@ async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+void process(ExtractionResult result, ExtractionConfig config)
 ```
 ###### processingStage()
 
@@ -3795,7 +3250,7 @@ The `ProcessingStage` (Early, Middle, or Late).
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+ProcessingStage processingStage()
 ```
 ###### shouldProcess()
 
@@ -3811,7 +3266,7 @@ Defaults to `true` (always run).
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+bool shouldProcess(ExtractionResult result, ExtractionConfig config)
 ```
 ###### estimatedDurationMs()
 
@@ -3826,7 +3281,7 @@ Estimated processing time in milliseconds.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+int estimatedDurationMs(ExtractionResult result)
 ```
 ###### priority()
 
@@ -3839,7 +3294,7 @@ for high-priority processors that should run early in their stage.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+int priority()
 ```
 
 ---
@@ -3863,35 +3318,8 @@ Post-processor configuration.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static PostProcessorConfig default()
 ```
-
----
-
-#### PptxAppProperties
-
-Application properties from docProps/app.xml for PPTX
-
-Contains PowerPoint-specific document metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `application` | `String?` | `null` | Application name (e.g., "Microsoft Office PowerPoint") |
-| `appVersion` | `String?` | `null` | Application version |
-| `totalTime` | `int?` | `null` | Total editing time in minutes |
-| `company` | `String?` | `null` | Company name |
-| `docSecurity` | `int?` | `null` | Document security level |
-| `scaleCrop` | `bool?` | `null` | Scale crop flag |
-| `linksUpToDate` | `bool?` | `null` | Links up to date flag |
-| `sharedDoc` | `bool?` | `null` | Shared document flag |
-| `hyperlinksChanged` | `bool?` | `null` | Hyperlinks changed flag |
-| `slides` | `int?` | `null` | Number of slides |
-| `notes` | `int?` | `null` | Number of notes |
-| `hiddenSlides` | `int?` | `null` | Number of hidden slides |
-| `multimediaClips` | `int?` | `null` | Number of multimedia clips |
-| `presentationFormat` | `String?` | `null` | Presentation format (e.g., "Widescreen", "Standard") |
-| `slideTitles` | `List<String>` | `[]` | Slide titles |
-
 
 ---
 
@@ -3976,7 +3404,7 @@ RAKE-specific parameters.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static RakeParams default()
 ```
 
 ---
@@ -3996,30 +3424,6 @@ the type in their own code.
 | `cells` | `List<List<String>>` | — | Table cells as a 2D vector (rows × columns). |
 | `markdown` | `String` | — | Rendered markdown table. |
 
-
----
-
-#### Recyclable
-
-Trait for types that can be pooled and reused.
-
-Implementing this trait allows a type to be used with `Pool<T>`.
-The `reset()` method should clear the object's state for reuse.
-
-##### Methods
-
-###### reset()
-
-Reset the object to a reusable state.
-
-This is called when returning an object to the pool.
-Should clear any internal data while preserving capacity.
-
-**Signature:**
-
-```dart
-// Phase 1: dart backend method signature generation
-```
 
 ---
 
@@ -4058,20 +3462,8 @@ Returns an error if rendering fails.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+String render(InternalDocument doc)
 ```
-
----
-
-#### ResolvedStyle
-
-Fully resolved (flattened) style after walking the inheritance chain.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `paragraphProperties` | `String` | — | Paragraph properties |
-| `runProperties` | `String` | — | Run properties |
-
 
 ---
 
@@ -4101,7 +3493,7 @@ while still supporting legitimate documents.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static SecurityLimits default()
 ```
 
 ---
@@ -4136,7 +3528,7 @@ including host/port settings, CORS configuration, and upload limits.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static ServerConfig default()
 ```
 ###### listenAddr()
 
@@ -4145,7 +3537,7 @@ Get the server listen address (host:port).
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+String listenAddr()
 ```
 ###### corsAllowsAll()
 
@@ -4157,7 +3549,7 @@ are allowed. Returns `false` if specific origins are configured.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+bool corsAllowsAll()
 ```
 ###### isOriginAllowed()
 
@@ -4170,7 +3562,7 @@ Returns `true` if:
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+bool isOriginAllowed(String origin)
 ```
 ###### maxRequestBodyMb()
 
@@ -4179,7 +3571,7 @@ Get maximum request body size in megabytes (rounded up).
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+int maxRequestBodyMb()
 ```
 ###### maxMultipartFieldMb()
 
@@ -4188,20 +3580,8 @@ Get maximum multipart field size in megabytes (rounded up).
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+int maxMultipartFieldMb()
 ```
-
----
-
-#### StreamReader
-
-
----
-
-#### StringBufferPool
-
-Convenience type alias for a pooled String.
-
 
 ---
 
@@ -4249,37 +3629,6 @@ returning structured data that conforms to the schema.
 
 ---
 
-#### StructuredExtractionResponse
-
-Response from structured extraction endpoint.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `structuredOutput` | `String` | — | Structured data conforming to the provided JSON schema |
-| `content` | `String` | — | Extracted document text content |
-| `mimeType` | `String` | — | Detected MIME type of the input file |
-
-
----
-
-#### StyleDefinition
-
-A single style definition parsed from `<w:style>` in `word/styles.xml`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `id` | `String` | — | The style ID (`w:styleId` attribute). |
-| `name` | `String?` | `null` | Human-readable name (`<w:name w:val="..."/>`). |
-| `styleType` | `String` | — | Style type: paragraph, character, table, or numbering. |
-| `basedOn` | `String?` | `null` | ID of the parent style (`<w:basedOn w:val="..."/>`). |
-| `nextStyle` | `String?` | `null` | ID of the style to apply to the next paragraph (`<w:next w:val="..."/>`). |
-| `isDefault` | `bool` | — | Whether this is the default style for its type. |
-| `paragraphProperties` | `String` | — | Paragraph properties defined directly on this style. |
-| `runProperties` | `String` | — | Run properties defined directly on this style. |
-
-
----
-
 #### SupportedFormat
 
 A supported document format entry.
@@ -4291,44 +3640,6 @@ Represents a file extension and its corresponding MIME type that Kreuzberg can p
 | `extension` | `String` | — | File extension (without leading dot), e.g., "pdf", "docx" |
 | `mimeType` | `String` | — | MIME type string, e.g., "application/pdf" |
 
-
----
-
-#### SyncExtractor
-
-Trait for extractors that can work synchronously (WASM-compatible).
-
-This trait defines the synchronous extraction interface for WASM targets and other
-environments where async/tokio runtimes are not available or desirable.
-
-# Implementation
-
-Extractors that need to support WASM should implement this trait in addition to
-the async `DocumentExtractor` trait. This allows the same extractor to work in both
-environments by delegating to the sync implementation.
-
-# MIME Type Validation
-
-The `mime_type` parameter is guaranteed to be already validated.
-
-##### Methods
-
-###### extractSync()
-
-Extract content from a byte array synchronously.
-
-This method performs extraction without requiring an async runtime.
-It is called by `extract_bytes_sync()` when the `tokio-runtime` feature is disabled.
-
-**Returns:**
-
-An `InternalDocument` containing the extracted elements, metadata, and tables.
-
-**Signature:**
-
-```dart
-// Phase 1: dart backend method signature generation
-```
 
 ---
 
@@ -4380,66 +3691,6 @@ Stores row/column dimensions and a flat list of cells with position info.
 
 ---
 
-#### TableProperties
-
-Table-level properties from `<w:tblPr>`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `styleId` | `String?` | `null` | Style id |
-| `width` | `String?` | `null` | Width |
-| `alignment` | `String?` | `null` | Alignment |
-| `layout` | `String?` | `null` | Layout |
-| `look` | `String?` | `null` | Look |
-| `borders` | `String?` | `null` | Borders |
-| `cellMargins` | `String?` | `null` | Cell margins |
-| `indent` | `String?` | `null` | Indent |
-| `caption` | `String?` | `null` | Caption |
-
-
----
-
-#### TessdataManager
-
-Manages tessdata file downloading, caching, and manifest generation.
-
-##### Methods
-
-###### cacheDir()
-
-Get the cache directory path.
-
-**Signature:**
-
-```dart
-// Phase 1: dart backend method signature generation
-```
-###### isLanguageCached()
-
-Check if a specific language traineddata file is cached.
-
-**Signature:**
-
-```dart
-// Phase 1: dart backend method signature generation
-```
-###### ensureAllLanguages()
-
-Downloads all tessdata_fast traineddata files to the cache directory.
-
-Skips files that already exist. Returns the count of newly downloaded files.
-
-When the `paddle-ocr` feature is not enabled, no download URLs are available
-and this method always returns `Ok(0)`.
-
-**Signature:**
-
-```dart
-// Phase 1: dart backend method signature generation
-```
-
----
-
 #### TesseractConfig
 
 Tesseract OCR configuration.
@@ -4479,7 +3730,7 @@ for specific document types (invoices, handwriting, etc.).
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static TesseractConfig default()
 ```
 
 ---
@@ -4562,7 +3813,7 @@ for Markdown, structural elements like headers and links.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static TokenReductionConfig default()
 ```
 
 ---
@@ -4583,15 +3834,8 @@ Token reduction configuration.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static TokenReductionOptions default()
 ```
-
----
-
-#### TracingLayer
-
-A `tower.Layer` that wraps each extraction in a semantic tracing span.
-
 
 ---
 
@@ -4629,7 +3873,7 @@ docstrings = true
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static TreeSitterConfig default()
 ```
 
 ---
@@ -4659,7 +3903,7 @@ Controls which analysis features are enabled when extracting code files.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static TreeSitterProcessConfig default()
 ```
 
 ---
@@ -4798,7 +4042,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+void validate(ExtractionResult result, ExtractionConfig config)
 ```
 ###### shouldValidate()
 
@@ -4814,7 +4058,7 @@ Defaults to `true` (always run).
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+bool shouldValidate(ExtractionResult result, ExtractionConfig config)
 ```
 ###### priority()
 
@@ -4832,42 +4076,8 @@ Priority value (higher = runs earlier).
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+int priority()
 ```
-
----
-
-#### WarmResponse
-
-Cache warm response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `cacheDir` | `String` | — | Cache directory used |
-| `downloaded` | `List<String>` | — | Models that were downloaded |
-| `alreadyCached` | `List<String>` | — | Models that were already cached |
-
-
----
-
-#### XlsxAppProperties
-
-Application properties from docProps/app.xml for XLSX
-
-Contains Excel-specific document metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `application` | `String?` | `null` | Application name (e.g., "Microsoft Excel") |
-| `appVersion` | `String?` | `null` | Application version |
-| `docSecurity` | `int?` | `null` | Document security level |
-| `scaleCrop` | `bool?` | `null` | Scale crop flag |
-| `linksUpToDate` | `bool?` | `null` | Links up to date flag |
-| `sharedDoc` | `bool?` | `null` | Shared document flag |
-| `hyperlinksChanged` | `bool?` | `null` | Hyperlinks changed flag |
-| `company` | `String?` | `null` | Company name |
-| `worksheetNames` | `List<String>` | `[]` | Worksheet names |
-
 
 ---
 
@@ -4916,7 +4126,7 @@ YAKE-specific parameters.
 **Signature:**
 
 ```dart
-// Phase 1: dart backend method signature generation
+static YakeParams default()
 ```
 
 ---
@@ -4930,13 +4140,6 @@ Year range for bibliographic metadata.
 | `min` | `int?` | `null` | Min |
 | `max` | `int?` | `null` | Max |
 | `years` | `List<int>` | — | Years |
-
-
----
-
-#### ZipBombValidator
-
-Helper struct for validating ZIP archives for security issues.
 
 
 ---
@@ -5091,6 +4294,32 @@ of `ExtractionResult`.
 | `Chunks` | Use TSLP semantic chunks as content (default). |
 | `Raw` | Use raw source code as content. |
 | `Structure` | Emit function/class headings + docstrings (no code bodies). |
+
+
+---
+
+#### ListType
+
+Type of list detection.
+
+| Value | Description |
+|-------|-------------|
+| `Bullet` | Bullet points (-, *, •, etc.) |
+| `Numbered` | Numbered lists (1., 2., etc.) |
+| `Lettered` | Lettered lists (a., b., A., B., etc.) |
+| `Indented` | Indented items |
+
+
+---
+
+#### DrawingType
+
+Whether the drawing is inline or anchored.
+
+| Value | Description |
+|-------|-------------|
+| `Inline` | Inline |
+| `Anchored` | Anchored — Fields: `0`: `String` |
 
 
 ---
@@ -5556,17 +4785,6 @@ Semantic classification of an extracted URI.
 | `Citation` | A citation or bibliographic reference (DOI, academic ref). |
 | `Reference` | A general reference (e.g. `\ref{}` in LaTeX, `:ref:` in RST). |
 | `Email` | An email address (`mailto:` link or bare email). |
-
-
----
-
-#### PoolError
-
-Error type for pool operations.
-
-| Value | Description |
-|-------|-------------|
-| `LockPoisoned` | The pool's internal mutex was poisoned. This indicates a panic occurred while holding the lock. The pool is in a locked state and cannot be recovered. |
 
 
 ---

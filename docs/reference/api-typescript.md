@@ -611,32 +611,6 @@ for inference in layout detection and embedding generation.
 
 ---
 
-#### AnchorProperties
-
-Properties for anchored drawings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `behindDoc` | `boolean` | — | Behind doc |
-| `layoutInCell` | `boolean` | — | Layout in cell |
-| `relativeHeight` | `number \| null` | `null` | Relative height |
-| `positionH` | `string \| null` | `null` | Position h |
-| `positionV` | `string \| null` | `null` | Position v |
-| `wrapType` | `string` | — | Wrap type |
-
-
----
-
-#### ApiDoc
-
-OpenAPI documentation structure.
-
-Defines all endpoints, request/response schemas, and examples
-for the Kreuzberg document extraction API.
-
-
----
-
 #### ArchiveEntry
 
 A single file extracted from an archive.
@@ -730,36 +704,6 @@ BibTeX bibliography metadata.
 
 ---
 
-#### ByteBufferPool
-
-Convenience type alias for a pooled Vec<u8>.
-
-
----
-
-#### CacheWarmParams
-
-Request parameters for cache warm (model download).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `allEmbeddings` | `boolean` | — | Download all embedding model presets |
-| `embeddingModel` | `string \| null` | `null` | Specific embedding preset name to download (e.g. "balanced", "speed", "quality") |
-
-
----
-
-#### CharShape
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `bold` | `boolean` | — | Bold |
-| `italic` | `boolean` | — | Italic |
-| `underline` | `boolean` | — | Underline |
-
-
----
-
 #### Chunk
 
 A text chunk with optional embedding and metadata.
@@ -797,49 +741,6 @@ Metadata about a chunk's position in the original document.
 
 ---
 
-#### ChunkRequest
-
-Chunk request with text and configuration.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `string` | — | Text to chunk (must not be empty) |
-| `config` | `string \| null` | `null` | Optional chunking configuration |
-| `chunkerType` | `string` | — | Chunker type (text, markdown, yaml, or semantic) |
-
-
----
-
-#### ChunkResponse
-
-Chunk response with chunks and metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `chunks` | `Array<string>` | — | List of chunks |
-| `chunkCount` | `number` | — | Total number of chunks |
-| `config` | `string` | — | Configuration used for chunking |
-| `inputSizeBytes` | `number` | — | Input text size in bytes |
-| `chunkerType` | `string` | — | Chunker type used for chunking |
-
-
----
-
-#### ChunkTextParams
-
-Request parameters for text chunking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `string` | — | Text content to split into chunks |
-| `maxCharacters` | `number \| null` | `null` | Maximum characters per chunk (default: 2000) |
-| `overlap` | `number \| null` | `null` | Number of overlapping characters between chunks (default: 100) |
-| `chunkerType` | `string \| null` | `null` | Chunker type: "text", "markdown", "yaml", or "semantic" (default: "text") |
-| `topicThreshold` | `number \| null` | `null` | Topic threshold for semantic chunking (0.0-1.0, default: 0.75) |
-
-
----
-
 #### ChunkingConfig
 
 Chunking configuration.
@@ -870,20 +771,6 @@ Use `..the default constructor` when constructing to allow for future field addi
 ```typescript
 static default(): ChunkingConfig
 ```
-
----
-
-#### ChunkingResult
-
-Result of a text chunking operation.
-
-Contains the generated chunks and metadata about the chunking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `chunks` | `Array<Chunk>` | — | List of text chunks |
-| `chunkCount` | `number` | — | Total number of chunks generated |
-
 
 ---
 
@@ -946,34 +833,6 @@ JATS contributor with role.
 
 ---
 
-#### CoreProperties
-
-Dublin Core metadata from docProps/core.xml
-
-Contains standard metadata fields defined by the Dublin Core standard
-and Office-specific extensions.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `title` | `string \| null` | `null` | Document title |
-| `subject` | `string \| null` | `null` | Document subject/topic |
-| `creator` | `string \| null` | `null` | Document creator/author |
-| `keywords` | `string \| null` | `null` | Keywords or tags |
-| `description` | `string \| null` | `null` | Document description/abstract |
-| `lastModifiedBy` | `string \| null` | `null` | User who last modified the document |
-| `revision` | `string \| null` | `null` | Revision number |
-| `created` | `string \| null` | `null` | Creation timestamp (ISO 8601) |
-| `modified` | `string \| null` | `null` | Last modification timestamp (ISO 8601) |
-| `category` | `string \| null` | `null` | Document category |
-| `contentStatus` | `string \| null` | `null` | Content status (Draft, Final, etc.) |
-| `language` | `string \| null` | `null` | Document language |
-| `identifier` | `string \| null` | `null` | Unique identifier |
-| `version` | `string \| null` | `null` | Document version |
-| `lastPrinted` | `string \| null` | `null` | Last print timestamp (ISO 8601) |
-
-
----
-
 #### CsvMetadata
 
 CSV/TSV file metadata.
@@ -985,16 +844,6 @@ CSV/TSV file metadata.
 | `delimiter` | `string \| null` | `null` | Delimiter |
 | `hasHeader` | `boolean` | — | Whether header |
 | `columnTypes` | `Array<string> \| null` | `[]` | Column types |
-
-
----
-
-#### CustomProperties
-
-Custom properties from docProps/custom.xml
-
-Maps property names to their values. Values are converted to JSON types
-based on the VT (Variant Type) specified in the XML.
 
 
 ---
@@ -1024,18 +873,6 @@ dBASE (DBF) file metadata.
 
 ---
 
-#### DetectMimeTypeParams
-
-Request parameters for MIME type detection.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `path` | `string` | — | Path to the file |
-| `useContent` | `boolean` | — | Use content-based detection (default: true) |
-
-
----
-
 #### DetectResponse
 
 MIME type detection response.
@@ -1044,18 +881,6 @@ MIME type detection response.
 |-------|------|---------|-------------|
 | `mimeType` | `string` | — | Detected MIME type |
 | `filename` | `string \| null` | `null` | Original filename (if provided) |
-
-
----
-
-#### DetectedBoundary
-
-A detected structural boundary in the text.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `byteOffset` | `number` | — | Byte offset of the start of the line in the original text. |
-| `isHeader` | `boolean` | — | Whether this boundary looks like a header/section title. |
 
 
 ---
@@ -1125,20 +950,6 @@ Link element in Djot.
 | `text` | `string` | — | Link text content |
 | `title` | `string \| null` | `null` | Optional title |
 | `attributes` | `string \| null` | `null` | Element attributes |
-
-
----
-
-#### DoclingCompatResponse
-
-OpenWebUI "Docling" engine response format.
-
-Returned by `POST /v1/convert/file` for docling-serve compatibility.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `document` | `string` | — | Converted document content |
-| `status` | `string` | — | Processing status |
 
 
 ---
@@ -1376,34 +1187,6 @@ static default(): DocumentStructure
 
 ---
 
-#### DocxAppProperties
-
-Application properties from docProps/app.xml for DOCX
-
-Contains Word-specific document statistics and metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `application` | `string \| null` | `null` | Application name (e.g., "Microsoft Office Word") |
-| `appVersion` | `string \| null` | `null` | Application version |
-| `template` | `string \| null` | `null` | Template filename |
-| `totalTime` | `number \| null` | `null` | Total editing time in minutes |
-| `pages` | `number \| null` | `null` | Number of pages |
-| `words` | `number \| null` | `null` | Number of words |
-| `characters` | `number \| null` | `null` | Number of characters (excluding spaces) |
-| `charactersWithSpaces` | `number \| null` | `null` | Number of characters (including spaces) |
-| `lines` | `number \| null` | `null` | Number of lines |
-| `paragraphs` | `number \| null` | `null` | Number of paragraphs |
-| `company` | `string \| null` | `null` | Company name |
-| `docSecurity` | `number \| null` | `null` | Document security level |
-| `scaleCrop` | `boolean \| null` | `null` | Scale crop flag |
-| `linksUpToDate` | `boolean \| null` | `null` | Links up to date flag |
-| `sharedDoc` | `boolean \| null` | `null` | Shared document flag |
-| `hyperlinksChanged` | `boolean \| null` | `null` | Hyperlinks changed flag |
-
-
----
-
 #### DocxMetadata
 
 Word document metadata.
@@ -1413,23 +1196,9 @@ Integrates with `office_metadata` module for core/app/custom properties.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `coreProperties` | `CoreProperties \| null` | `null` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
-| `appProperties` | `DocxAppProperties \| null` | `null` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
+| `coreProperties` | `string \| null` | `null` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
+| `appProperties` | `string \| null` | `null` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
 | `customProperties` | `Record<string, unknown> \| null` | `{}` | Custom properties from docProps/custom.xml (user-defined properties) Contains key-value pairs defined by users or applications. Values can be strings, numbers, booleans, or dates. |
-
-
----
-
-#### Drawing
-
-A drawing object extracted from `<w:drawing>`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `drawingType` | `string` | — | Drawing type |
-| `extent` | `string \| null` | `null` | Extent |
-| `docProperties` | `string \| null` | `null` | Doc properties |
-| `imageRef` | `string \| null` | `null` | Image ref |
 
 
 ---
@@ -1535,47 +1304,6 @@ Includes sender/recipient information, message ID, and attachment list.
 | `bccEmails` | `Array<string>` | `[]` | BCC recipients |
 | `messageId` | `string \| null` | `null` | Message-ID header value |
 | `attachments` | `Array<string>` | `[]` | List of attachment filenames |
-
-
----
-
-#### EmbedRequest
-
-Embedding request for generating embeddings from text.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `texts` | `Array<string>` | — | Text strings to generate embeddings for (at least one non-empty string required) |
-| `config` | `EmbeddingConfig \| null` | `null` | Optional embedding configuration (model, batch size, etc.) |
-
-
----
-
-#### EmbedResponse
-
-Embedding response containing generated embeddings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `embeddings` | `Array<Array<number>>` | — | Generated embeddings (one per input text) |
-| `model` | `string` | — | Model used for embedding generation |
-| `dimensions` | `number` | — | Dimensionality of the embeddings |
-| `count` | `number` | — | Number of embeddings generated |
-
-
----
-
-#### EmbedTextParams
-
-Request parameters for embedding generation.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `texts` | `Array<string>` | — | List of text strings to generate embeddings for |
-| `preset` | `string \| null` | `null` | Embedding preset name (default: "balanced"). Available: "speed", "balanced", "quality" |
-| `model` | `string \| null` | `null` | LLM model for provider-hosted embeddings (e.g., "openai/text-embedding-3-small"). When set, overrides preset and uses liter-llm for embedding generation. |
-| `apiKey` | `string \| null` | `null` | API key for the LLM provider (optional, falls back to env). |
-| `embeddingPlugin` | `string \| null` | `null` | Name of a pre-registered in-process embedding plugin backend. When set, overrides both preset and model and dispatches to the registered callback. Requires a prior call to `kreuzberg.plugins.register_embedding_backend`. |
 
 
 ---
@@ -1801,31 +1529,6 @@ extracted content and metadata.
 
 ---
 
-#### ExtractResponse
-
-Extraction response (list of results).
-
-
----
-
-#### ExtractStructuredParams
-
-Request parameters for LLM-based structured extraction.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `path` | `string` | — | File path to extract from |
-| `schema` | `unknown` | — | JSON schema for structured output |
-| `model` | `string` | — | LLM model (e.g., "openai/gpt-4o") |
-| `schemaName` | `string` | — | Schema name (default: "extraction") |
-| `schemaDescription` | `string \| null` | `null` | Schema description for the LLM |
-| `prompt` | `string \| null` | `null` | Custom Jinja2 prompt template |
-| `apiKey` | `string \| null` | `null` | API key (optional, falls back to env) |
-| `strict` | `boolean` | — | Enable strict mode |
-
-
----
-
 #### ExtractedImage
 
 Extracted image from a document.
@@ -1852,22 +1555,6 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `imageKind` | `ImageKind \| null` | `null` | Heuristic classification of what this image likely depicts. `null` if classification was disabled or inconclusive. |
 | `kindConfidence` | `number \| null` | `null` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
 | `clusterId` | `number \| null` | `null` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `null` for singletons. |
-
-
----
-
-#### ExtractedInlineImage
-
-Extracted inline image with metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `data` | `Buffer` | — | Uses `bytes.Bytes` for cheap cloning of large buffers. |
-| `format` | `string` | — | Format |
-| `filename` | `string \| null` | `null` | Filename |
-| `description` | `string \| null` | `null` | Human-readable description |
-| `dimensions` | `Array<number> \| null` | `null` | Dimensions |
-| `attributes` | `Array<string>` | — | Attributes |
 
 
 ---
@@ -2185,19 +1872,6 @@ static default(): HierarchyConfig
 
 ---
 
-#### HtmlExtractionResult
-
-Result of HTML extraction with optional images and warnings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `markdown` | `string` | — | Markdown |
-| `images` | `Array<ExtractedInlineImage>` | — | Images extracted from the document |
-| `warnings` | `Array<string>` | — | Warnings |
-
-
----
-
 #### HtmlMetadata
 
 HTML metadata extracted from HTML documents.
@@ -2264,97 +1938,6 @@ static default(): HtmlOutputConfig
 
 ---
 
-#### HwpImage
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `name` | `string` | — | The name |
-| `data` | `Buffer` | — | Data |
-
-
----
-
-#### HwpxExtractor
-
-Extractor for Hangul Word Processor XML (.hwpx) files.
-
-Supports HWPX (Open HWPML), the ZIP-based XML successor to the binary HWP 5.0 format.
-
-##### Methods
-
-###### default()
-
-**Signature:**
-
-```typescript
-static default(): HwpxExtractor
-```
-###### name()
-
-**Signature:**
-
-```typescript
-name(): string
-```
-###### version()
-
-**Signature:**
-
-```typescript
-version(): string
-```
-###### initialize()
-
-**Signature:**
-
-```typescript
-initialize(): void
-```
-###### shutdown()
-
-**Signature:**
-
-```typescript
-shutdown(): void
-```
-###### description()
-
-**Signature:**
-
-```typescript
-description(): string
-```
-###### author()
-
-**Signature:**
-
-```typescript
-author(): string
-```
-###### extractBytes()
-
-**Signature:**
-
-```typescript
-extractBytes(content: Buffer, mimeType: string, config: ExtractionConfig): string
-```
-###### supportedMimeTypes()
-
-**Signature:**
-
-```typescript
-supportedMimeTypes(): Array<string>
-```
-###### priority()
-
-**Signature:**
-
-```typescript
-priority(): number
-```
-
----
-
 #### ImageExtractionConfig
 
 Image extraction configuration.
@@ -2415,19 +1998,6 @@ Image element metadata.
 
 ---
 
-#### ImageOcrResult
-
-Result of OCR extraction from an image with optional page tracking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `content` | `string` | — | Extracted text content |
-| `boundaries` | `Array<PageBoundary> \| null` | `null` | Character byte boundaries per frame (for multi-frame TIFFs) |
-| `pageContents` | `Array<PageContent> \| null` | `null` | Per-frame content information |
-
-
----
-
 #### ImagePreprocessingConfig
 
 Image preprocessing configuration for OCR.
@@ -2479,18 +2049,6 @@ including DPI normalization, resizing, and resampling.
 | `calculatedDpi` | `number \| null` | `null` | Calculated optimal DPI (if auto_adjust_dpi enabled) |
 | `skippedResize` | `boolean` | — | Whether resize was skipped (dimensions already optimal) |
 | `resizeError` | `string \| null` | `null` | Error message if resize failed |
-
-
----
-
-#### InfoResponse
-
-Server information response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `version` | `string` | — | API version |
-| `rustBackend` | `boolean` | — | Whether using Rust backend |
 
 
 ---
@@ -2698,47 +2256,6 @@ within one extraction (e.g. VLM OCR + structured extraction).
 | `totalTokens` | `number \| null` | `null` | Total tokens (input + output). |
 | `estimatedCost` | `number \| null` | `null` | Estimated cost in USD based on the provider's published pricing. |
 | `finishReason` | `string \| null` | `null` | Why the model stopped generating (e.g. "stop", "length", "content_filter"). |
-
-
----
-
-#### ManifestEntryResponse
-
-Model manifest entry for cache management.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `relativePath` | `string` | — | Relative path within the cache directory |
-| `sha256` | `string` | — | SHA256 checksum of the model file |
-| `sizeBytes` | `number` | — | Expected file size in bytes |
-| `sourceUrl` | `string` | — | HuggingFace source URL for downloading |
-
-
----
-
-#### ManifestResponse
-
-Model manifest response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `kreuzbergVersion` | `string` | — | Kreuzberg version |
-| `totalSizeBytes` | `number` | — | Total size of all models in bytes |
-| `modelCount` | `number` | — | Number of models in the manifest |
-| `models` | `Array<ManifestEntryResponse>` | — | Individual model entries |
-
-
----
-
-#### MergedChunk
-
-A merged chunk produced by `merge_segments`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `text` | `string` | — | Text |
-| `byteStart` | `number` | — | Byte start |
-| `byteEnd` | `number` | — | Byte end |
 
 
 ---
@@ -3179,51 +2696,6 @@ Bounding box for an OCR-detected table in pixel coordinates.
 
 ---
 
-#### OdtProperties
-
-OpenDocument metadata from meta.xml
-
-Contains metadata fields defined by the OASIS OpenDocument Format standard.
-Uses Dublin Core elements (dc:) and OpenDocument meta elements (meta:).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `title` | `string \| null` | `null` | Document title (dc:title) |
-| `subject` | `string \| null` | `null` | Document subject/topic (dc:subject) |
-| `creator` | `string \| null` | `null` | Current document creator/author (dc:creator) |
-| `initialCreator` | `string \| null` | `null` | Initial creator of the document (meta:initial-creator) |
-| `keywords` | `string \| null` | `null` | Keywords or tags (meta:keyword) |
-| `description` | `string \| null` | `null` | Document description (dc:description) |
-| `date` | `string \| null` | `null` | Current modification date (dc:date) |
-| `creationDate` | `string \| null` | `null` | Initial creation date (meta:creation-date) |
-| `language` | `string \| null` | `null` | Document language (dc:language) |
-| `generator` | `string \| null` | `null` | Generator/application that created the document (meta:generator) |
-| `editingDuration` | `string \| null` | `null` | Editing duration in ISO 8601 format (meta:editing-duration) |
-| `editingCycles` | `string \| null` | `null` | Number of edits/revisions (meta:editing-cycles) |
-| `pageCount` | `number \| null` | `null` | Document statistics - page count (meta:page-count) |
-| `wordCount` | `number \| null` | `null` | Document statistics - word count (meta:word-count) |
-| `characterCount` | `number \| null` | `null` | Document statistics - character count (meta:character-count) |
-| `paragraphCount` | `number \| null` | `null` | Document statistics - paragraph count (meta:paragraph-count) |
-| `tableCount` | `number \| null` | `null` | Document statistics - table count (meta:table-count) |
-| `imageCount` | `number \| null` | `null` | Document statistics - image count (meta:image-count) |
-
-
----
-
-#### OpenWebDocumentResponse
-
-OpenWebUI "External" engine response format.
-
-Returned by `PUT /process` for the OpenWebUI external document loader.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `pageContent` | `string` | — | Extracted text content |
-| `metadata` | `string` | — | Document metadata |
-
-
----
-
 #### OrientationResult
 
 Document orientation detection result.
@@ -3482,23 +2954,6 @@ and visibility state (for presentations).
 | `hidden` | `boolean \| null` | `null` | Whether this page is hidden (e.g., in presentations) |
 | `isBlank` | `boolean \| null` | `null` | Whether this page is blank (no meaningful text, no images, no tables) A page is considered blank if it has fewer than 3 non-whitespace characters and contains no tables or images. This is useful for filtering out empty pages in scanned documents or PDFs with blank separator pages. |
 | `hasVectorGraphics` | `boolean` | — | Whether this page contains non-trivial vector graphics (paths, shapes, curves) Indicates the presence of vector-drawn content such as charts, diagrams, or geometric shapes (e.g., from Adobe InDesign, LaTeX TikZ). These are invisible to `ExtractionResult.images` since they are not embedded as raster XObjects. Set to `true` when path count exceeds a heuristic threshold, signaling that downstream consumers may want to rasterize the page to capture this content. Only populated for PDFs; `null` for other document types. |
-
-
----
-
-#### PageMarginsPoints
-
-Page margins converted to points (1/72 inch).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `top` | `number \| null` | `null` | Top |
-| `right` | `number \| null` | `null` | Right |
-| `bottom` | `number \| null` | `null` | Bottom |
-| `left` | `number \| null` | `null` | Left |
-| `header` | `number \| null` | `null` | Header |
-| `footer` | `number \| null` | `null` | Footer |
-| `gutter` | `number \| null` | `null` | Gutter |
 
 
 ---
@@ -3868,33 +3323,6 @@ static default(): PostProcessorConfig
 
 ---
 
-#### PptxAppProperties
-
-Application properties from docProps/app.xml for PPTX
-
-Contains PowerPoint-specific document metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `application` | `string \| null` | `null` | Application name (e.g., "Microsoft Office PowerPoint") |
-| `appVersion` | `string \| null` | `null` | Application version |
-| `totalTime` | `number \| null` | `null` | Total editing time in minutes |
-| `company` | `string \| null` | `null` | Company name |
-| `docSecurity` | `number \| null` | `null` | Document security level |
-| `scaleCrop` | `boolean \| null` | `null` | Scale crop flag |
-| `linksUpToDate` | `boolean \| null` | `null` | Links up to date flag |
-| `sharedDoc` | `boolean \| null` | `null` | Shared document flag |
-| `hyperlinksChanged` | `boolean \| null` | `null` | Hyperlinks changed flag |
-| `slides` | `number \| null` | `null` | Number of slides |
-| `notes` | `number \| null` | `null` | Number of notes |
-| `hiddenSlides` | `number \| null` | `null` | Number of hidden slides |
-| `multimediaClips` | `number \| null` | `null` | Number of multimedia clips |
-| `presentationFormat` | `string \| null` | `null` | Presentation format (e.g., "Widescreen", "Standard") |
-| `slideTitles` | `Array<string>` | `[]` | Slide titles |
-
-
----
-
 #### PptxExtractionResult
 
 PowerPoint (PPTX) extraction result.
@@ -3999,30 +3427,6 @@ the type in their own code.
 
 ---
 
-#### Recyclable
-
-Trait for types that can be pooled and reused.
-
-Implementing this trait allows a type to be used with `Pool<T>`.
-The `reset()` method should clear the object's state for reuse.
-
-##### Methods
-
-###### reset()
-
-Reset the object to a reusable state.
-
-This is called when returning an object to the pool.
-Should clear any internal data while preserving capacity.
-
-**Signature:**
-
-```typescript
-reset(): void
-```
-
----
-
 #### Renderer
 
 Trait for document renderers that convert `InternalDocument` to output strings.
@@ -4060,18 +3464,6 @@ Returns an error if rendering fails.
 ```typescript
 render(doc: InternalDocument): string
 ```
-
----
-
-#### ResolvedStyle
-
-Fully resolved (flattened) style after walking the inheritance chain.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `paragraphProperties` | `string` | — | Paragraph properties |
-| `runProperties` | `string` | — | Run properties |
-
 
 ---
 
@@ -4193,18 +3585,6 @@ maxMultipartFieldMb(): number
 
 ---
 
-#### StreamReader
-
-
----
-
-#### StringBufferPool
-
-Convenience type alias for a pooled String.
-
-
----
-
 #### StructuredData
 
 Structured data (Schema.org, microdata, RDFa) block.
@@ -4249,37 +3629,6 @@ returning structured data that conforms to the schema.
 
 ---
 
-#### StructuredExtractionResponse
-
-Response from structured extraction endpoint.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `structuredOutput` | `unknown` | — | Structured data conforming to the provided JSON schema |
-| `content` | `string` | — | Extracted document text content |
-| `mimeType` | `string` | — | Detected MIME type of the input file |
-
-
----
-
-#### StyleDefinition
-
-A single style definition parsed from `<w:style>` in `word/styles.xml`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `id` | `string` | — | The style ID (`w:styleId` attribute). |
-| `name` | `string \| null` | `null` | Human-readable name (`<w:name w:val="..."/>`). |
-| `styleType` | `string` | — | Style type: paragraph, character, table, or numbering. |
-| `basedOn` | `string \| null` | `null` | ID of the parent style (`<w:basedOn w:val="..."/>`). |
-| `nextStyle` | `string \| null` | `null` | ID of the style to apply to the next paragraph (`<w:next w:val="..."/>`). |
-| `isDefault` | `boolean` | — | Whether this is the default style for its type. |
-| `paragraphProperties` | `string` | — | Paragraph properties defined directly on this style. |
-| `runProperties` | `string` | — | Run properties defined directly on this style. |
-
-
----
-
 #### SupportedFormat
 
 A supported document format entry.
@@ -4291,44 +3640,6 @@ Represents a file extension and its corresponding MIME type that Kreuzberg can p
 | `extension` | `string` | — | File extension (without leading dot), e.g., "pdf", "docx" |
 | `mimeType` | `string` | — | MIME type string, e.g., "application/pdf" |
 
-
----
-
-#### SyncExtractor
-
-Trait for extractors that can work synchronously (WASM-compatible).
-
-This trait defines the synchronous extraction interface for WASM targets and other
-environments where async/tokio runtimes are not available or desirable.
-
-# Implementation
-
-Extractors that need to support WASM should implement this trait in addition to
-the async `DocumentExtractor` trait. This allows the same extractor to work in both
-environments by delegating to the sync implementation.
-
-# MIME Type Validation
-
-The `mime_type` parameter is guaranteed to be already validated.
-
-##### Methods
-
-###### extractSync()
-
-Extract content from a byte array synchronously.
-
-This method performs extraction without requiring an async runtime.
-It is called by `extract_bytes_sync()` when the `tokio-runtime` feature is disabled.
-
-**Returns:**
-
-An `InternalDocument` containing the extracted elements, metadata, and tables.
-
-**Signature:**
-
-```typescript
-extractSync(content: Buffer, mimeType: string, config: ExtractionConfig): InternalDocument
-```
 
 ---
 
@@ -4377,66 +3688,6 @@ Stores row/column dimensions and a flat list of cells with position info.
 | `cols` | `number` | — | Number of columns in the table. |
 | `cells` | `Array<GridCell>` | `[]` | All cells in row-major order. |
 
-
----
-
-#### TableProperties
-
-Table-level properties from `<w:tblPr>`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `styleId` | `string \| null` | `null` | Style id |
-| `width` | `string \| null` | `null` | Width |
-| `alignment` | `string \| null` | `null` | Alignment |
-| `layout` | `string \| null` | `null` | Layout |
-| `look` | `string \| null` | `null` | Look |
-| `borders` | `string \| null` | `null` | Borders |
-| `cellMargins` | `string \| null` | `null` | Cell margins |
-| `indent` | `string \| null` | `null` | Indent |
-| `caption` | `string \| null` | `null` | Caption |
-
-
----
-
-#### TessdataManager
-
-Manages tessdata file downloading, caching, and manifest generation.
-
-##### Methods
-
-###### cacheDir()
-
-Get the cache directory path.
-
-**Signature:**
-
-```typescript
-cacheDir(): string
-```
-###### isLanguageCached()
-
-Check if a specific language traineddata file is cached.
-
-**Signature:**
-
-```typescript
-isLanguageCached(lang: string): boolean
-```
-###### ensureAllLanguages()
-
-Downloads all tessdata_fast traineddata files to the cache directory.
-
-Skips files that already exist. Returns the count of newly downloaded files.
-
-When the `paddle-ocr` feature is not enabled, no download URLs are available
-and this method always returns `Ok(0)`.
-
-**Signature:**
-
-```typescript
-ensureAllLanguages(): number
-```
 
 ---
 
@@ -4585,13 +3836,6 @@ Token reduction configuration.
 ```typescript
 static default(): TokenReductionOptions
 ```
-
----
-
-#### TracingLayer
-
-A `tower.Layer` that wraps each extraction in a semantic tracing span.
-
 
 ---
 
@@ -4837,40 +4081,6 @@ priority(): number
 
 ---
 
-#### WarmResponse
-
-Cache warm response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `cacheDir` | `string` | — | Cache directory used |
-| `downloaded` | `Array<string>` | — | Models that were downloaded |
-| `alreadyCached` | `Array<string>` | — | Models that were already cached |
-
-
----
-
-#### XlsxAppProperties
-
-Application properties from docProps/app.xml for XLSX
-
-Contains Excel-specific document metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `application` | `string \| null` | `null` | Application name (e.g., "Microsoft Excel") |
-| `appVersion` | `string \| null` | `null` | Application version |
-| `docSecurity` | `number \| null` | `null` | Document security level |
-| `scaleCrop` | `boolean \| null` | `null` | Scale crop flag |
-| `linksUpToDate` | `boolean \| null` | `null` | Links up to date flag |
-| `sharedDoc` | `boolean \| null` | `null` | Shared document flag |
-| `hyperlinksChanged` | `boolean \| null` | `null` | Hyperlinks changed flag |
-| `company` | `string \| null` | `null` | Company name |
-| `worksheetNames` | `Array<string>` | `[]` | Worksheet names |
-
-
----
-
 #### XmlExtractionResult
 
 XML extraction result.
@@ -4930,13 +4140,6 @@ Year range for bibliographic metadata.
 | `min` | `number \| null` | `null` | Min |
 | `max` | `number \| null` | `null` | Max |
 | `years` | `Array<number>` | — | Years |
-
-
----
-
-#### ZipBombValidator
-
-Helper struct for validating ZIP archives for security issues.
 
 
 ---
@@ -5091,6 +4294,32 @@ of `ExtractionResult`.
 | `Chunks` | Use TSLP semantic chunks as content (default). |
 | `Raw` | Use raw source code as content. |
 | `Structure` | Emit function/class headings + docstrings (no code bodies). |
+
+
+---
+
+#### ListType
+
+Type of list detection.
+
+| Value | Description |
+|-------|-------------|
+| `Bullet` | Bullet points (-, *, •, etc.) |
+| `Numbered` | Numbered lists (1., 2., etc.) |
+| `Lettered` | Lettered lists (a., b., A., B., etc.) |
+| `Indented` | Indented items |
+
+
+---
+
+#### DrawingType
+
+Whether the drawing is inline or anchored.
+
+| Value | Description |
+|-------|-------------|
+| `Inline` | Inline |
+| `Anchored` | Anchored — Fields: `0`: `string` |
 
 
 ---
@@ -5556,17 +4785,6 @@ Semantic classification of an extracted URI.
 | `Citation` | A citation or bibliographic reference (DOI, academic ref). |
 | `Reference` | A general reference (e.g. `\ref{}` in LaTeX, `:ref:` in RST). |
 | `Email` | An email address (`mailto:` link or bare email). |
-
-
----
-
-#### PoolError
-
-Error type for pool operations.
-
-| Value | Description |
-|-------|-------------|
-| `LockPoisoned` | The pool's internal mutex was poisoned. This indicates a panic occurred while holding the lock. The pool is in a locked state and cannot be recovered. |
 
 
 ---

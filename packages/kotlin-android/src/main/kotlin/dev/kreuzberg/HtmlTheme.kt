@@ -10,5 +10,5 @@ enum class HtmlTheme {
     GIT_HUB,
     DARK,
     LIGHT,
-    UNSTYLED;
+    UNSTYLED,
 }

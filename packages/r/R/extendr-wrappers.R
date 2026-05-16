@@ -16,37 +16,14 @@ NULL
 #' 3. Select appropriate extractor from registry
 #' 4. Extract content
 #' 5. Run post-processing pipeline
+#' @param content The byte array to extract.
+#' @param mime_type MIME type of the content.
+#' @param config Extraction configuration.
+#' @return An `ExtractionResult` containing the extracted content and metadata.
 #'
-#' # Arguments
-#'
-#' * `content` - The byte array to extract
-#' * `mime_type` - MIME type of the content
-#' * `config` - Extraction configuration
-#'
-#' # Returns
-#'
-#' An `ExtractionResult` containing the extracted content and metadata.
-#'
-#' # Errors
-#'
+#' @section Errors:
 #' Returns `KreuzbergError::Validation` if MIME type is invalid.
 #' Returns `KreuzbergError::UnsupportedFormat` if MIME type is not supported.
-#'
-#' # Example
-#'
-#' ```rust,no_run
-#' use kreuzberg::core::extractor::extract_bytes;
-#' use kreuzberg::core::config::ExtractionConfig;
-#'
-#' let config = ExtractionConfig::default();
-#' let bytes = b"Hello, world!";
-#' let result = extract_bytes(bytes, "text/plain", &config).await?;
-#' println!("Content: {}", result.content);
-#' ```
-#' @param content Raw vector of bytes.
-#' @param mime_type Character string.
-#' @param config ExtractionConfig object (list with class attribute).
-#' @return ExtractionResult object (list with class attribute).
 #' @export
 extract_bytes <- function(content, mime_type, config) .Call("wrap__extract_bytes", content, mime_type, config, PACKAGE = "kreuzberg")
 #' Extract content from a file
@@ -58,36 +35,14 @@ extract_bytes <- function(content, mime_type, config) .Call("wrap__extract_bytes
 #' 4. Extract content
 #' 5. Run post-processing pipeline
 #' 6. Store result in cache (if caching enabled)
+#' @param path Path to the file to extract.
+#' @param mime_type Optional MIME type override. If None, will be auto-detected.
+#' @param config Extraction configuration.
+#' @return An `ExtractionResult` containing the extracted content and metadata.
 #'
-#' # Arguments
-#'
-#' * `path` - Path to the file to extract
-#' * `mime_type` - Optional MIME type override. If None, will be auto-detected
-#' * `config` - Extraction configuration
-#'
-#' # Returns
-#'
-#' An `ExtractionResult` containing the extracted content and metadata.
-#'
-#' # Errors
-#'
+#' @section Errors:
 #' Returns `KreuzbergError::Io` if the file doesn't exist (NotFound) or for other file I/O errors.
 #' Returns `KreuzbergError::UnsupportedFormat` if MIME type is not supported.
-#'
-#' # Example
-#'
-#' ```rust,no_run
-#' use kreuzberg::core::extractor::extract_file;
-#' use kreuzberg::core::config::ExtractionConfig;
-#'
-#' let config = ExtractionConfig::default();
-#' let result = extract_file("document.pdf", None, &config).await?;
-#' println!("Content: {}", result.content);
-#' ```
-#' @param path File path as character string.
-#' @param mime_type Character string.
-#' @param config ExtractionConfig object (list with class attribute).
-#' @return ExtractionResult object (list with class attribute).
 #' @export
 extract_file <- function(path, mime_type, config) .Call("wrap__extract_file", path, mime_type, config, PACKAGE = "kreuzberg")
 #' Synchronous wrapper for `extract_file`
@@ -100,17 +55,6 @@ extract_file <- function(path, mime_type, config) .Call("wrap__extract_file", pa
 #'
 #' This function is only available with the `tokio-runtime` feature. For WASM targets,
 #' use a truly synchronous extraction approach instead.
-#'
-#' # Example
-#'
-#' ```rust,no_run
-#' use kreuzberg::core::extractor::extract_file_sync;
-#' use kreuzberg::core::config::ExtractionConfig;
-#'
-#' let config = ExtractionConfig::default();
-#' let result = extract_file_sync("document.pdf", None, &config)?;
-#' println!("Content: {}", result.content);
-#' ```
 #' @param path File path as character string.
 #' @param mime_type Character string.
 #' @param config ExtractionConfig object (list with class attribute).
@@ -124,18 +68,6 @@ extract_file_sync <- function(path, mime_type, config) .Call("wrap__extract_file
 #'
 #' With the `tokio-runtime` feature, this blocks the current thread using the global
 #' Tokio runtime. Without it (WASM), this calls a truly synchronous implementation.
-#'
-#' # Example
-#'
-#' ```rust,no_run
-#' use kreuzberg::core::extractor::extract_bytes_sync;
-#' use kreuzberg::core::config::ExtractionConfig;
-#'
-#' let config = ExtractionConfig::default();
-#' let bytes = b"Hello, world!";
-#' let result = extract_bytes_sync(bytes, "text/plain", &config)?;
-#' println!("Content: {}", result.content);
-#' ```
 #' @param content Raw vector of bytes.
 #' @param mime_type Character string.
 #' @param config ExtractionConfig object (list with class attribute).
@@ -146,23 +78,6 @@ extract_bytes_sync <- function(content, mime_type, config) .Call("wrap__extract_
 #'
 #' Uses the global Tokio runtime for optimal performance.
 #' Only available with `tokio-runtime` (WASM has no filesystem).
-#'
-#' # Example
-#'
-#' ```rust,no_run
-#' use kreuzberg::core::extractor::batch_extract_files_sync;
-#' use kreuzberg::core::config::{ExtractionConfig, BatchFileItem, FileExtractionConfig};
-#'
-#' let config = ExtractionConfig::default();
-#' let items = vec![
-#'     BatchFileItem {
-#'         path: "doc1.pdf".into(),
-#'         config: Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() }),
-#'     },
-#'     BatchFileItem { path: "doc2.pdf".into(), config: None },
-#' ];
-#' let results = batch_extract_files_sync(items, &config)?;
-#' ```
 #' @param items List of batchfileitem object (list with class attribute).
 #' @param config ExtractionConfig object (list with class attribute).
 #' @return List of extractionresult object (list with class attribute).
@@ -174,24 +89,6 @@ batch_extract_files_sync <- function(items, config) .Call("wrap__batch_extract_f
 #' With the `tokio-runtime` feature, this blocks the current thread using the global
 #' Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
 #' that iterates through items and calls `extract_bytes_sync()`.
-#'
-#' # Example
-#'
-#' ```rust,no_run
-#' use kreuzberg::core::extractor::batch_extract_bytes_sync;
-#' use kreuzberg::core::config::{ExtractionConfig, BatchBytesItem, FileExtractionConfig};
-#'
-#' let config = ExtractionConfig::default();
-#' let items = vec![
-#'     BatchBytesItem { content: b"content".to_vec(), mime_type: "text/plain".to_string(), config: None },
-#'     BatchBytesItem {
-#'         content: b"other".to_vec(),
-#'         mime_type: "text/plain".to_string(),
-#'         config: Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() }),
-#'     },
-#' ];
-#' let results = batch_extract_bytes_sync(items, &config)?;
-#' ```
 #' @param items List of batchbytesitem object (list with class attribute).
 #' @param config ExtractionConfig object (list with class attribute).
 #' @return List of extractionresult object (list with class attribute).
@@ -208,60 +105,13 @@ batch_extract_bytes_sync <- function(items, config) .Call("wrap__batch_extract_b
 #' fields from the batch-level `config`. Pass `None` for a file to use the batch defaults.
 #' Batch-level settings like `max_concurrent_extractions` and `use_cache` are always
 #' taken from the batch-level `config`.
+#' @param items Vector of `BatchFileItem` structs, each containing a path and optional per-file configuration overrides.
+#' @param config Batch-level extraction configuration (provides defaults and batch settings).
+#' @return A vector of `ExtractionResult` in the same order as the input items.
 #'
-#' # Arguments
-#'
-#' * `items` - Vector of `BatchFileItem` structs, each containing a path and optional
-#'   per-file configuration overrides.
-#' * `config` - Batch-level extraction configuration (provides defaults and batch settings)
-#'
-#' # Returns
-#'
-#' A vector of `ExtractionResult` in the same order as the input items.
-#'
-#' # Errors
-#'
+#' @section Errors:
 #' Individual file errors are captured in the result metadata. System errors
 #' (IO, RuntimeError equivalents) will bubble up and fail the entire batch.
-#'
-#' # Examples
-#'
-#' Simple usage with no per-file overrides:
-#'
-#' ```rust,no_run
-#' use kreuzberg::core::extractor::batch_extract_files;
-#' use kreuzberg::core::config::{ExtractionConfig, BatchFileItem};
-#' use std::path::PathBuf;
-#'
-#' let config = ExtractionConfig::default();
-#' let items = vec![
-#'     BatchFileItem { path: "doc1.pdf".into(), config: None },
-#'     BatchFileItem { path: "doc2.pdf".into(), config: None },
-#' ];
-#' let results = batch_extract_files(items, &config).await?;
-#' println!("Processed {} files", results.len());
-#' ```
-#'
-#' Per-file configuration overrides:
-#'
-#' ```rust,no_run
-#' use kreuzberg::core::extractor::batch_extract_files;
-#' use kreuzberg::core::config::{ExtractionConfig, BatchFileItem, FileExtractionConfig};
-#' use std::path::PathBuf;
-#'
-#' let config = ExtractionConfig::default();
-#' let items = vec![
-#'     BatchFileItem {
-#'         path: "scan.pdf".into(),
-#'         config: Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() }),
-#'     },
-#'     BatchFileItem { path: "notes.txt".into(), config: None },
-#' ];
-#' let results = batch_extract_files(items, &config).await?;
-#' ```
-#' @param items List of batchfileitem object (list with class attribute).
-#' @param config ExtractionConfig object (list with class attribute).
-#' @return List of extractionresult object (list with class attribute).
 #' @export
 batch_extract_files <- function(items, config) .Call("wrap__batch_extract_files", items, config, PACKAGE = "kreuzberg")
 #' Extract content from multiple byte arrays concurrently
@@ -274,54 +124,9 @@ batch_extract_files <- function(items, config) .Call("wrap__batch_extract_files"
 #' Each item can optionally specify a [`FileExtractionConfig`] that overrides specific
 #' fields from the batch-level `config`. Pass `None` as the config to use
 #' the batch-level defaults for that item.
-#'
-#' # Arguments
-#'
-#' * `items` - Vector of `BatchBytesItem` structs, each containing content bytes,
-#'   MIME type, and optional per-item configuration overrides.
-#' * `config` - Batch-level extraction configuration
-#'
-#' # Returns
-#'
-#' A vector of `ExtractionResult` in the same order as the input items.
-#'
-#' # Examples
-#'
-#' Simple usage with no per-item overrides:
-#'
-#' ```rust,no_run
-#' use kreuzberg::core::extractor::batch_extract_bytes;
-#' use kreuzberg::core::config::{ExtractionConfig, BatchBytesItem};
-#'
-#' let config = ExtractionConfig::default();
-#' let items = vec![
-#'     BatchBytesItem { content: b"content 1".to_vec(), mime_type: "text/plain".to_string(), config: None },
-#'     BatchBytesItem { content: b"content 2".to_vec(), mime_type: "text/plain".to_string(), config: None },
-#' ];
-#' let results = batch_extract_bytes(items, &config).await?;
-#' println!("Processed {} items", results.len());
-#' ```
-#'
-#' Per-item configuration overrides:
-#'
-#' ```rust,no_run
-#' use kreuzberg::core::extractor::batch_extract_bytes;
-#' use kreuzberg::core::config::{ExtractionConfig, BatchBytesItem, FileExtractionConfig};
-#'
-#' let config = ExtractionConfig::default();
-#' let items = vec![
-#'     BatchBytesItem { content: b"content".to_vec(), mime_type: "text/plain".to_string(), config: None },
-#'     BatchBytesItem {
-#'         content: b"<html>test</html>".to_vec(),
-#'         mime_type: "text/html".to_string(),
-#'         config: Some(FileExtractionConfig { force_ocr: Some(true), ..Default::default() }),
-#'     },
-#' ];
-#' let results = batch_extract_bytes(items, &config).await?;
-#' ```
-#' @param items List of batchbytesitem object (list with class attribute).
-#' @param config ExtractionConfig object (list with class attribute).
-#' @return List of extractionresult object (list with class attribute).
+#' @param items Vector of `BatchBytesItem` structs, each containing content bytes, MIME type, and optional per-item configuration overrides.
+#' @param config Batch-level extraction configuration.
+#' @return A vector of `ExtractionResult` in the same order as the input items.
 #' @export
 batch_extract_bytes <- function(items, config) .Call("wrap__batch_extract_bytes", items, config, PACKAGE = "kreuzberg")
 #' Detect MIME type from raw file bytes
@@ -331,47 +136,18 @@ batch_extract_bytes <- function(items, config) .Call("wrap__batch_extract_bytes"
 #'
 #' For ZIP-based files, inspects contents to distinguish Office Open XML
 #' formats (DOCX, XLSX, PPTX) from plain ZIP archives.
+#' @param content Raw file bytes.
+#' @return The detected MIME type string.
 #'
-#' # Arguments
-#'
-#' * `content` - Raw file bytes
-#'
-#' # Returns
-#'
-#' The detected MIME type string.
-#'
-#' # Errors
-#'
+#' @section Errors:
 #' Returns `KreuzbergError::UnsupportedFormat` if MIME type cannot be determined.
-#' @param content Raw vector of bytes.
-#' @return Character string.
 #' @export
 detect_mime_type_from_bytes <- function(content) .Call("wrap__detect_mime_type_from_bytes", content, PACKAGE = "kreuzberg")
 #' Get file extensions for a given MIME type
 #'
 #' Returns all known file extensions that map to the specified MIME type.
-#'
-#' # Arguments
-#'
-#' * `mime_type` - The MIME type to look up
-#'
-#' # Returns
-#'
-#' A vector of file extensions (without leading dot) for the MIME type.
-#'
-#' # Example
-#'
-#' ```
-#' use kreuzberg::core::mime::get_extensions_for_mime;
-#'
-#' let extensions = get_extensions_for_mime("application/pdf").unwrap();
-#' assert_eq!(extensions, vec!["pdf"]);
-#'
-#' let doc_extensions = get_extensions_for_mime("application/vnd.openxmlformats-officedocument.wordprocessingml.document").unwrap();
-#' assert!(doc_extensions.contains(&"docx".to_string()));
-#' ```
-#' @param mime_type Character string.
-#' @return List of character string.
+#' @param mime_type The MIME type to look up.
+#' @return A vector of file extensions (without leading dot) for the MIME type.
 #' @export
 get_extensions_for_mime <- function(mime_type) .Call("wrap__get_extensions_for_mime", mime_type, PACKAGE = "kreuzberg")
 #' List the names of all registered embedding backends
@@ -388,53 +164,22 @@ list_document_extractors <- function() .Call("wrap__list_document_extractors", P
 #' List all registered OCR backends
 #'
 #' Returns the names of all OCR backends currently registered in the global registry.
-#'
-#' # Returns
-#'
-#' A vector of OCR backend names.
-#'
-#' # Example
-#'
-#' ```rust
-#' use kreuzberg::plugins::list_ocr_backends;
-#'
-#' let backends = list_ocr_backends()?;
-#' for name in backends {
-#'     println!("Registered OCR backend: {}", name);
-#' }
-#' ```
-#' @return List of character string.
+#' @return A vector of OCR backend names.
 #' @export
 list_ocr_backends <- function() .Call("wrap__list_ocr_backends", PACKAGE = "kreuzberg")
 #' List all registered post-processor names
 #'
 #' Returns a vector of all post-processor names currently registered in the
 #' global registry.
-#'
-#' # Returns
-#'
-#' - `Ok(Vec<String>)` - Vector of post-processor names
-#' - `Err(...)` if the registry lock is poisoned
-#'
-#' # Example
-#'
-#' ```rust
-#' use kreuzberg::plugins::list_post_processors;
-#'
-#' let processors = list_post_processors()?;
-#' for name in processors {
-#'     println!("Registered post-processor: {}", name);
-#' }
-#' ```
-#' @return List of character string.
+#' @return - `Ok(Vec<String>)` - Vector of post-processor names
+- `Err(...)` if the registry lock is poisoned.
 #' @export
 list_post_processors <- function() .Call("wrap__list_post_processors", PACKAGE = "kreuzberg")
 #' List names of all registered renderers
-#'
-#' # Errors
-#'
-#' Returns an error if the registry lock is poisoned.
 #' @return List of character string.
+#'
+#' @section Errors:
+#' Returns an error if the registry lock is poisoned.
 #' @export
 list_renderers <- function() .Call("wrap__list_renderers", PACKAGE = "kreuzberg")
 #' List names of all registered validators
@@ -448,54 +193,29 @@ list_validators <- function() .Call("wrap__list_validators", PACKAGE = "kreuzber
 #' `spawn_blocking`, keeping the async executor free.
 #'
 #' Returns one embedding vector per input text in the same order.
+#' @param texts Vec of strings to embed (owned, sent to blocking thread).
+#' @param config Embedding configuration specifying model, batch size, and normalization.
+#' @return List of list of numeric.
 #'
-#' # Arguments
-#'
-#' * `texts` - Vec of strings to embed (owned, sent to blocking thread)
-#' * `config` - Embedding configuration specifying model, batch size, and normalization
-#'
-#' # Errors
-#'
+#' @section Errors:
 #' - `KreuzbergError::MissingDependency` if ONNX Runtime is not installed
 #' - `KreuzbergError::Embedding` if the preset name is unknown, model download fails,
 #'   or the blocking inference task panics
-#'
-#' # Example
-#'
-#' ```rust,ignore
-#' use kreuzberg::{embed_texts_async, EmbeddingConfig};
-#'
-#' let embeddings = embed_texts_async(
-#'     vec!["Hello!".to_string()],
-#'     &EmbeddingConfig::default(),
-#' ).await?;
-#' ```
-#' @param texts List of character string.
-#' @param config EmbeddingConfig object (list with class attribute).
-#' @return List of list of numeric.
 #' @export
 embed_texts_async <- function(texts, config) .Call("wrap__embed_texts_async", texts, config, PACKAGE = "kreuzberg")
 #' Render a single PDF page to PNG bytes
 #'
 #' Returns raw PNG-encoded bytes for the specified page at the given DPI.
 #' Uses pdf_oxide with tiny-skia for pure-Rust rendering.
+#' @param pdf_bytes Raw PDF file bytes.
+#' @param page_index Zero-based page index.
+#' @param dpi Resolution in dots per inch (default: 150).
+#' @param password Optional password for encrypted PDFs.
+#' @return Raw vector of bytes.
 #'
-#' # Arguments
-#'
-#' * `pdf_bytes` - Raw PDF file bytes
-#' * `page_index` - Zero-based page index
-#' * `dpi` - Resolution in dots per inch (default: 150)
-#' * `password` - Optional password for encrypted PDFs
-#'
-#' # Errors
-#'
+#' @section Errors:
 #' Returns `KreuzbergError::Parsing` if the PDF cannot be opened, authenticated,
 #' or rendered, or if `page_index` is out of range.
-#' @param pdf_bytes Raw vector of bytes.
-#' @param page_index Integer.
-#' @param dpi Integer.
-#' @param password Character string.
-#' @return Raw vector of bytes.
 #' @export
 render_pdf_page_to_png <- function(pdf_bytes, page_index, dpi, password) .Call("wrap__render_pdf_page_to_png", pdf_bytes, page_index, dpi, password, PACKAGE = "kreuzberg")
 #' Detect the MIME type of a file at the given path
@@ -529,6 +249,13 @@ get_embedding_preset <- function(name) .Call("wrap__get_embedding_preset", name,
 #' @return List of character string.
 #' @export
 list_embedding_presets <- function() .Call("wrap__list_embedding_presets", PACKAGE = "kreuzberg")
+#' Hardware acceleration configuration for ONNX Runtime models
+#'
+#' Controls which execution provider (CPU, CoreML, CUDA, TensorRT) is used
+#' for inference in layout detection and embedding generation.
+#' @field provider Execution provider to use for ONNX inference.
+#' @field device_id GPU device ID (for CUDA/TensorRT). Ignored for CPU/CoreML/Auto.
+#' @export
 AccelerationConfig <- new.env(parent = emptyenv())
 AccelerationConfig$from_json <- function(json) .Call("wrap__AccelerationConfig__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -539,6 +266,20 @@ AccelerationConfig$from_json <- function(json) .Call("wrap__AccelerationConfig__
 }
 #' @export
 `[[.AccelerationConfig` <- `$.AccelerationConfig`
+#' Cross-extractor content filtering configuration
+#'
+#' Controls whether "furniture" content (headers, footers, page numbers,
+#' watermarks, repeating text) is included in or stripped from extraction
+#' results. Applies across all extractors (PDF, DOCX, RTF, ODT, HTML, etc.)
+#' with format-specific implementation.
+#'
+#' When `None` on `ExtractionConfig`, each extractor uses its current
+#' default behavior unchanged.
+#' @field include_headers Include running headers in extraction output.
+#' @field include_footers Include running footers in extraction output.
+#' @field strip_repeating_text Enable the heuristic cross-page repeating text detector.
+#' @field include_watermarks Include watermark text in extraction output.
+#' @export
 ContentFilterConfig <- new.env(parent = emptyenv())
 ContentFilterConfig$default <- function() .Call("wrap__ContentFilterConfig__default", PACKAGE = "kreuzberg")
 ContentFilterConfig$from_json <- function(json) .Call("wrap__ContentFilterConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -550,6 +291,9 @@ ContentFilterConfig$from_json <- function(json) .Call("wrap__ContentFilterConfig
 }
 #' @export
 `[[.ContentFilterConfig` <- `$.ContentFilterConfig`
+#' Configuration for email extraction
+#' @field msg_fallback_codepage Windows codepage number to use when an MSG file contains no codepage property. Defaults to `None`, which falls back to windows-1252.
+#' @export
 EmailConfig <- new.env(parent = emptyenv())
 EmailConfig$from_json <- function(json) .Call("wrap__EmailConfig__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -560,6 +304,45 @@ EmailConfig$from_json <- function(json) .Call("wrap__EmailConfig__from_json", js
 }
 #' @export
 `[[.EmailConfig` <- `$.EmailConfig`
+#' Main extraction configuration
+#'
+#' This struct contains all configuration options for the extraction process.
+#' It can be loaded from TOML, YAML, or JSON files, or created programmatically.
+#' @field use_cache Enable caching of extraction results
+#' @field enable_quality_processing Enable quality post-processing
+#' @field ocr OCR configuration (None = OCR disabled)
+#' @field force_ocr Force OCR even for searchable PDFs
+#' @field force_ocr_pages Force OCR on specific pages only (1-indexed page numbers, must be >= 1).
+#' @field disable_ocr Disable OCR entirely, even for images.
+#' @field chunking Text chunking configuration (None = chunking disabled)
+#' @field content_filter Content filtering configuration (None = use extractor defaults).
+#' @field images Image extraction configuration (None = no image extraction)
+#' @field pdf_options PDF-specific options (None = use defaults)
+#' @field token_reduction Token reduction configuration (None = no token reduction)
+#' @field language_detection Language detection configuration (None = no language detection)
+#' @field pages Page extraction configuration (None = no page tracking)
+#' @field keywords Keyword extraction configuration (None = no keyword extraction)
+#' @field postprocessor Post-processor configuration (None = use defaults)
+#' @field html_options HTML to Markdown conversion options (None = use defaults)
+#' @field html_output Styled HTML output configuration.
+#' @field extraction_timeout_secs Default per-file timeout in seconds for batch extraction.
+#' @field max_concurrent_extractions Maximum concurrent extractions in batch operations (None = (num_cpus × 1.5).ceil()).
+#' @field result_format Result structure format
+#' @field security_limits Security limits for archive extraction.
+#' @field output_format Content text format (default: Plain).
+#' @field layout Layout detection configuration (None = layout detection disabled).
+#' @field use_layout_for_markdown Run layout detection on the non-OCR PDF markdown path.
+#' @field include_document_structure Enable structured document tree output.
+#' @field acceleration Hardware acceleration configuration for ONNX Runtime models.
+#' @field cache_namespace Cache namespace for tenant isolation.
+#' @field cache_ttl_secs Per-request cache TTL in seconds.
+#' @field email Email extraction configuration (None = use defaults).
+#' @field concurrency Concurrency limits for constrained environments (None = use defaults).
+#' @field max_archive_depth Maximum recursion depth for archive extraction (default: 3). Set to 0 to disable recursive extraction (legacy behavior).
+#' @field tree_sitter Tree-sitter language pack configuration (None = tree-sitter disabled).
+#' @field structured_extraction Structured extraction via LLM (None = disabled).
+#' @field cancel_token Cancellation token for this extraction (None = no external cancellation).
+#' @export
 ExtractionConfig <- new.env(parent = emptyenv())
 ExtractionConfig$default <- function() .Call("wrap__ExtractionConfig__default", PACKAGE = "kreuzberg")
 ExtractionConfig$needs_image_processing <- function() .Call("wrap__ExtractionConfig__needs_image_processing", self, PACKAGE = "kreuzberg")
@@ -572,6 +355,44 @@ ExtractionConfig$from_json <- function(json) .Call("wrap__ExtractionConfig__from
 }
 #' @export
 `[[.ExtractionConfig` <- `$.ExtractionConfig`
+#' Per-file extraction configuration overrides for batch processing
+#'
+#' All fields are `Option<T>` — `None` means "use the batch-level default."
+#' This type is used with `batch_extract_files` and
+#' `batch_extract_bytes` to allow heterogeneous
+#' extraction settings within a single batch.
+#'
+#' # Excluded Fields
+#'
+#' The following `ExtractionConfig` fields are batch-level only and
+#' cannot be overridden per file:
+#' - `max_concurrent_extractions` — controls batch parallelism
+#' - `use_cache` — global caching policy
+#' - `acceleration` — shared ONNX execution provider
+#' - `security_limits` — global archive security policy
+#' @field enable_quality_processing Override quality post-processing for this file.
+#' @field ocr Override OCR configuration for this file (None in the Option = use batch default).
+#' @field force_ocr Override force OCR for this file.
+#' @field force_ocr_pages Override force OCR pages for this file (1-indexed page numbers).
+#' @field disable_ocr Override disable OCR for this file.
+#' @field chunking Override chunking configuration for this file.
+#' @field content_filter Override content filtering configuration for this file.
+#' @field images Override image extraction configuration for this file.
+#' @field pdf_options Override PDF options for this file.
+#' @field token_reduction Override token reduction for this file.
+#' @field language_detection Override language detection for this file.
+#' @field pages Override page extraction for this file.
+#' @field keywords Override keyword extraction for this file.
+#' @field postprocessor Override post-processor for this file.
+#' @field html_options Override HTML conversion options for this file.
+#' @field result_format Override result format for this file.
+#' @field output_format Override output content format for this file.
+#' @field include_document_structure Override document structure output for this file.
+#' @field layout Override layout detection for this file.
+#' @field timeout_secs Override per-file extraction timeout in seconds.
+#' @field tree_sitter Override tree-sitter configuration for this file.
+#' @field structured_extraction Override structured extraction configuration for this file.
+#' @export
 FileExtractionConfig <- new.env(parent = emptyenv())
 FileExtractionConfig$from_json <- function(json) .Call("wrap__FileExtractionConfig__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -582,6 +403,14 @@ FileExtractionConfig$from_json <- function(json) .Call("wrap__FileExtractionConf
 }
 #' @export
 `[[.FileExtractionConfig` <- `$.FileExtractionConfig`
+#' Batch item for byte array extraction
+#'
+#' Used with `batch_extract_bytes` and `batch_extract_bytes_sync`
+#' to represent a single item in a batch extraction job.
+#' @field content The content bytes to extract from
+#' @field mime_type MIME type of the content (e.g., "application/pdf", "text/html")
+#' @field config Per-item configuration overrides (None uses batch-level defaults)
+#' @export
 BatchBytesItem <- new.env(parent = emptyenv())
 #' @export
 `$.BatchBytesItem` <- function(self, name) {
@@ -591,6 +420,13 @@ BatchBytesItem <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.BatchBytesItem` <- `$.BatchBytesItem`
+#' Batch item for file extraction
+#'
+#' Used with `batch_extract_files` and `batch_extract_files_sync`
+#' to represent a single file in a batch extraction job.
+#' @field path Path to the file to extract from
+#' @field config Per-file configuration overrides (None uses batch-level defaults)
+#' @export
 BatchFileItem <- new.env(parent = emptyenv())
 #' @export
 `$.BatchFileItem` <- function(self, name) {
@@ -600,6 +436,17 @@ BatchFileItem <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.BatchFileItem` <- `$.BatchFileItem`
+#' Image extraction configuration
+#' @field extract_images Extract images from documents
+#' @field target_dpi Target DPI for image normalization
+#' @field max_image_dimension Maximum dimension for images (width or height)
+#' @field inject_placeholders Whether to inject image reference placeholders into markdown output. When `true` (default), image references like `![Image 1](embedded:p1_i0)` are appended to the markdown. Set to `false` to extract images as data without polluting the markdown output.
+#' @field auto_adjust_dpi Automatically adjust DPI based on image content
+#' @field min_dpi Minimum DPI threshold
+#' @field max_dpi Maximum DPI threshold
+#' @field max_images_per_page Maximum number of image objects to extract per PDF page.
+#' @field classify When `true` (default), extracted images are classified by kind and grouped into clusters where they appear to belong to one figure.
+#' @export
 ImageExtractionConfig <- new.env(parent = emptyenv())
 ImageExtractionConfig$default <- function() .Call("wrap__ImageExtractionConfig__default", PACKAGE = "kreuzberg")
 ImageExtractionConfig$from_json <- function(json) .Call("wrap__ImageExtractionConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -611,6 +458,10 @@ ImageExtractionConfig$from_json <- function(json) .Call("wrap__ImageExtractionCo
 }
 #' @export
 `[[.ImageExtractionConfig` <- `$.ImageExtractionConfig`
+#' Token reduction configuration
+#' @field mode Reduction mode: "off", "light", "moderate", "aggressive", "maximum"
+#' @field preserve_important_words Preserve important words (capitalized, technical terms)
+#' @export
 TokenReductionOptions <- new.env(parent = emptyenv())
 TokenReductionOptions$default <- function() .Call("wrap__TokenReductionOptions__default", PACKAGE = "kreuzberg")
 TokenReductionOptions$from_json <- function(json) .Call("wrap__TokenReductionOptions__from_json", json, PACKAGE = "kreuzberg")
@@ -622,6 +473,11 @@ TokenReductionOptions$from_json <- function(json) .Call("wrap__TokenReductionOpt
 }
 #' @export
 `[[.TokenReductionOptions` <- `$.TokenReductionOptions`
+#' Language detection configuration
+#' @field enabled Enable language detection
+#' @field min_confidence Minimum confidence threshold (0.0-1.0)
+#' @field detect_multiple Detect multiple languages in the document
+#' @export
 LanguageDetectionConfig <- new.env(parent = emptyenv())
 LanguageDetectionConfig$default <- function() .Call("wrap__LanguageDetectionConfig__default", PACKAGE = "kreuzberg")
 LanguageDetectionConfig$from_json <- function(json) .Call("wrap__LanguageDetectionConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -633,6 +489,18 @@ LanguageDetectionConfig$from_json <- function(json) .Call("wrap__LanguageDetecti
 }
 #' @export
 `[[.LanguageDetectionConfig` <- `$.LanguageDetectionConfig`
+#' Configuration for styled HTML output
+#'
+#' When set on [`ExtractionConfig::html_output`] alongside
+#' `output_format = OutputFormat::Html`, the pipeline builds a
+#' [`StyledHtmlRenderer`](crate::rendering::StyledHtmlRenderer) instead of
+#' the plain comrak-based renderer.
+#' @field css Inline CSS string injected into the output after the theme stylesheet. Concatenated after `css_file` content when both are set.
+#' @field css_file Path to a CSS file loaded once at renderer construction time. Concatenated before `css` when both are set.
+#' @field theme Built-in colour/typography theme. Default: [`HtmlTheme::Unstyled`].
+#' @field class_prefix CSS class prefix applied to every emitted class name.
+#' @field embed_css When `true` (default), write the resolved CSS into a `<style>` block immediately after the opening `<div class="{prefix}doc">`.
+#' @export
 HtmlOutputConfig <- new.env(parent = emptyenv())
 HtmlOutputConfig$default <- function() .Call("wrap__HtmlOutputConfig__default", PACKAGE = "kreuzberg")
 HtmlOutputConfig$from_json <- function(json) .Call("wrap__HtmlOutputConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -644,6 +512,16 @@ HtmlOutputConfig$from_json <- function(json) .Call("wrap__HtmlOutputConfig__from
 }
 #' @export
 `[[.HtmlOutputConfig` <- `$.HtmlOutputConfig`
+#' Layout detection configuration
+#'
+#' Controls layout detection behavior in the extraction pipeline.
+#' When set on [`ExtractionConfig`](super::ExtractionConfig), layout detection
+#' is enabled for PDF extraction.
+#' @field confidence_threshold Confidence threshold override (None = use model default).
+#' @field apply_heuristics Whether to apply postprocessing heuristics (default: true).
+#' @field table_model Table structure recognition model.
+#' @field acceleration Hardware acceleration for ONNX models (layout detection + table structure).
+#' @export
 LayoutDetectionConfig <- new.env(parent = emptyenv())
 LayoutDetectionConfig$default <- function() .Call("wrap__LayoutDetectionConfig__default", PACKAGE = "kreuzberg")
 LayoutDetectionConfig$from_json <- function(json) .Call("wrap__LayoutDetectionConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -655,6 +533,18 @@ LayoutDetectionConfig$from_json <- function(json) .Call("wrap__LayoutDetectionCo
 }
 #' @export
 `[[.LayoutDetectionConfig` <- `$.LayoutDetectionConfig`
+#' Configuration for an LLM provider/model via liter-llm
+#'
+#' Each feature (VLM OCR, VLM embeddings, structured extraction) carries
+#' its own `LlmConfig`, allowing different providers per feature.
+#' @field model Provider/model string using liter-llm routing format.
+#' @field api_key API key for the provider. When `None`, liter-llm falls back to the provider's standard environment variable (e.g., `OPENAI_API_KEY`).
+#' @field base_url Custom base URL override for the provider endpoint.
+#' @field timeout_secs Request timeout in seconds (default: 60).
+#' @field max_retries Maximum retry attempts (default: 3).
+#' @field temperature Sampling temperature for generation tasks.
+#' @field max_tokens Maximum tokens to generate.
+#' @export
 LlmConfig <- new.env(parent = emptyenv())
 LlmConfig$from_json <- function(json) .Call("wrap__LlmConfig__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -665,6 +555,17 @@ LlmConfig$from_json <- function(json) .Call("wrap__LlmConfig__from_json", json, 
 }
 #' @export
 `[[.LlmConfig` <- `$.LlmConfig`
+#' Configuration for LLM-based structured data extraction
+#'
+#' Sends extracted document content to a VLM with a JSON schema,
+#' returning structured data that conforms to the schema.
+#' @field schema JSON Schema defining the desired output structure.
+#' @field schema_name Schema name passed to the LLM's structured output mode.
+#' @field schema_description Optional schema description for the LLM.
+#' @field strict Enable strict mode — output must exactly match the schema.
+#' @field prompt Custom Jinja2 extraction prompt template. When `None`, a default template is used.
+#' @field llm LLM configuration for the extraction.
+#' @export
 StructuredExtractionConfig <- new.env(parent = emptyenv())
 #' @export
 `$.StructuredExtractionConfig` <- function(self, name) {
@@ -674,6 +575,27 @@ StructuredExtractionConfig <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.StructuredExtractionConfig` <- `$.StructuredExtractionConfig`
+#' Quality thresholds for OCR fallback decisions and pipeline quality gating
+#'
+#' All fields default to the values that match the previous hardcoded behavior,
+#' so `OcrQualityThresholds::default()` preserves existing semantics exactly.
+#' @field min_total_non_whitespace Minimum total non-whitespace characters to consider text substantive.
+#' @field min_non_whitespace_per_page Minimum non-whitespace characters per page on average.
+#' @field min_meaningful_word_len Minimum character count for a word to be "meaningful".
+#' @field min_meaningful_words Minimum count of meaningful words before text is accepted.
+#' @field min_alnum_ratio Minimum alphanumeric ratio (non-whitespace chars that are alphanumeric).
+#' @field min_garbage_chars Minimum Unicode replacement characters (U+FFFD) to trigger OCR fallback.
+#' @field max_fragmented_word_ratio Maximum fraction of short (1-2 char) words before text is considered fragmented.
+#' @field critical_fragmented_word_ratio Critical fragmentation threshold — triggers OCR regardless of meaningful words. Normal English text has ~20-30% short words. 80%+ is definitive garbage.
+#' @field min_avg_word_length Minimum average word length. Below this with enough words indicates garbled extraction.
+#' @field min_words_for_avg_length_check Minimum word count before average word length check applies.
+#' @field min_consecutive_repeat_ratio Minimum consecutive word repetition ratio to detect column scrambling.
+#' @field min_words_for_repeat_check Minimum word count before consecutive repetition check is applied.
+#' @field substantive_min_chars Minimum character count for "substantive markdown" OCR skip gate.
+#' @field non_text_min_chars Minimum character count for "non-text content" OCR skip gate.
+#' @field alnum_ws_ratio_threshold Alphanumeric+whitespace ratio threshold for skip decisions.
+#' @field pipeline_min_quality Minimum quality score (0.0-1.0) for a pipeline stage result to be accepted. If the result from a backend scores below this, try the next backend.
+#' @export
 OcrQualityThresholds <- new.env(parent = emptyenv())
 OcrQualityThresholds$default <- function() .Call("wrap__OcrQualityThresholds__default", PACKAGE = "kreuzberg")
 OcrQualityThresholds$from_json <- function(json) .Call("wrap__OcrQualityThresholds__from_json", json, PACKAGE = "kreuzberg")
@@ -685,6 +607,15 @@ OcrQualityThresholds$from_json <- function(json) .Call("wrap__OcrQualityThreshol
 }
 #' @export
 `[[.OcrQualityThresholds` <- `$.OcrQualityThresholds`
+#' A single backend stage in the OCR pipeline
+#' @field backend Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name.
+#' @field priority Priority weight (higher = tried first). Stages are sorted by priority descending.
+#' @field language Language override for this stage (None = use parent OcrConfig.language).
+#' @field tesseract_config Tesseract-specific config override for this stage.
+#' @field paddle_ocr_config PaddleOCR-specific config for this stage.
+#' @field vlm_config VLM config override for this pipeline stage.
+#' @field backend_options Arbitrary per-call options passed through to the backend unchanged.
+#' @export
 OcrPipelineStage <- new.env(parent = emptyenv())
 #' @export
 `$.OcrPipelineStage` <- function(self, name) {
@@ -694,6 +625,23 @@ OcrPipelineStage <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.OcrPipelineStage` <- `$.OcrPipelineStage`
+#' OCR configuration
+#' @field enabled Whether OCR is enabled.
+#' @field backend OCR backend: tesseract, easyocr, paddleocr
+#' @field language Language code (e.g., "eng", "deu")
+#' @field tesseract_config Tesseract-specific configuration (optional)
+#' @field output_format Output format for OCR results (optional, for format conversion)
+#' @field paddle_ocr_config PaddleOCR-specific configuration (optional, JSON passthrough)
+#' @field backend_options Arbitrary per-call options passed through to the backend unchanged.
+#' @field element_config OCR element extraction configuration
+#' @field quality_thresholds Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior).
+#' @field pipeline Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today).
+#' @field auto_rotate Enable automatic page rotation based on orientation detection.
+#' @field vlm_config VLM (Vision Language Model) OCR configuration.
+#' @field vlm_prompt Custom Jinja2 prompt template for VLM OCR.
+#' @field acceleration Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection).
+#' @field tessdata_bytes Caller-supplied Tesseract `traineddata` bytes per language code.
+#' @export
 OcrConfig <- new.env(parent = emptyenv())
 OcrConfig$default <- function() .Call("wrap__OcrConfig__default", PACKAGE = "kreuzberg")
 OcrConfig$from_json <- function(json) .Call("wrap__OcrConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -705,6 +653,17 @@ OcrConfig$from_json <- function(json) .Call("wrap__OcrConfig__from_json", json, 
 }
 #' @export
 `[[.OcrConfig` <- `$.OcrConfig`
+#' Page extraction and tracking configuration
+#'
+#' Controls how pages are extracted, tracked, and represented in the extraction results.
+#' When `None`, page tracking is disabled.
+#'
+#' Page range tracking in chunk metadata (first_page/last_page) is automatically enabled
+#' when page boundaries are available and chunking is configured.
+#' @field extract_pages Extract pages as separate array (ExtractionResult.pages)
+#' @field insert_page_markers Insert page markers in main content string
+#' @field marker_format Page marker format (use {page_num} placeholder) Default: "\n\n<!-- PAGE {page_num} -->\n\n"
+#' @export
 PageConfig <- new.env(parent = emptyenv())
 PageConfig$default <- function() .Call("wrap__PageConfig__default", PACKAGE = "kreuzberg")
 PageConfig$from_json <- function(json) .Call("wrap__PageConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -716,6 +675,18 @@ PageConfig$from_json <- function(json) .Call("wrap__PageConfig__from_json", json
 }
 #' @export
 `[[.PageConfig` <- `$.PageConfig`
+#' PDF-specific configuration
+#' @field extract_images Extract images from PDF
+#' @field extract_tables Extract tables from PDF.
+#' @field passwords List of passwords to try when opening encrypted PDFs
+#' @field extract_metadata Extract PDF metadata
+#' @field hierarchy Hierarchy extraction configuration (None = hierarchy extraction disabled)
+#' @field extract_annotations Extract PDF annotations (text notes, highlights, links, stamps). Default: false
+#' @field top_margin_fraction Top margin fraction (0.0–1.0) of page height to exclude headers/running heads. Default: 0.06 (6%)
+#' @field bottom_margin_fraction Bottom margin fraction (0.0–1.0) of page height to exclude footers/page numbers. Default: 0.05 (5%)
+#' @field allow_single_column_tables Allow single-column pseudo tables in extraction results.
+#' @field ocr_inline_images Perform OCR on inline images extracted from PDF pages and attach the recognized text to each `ExtractedImage.ocr_result`. Requires Tesseract to be available; if `ExtractionConfig.ocr` is `None` the extractor falls back to `TesseractConfig::default()`. Per-image failures degrade gracefully (the image is returned without OCR text rather than failing the whole extraction). Default: `false`.
+#' @export
 PdfConfig <- new.env(parent = emptyenv())
 PdfConfig$default <- function() .Call("wrap__PdfConfig__default", PACKAGE = "kreuzberg")
 PdfConfig$from_json <- function(json) .Call("wrap__PdfConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -727,6 +698,16 @@ PdfConfig$from_json <- function(json) .Call("wrap__PdfConfig__from_json", json, 
 }
 #' @export
 `[[.PdfConfig` <- `$.PdfConfig`
+#' Hierarchy extraction configuration for PDF text structure analysis
+#'
+#' Enables extraction of document hierarchy levels (H1-H6) based on font size
+#' clustering and semantic analysis. When enabled, hierarchical blocks are
+#' included in page content.
+#' @field enabled Enable hierarchy extraction
+#' @field k_clusters Number of font size clusters to use for hierarchy levels (1-7)
+#' @field include_bbox Include bounding box information in hierarchy blocks
+#' @field ocr_coverage_threshold OCR coverage threshold for smart OCR triggering (0.0-1.0)
+#' @export
 HierarchyConfig <- new.env(parent = emptyenv())
 HierarchyConfig$default <- function() .Call("wrap__HierarchyConfig__default", PACKAGE = "kreuzberg")
 HierarchyConfig$from_json <- function(json) .Call("wrap__HierarchyConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -738,6 +719,13 @@ HierarchyConfig$from_json <- function(json) .Call("wrap__HierarchyConfig__from_j
 }
 #' @export
 `[[.HierarchyConfig` <- `$.HierarchyConfig`
+#' Post-processor configuration
+#' @field enabled Enable post-processors
+#' @field enabled_processors Whitelist of processor names to run (None = all enabled)
+#' @field disabled_processors Blacklist of processor names to skip (None = none disabled)
+#' @field enabled_set Pre-computed AHashSet for O(1) enabled processor lookup
+#' @field disabled_set Pre-computed AHashSet for O(1) disabled processor lookup
+#' @export
 PostProcessorConfig <- new.env(parent = emptyenv())
 PostProcessorConfig$default <- function() .Call("wrap__PostProcessorConfig__default", PACKAGE = "kreuzberg")
 PostProcessorConfig$from_json <- function(json) .Call("wrap__PostProcessorConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -749,6 +737,28 @@ PostProcessorConfig$from_json <- function(json) .Call("wrap__PostProcessorConfig
 }
 #' @export
 `[[.PostProcessorConfig` <- `$.PostProcessorConfig`
+#' Chunking configuration
+#'
+#' Configures text chunking for document content, including chunk size,
+#' overlap, trimming behavior, and optional embeddings.
+#'
+#' Use `..Default::default()` when constructing to allow for future field additions:
+#' ```rust
+#' let config = ChunkingConfig {
+#'     max_characters: 500,
+#'     ..Default::default()
+#' };
+#' ```
+#' @field max_characters Maximum size per chunk (in units determined by `sizing`).
+#' @field overlap Overlap between chunks (in units determined by `sizing`).
+#' @field trim Whether to trim whitespace from chunk boundaries.
+#' @field chunker_type Type of chunker to use (Text or Markdown).
+#' @field embedding Optional embedding configuration for chunk embeddings.
+#' @field preset Use a preset configuration (overrides individual settings if provided).
+#' @field sizing How to measure chunk size.
+#' @field prepend_heading_context When `true` and `chunker_type` is `Markdown`, prepend the heading hierarchy path (e.g. `"# Title > ## Section\n\n"`) to each chunk's content string.
+#' @field topic_threshold Optional cosine similarity threshold for semantic topic boundary detection.
+#' @export
 ChunkingConfig <- new.env(parent = emptyenv())
 ChunkingConfig$default <- function() .Call("wrap__ChunkingConfig__default", PACKAGE = "kreuzberg")
 ChunkingConfig$from_json <- function(json) .Call("wrap__ChunkingConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -760,6 +770,18 @@ ChunkingConfig$from_json <- function(json) .Call("wrap__ChunkingConfig__from_jso
 }
 #' @export
 `[[.ChunkingConfig` <- `$.ChunkingConfig`
+#' Embedding configuration for text chunks
+#'
+#' Configures embedding generation using ONNX models via the vendored embedding engine.
+#' Requires the `embeddings` feature to be enabled.
+#' @field model The embedding model to use (defaults to "balanced" preset if not specified)
+#' @field normalize Whether to normalize embedding vectors (recommended for cosine similarity)
+#' @field batch_size Batch size for embedding generation
+#' @field show_download_progress Show model download progress
+#' @field cache_dir Custom cache directory for model files
+#' @field acceleration Hardware acceleration for the embedding ONNX model.
+#' @field max_embed_duration_secs Maximum wall-clock duration (in seconds) for a single `embed()` call when using [`EmbeddingModelType::Plugin`].
+#' @export
 EmbeddingConfig <- new.env(parent = emptyenv())
 EmbeddingConfig$default <- function() .Call("wrap__EmbeddingConfig__default", PACKAGE = "kreuzberg")
 EmbeddingConfig$from_json <- function(json) .Call("wrap__EmbeddingConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -771,6 +793,28 @@ EmbeddingConfig$from_json <- function(json) .Call("wrap__EmbeddingConfig__from_j
 }
 #' @export
 `[[.EmbeddingConfig` <- `$.EmbeddingConfig`
+#' Configuration for tree-sitter language pack integration
+#'
+#' Controls grammar download behavior and code analysis options.
+#'
+#' # Example (TOML)
+#'
+#' ```toml
+#' [tree_sitter]
+#' languages = ["python", "rust"]
+#' groups = ["web"]
+#'
+#' [tree_sitter.process]
+#' structure = true
+#' comments = true
+#' docstrings = true
+#' ```
+#' @field enabled Enable code intelligence processing (default: true).
+#' @field cache_dir Custom cache directory for downloaded grammars.
+#' @field languages Languages to pre-download on init (e.g., `["python", "rust"]`).
+#' @field groups Language groups to pre-download (e.g., `["web", "systems", "scripting"]`).
+#' @field process Processing options for code analysis.
+#' @export
 TreeSitterConfig <- new.env(parent = emptyenv())
 TreeSitterConfig$default <- function() .Call("wrap__TreeSitterConfig__default", PACKAGE = "kreuzberg")
 TreeSitterConfig$from_json <- function(json) .Call("wrap__TreeSitterConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -782,6 +826,19 @@ TreeSitterConfig$from_json <- function(json) .Call("wrap__TreeSitterConfig__from
 }
 #' @export
 `[[.TreeSitterConfig` <- `$.TreeSitterConfig`
+#' Processing options for tree-sitter code analysis
+#'
+#' Controls which analysis features are enabled when extracting code files.
+#' @field structure Extract structural items (functions, classes, structs, etc.). Default: true.
+#' @field imports Extract import statements. Default: true.
+#' @field exports Extract export statements. Default: true.
+#' @field comments Extract comments. Default: false.
+#' @field docstrings Extract docstrings. Default: false.
+#' @field symbols Extract symbol definitions. Default: false.
+#' @field diagnostics Include parse diagnostics. Default: false.
+#' @field chunk_max_size Maximum chunk size in bytes. `None` disables chunking.
+#' @field content_mode Content rendering mode for code extraction.
+#' @export
 TreeSitterProcessConfig <- new.env(parent = emptyenv())
 TreeSitterProcessConfig$default <- function() .Call("wrap__TreeSitterProcessConfig__default", PACKAGE = "kreuzberg")
 TreeSitterProcessConfig$from_json <- function(json) .Call("wrap__TreeSitterProcessConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -793,6 +850,12 @@ TreeSitterProcessConfig$from_json <- function(json) .Call("wrap__TreeSitterProce
 }
 #' @export
 `[[.TreeSitterProcessConfig` <- `$.TreeSitterProcessConfig`
+#' A supported document format entry
+#'
+#' Represents a file extension and its corresponding MIME type that Kreuzberg can process.
+#' @field extension File extension (without leading dot), e.g., "pdf", "docx"
+#' @field mime_type MIME type string, e.g., "application/pdf"
+#' @export
 SupportedFormat <- new.env(parent = emptyenv())
 #' @export
 `$.SupportedFormat` <- function(self, name) {
@@ -802,6 +865,24 @@ SupportedFormat <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.SupportedFormat` <- `$.SupportedFormat`
+#' API server configuration
+#'
+#' This struct holds all configuration options for the Kreuzberg API server,
+#' including host/port settings, CORS configuration, and upload limits.
+#'
+#' # Defaults
+#'
+#' - `host`: "127.0.0.1" (localhost only)
+#' - `port`: 8000
+#' - `cors_origins`: empty vector (allows all origins)
+#' - `max_request_body_bytes`: 104_857_600 (100 MB)
+#' - `max_multipart_field_bytes`: 104_857_600 (100 MB)
+#' @field host Server host address (e.g., "127.0.0.1", "0.0.0.0")
+#' @field port Server port number
+#' @field cors_origins CORS allowed origins. Empty vector means allow all origins.
+#' @field max_request_body_bytes Maximum size of request body in bytes (default: 100 MB)
+#' @field max_multipart_field_bytes Maximum size of multipart fields in bytes (default: 100 MB)
+#' @export
 ServerConfig <- new.env(parent = emptyenv())
 ServerConfig$default <- function() .Call("wrap__ServerConfig__default", PACKAGE = "kreuzberg")
 ServerConfig$listen_addr <- function() .Call("wrap__ServerConfig__listen_addr", self, PACKAGE = "kreuzberg")
@@ -818,6 +899,12 @@ ServerConfig$from_json <- function(json) .Call("wrap__ServerConfig__from_json", 
 }
 #' @export
 `[[.ServerConfig` <- `$.ServerConfig`
+#' StructuredDataResult
+#' @field content content
+#' @field format format
+#' @field metadata metadata
+#' @field text_fields text_fields
+#' @export
 StructuredDataResult <- new.env(parent = emptyenv())
 #' @export
 `$.StructuredDataResult` <- function(self, name) {
@@ -827,6 +914,20 @@ StructuredDataResult <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.StructuredDataResult` <- `$.StructuredDataResult`
+#' Configuration for security limits across extractors
+#'
+#' All limits are intentionally conservative to prevent DoS attacks
+#' while still supporting legitimate documents.
+#' @field max_archive_size Maximum uncompressed size for archives (500 MB)
+#' @field max_compression_ratio Maximum compression ratio before flagging as potential bomb (100:1)
+#' @field max_files_in_archive Maximum number of files in archive (10,000)
+#' @field max_nesting_depth Maximum nesting depth for structures (100)
+#' @field max_entity_length Maximum length of any single XML entity / attribute / token (1 MiB). This is a per-token cap, NOT a cumulative cap — billion-laughs class attacks where a single entity expands to hundreds of MB are caught here, while normal long text content (a paragraph, a CDATA block) is caught by `max_content_size` instead.
+#' @field max_content_size Maximum string growth per document (100 MB)
+#' @field max_iterations Maximum iterations per operation
+#' @field max_xml_depth Maximum XML depth (100 levels)
+#' @field max_table_cells Maximum cells per table (100,000)
+#' @export
 SecurityLimits <- new.env(parent = emptyenv())
 SecurityLimits$default <- function() .Call("wrap__SecurityLimits__default", PACKAGE = "kreuzberg")
 SecurityLimits$from_json <- function(json) .Call("wrap__SecurityLimits__from_json", json, PACKAGE = "kreuzberg")
@@ -838,6 +939,19 @@ SecurityLimits$from_json <- function(json) .Call("wrap__SecurityLimits__from_jso
 }
 #' @export
 `[[.SecurityLimits` <- `$.SecurityLimits`
+#' TokenReductionConfig
+#' @field level level
+#' @field language_hint language_hint
+#' @field preserve_markdown preserve_markdown
+#' @field preserve_code preserve_code
+#' @field semantic_threshold semantic_threshold
+#' @field enable_parallel enable_parallel
+#' @field use_simd use_simd
+#' @field custom_stopwords custom_stopwords
+#' @field preserve_patterns preserve_patterns
+#' @field target_reduction target_reduction
+#' @field enable_semantic_clustering enable_semantic_clustering
+#' @export
 TokenReductionConfig <- new.env(parent = emptyenv())
 TokenReductionConfig$default <- function() .Call("wrap__TokenReductionConfig__default", PACKAGE = "kreuzberg")
 TokenReductionConfig$from_json <- function(json) .Call("wrap__TokenReductionConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -849,6 +963,12 @@ TokenReductionConfig$from_json <- function(json) .Call("wrap__TokenReductionConf
 }
 #' @export
 `[[.TokenReductionConfig` <- `$.TokenReductionConfig`
+#' A PDF annotation extracted from a document page
+#' @field annotation_type The type of annotation.
+#' @field content Text content of the annotation (e.g., comment text, link URL).
+#' @field page_number Page number where the annotation appears (1-indexed).
+#' @field bounding_box Bounding box of the annotation on the page.
+#' @export
 PdfAnnotation <- new.env(parent = emptyenv())
 #' @export
 `$.PdfAnnotation` <- function(self, name) {
@@ -858,6 +978,14 @@ PdfAnnotation <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.PdfAnnotation` <- `$.PdfAnnotation`
+#' Inline element within a block
+#'
+#' Represents text with formatting, links, images, etc.
+#' @field element_type Type of inline element
+#' @field content Text content
+#' @field attributes Element attributes
+#' @field metadata Additional metadata (e.g., href for links, src/alt for images)
+#' @export
 InlineElement <- new.env(parent = emptyenv())
 #' @export
 `$.InlineElement` <- function(self, name) {
@@ -867,6 +995,12 @@ InlineElement <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.InlineElement` <- `$.InlineElement`
+#' Image element in Djot
+#' @field src Image source URL or path
+#' @field alt Alternative text
+#' @field title Optional title
+#' @field attributes Element attributes
+#' @export
 DjotImage <- new.env(parent = emptyenv())
 #' @export
 `$.DjotImage` <- function(self, name) {
@@ -876,6 +1010,12 @@ DjotImage <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.DjotImage` <- `$.DjotImage`
+#' Link element in Djot
+#' @field url Link URL
+#' @field text Link text content
+#' @field title Optional title
+#' @field attributes Element attributes
+#' @export
 DjotLink <- new.env(parent = emptyenv())
 #' @export
 `$.DjotLink` <- function(self, name) {
@@ -885,6 +1025,11 @@ DjotLink <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.DjotLink` <- `$.DjotLink`
+#' A resolved relationship between two nodes in the document tree
+#' @field source Source node index (the referencing node).
+#' @field target Target node index (the referenced node).
+#' @field kind Semantic kind of the relationship.
+#' @export
 DocumentRelationship <- new.env(parent = emptyenv())
 #' @export
 `$.DocumentRelationship` <- function(self, name) {
@@ -894,6 +1039,15 @@ DocumentRelationship <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.DocumentRelationship` <- `$.DocumentRelationship`
+#' Individual grid cell with position and span metadata
+#' @field content Cell text content.
+#' @field row Zero-indexed row position.
+#' @field col Zero-indexed column position.
+#' @field row_span Number of rows this cell spans.
+#' @field col_span Number of columns this cell spans.
+#' @field is_header Whether this is a header cell.
+#' @field bbox Bounding box for this cell (if available).
+#' @export
 GridCell <- new.env(parent = emptyenv())
 #' @export
 `$.GridCell` <- function(self, name) {
@@ -903,6 +1057,14 @@ GridCell <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.GridCell` <- `$.GridCell`
+#' Inline text annotation — byte-range based formatting and links
+#'
+#' Annotations reference byte offsets into the node's text content,
+#' enabling precise identification of formatted regions.
+#' @field start Start byte offset in the node's text content (inclusive).
+#' @field end End byte offset in the node's text content (exclusive).
+#' @field kind Annotation type.
+#' @export
 TextAnnotation <- new.env(parent = emptyenv())
 #' @export
 `$.TextAnnotation` <- function(self, name) {
@@ -912,6 +1074,14 @@ TextAnnotation <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.TextAnnotation` <- `$.TextAnnotation`
+#' A single file extracted from an archive
+#'
+#' When archives (ZIP, TAR, 7Z, GZIP) are extracted with recursive extraction
+#' enabled, each processable file produces its own full `ExtractionResult`.
+#' @field path Archive-relative file path (e.g. "folder/document.pdf").
+#' @field mime_type Detected MIME type of the file.
+#' @field result Full extraction result for this file.
+#' @export
 ArchiveEntry <- new.env(parent = emptyenv())
 #' @export
 `$.ArchiveEntry` <- function(self, name) {
@@ -921,6 +1091,13 @@ ArchiveEntry <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.ArchiveEntry` <- `$.ArchiveEntry`
+#' A non-fatal warning from a processing pipeline stage
+#'
+#' Captures errors from optional features that don't prevent extraction
+#' but may indicate degraded results.
+#' @field source The pipeline stage or feature that produced this warning (e.g., "embedding", "chunking", "language_detection", "output_format").
+#' @field message Human-readable description of what went wrong.
+#' @export
 ProcessingWarning <- new.env(parent = emptyenv())
 #' @export
 `$.ProcessingWarning` <- function(self, name) {
@@ -930,6 +1107,19 @@ ProcessingWarning <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.ProcessingWarning` <- `$.ProcessingWarning`
+#' Token usage and cost data for a single LLM call made during extraction
+#'
+#' Populated when VLM OCR, structured extraction, or LLM-based embeddings
+#' are used. Multiple entries may be present when multiple LLM calls occur
+#' within one extraction (e.g. VLM OCR + structured extraction).
+#' @field model The LLM model identifier (e.g. "openai/gpt-4o", "anthropic/claude-sonnet-4-20250514").
+#' @field source The pipeline stage that triggered this LLM call (e.g. "vlm_ocr", "structured_extraction", "embeddings").
+#' @field input_tokens Number of input/prompt tokens consumed.
+#' @field output_tokens Number of output/completion tokens generated.
+#' @field total_tokens Total tokens (input + output).
+#' @field estimated_cost Estimated cost in USD based on the provider's published pricing.
+#' @field finish_reason Why the model stopped generating (e.g. "stop", "length", "content_filter").
+#' @export
 LlmUsage <- new.env(parent = emptyenv())
 LlmUsage$from_json <- function(json) .Call("wrap__LlmUsage__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -940,6 +1130,16 @@ LlmUsage$from_json <- function(json) .Call("wrap__LlmUsage__from_json", json, PA
 }
 #' @export
 `[[.LlmUsage` <- `$.LlmUsage`
+#' A text chunk with optional embedding and metadata
+#'
+#' Chunks are created when chunking is enabled in `ExtractionConfig`. Each chunk
+#' contains the text content, optional embedding vector (if embedding generation
+#' is configured), and metadata about its position in the document.
+#' @field content The text content of this chunk.
+#' @field chunk_type Semantic structural classification of this chunk.
+#' @field embedding Optional embedding vector for this chunk.
+#' @field metadata Metadata about this chunk's position and properties.
+#' @export
 Chunk <- new.env(parent = emptyenv())
 #' @export
 `$.Chunk` <- function(self, name) {
@@ -949,6 +1149,10 @@ Chunk <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.Chunk` <- `$.Chunk`
+#' A single heading in the hierarchy
+#' @field level Heading depth (1 = h1, 2 = h2, etc.)
+#' @field text The text content of the heading.
+#' @export
 HeadingLevel <- new.env(parent = emptyenv())
 #' @export
 `$.HeadingLevel` <- function(self, name) {
@@ -958,6 +1162,17 @@ HeadingLevel <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.HeadingLevel` <- `$.HeadingLevel`
+#' Metadata about a chunk's position in the original document
+#' @field byte_start Byte offset where this chunk starts in the original text (UTF-8 valid boundary).
+#' @field byte_end Byte offset where this chunk ends in the original text (UTF-8 valid boundary).
+#' @field token_count Number of tokens in this chunk (if available).
+#' @field chunk_index Zero-based index of this chunk in the document.
+#' @field total_chunks Total number of chunks in the document.
+#' @field first_page First page number this chunk spans (1-indexed).
+#' @field last_page Last page number this chunk spans (1-indexed, equal to first_page for single-page chunks).
+#' @field heading_context Heading context when using Markdown chunker.
+#' @field image_indices Indices into `ExtractionResult.images` for images on pages covered by this chunk.
+#' @export
 ChunkMetadata <- new.env(parent = emptyenv())
 #' @export
 `$.ChunkMetadata` <- function(self, name) {
@@ -967,6 +1182,28 @@ ChunkMetadata <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.ChunkMetadata` <- `$.ChunkMetadata`
+#' Extracted image from a document
+#'
+#' Contains raw image data, metadata, and optional nested OCR results.
+#' Raw bytes allow cross-language compatibility - users can convert to
+#' PIL.Image (Python), Sharp (Node.js), or other formats as needed.
+#' @field data Raw image data (PNG, JPEG, WebP, etc. bytes). Uses `bytes::Bytes` for cheap cloning of large buffers.
+#' @field format Image format (e.g., "jpeg", "png", "webp") Uses Cow<'static, str> to avoid allocation for static literals.
+#' @field image_index Zero-indexed position of this image in the document/page
+#' @field page_number Page/slide number where image was found (1-indexed)
+#' @field width Image width in pixels
+#' @field height Image height in pixels
+#' @field colorspace Colorspace information (e.g., "RGB", "CMYK", "Gray")
+#' @field bits_per_component Bits per color component (e.g., 8, 16)
+#' @field is_mask Whether this image is a mask image
+#' @field description Optional description of the image
+#' @field ocr_result Nested OCR extraction result (if image was OCRed)
+#' @field bounding_box Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top). Only populated for PDF-extracted images when position data is available from the PDF extractor.
+#' @field source_path Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX). Used for rendering image references when the binary data is not extracted.
+#' @field image_kind Heuristic classification of what this image likely depicts. `None` if classification was disabled or inconclusive.
+#' @field kind_confidence Confidence score for `image_kind`, in the range 0.0 to 1.0.
+#' @field cluster_id Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `None` for singletons.
+#' @export
 ExtractedImage <- new.env(parent = emptyenv())
 #' @export
 `$.ExtractedImage` <- function(self, name) {
@@ -976,6 +1213,13 @@ ExtractedImage <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.ExtractedImage` <- `$.ExtractedImage`
+#' Metadata for a semantic element
+#' @field page_number Page number (1-indexed)
+#' @field filename Source filename or document name
+#' @field coordinates Bounding box coordinates if available
+#' @field element_index Position index in the element sequence
+#' @field additional Additional custom metadata
+#' @export
 ElementMetadata <- new.env(parent = emptyenv())
 #' @export
 `$.ElementMetadata` <- function(self, name) {
@@ -985,6 +1229,15 @@ ElementMetadata <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.ElementMetadata` <- `$.ElementMetadata`
+#' Semantic element extracted from document
+#'
+#' Represents a logical unit of content with semantic classification,
+#' unique identifier, and metadata for tracking origin and position.
+#' @field element_id Unique element identifier
+#' @field element_type Semantic type of this element
+#' @field text Text content of the element
+#' @field metadata Metadata about the element
+#' @export
 Element <- new.env(parent = emptyenv())
 #' @export
 `$.Element` <- function(self, name) {
@@ -994,6 +1247,14 @@ Element <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.Element` <- `$.Element`
+#' XML extraction result
+#'
+#' Contains extracted text content from XML files along with
+#' structural statistics about the XML document.
+#' @field content Extracted text content (XML structure filtered out)
+#' @field element_count Total number of XML elements processed
+#' @field unique_elements List of unique element names found (sorted)
+#' @export
 XmlExtractionResult <- new.env(parent = emptyenv())
 #' @export
 `$.XmlExtractionResult` <- function(self, name) {
@@ -1003,6 +1264,18 @@ XmlExtractionResult <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.XmlExtractionResult` <- `$.XmlExtractionResult`
+#' Plain text and Markdown extraction result
+#'
+#' Contains the extracted text along with statistics and,
+#' for Markdown files, structural elements like headers and links.
+#' @field content Extracted text content
+#' @field line_count Number of lines
+#' @field word_count Number of words
+#' @field character_count Number of characters
+#' @field headers Markdown headers (text only, Markdown files only)
+#' @field links Markdown links as (text, URL) tuples (Markdown files only)
+#' @field code_blocks Code blocks as (language, code) tuples (Markdown files only)
+#' @export
 TextExtractionResult <- new.env(parent = emptyenv())
 #' @export
 `$.TextExtractionResult` <- function(self, name) {
@@ -1012,6 +1285,16 @@ TextExtractionResult <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.TextExtractionResult` <- `$.TextExtractionResult`
+#' Email attachment representation
+#'
+#' Contains metadata and optionally the content of an email attachment.
+#' @field name Attachment name (from Content-Disposition header)
+#' @field filename Filename of the attachment
+#' @field mime_type MIME type of the attachment
+#' @field size Size in bytes
+#' @field is_image Whether this attachment is an image
+#' @field data Attachment data (if extracted). Uses `bytes::Bytes` for cheap cloning of large buffers.
+#' @export
 EmailAttachment <- new.env(parent = emptyenv())
 #' @export
 `$.EmailAttachment` <- function(self, name) {
@@ -1021,6 +1304,12 @@ EmailAttachment <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.EmailAttachment` <- `$.EmailAttachment`
+#' Bounding box for an OCR-detected table in pixel coordinates
+#' @field left Left x-coordinate (pixels)
+#' @field top Top y-coordinate (pixels)
+#' @field right Right x-coordinate (pixels)
+#' @field bottom Bottom y-coordinate (pixels)
+#' @export
 OcrTableBoundingBox <- new.env(parent = emptyenv())
 #' @export
 `$.OcrTableBoundingBox` <- function(self, name) {
@@ -1030,6 +1319,19 @@ OcrTableBoundingBox <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.OcrTableBoundingBox` <- `$.OcrTableBoundingBox`
+#' Image preprocessing configuration for OCR
+#'
+#' These settings control how images are preprocessed before OCR to improve
+#' text recognition quality. Different preprocessing strategies work better
+#' for different document types.
+#' @field target_dpi Target DPI for the image (300 is standard, 600 for small text).
+#' @field auto_rotate Auto-detect and correct image rotation.
+#' @field deskew Correct skew (tilted images).
+#' @field denoise Remove noise from the image.
+#' @field contrast_enhance Enhance contrast for better text visibility.
+#' @field binarization_method Binarization method: "otsu", "sauvola", "adaptive".
+#' @field invert_colors Invert colors (white text on black → black on white).
+#' @export
 ImagePreprocessingConfig <- new.env(parent = emptyenv())
 ImagePreprocessingConfig$default <- function() .Call("wrap__ImagePreprocessingConfig__default", PACKAGE = "kreuzberg")
 ImagePreprocessingConfig$from_json <- function(json) .Call("wrap__ImagePreprocessingConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -1041,6 +1343,33 @@ ImagePreprocessingConfig$from_json <- function(json) .Call("wrap__ImagePreproces
 }
 #' @export
 `[[.ImagePreprocessingConfig` <- `$.ImagePreprocessingConfig`
+#' Tesseract OCR configuration
+#'
+#' Provides fine-grained control over Tesseract OCR engine parameters.
+#' Most users can use the defaults, but these settings allow optimization
+#' for specific document types (invoices, handwriting, etc.).
+#' @field language Language code (e.g., "eng", "deu", "fra")
+#' @field psm Page Segmentation Mode (0-13).
+#' @field output_format Output format ("text" or "markdown")
+#' @field oem OCR Engine Mode (0-3).
+#' @field min_confidence Minimum confidence threshold (0.0-100.0).
+#' @field preprocessing Image preprocessing configuration.
+#' @field enable_table_detection Enable automatic table detection and reconstruction
+#' @field table_min_confidence Minimum confidence threshold for table detection (0.0-1.0)
+#' @field table_column_threshold Column threshold for table detection (pixels)
+#' @field table_row_threshold_ratio Row threshold ratio for table detection (0.0-1.0)
+#' @field use_cache Enable OCR result caching
+#' @field classify_use_pre_adapted_templates Use pre-adapted templates for character classification
+#' @field language_model_ngram_on Enable N-gram language model
+#' @field tessedit_dont_blkrej_good_wds Don't reject good words during block-level processing
+#' @field tessedit_dont_rowrej_good_wds Don't reject good words during row-level processing
+#' @field tessedit_enable_dict_correction Enable dictionary correction
+#' @field tessedit_char_whitelist Whitelist of allowed characters (empty = all allowed)
+#' @field tessedit_char_blacklist Blacklist of forbidden characters (empty = none forbidden)
+#' @field tessedit_use_primary_params_model Use primary language params model
+#' @field textord_space_size_is_variable Variable-width space detection
+#' @field thresholding_method Use adaptive thresholding method
+#' @export
 TesseractConfig <- new.env(parent = emptyenv())
 TesseractConfig$default <- function() .Call("wrap__TesseractConfig__default", PACKAGE = "kreuzberg")
 TesseractConfig$from_json <- function(json) .Call("wrap__TesseractConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -1052,6 +1381,23 @@ TesseractConfig$from_json <- function(json) .Call("wrap__TesseractConfig__from_j
 }
 #' @export
 `[[.TesseractConfig` <- `$.TesseractConfig`
+#' Image preprocessing metadata
+#'
+#' Tracks the transformations applied to an image during OCR preprocessing,
+#' including DPI normalization, resizing, and resampling.
+#' @field original_dimensions Original image dimensions (width, height) in pixels
+#' @field original_dpi Original image DPI (horizontal, vertical)
+#' @field target_dpi Target DPI from configuration
+#' @field scale_factor Scaling factor applied to the image
+#' @field auto_adjusted Whether DPI was auto-adjusted based on content
+#' @field final_dpi Final DPI after processing
+#' @field new_dimensions New dimensions after resizing (if resized)
+#' @field resample_method Resampling algorithm used ("LANCZOS3", "CATMULLROM", etc.)
+#' @field dimension_clamped Whether dimensions were clamped to max_image_dimension
+#' @field calculated_dpi Calculated optimal DPI (if auto_adjust_dpi enabled)
+#' @field skipped_resize Whether resize was skipped (dimensions already optimal)
+#' @field resize_error Error message if resize failed
+#' @export
 ImagePreprocessingMetadata <- new.env(parent = emptyenv())
 #' @export
 `$.ImagePreprocessingMetadata` <- function(self, name) {
@@ -1061,6 +1407,33 @@ ImagePreprocessingMetadata <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.ImagePreprocessingMetadata` <- `$.ImagePreprocessingMetadata`
+#' Extraction result metadata
+#'
+#' Contains common fields applicable to all formats, format-specific metadata
+#' via a discriminated union, and additional custom fields from postprocessors.
+#' @field title Document title
+#' @field subject Document subject or description
+#' @field authors Primary author(s) - always Vec for consistency
+#' @field keywords Keywords/tags - always Vec for consistency
+#' @field language Primary language (ISO 639 code)
+#' @field created_at Creation timestamp (ISO 8601 format)
+#' @field modified_at Last modification timestamp (ISO 8601 format)
+#' @field created_by User who created the document
+#' @field modified_by User who last modified the document
+#' @field pages Page/slide/sheet structure with boundaries
+#' @field format Format-specific metadata (discriminated union)
+#' @field image_preprocessing Image preprocessing metadata (when OCR preprocessing was applied)
+#' @field json_schema JSON schema (for structured data extraction)
+#' @field error Error metadata (for batch operations)
+#' @field extraction_duration_ms Extraction duration in milliseconds (for benchmarking).
+#' @field category Document category (from frontmatter or classification).
+#' @field tags Document tags (from frontmatter).
+#' @field document_version Document version string (from frontmatter).
+#' @field abstract_text Abstract or summary text (from frontmatter).
+#' @field output_format Output format identifier (e.g., "markdown", "html", "text").
+#' @field ocr_used Whether OCR was used during extraction.
+#' @field additional Additional custom fields from postprocessors.
+#' @export
 Metadata <- new.env(parent = emptyenv())
 Metadata$is_empty <- function() .Call("wrap__Metadata__is_empty", self, PACKAGE = "kreuzberg")
 Metadata$from_json <- function(json) .Call("wrap__Metadata__from_json", json, PACKAGE = "kreuzberg")
@@ -1072,6 +1445,13 @@ Metadata$from_json <- function(json) .Call("wrap__Metadata__from_json", json, PA
 }
 #' @export
 `[[.Metadata` <- `$.Metadata`
+#' Excel/spreadsheet format metadata
+#'
+#' Identifies the document as a spreadsheet source via the `FormatMetadata::Excel`
+#' discriminant. Sheet count and sheet names are stored inside this struct.
+#' @field sheet_count Number of sheets in the workbook.
+#' @field sheet_names Names of all sheets in the workbook.
+#' @export
 ExcelMetadata <- new.env(parent = emptyenv())
 ExcelMetadata$from_json <- function(json) .Call("wrap__ExcelMetadata__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1082,6 +1462,17 @@ ExcelMetadata$from_json <- function(json) .Call("wrap__ExcelMetadata__from_json"
 }
 #' @export
 `[[.ExcelMetadata` <- `$.ExcelMetadata`
+#' Email metadata extracted from .eml and .msg files
+#'
+#' Includes sender/recipient information, message ID, and attachment list.
+#' @field from_email Sender's email address
+#' @field from_name Sender's display name
+#' @field to_emails Primary recipients
+#' @field cc_emails CC recipients
+#' @field bcc_emails BCC recipients
+#' @field message_id Message-ID header value
+#' @field attachments List of attachment filenames
+#' @export
 EmailMetadata <- new.env(parent = emptyenv())
 EmailMetadata$from_json <- function(json) .Call("wrap__EmailMetadata__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1092,6 +1483,15 @@ EmailMetadata$from_json <- function(json) .Call("wrap__EmailMetadata__from_json"
 }
 #' @export
 `[[.EmailMetadata` <- `$.EmailMetadata`
+#' Archive (ZIP/TAR/7Z) metadata
+#'
+#' Extracted from compressed archive files containing file lists and size information.
+#' @field format Archive format ("ZIP", "TAR", "7Z", etc.)
+#' @field file_count Total number of files in the archive
+#' @field file_list List of file paths within the archive
+#' @field total_size Total uncompressed size in bytes
+#' @field compressed_size Compressed size in bytes (if available)
+#' @export
 ArchiveMetadata <- new.env(parent = emptyenv())
 ArchiveMetadata$from_json <- function(json) .Call("wrap__ArchiveMetadata__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1102,6 +1502,14 @@ ArchiveMetadata$from_json <- function(json) .Call("wrap__ArchiveMetadata__from_j
 }
 #' @export
 `[[.ArchiveMetadata` <- `$.ArchiveMetadata`
+#' Image metadata extracted from image files
+#'
+#' Includes dimensions, format, and EXIF data.
+#' @field width Image width in pixels
+#' @field height Image height in pixels
+#' @field format Image format (e.g., "PNG", "JPEG", "TIFF")
+#' @field exif EXIF metadata tags
+#' @export
 ImageMetadata <- new.env(parent = emptyenv())
 ImageMetadata$from_json <- function(json) .Call("wrap__ImageMetadata__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1112,6 +1520,12 @@ ImageMetadata$from_json <- function(json) .Call("wrap__ImageMetadata__from_json"
 }
 #' @export
 `[[.ImageMetadata` <- `$.ImageMetadata`
+#' XML metadata extracted during XML parsing
+#'
+#' Provides statistics about XML document structure.
+#' @field element_count Total number of XML elements processed
+#' @field unique_elements List of unique element tag names (sorted)
+#' @export
 XmlMetadata <- new.env(parent = emptyenv())
 XmlMetadata$from_json <- function(json) .Call("wrap__XmlMetadata__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1122,6 +1536,17 @@ XmlMetadata$from_json <- function(json) .Call("wrap__XmlMetadata__from_json", js
 }
 #' @export
 `[[.XmlMetadata` <- `$.XmlMetadata`
+#' Text/Markdown metadata
+#'
+#' Extracted from plain text and Markdown files. Includes word counts and,
+#' for Markdown, structural elements like headers and links.
+#' @field line_count Number of lines in the document
+#' @field word_count Number of words
+#' @field character_count Number of characters
+#' @field headers Markdown headers (headings text only, for Markdown files)
+#' @field links Markdown links as (text, url) tuples (for Markdown files)
+#' @field code_blocks Code blocks as (language, code) tuples (for Markdown files)
+#' @export
 TextMetadata <- new.env(parent = emptyenv())
 TextMetadata$from_json <- function(json) .Call("wrap__TextMetadata__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1132,6 +1557,13 @@ TextMetadata$from_json <- function(json) .Call("wrap__TextMetadata__from_json", 
 }
 #' @export
 `[[.TextMetadata` <- `$.TextMetadata`
+#' Header/heading element metadata
+#' @field level Header level: 1 (h1) through 6 (h6)
+#' @field text Normalized text content of the header
+#' @field id HTML id attribute if present
+#' @field depth Document tree depth at the header element
+#' @field html_offset Byte offset in original HTML document
+#' @export
 HeaderMetadata <- new.env(parent = emptyenv())
 #' @export
 `$.HeaderMetadata` <- function(self, name) {
@@ -1141,6 +1573,14 @@ HeaderMetadata <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.HeaderMetadata` <- `$.HeaderMetadata`
+#' Link element metadata
+#' @field href The href URL value
+#' @field text Link text content (normalized)
+#' @field title Optional title attribute
+#' @field link_type Link type classification
+#' @field rel Rel attribute values
+#' @field attributes Additional attributes as key-value pairs
+#' @export
 LinkMetadata <- new.env(parent = emptyenv())
 #' @export
 `$.LinkMetadata` <- function(self, name) {
@@ -1150,6 +1590,14 @@ LinkMetadata <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.LinkMetadata` <- `$.LinkMetadata`
+#' Image element metadata
+#' @field src Image source (URL, data URI, or SVG content)
+#' @field alt Alternative text from alt attribute
+#' @field title Title attribute
+#' @field dimensions Image dimensions as (width, height) if available
+#' @field image_type Image type classification
+#' @field attributes Additional attributes as key-value pairs
+#' @export
 ImageMetadataType <- new.env(parent = emptyenv())
 #' @export
 `$.ImageMetadataType` <- function(self, name) {
@@ -1159,6 +1607,11 @@ ImageMetadataType <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.ImageMetadataType` <- `$.ImageMetadataType`
+#' Structured data (Schema.org, microdata, RDFa) block
+#' @field data_type Type of structured data
+#' @field raw_json Raw JSON string representation
+#' @field schema_type Schema type if detectable (e.g., "Article", "Event", "Product")
+#' @export
 StructuredData <- new.env(parent = emptyenv())
 #' @export
 `$.StructuredData` <- function(self, name) {
@@ -1168,6 +1621,16 @@ StructuredData <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.StructuredData` <- `$.StructuredData`
+#' OCR processing metadata
+#'
+#' Captures information about OCR processing configuration and results.
+#' @field language OCR language code(s) used
+#' @field psm Tesseract Page Segmentation Mode (PSM)
+#' @field output_format Output format (e.g., "text", "hocr")
+#' @field table_count Number of tables detected
+#' @field table_rows table_rows
+#' @field table_cols table_cols
+#' @export
 OcrMetadata <- new.env(parent = emptyenv())
 OcrMetadata$from_json <- function(json) .Call("wrap__OcrMetadata__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1178,6 +1641,10 @@ OcrMetadata$from_json <- function(json) .Call("wrap__OcrMetadata__from_json", js
 }
 #' @export
 `[[.OcrMetadata` <- `$.OcrMetadata`
+#' Error metadata (for batch operations)
+#' @field error_type error_type
+#' @field message message
+#' @export
 ErrorMetadata <- new.env(parent = emptyenv())
 #' @export
 `$.ErrorMetadata` <- function(self, name) {
@@ -1187,6 +1654,14 @@ ErrorMetadata <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.ErrorMetadata` <- `$.ErrorMetadata`
+#' PowerPoint presentation metadata
+#'
+#' Extracted from PPTX files containing slide counts and presentation details.
+#' @field slide_count Total number of slides in the presentation
+#' @field slide_names Names of slides (if available)
+#' @field image_count Number of embedded images
+#' @field table_count Number of tables
+#' @export
 PptxMetadata <- new.env(parent = emptyenv())
 PptxMetadata$from_json <- function(json) .Call("wrap__PptxMetadata__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1197,6 +1672,14 @@ PptxMetadata$from_json <- function(json) .Call("wrap__PptxMetadata__from_json", 
 }
 #' @export
 `[[.PptxMetadata` <- `$.PptxMetadata`
+#' Word document metadata
+#'
+#' Extracted from DOCX files using shared Office Open XML metadata extraction.
+#' Integrates with `office_metadata` module for core/app/custom properties.
+#' @field core_properties Core properties from docProps/core.xml (Dublin Core metadata)
+#' @field app_properties Application properties from docProps/app.xml (Word-specific statistics)
+#' @field custom_properties Custom properties from docProps/custom.xml (user-defined properties)
+#' @export
 DocxMetadata <- new.env(parent = emptyenv())
 DocxMetadata$from_json <- function(json) .Call("wrap__DocxMetadata__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1207,6 +1690,13 @@ DocxMetadata$from_json <- function(json) .Call("wrap__DocxMetadata__from_json", 
 }
 #' @export
 `[[.DocxMetadata` <- `$.DocxMetadata`
+#' CSV/TSV file metadata
+#' @field row_count row_count
+#' @field column_count column_count
+#' @field delimiter delimiter
+#' @field has_header has_header
+#' @field column_types column_types
+#' @export
 CsvMetadata <- new.env(parent = emptyenv())
 CsvMetadata$from_json <- function(json) .Call("wrap__CsvMetadata__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1217,6 +1707,13 @@ CsvMetadata$from_json <- function(json) .Call("wrap__CsvMetadata__from_json", js
 }
 #' @export
 `[[.CsvMetadata` <- `$.CsvMetadata`
+#' BibTeX bibliography metadata
+#' @field entry_count Number of entries in the bibliography.
+#' @field citation_keys citation_keys
+#' @field authors authors
+#' @field year_range year_range
+#' @field entry_types entry_types
+#' @export
 BibtexMetadata <- new.env(parent = emptyenv())
 BibtexMetadata$from_json <- function(json) .Call("wrap__BibtexMetadata__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1227,6 +1724,14 @@ BibtexMetadata$from_json <- function(json) .Call("wrap__BibtexMetadata__from_jso
 }
 #' @export
 `[[.BibtexMetadata` <- `$.BibtexMetadata`
+#' Citation file metadata (RIS, PubMed, EndNote)
+#' @field citation_count citation_count
+#' @field format format
+#' @field authors authors
+#' @field year_range year_range
+#' @field dois dois
+#' @field keywords keywords
+#' @export
 CitationMetadata <- new.env(parent = emptyenv())
 CitationMetadata$from_json <- function(json) .Call("wrap__CitationMetadata__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1237,6 +1742,11 @@ CitationMetadata$from_json <- function(json) .Call("wrap__CitationMetadata__from
 }
 #' @export
 `[[.CitationMetadata` <- `$.CitationMetadata`
+#' Year range for bibliographic metadata
+#' @field min min
+#' @field max max
+#' @field years years
+#' @export
 YearRange <- new.env(parent = emptyenv())
 #' @export
 `$.YearRange` <- function(self, name) {
@@ -1246,6 +1756,11 @@ YearRange <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.YearRange` <- `$.YearRange`
+#' FictionBook (FB2) metadata
+#' @field genres genres
+#' @field sequences sequences
+#' @field annotation annotation
+#' @export
 FictionBookMetadata <- new.env(parent = emptyenv())
 FictionBookMetadata$from_json <- function(json) .Call("wrap__FictionBookMetadata__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1256,6 +1771,10 @@ FictionBookMetadata$from_json <- function(json) .Call("wrap__FictionBookMetadata
 }
 #' @export
 `[[.FictionBookMetadata` <- `$.FictionBookMetadata`
+#' DBASE field information
+#' @field name name
+#' @field field_type field_type
+#' @export
 DbfFieldInfo <- new.env(parent = emptyenv())
 #' @export
 `$.DbfFieldInfo` <- function(self, name) {
@@ -1265,6 +1784,10 @@ DbfFieldInfo <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.DbfFieldInfo` <- `$.DbfFieldInfo`
+#' JATS contributor with role
+#' @field name name
+#' @field role role
+#' @export
 ContributorRole <- new.env(parent = emptyenv())
 #' @export
 `$.ContributorRole` <- function(self, name) {
@@ -1274,6 +1797,14 @@ ContributorRole <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.ContributorRole` <- `$.ContributorRole`
+#' EPUB metadata (Dublin Core extensions)
+#' @field coverage coverage
+#' @field dc_format dc_format
+#' @field relation relation
+#' @field source source
+#' @field dc_type dc_type
+#' @field cover_image cover_image
+#' @export
 EpubMetadata <- new.env(parent = emptyenv())
 EpubMetadata$from_json <- function(json) .Call("wrap__EpubMetadata__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1284,6 +1815,9 @@ EpubMetadata$from_json <- function(json) .Call("wrap__EpubMetadata__from_json", 
 }
 #' @export
 `[[.EpubMetadata` <- `$.EpubMetadata`
+#' Outlook PST archive metadata
+#' @field message_count message_count
+#' @export
 PstMetadata <- new.env(parent = emptyenv())
 PstMetadata$from_json <- function(json) .Call("wrap__PstMetadata__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1294,6 +1828,13 @@ PstMetadata$from_json <- function(json) .Call("wrap__PstMetadata__from_json", js
 }
 #' @export
 `[[.PstMetadata` <- `$.PstMetadata`
+#' Confidence scores for an OCR element
+#'
+#' Separates detection confidence (how confident that text exists at this location)
+#' from recognition confidence (how confident about the actual text content).
+#' @field detection Detection confidence: how confident the OCR engine is that text exists here.
+#' @field recognition Recognition confidence: how confident about the text content.
+#' @export
 OcrConfidence <- new.env(parent = emptyenv())
 OcrConfidence$from_json <- function(json) .Call("wrap__OcrConfidence__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1304,6 +1845,10 @@ OcrConfidence$from_json <- function(json) .Call("wrap__OcrConfidence__from_json"
 }
 #' @export
 `[[.OcrConfidence` <- `$.OcrConfidence`
+#' Rotation information for an OCR element
+#' @field angle_degrees Rotation angle in degrees (0, 90, 180, 270 for PaddleOCR).
+#' @field confidence Confidence score for the rotation detection.
+#' @export
 OcrRotation <- new.env(parent = emptyenv())
 #' @export
 `$.OcrRotation` <- function(self, name) {
@@ -1313,6 +1858,19 @@ OcrRotation <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.OcrRotation` <- `$.OcrRotation`
+#' A unified OCR element representing detected text with full metadata
+#'
+#' This is the primary type for structured OCR output, preserving all information
+#' from both Tesseract and PaddleOCR backends.
+#' @field text The recognized text content.
+#' @field geometry Bounding geometry (rectangle or quadrilateral).
+#' @field confidence Confidence scores for detection and recognition.
+#' @field level Hierarchical level (word, line, block, page).
+#' @field rotation Rotation information (if detected).
+#' @field page_number Page number (1-indexed).
+#' @field parent_id Parent element ID for hierarchical relationships.
+#' @field backend_metadata Backend-specific metadata that doesn't fit the unified schema.
+#' @export
 OcrElement <- new.env(parent = emptyenv())
 OcrElement$from_json <- function(json) .Call("wrap__OcrElement__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1323,6 +1881,14 @@ OcrElement$from_json <- function(json) .Call("wrap__OcrElement__from_json", json
 }
 #' @export
 `[[.OcrElement` <- `$.OcrElement`
+#' Configuration for OCR element extraction
+#'
+#' Controls how OCR elements are extracted and filtered.
+#' @field include_elements Whether to include OCR elements in the extraction result.
+#' @field min_level Minimum hierarchical level to include.
+#' @field min_confidence Minimum recognition confidence threshold (0.0-1.0).
+#' @field build_hierarchy Whether to build hierarchical relationships between elements.
+#' @export
 OcrElementConfig <- new.env(parent = emptyenv())
 OcrElementConfig$from_json <- function(json) .Call("wrap__OcrElementConfig__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1333,6 +1899,15 @@ OcrElementConfig$from_json <- function(json) .Call("wrap__OcrElementConfig__from
 }
 #' @export
 `[[.OcrElementConfig` <- `$.OcrElementConfig`
+#' Byte offset boundary for a page
+#'
+#' Tracks where a specific page's content starts and ends in the main content string,
+#' enabling mapping from byte positions to page numbers. Offsets are guaranteed to be
+#' at valid UTF-8 character boundaries when using standard String methods (push_str, push, etc.).
+#' @field byte_start Byte offset where this page starts in the content string (UTF-8 valid boundary, inclusive)
+#' @field byte_end Byte offset where this page ends in the content string (UTF-8 valid boundary, exclusive)
+#' @field page_number Page number (1-indexed)
+#' @export
 PageBoundary <- new.env(parent = emptyenv())
 #' @export
 `$.PageBoundary` <- function(self, name) {
@@ -1342,6 +1917,19 @@ PageBoundary <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.PageBoundary` <- `$.PageBoundary`
+#' Metadata for individual page/slide/sheet
+#'
+#' Captures per-page information including dimensions, content counts,
+#' and visibility state (for presentations).
+#' @field number Page number (1-indexed)
+#' @field title Page title (usually for presentations)
+#' @field dimensions Dimensions in points (PDF) or pixels (images): (width, height)
+#' @field image_count Number of images on this page
+#' @field table_count Number of tables on this page
+#' @field hidden Whether this page is hidden (e.g., in presentations)
+#' @field is_blank Whether this page is blank (no meaningful text, no images, no tables)
+#' @field has_vector_graphics Whether this page contains non-trivial vector graphics (paths, shapes, curves)
+#' @export
 PageInfo <- new.env(parent = emptyenv())
 #' @export
 `$.PageInfo` <- function(self, name) {
@@ -1351,6 +1939,16 @@ PageInfo <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.PageInfo` <- `$.PageInfo`
+#' A detected layout region on a page
+#'
+#' When layout detection is enabled, each page may have layout regions
+#' identifying different content types (text, pictures, tables, etc.)
+#' with confidence scores and spatial positions.
+#' @field class_name Layout class name (e.g. "picture", "table", "text", "section_header").
+#' @field confidence Confidence score from the layout detection model (0.0 to 1.0).
+#' @field bounding_box Bounding box in document coordinate space.
+#' @field area_fraction Fraction of the page area covered by this region (0.0 to 1.0).
+#' @export
 LayoutRegion <- new.env(parent = emptyenv())
 LayoutRegion$from_json <- function(json) .Call("wrap__LayoutRegion__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1361,6 +1959,15 @@ LayoutRegion$from_json <- function(json) .Call("wrap__LayoutRegion__from_json", 
 }
 #' @export
 `[[.LayoutRegion` <- `$.LayoutRegion`
+#' A text block with hierarchy level assignment
+#'
+#' Represents a block of text with semantic heading information extracted from
+#' font size clustering and hierarchical analysis.
+#' @field text The text content of this block
+#' @field font_size The font size of the text in this block
+#' @field level The hierarchy level of this block (H1-H6 or Body)
+#' @field bbox Bounding box information for the block
+#' @export
 HierarchicalBlock <- new.env(parent = emptyenv())
 #' @export
 `$.HierarchicalBlock` <- function(self, name) {
@@ -1370,6 +1977,14 @@ HierarchicalBlock <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.HierarchicalBlock` <- `$.HierarchicalBlock`
+#' Individual table cell with content and optional styling
+#'
+#' Future extension point for rich table support with cell-level metadata.
+#' @field content Cell content as text
+#' @field row_span Row span (number of rows this cell spans)
+#' @field col_span Column span (number of columns this cell spans)
+#' @field is_header Whether this is a header cell
+#' @export
 TableCell <- new.env(parent = emptyenv())
 #' @export
 `$.TableCell` <- function(self, name) {
@@ -1379,6 +1994,16 @@ TableCell <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.TableCell` <- `$.TableCell`
+#' A URI extracted from a document
+#'
+#' Represents any link, reference, or resource pointer found during extraction.
+#' The `kind` field classifies the URI semantically, while `label` carries
+#' optional human-readable display text.
+#' @field url The URL or path string.
+#' @field label Optional display text / label for the link.
+#' @field page Optional page number where the URI was found (1-indexed).
+#' @field kind Semantic classification of the URI.
+#' @export
 Uri <- new.env(parent = emptyenv())
 #' @export
 `$.Uri` <- function(self, name) {
@@ -1388,6 +2013,10 @@ Uri <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.Uri` <- `$.Uri`
+#' MIME type detection response
+#' @field mime_type Detected MIME type
+#' @field filename Original filename (if provided)
+#' @export
 DetectResponse <- new.env(parent = emptyenv())
 #' @export
 `$.DetectResponse` <- function(self, name) {
@@ -1397,6 +2026,22 @@ DetectResponse <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.DetectResponse` <- `$.DetectResponse`
+#' Preset configurations for common RAG use cases
+#'
+#' Each preset combines chunk size, overlap, and embedding model
+#' to provide an optimized configuration for specific scenarios.
+#'
+#' All string fields are owned `String` for FFI compatibility — instances
+#' are safe to clone and pass across language boundaries.
+#' @field name name
+#' @field chunk_size chunk_size
+#' @field overlap overlap
+#' @field model_repo HuggingFace repository name for the model.
+#' @field pooling Pooling strategy: "cls" or "mean".
+#' @field model_file Path to the ONNX model file within the repo.
+#' @field dimensions dimensions
+#' @field description description
+#' @export
 EmbeddingPreset <- new.env(parent = emptyenv())
 #' @export
 `$.EmbeddingPreset` <- function(self, name) {
@@ -1406,6 +2051,9 @@ EmbeddingPreset <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.EmbeddingPreset` <- `$.EmbeddingPreset`
+#' YAKE-specific parameters
+#' @field window_size Window size for co-occurrence analysis (default: 2).
+#' @export
 YakeParams <- new.env(parent = emptyenv())
 YakeParams$default <- function() .Call("wrap__YakeParams__default", PACKAGE = "kreuzberg")
 YakeParams$from_json <- function(json) .Call("wrap__YakeParams__from_json", json, PACKAGE = "kreuzberg")
@@ -1417,6 +2065,10 @@ YakeParams$from_json <- function(json) .Call("wrap__YakeParams__from_json", json
 }
 #' @export
 `[[.YakeParams` <- `$.YakeParams`
+#' RAKE-specific parameters
+#' @field min_word_length Minimum word length to consider (default: 1).
+#' @field max_words_per_phrase Maximum words in a keyword phrase (default: 3).
+#' @export
 RakeParams <- new.env(parent = emptyenv())
 RakeParams$default <- function() .Call("wrap__RakeParams__default", PACKAGE = "kreuzberg")
 RakeParams$from_json <- function(json) .Call("wrap__RakeParams__from_json", json, PACKAGE = "kreuzberg")
@@ -1428,6 +2080,15 @@ RakeParams$from_json <- function(json) .Call("wrap__RakeParams__from_json", json
 }
 #' @export
 `[[.RakeParams` <- `$.RakeParams`
+#' Keyword extraction configuration
+#' @field algorithm Algorithm to use for extraction.
+#' @field max_keywords Maximum number of keywords to extract (default: 10).
+#' @field min_score Minimum score threshold (0.0-1.0, default: 0.0).
+#' @field ngram_range N-gram range for keyword extraction (min, max).
+#' @field language Language code for stopword filtering (e.g., "en", "de", "fr").
+#' @field yake_params YAKE-specific tuning parameters.
+#' @field rake_params RAKE-specific tuning parameters.
+#' @export
 KeywordConfig <- new.env(parent = emptyenv())
 KeywordConfig$default <- function() .Call("wrap__KeywordConfig__default", PACKAGE = "kreuzberg")
 KeywordConfig$from_json <- function(json) .Call("wrap__KeywordConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -1439,6 +2100,12 @@ KeywordConfig$from_json <- function(json) .Call("wrap__KeywordConfig__from_json"
 }
 #' @export
 `[[.KeywordConfig` <- `$.KeywordConfig`
+#' Extracted keyword with metadata
+#' @field text The keyword text.
+#' @field score Relevance score (higher is better, algorithm-specific range).
+#' @field algorithm Algorithm that extracted this keyword.
+#' @field positions Optional positions where keyword appears in text (character offsets).
+#' @export
 Keyword <- new.env(parent = emptyenv())
 #' @export
 `$.Keyword` <- function(self, name) {
@@ -1448,6 +2115,10 @@ Keyword <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.Keyword` <- `$.Keyword`
+#' OcrCacheStats
+#' @field total_files total_files
+#' @field total_size_mb total_size_mb
+#' @export
 OcrCacheStats <- new.env(parent = emptyenv())
 #' @export
 `$.OcrCacheStats` <- function(self, name) {
@@ -1457,6 +2128,23 @@ OcrCacheStats <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.OcrCacheStats` <- `$.OcrCacheStats`
+#' Configuration for PaddleOCR backend
+#'
+#' Configures PaddleOCR text detection and recognition with multi-language support.
+#' Uses a builder pattern for convenient configuration.
+#' @field language Language code (e.g., "en", "ch", "jpn", "kor", "deu", "fra")
+#' @field cache_dir Optional custom cache directory for model files
+#' @field use_angle_cls Enable angle classification for rotated text (default: false). Can misfire on short text regions, rotating crops incorrectly before recognition.
+#' @field enable_table_detection Enable table structure detection (default: false)
+#' @field det_db_thresh Database threshold for text detection (default: 0.3) Range: 0.0-1.0, higher values require more confident detections
+#' @field det_db_box_thresh Box threshold for text bounding box refinement (default: 0.5) Range: 0.0-1.0
+#' @field det_db_unclip_ratio Unclip ratio for expanding text bounding boxes (default: 1.6) Controls the expansion of detected text regions
+#' @field det_limit_side_len Maximum side length for detection image (default: 960) Larger images may be resized to this limit for faster inference
+#' @field rec_batch_num Batch size for recognition inference (default: 6) Number of text regions to process simultaneously
+#' @field padding Padding in pixels added around the image before detection (default: 10). Large values can include surrounding content like table gridlines.
+#' @field drop_score Minimum recognition confidence score for text lines (default: 0.5). Text regions with recognition confidence below this threshold are discarded. Matches PaddleOCR Python's `drop_score` parameter. Range: 0.0-1.0
+#' @field model_tier Model tier controlling detection/recognition model size and accuracy trade-off. - `"mobile"` (default): Lightweight models (~4.5MB detection, ~16.5MB recognition), fast download and inference - `"server"`: Large, high-accuracy models (~88MB detection, ~84MB recognition), best for GPU or complex documents
+#' @export
 PaddleOcrConfig <- new.env(parent = emptyenv())
 PaddleOcrConfig$with_cache_dir <- function(path) .Call("wrap__PaddleOcrConfig__with_cache_dir", self, path, PACKAGE = "kreuzberg")
 PaddleOcrConfig$with_table_detection <- function(enable) .Call("wrap__PaddleOcrConfig__with_table_detection", self, enable, PACKAGE = "kreuzberg")
@@ -1479,6 +2167,12 @@ PaddleOcrConfig$from_json <- function(json) .Call("wrap__PaddleOcrConfig__from_j
 }
 #' @export
 `[[.PaddleOcrConfig` <- `$.PaddleOcrConfig`
+#' Combined paths to all models needed for OCR (backward compatibility)
+#' @field det_model Path to the detection model directory.
+#' @field cls_model Path to the classification model directory.
+#' @field rec_model Path to the recognition model directory.
+#' @field dict_file Path to the character dictionary file.
+#' @export
 ModelPaths <- new.env(parent = emptyenv())
 #' @export
 `$.ModelPaths` <- function(self, name) {
@@ -1488,6 +2182,10 @@ ModelPaths <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.ModelPaths` <- `$.ModelPaths`
+#' Document orientation detection result
+#' @field degrees Detected orientation in degrees (0, 90, 180, or 270).
+#' @field confidence Confidence score (0.0-1.0).
+#' @export
 OrientationResult <- new.env(parent = emptyenv())
 #' @export
 `$.OrientationResult` <- function(self, name) {
@@ -1497,6 +2195,12 @@ OrientationResult <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.OrientationResult` <- `$.OrientationResult`
+#' Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-right
+#' @field x1 x1
+#' @field y1 y1
+#' @field x2 x2
+#' @field y2 y2
+#' @export
 BBox <- new.env(parent = emptyenv())
 #' @export
 `$.BBox` <- function(self, name) {
@@ -1506,6 +2210,11 @@ BBox <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.BBox` <- `$.BBox`
+#' A single layout detection result
+#' @field class_name class_name
+#' @field confidence confidence
+#' @field bbox bbox
+#' @export
 LayoutDetection <- new.env(parent = emptyenv())
 #' @export
 `$.LayoutDetection` <- function(self, name) {
@@ -1515,6 +2224,11 @@ LayoutDetection <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.LayoutDetection` <- `$.LayoutDetection`
+#' Embedded file descriptor extracted from the PDF name tree
+#' @field name The filename as stored in the PDF name tree.
+#' @field data Raw file bytes from the embedded stream.
+#' @field mime_type MIME type if specified in the filespec, otherwise `None`.
+#' @export
 EmbeddedFile <- new.env(parent = emptyenv())
 #' @export
 `$.EmbeddedFile` <- function(self, name) {
@@ -1524,6 +2238,18 @@ EmbeddedFile <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.EmbeddedFile` <- `$.EmbeddedFile`
+#' PDF-specific metadata
+#'
+#' Contains metadata fields specific to PDF documents that are not in the common
+#' `Metadata` structure. Common fields like title, authors, keywords, and dates
+#' are at the `Metadata` level.
+#' @field pdf_version PDF version (e.g., "1.7", "2.0")
+#' @field producer PDF producer (application that created the PDF)
+#' @field is_encrypted Whether the PDF is encrypted/password-protected
+#' @field width First page width in points (1/72 inch)
+#' @field height First page height in points (1/72 inch)
+#' @field page_count Total number of pages in the PDF document
+#' @export
 PdfMetadata <- new.env(parent = emptyenv())
 PdfMetadata$from_json <- function(json) .Call("wrap__PdfMetadata__from_json", json, PACKAGE = "kreuzberg")
 #' @export
@@ -1534,6 +2260,21 @@ PdfMetadata$from_json <- function(json) .Call("wrap__PdfMetadata__from_json", js
 }
 #' @export
 `[[.PdfMetadata` <- `$.PdfMetadata`
+#' Output format for extraction results
+#'
+#' Controls the format of the `content` field in `ExtractionResult`.
+#' When set to `Markdown`, `Djot`, or `Html`, the output will be formatted
+#' accordingly. `Plain` returns the raw extracted text.
+#' `Structured` returns JSON with full OCR element data including bounding
+#' boxes and confidence scores.
+#' @field Plain Plain text content only (default)
+#' @field Markdown Markdown format
+#' @field Djot Djot markup format
+#' @field Html HTML format
+#' @field Json JSON tree format with heading-driven sections.
+#' @field Structured Structured JSON format with full OCR element metadata.
+#' @field Custom Custom renderer registered via the RendererRegistry. The string is the renderer name (e.g., "docx", "latex").
+#' @export
 OutputFormat <- new.env(parent = emptyenv())
 #' @export
 `$.OutputFormat` <- function(self, name) {
@@ -1543,6 +2284,10 @@ OutputFormat <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.OutputFormat` <- `$.OutputFormat`
+#' Whether the drawing is inline or anchored
+#' @field Inline Inline
+#' @field Anchored Anchored
+#' @export
 DrawingType <- new.env(parent = emptyenv())
 #' @export
 `$.DrawingType` <- function(self, name) {
@@ -1552,6 +2297,31 @@ DrawingType <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.DrawingType` <- `$.DrawingType`
+#' Format-specific metadata (discriminated union)
+#'
+#' Only one format type can exist per extraction result. This provides
+#' type-safe, clean metadata without nested optionals.
+#' @field Pdf Pdf
+#' @field Docx Docx
+#' @field Excel Excel
+#' @field Email Email
+#' @field Pptx Pptx
+#' @field Archive Archive
+#' @field Image Image
+#' @field Xml Xml
+#' @field Text Text
+#' @field Html Html
+#' @field Ocr Ocr
+#' @field Csv Csv
+#' @field Bibtex Bibtex
+#' @field Citation Citation
+#' @field FictionBook FictionBook
+#' @field Dbf Dbf
+#' @field Jats Jats
+#' @field Epub Epub
+#' @field Pst Pst
+#' @field Code Code
+#' @export
 FormatMetadata <- new.env(parent = emptyenv())
 #' @export
 `$.FormatMetadata` <- function(self, name) {
@@ -1561,6 +2331,15 @@ FormatMetadata <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.FormatMetadata` <- `$.FormatMetadata`
+#' How chunk size is measured
+#'
+#' Defaults to `Characters` (Unicode character count). When using token-based sizing,
+#' chunks are sized by token count according to the specified tokenizer.
+#'
+#' Token-based sizing uses HuggingFace tokenizers loaded at runtime. Any tokenizer
+#' available on HuggingFace Hub can be used, including OpenAI-compatible tokenizers
+#' (e.g., `Xenova/gpt-4o`, `Xenova/cl100k_base`).
+#' @export
 ChunkSizing <- new.env(parent = emptyenv())
 ChunkSizing$default <- function() .Call("wrap__ChunkSizing__default", PACKAGE = "kreuzberg")
 ChunkSizing$from_json <- function(json) .Call("wrap__ChunkSizing__from_json", json, PACKAGE = "kreuzberg")
@@ -1572,6 +2351,8 @@ ChunkSizing$from_json <- function(json) .Call("wrap__ChunkSizing__from_json", js
 }
 #' @export
 `[[.ChunkSizing` <- `$.ChunkSizing`
+#' Embedding model types supported by Kreuzberg
+#' @export
 EmbeddingModelType <- new.env(parent = emptyenv())
 EmbeddingModelType$default <- function() .Call("wrap__EmbeddingModelType__default", PACKAGE = "kreuzberg")
 EmbeddingModelType$from_json <- function(json) .Call("wrap__EmbeddingModelType__from_json", json, PACKAGE = "kreuzberg")
@@ -1583,6 +2364,11 @@ EmbeddingModelType$from_json <- function(json) .Call("wrap__EmbeddingModelType__
 }
 #' @export
 `[[.EmbeddingModelType` <- `$.EmbeddingModelType`
+#' Tagged enum for node content. Each variant carries only type-specific data
+#'
+#' Uses `#[serde(tag = "node_type")]` to avoid "type" keyword collision in
+#' Go/Java/TypeScript bindings.
+#' @export
 NodeContent <- new.env(parent = emptyenv())
 NodeContent$default <- function() .Call("wrap__NodeContent__default", PACKAGE = "kreuzberg")
 NodeContent$from_json <- function(json) .Call("wrap__NodeContent__from_json", json, PACKAGE = "kreuzberg")
@@ -1594,6 +2380,8 @@ NodeContent$from_json <- function(json) .Call("wrap__NodeContent__from_json", js
 }
 #' @export
 `[[.NodeContent` <- `$.NodeContent`
+#' Types of inline text annotations
+#' @export
 AnnotationKind <- new.env(parent = emptyenv())
 AnnotationKind$default <- function() .Call("wrap__AnnotationKind__default", PACKAGE = "kreuzberg")
 AnnotationKind$from_json <- function(json) .Call("wrap__AnnotationKind__from_json", json, PACKAGE = "kreuzberg")
@@ -1605,6 +2393,11 @@ AnnotationKind$from_json <- function(json) .Call("wrap__AnnotationKind__from_jso
 }
 #' @export
 `[[.AnnotationKind` <- `$.AnnotationKind`
+#' Bounding geometry for an OCR element
+#'
+#' Supports both axis-aligned rectangles (from Tesseract) and 4-point quadrilaterals
+#' (from PaddleOCR and rotated text detection).
+#' @export
 OcrBoundingGeometry <- new.env(parent = emptyenv())
 OcrBoundingGeometry$default <- function() .Call("wrap__OcrBoundingGeometry__default", PACKAGE = "kreuzberg")
 OcrBoundingGeometry$from_json <- function(json) .Call("wrap__OcrBoundingGeometry__from_json", json, PACKAGE = "kreuzberg")

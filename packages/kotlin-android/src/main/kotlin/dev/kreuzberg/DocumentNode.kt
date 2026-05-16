@@ -18,5 +18,5 @@ data class DocumentNode(
     val pageEnd: Int?,
     val bbox: String?,
     val annotations: List<TextAnnotation>,
-    val attributes: Map<String, String>?
+    val attributes: Map<String, String>?,
 )

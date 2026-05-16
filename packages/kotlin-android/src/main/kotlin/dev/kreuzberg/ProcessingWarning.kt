@@ -10,5 +10,5 @@ package dev.kreuzberg
  */
 data class ProcessingWarning(
     val source: String,
-    val message: String
+    val message: String,
 )

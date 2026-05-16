@@ -4,7 +4,9 @@ package dev.kreuzberg
 
 @Suppress("TooManyFunctions")
 object KreuzbergBridge {
-    init { System.loadLibrary("kreuzberg_jni") }
+    init {
+        System.loadLibrary("kreuzberg_jni")
+    }
 
     external fun nativeExtractBytes(content: String, mimeType: String, config: String): String
 

@@ -611,32 +611,6 @@ for inference in layout detection and embedding generation.
 
 ---
 
-#### AnchorProperties
-
-Properties for anchored drawings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `BehindDoc` | `bool` | — | Behind doc |
-| `LayoutInCell` | `bool` | — | Layout in cell |
-| `RelativeHeight` | `*int64` | `nil` | Relative height |
-| `PositionH` | `*string` | `nil` | Position h |
-| `PositionV` | `*string` | `nil` | Position v |
-| `WrapType` | `string` | — | Wrap type |
-
-
----
-
-#### ApiDoc
-
-OpenAPI documentation structure.
-
-Defines all endpoints, request/response schemas, and examples
-for the Kreuzberg document extraction API.
-
-
----
-
 #### ArchiveEntry
 
 A single file extracted from an archive.
@@ -730,36 +704,6 @@ BibTeX bibliography metadata.
 
 ---
 
-#### ByteBufferPool
-
-Convenience type alias for a pooled Vec<u8>.
-
-
----
-
-#### CacheWarmParams
-
-Request parameters for cache warm (model download).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `AllEmbeddings` | `bool` | — | Download all embedding model presets |
-| `EmbeddingModel` | `*string` | `nil` | Specific embedding preset name to download (e.g. "balanced", "speed", "quality") |
-
-
----
-
-#### CharShape
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Bold` | `bool` | — | Bold |
-| `Italic` | `bool` | — | Italic |
-| `Underline` | `bool` | — | Underline |
-
-
----
-
 #### Chunk
 
 A text chunk with optional embedding and metadata.
@@ -797,49 +741,6 @@ Metadata about a chunk's position in the original document.
 
 ---
 
-#### ChunkRequest
-
-Chunk request with text and configuration.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Text` | `string` | — | Text to chunk (must not be empty) |
-| `Config` | `*string` | `nil` | Optional chunking configuration |
-| `ChunkerType` | `string` | — | Chunker type (text, markdown, yaml, or semantic) |
-
-
----
-
-#### ChunkResponse
-
-Chunk response with chunks and metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Chunks` | `[]string` | — | List of chunks |
-| `ChunkCount` | `int` | — | Total number of chunks |
-| `Config` | `string` | — | Configuration used for chunking |
-| `InputSizeBytes` | `int` | — | Input text size in bytes |
-| `ChunkerType` | `string` | — | Chunker type used for chunking |
-
-
----
-
-#### ChunkTextParams
-
-Request parameters for text chunking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Text` | `string` | — | Text content to split into chunks |
-| `MaxCharacters` | `*int` | `nil` | Maximum characters per chunk (default: 2000) |
-| `Overlap` | `*int` | `nil` | Number of overlapping characters between chunks (default: 100) |
-| `ChunkerType` | `*string` | `nil` | Chunker type: "text", "markdown", "yaml", or "semantic" (default: "text") |
-| `TopicThreshold` | `*float32` | `nil` | Topic threshold for semantic chunking (0.0-1.0, default: 0.75) |
-
-
----
-
 #### ChunkingConfig
 
 Chunking configuration.
@@ -870,20 +771,6 @@ Use `..the default constructor` when constructing to allow for future field addi
 ```go
 func (o *ChunkingConfig) Default() ChunkingConfig
 ```
-
----
-
-#### ChunkingResult
-
-Result of a text chunking operation.
-
-Contains the generated chunks and metadata about the chunking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Chunks` | `[]Chunk` | — | List of text chunks |
-| `ChunkCount` | `int` | — | Total number of chunks generated |
-
 
 ---
 
@@ -946,34 +833,6 @@ JATS contributor with role.
 
 ---
 
-#### CoreProperties
-
-Dublin Core metadata from docProps/core.xml
-
-Contains standard metadata fields defined by the Dublin Core standard
-and Office-specific extensions.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Title` | `*string` | `nil` | Document title |
-| `Subject` | `*string` | `nil` | Document subject/topic |
-| `Creator` | `*string` | `nil` | Document creator/author |
-| `Keywords` | `*string` | `nil` | Keywords or tags |
-| `Description` | `*string` | `nil` | Document description/abstract |
-| `LastModifiedBy` | `*string` | `nil` | User who last modified the document |
-| `Revision` | `*string` | `nil` | Revision number |
-| `Created` | `*string` | `nil` | Creation timestamp (ISO 8601) |
-| `Modified` | `*string` | `nil` | Last modification timestamp (ISO 8601) |
-| `Category` | `*string` | `nil` | Document category |
-| `ContentStatus` | `*string` | `nil` | Content status (Draft, Final, etc.) |
-| `Language` | `*string` | `nil` | Document language |
-| `Identifier` | `*string` | `nil` | Unique identifier |
-| `Version` | `*string` | `nil` | Document version |
-| `LastPrinted` | `*string` | `nil` | Last print timestamp (ISO 8601) |
-
-
----
-
 #### CsvMetadata
 
 CSV/TSV file metadata.
@@ -985,16 +844,6 @@ CSV/TSV file metadata.
 | `Delimiter` | `*string` | `nil` | Delimiter |
 | `HasHeader` | `bool` | — | Whether header |
 | `ColumnTypes` | `*[]string` | `nil` | Column types |
-
-
----
-
-#### CustomProperties
-
-Custom properties from docProps/custom.xml
-
-Maps property names to their values. Values are converted to JSON types
-based on the VT (Variant Type) specified in the XML.
 
 
 ---
@@ -1024,18 +873,6 @@ dBASE (DBF) file metadata.
 
 ---
 
-#### DetectMimeTypeParams
-
-Request parameters for MIME type detection.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Path` | `string` | — | Path to the file |
-| `UseContent` | `bool` | — | Use content-based detection (default: true) |
-
-
----
-
 #### DetectResponse
 
 MIME type detection response.
@@ -1044,18 +881,6 @@ MIME type detection response.
 |-------|------|---------|-------------|
 | `MimeType` | `string` | — | Detected MIME type |
 | `Filename` | `*string` | `nil` | Original filename (if provided) |
-
-
----
-
-#### DetectedBoundary
-
-A detected structural boundary in the text.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `ByteOffset` | `int` | — | Byte offset of the start of the line in the original text. |
-| `IsHeader` | `bool` | — | Whether this boundary looks like a header/section title. |
 
 
 ---
@@ -1125,20 +950,6 @@ Link element in Djot.
 | `Text` | `string` | — | Link text content |
 | `Title` | `*string` | `nil` | Optional title |
 | `Attributes` | `*string` | `nil` | Element attributes |
-
-
----
-
-#### DoclingCompatResponse
-
-OpenWebUI "Docling" engine response format.
-
-Returned by `POST /v1/convert/file` for docling-serve compatibility.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Document` | `string` | — | Converted document content |
-| `Status` | `string` | — | Processing status |
 
 
 ---
@@ -1376,34 +1187,6 @@ func (o *DocumentStructure) Default() DocumentStructure
 
 ---
 
-#### DocxAppProperties
-
-Application properties from docProps/app.xml for DOCX
-
-Contains Word-specific document statistics and metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Application` | `*string` | `nil` | Application name (e.g., "Microsoft Office Word") |
-| `AppVersion` | `*string` | `nil` | Application version |
-| `Template` | `*string` | `nil` | Template filename |
-| `TotalTime` | `*int32` | `nil` | Total editing time in minutes |
-| `Pages` | `*int32` | `nil` | Number of pages |
-| `Words` | `*int32` | `nil` | Number of words |
-| `Characters` | `*int32` | `nil` | Number of characters (excluding spaces) |
-| `CharactersWithSpaces` | `*int32` | `nil` | Number of characters (including spaces) |
-| `Lines` | `*int32` | `nil` | Number of lines |
-| `Paragraphs` | `*int32` | `nil` | Number of paragraphs |
-| `Company` | `*string` | `nil` | Company name |
-| `DocSecurity` | `*int32` | `nil` | Document security level |
-| `ScaleCrop` | `*bool` | `nil` | Scale crop flag |
-| `LinksUpToDate` | `*bool` | `nil` | Links up to date flag |
-| `SharedDoc` | `*bool` | `nil` | Shared document flag |
-| `HyperlinksChanged` | `*bool` | `nil` | Hyperlinks changed flag |
-
-
----
-
 #### DocxMetadata
 
 Word document metadata.
@@ -1413,23 +1196,9 @@ Integrates with `office_metadata` module for core/app/custom properties.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `CoreProperties` | `*CoreProperties` | `nil` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
-| `AppProperties` | `*DocxAppProperties` | `nil` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
+| `CoreProperties` | `*string` | `nil` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
+| `AppProperties` | `*string` | `nil` | Application properties from docProps/app.xml (Word-specific statistics) Contains word count, page count, paragraph count, editing time, etc. DOCX-specific variant of Office application properties. |
 | `CustomProperties` | `*map[string]interface{}` | `nil` | Custom properties from docProps/custom.xml (user-defined properties) Contains key-value pairs defined by users or applications. Values can be strings, numbers, booleans, or dates. |
-
-
----
-
-#### Drawing
-
-A drawing object extracted from `<w:drawing>`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `DrawingType` | `string` | — | Drawing type |
-| `Extent` | `*string` | `nil` | Extent |
-| `DocProperties` | `*string` | `nil` | Doc properties |
-| `ImageRef` | `*string` | `nil` | Image ref |
 
 
 ---
@@ -1535,47 +1304,6 @@ Includes sender/recipient information, message ID, and attachment list.
 | `BccEmails` | `[]string` | `nil` | BCC recipients |
 | `MessageId` | `*string` | `nil` | Message-ID header value |
 | `Attachments` | `[]string` | `nil` | List of attachment filenames |
-
-
----
-
-#### EmbedRequest
-
-Embedding request for generating embeddings from text.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Texts` | `[]string` | — | Text strings to generate embeddings for (at least one non-empty string required) |
-| `Config` | `*EmbeddingConfig` | `nil` | Optional embedding configuration (model, batch size, etc.) |
-
-
----
-
-#### EmbedResponse
-
-Embedding response containing generated embeddings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Embeddings` | `[][]float32` | — | Generated embeddings (one per input text) |
-| `Model` | `string` | — | Model used for embedding generation |
-| `Dimensions` | `int` | — | Dimensionality of the embeddings |
-| `Count` | `int` | — | Number of embeddings generated |
-
-
----
-
-#### EmbedTextParams
-
-Request parameters for embedding generation.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Texts` | `[]string` | — | List of text strings to generate embeddings for |
-| `Preset` | `*string` | `nil` | Embedding preset name (default: "balanced"). Available: "speed", "balanced", "quality" |
-| `Model` | `*string` | `nil` | LLM model for provider-hosted embeddings (e.g., "openai/text-embedding-3-small"). When set, overrides preset and uses liter-llm for embedding generation. |
-| `ApiKey` | `*string` | `nil` | API key for the LLM provider (optional, falls back to env). |
-| `EmbeddingPlugin` | `*string` | `nil` | Name of a pre-registered in-process embedding plugin backend. When set, overrides both preset and model and dispatches to the registered callback. Requires a prior call to `kreuzberg.plugins.register_embedding_backend`. |
 
 
 ---
@@ -1801,31 +1529,6 @@ extracted content and metadata.
 
 ---
 
-#### ExtractResponse
-
-Extraction response (list of results).
-
-
----
-
-#### ExtractStructuredParams
-
-Request parameters for LLM-based structured extraction.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Path` | `string` | — | File path to extract from |
-| `Schema` | `interface{}` | — | JSON schema for structured output |
-| `Model` | `string` | — | LLM model (e.g., "openai/gpt-4o") |
-| `SchemaName` | `string` | — | Schema name (default: "extraction") |
-| `SchemaDescription` | `*string` | `nil` | Schema description for the LLM |
-| `Prompt` | `*string` | `nil` | Custom Jinja2 prompt template |
-| `ApiKey` | `*string` | `nil` | API key (optional, falls back to env) |
-| `Strict` | `bool` | — | Enable strict mode |
-
-
----
-
 #### ExtractedImage
 
 Extracted image from a document.
@@ -1852,22 +1555,6 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `ImageKind` | `*ImageKind` | `nil` | Heuristic classification of what this image likely depicts. `nil` if classification was disabled or inconclusive. |
 | `KindConfidence` | `*float32` | `nil` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
 | `ClusterId` | `*uint32` | `nil` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `nil` for singletons. |
-
-
----
-
-#### ExtractedInlineImage
-
-Extracted inline image with metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Data` | `[]byte` | — | Uses `bytes.Bytes` for cheap cloning of large buffers. |
-| `Format` | `string` | — | Format |
-| `Filename` | `*string` | `nil` | Filename |
-| `Description` | `*string` | `nil` | Human-readable description |
-| `Dimensions` | `*[]uint32` | `nil` | Dimensions |
-| `Attributes` | `[]string` | — | Attributes |
 
 
 ---
@@ -2185,19 +1872,6 @@ func (o *HierarchyConfig) Default() HierarchyConfig
 
 ---
 
-#### HtmlExtractionResult
-
-Result of HTML extraction with optional images and warnings.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Markdown` | `string` | — | Markdown |
-| `Images` | `[]ExtractedInlineImage` | — | Images extracted from the document |
-| `Warnings` | `[]string` | — | Warnings |
-
-
----
-
 #### HtmlMetadata
 
 HTML metadata extracted from HTML documents.
@@ -2264,97 +1938,6 @@ func (o *HtmlOutputConfig) Default() HtmlOutputConfig
 
 ---
 
-#### HwpImage
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Name` | `string` | — | The name |
-| `Data` | `[]byte` | — | Data |
-
-
----
-
-#### HwpxExtractor
-
-Extractor for Hangul Word Processor XML (.hwpx) files.
-
-Supports HWPX (Open HWPML), the ZIP-based XML successor to the binary HWP 5.0 format.
-
-##### Methods
-
-###### Default()
-
-**Signature:**
-
-```go
-func (o *HwpxExtractor) Default() HwpxExtractor
-```
-###### Name()
-
-**Signature:**
-
-```go
-func (o *HwpxExtractor) Name() string
-```
-###### Version()
-
-**Signature:**
-
-```go
-func (o *HwpxExtractor) Version() string
-```
-###### Initialize()
-
-**Signature:**
-
-```go
-func (o *HwpxExtractor) Initialize() error
-```
-###### Shutdown()
-
-**Signature:**
-
-```go
-func (o *HwpxExtractor) Shutdown() error
-```
-###### Description()
-
-**Signature:**
-
-```go
-func (o *HwpxExtractor) Description() string
-```
-###### Author()
-
-**Signature:**
-
-```go
-func (o *HwpxExtractor) Author() string
-```
-###### ExtractBytes()
-
-**Signature:**
-
-```go
-func (o *HwpxExtractor) ExtractBytes(content []byte, mimeType string, config ExtractionConfig) (string, error)
-```
-###### SupportedMimeTypes()
-
-**Signature:**
-
-```go
-func (o *HwpxExtractor) SupportedMimeTypes() []string
-```
-###### Priority()
-
-**Signature:**
-
-```go
-func (o *HwpxExtractor) Priority() int32
-```
-
----
-
 #### ImageExtractionConfig
 
 Image extraction configuration.
@@ -2415,19 +1998,6 @@ Image element metadata.
 
 ---
 
-#### ImageOcrResult
-
-Result of OCR extraction from an image with optional page tracking.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Content` | `string` | — | Extracted text content |
-| `Boundaries` | `*[]PageBoundary` | `nil` | Character byte boundaries per frame (for multi-frame TIFFs) |
-| `PageContents` | `*[]PageContent` | `nil` | Per-frame content information |
-
-
----
-
 #### ImagePreprocessingConfig
 
 Image preprocessing configuration for OCR.
@@ -2479,18 +2049,6 @@ including DPI normalization, resizing, and resampling.
 | `CalculatedDpi` | `*int32` | `nil` | Calculated optimal DPI (if auto_adjust_dpi enabled) |
 | `SkippedResize` | `bool` | — | Whether resize was skipped (dimensions already optimal) |
 | `ResizeError` | `*string` | `nil` | Error message if resize failed |
-
-
----
-
-#### InfoResponse
-
-Server information response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Version` | `string` | — | API version |
-| `RustBackend` | `bool` | — | Whether using Rust backend |
 
 
 ---
@@ -2698,47 +2256,6 @@ within one extraction (e.g. VLM OCR + structured extraction).
 | `TotalTokens` | `*uint64` | `nil` | Total tokens (input + output). |
 | `EstimatedCost` | `*float64` | `nil` | Estimated cost in USD based on the provider's published pricing. |
 | `FinishReason` | `*string` | `nil` | Why the model stopped generating (e.g. "stop", "length", "content_filter"). |
-
-
----
-
-#### ManifestEntryResponse
-
-Model manifest entry for cache management.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `RelativePath` | `string` | — | Relative path within the cache directory |
-| `Sha256` | `string` | — | SHA256 checksum of the model file |
-| `SizeBytes` | `uint64` | — | Expected file size in bytes |
-| `SourceUrl` | `string` | — | HuggingFace source URL for downloading |
-
-
----
-
-#### ManifestResponse
-
-Model manifest response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `KreuzbergVersion` | `string` | — | Kreuzberg version |
-| `TotalSizeBytes` | `uint64` | — | Total size of all models in bytes |
-| `ModelCount` | `int` | — | Number of models in the manifest |
-| `Models` | `[]ManifestEntryResponse` | — | Individual model entries |
-
-
----
-
-#### MergedChunk
-
-A merged chunk produced by `merge_segments`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Text` | `string` | — | Text |
-| `ByteStart` | `int` | — | Byte start |
-| `ByteEnd` | `int` | — | Byte end |
 
 
 ---
@@ -3179,51 +2696,6 @@ Bounding box for an OCR-detected table in pixel coordinates.
 
 ---
 
-#### OdtProperties
-
-OpenDocument metadata from meta.xml
-
-Contains metadata fields defined by the OASIS OpenDocument Format standard.
-Uses Dublin Core elements (dc:) and OpenDocument meta elements (meta:).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Title` | `*string` | `nil` | Document title (dc:title) |
-| `Subject` | `*string` | `nil` | Document subject/topic (dc:subject) |
-| `Creator` | `*string` | `nil` | Current document creator/author (dc:creator) |
-| `InitialCreator` | `*string` | `nil` | Initial creator of the document (meta:initial-creator) |
-| `Keywords` | `*string` | `nil` | Keywords or tags (meta:keyword) |
-| `Description` | `*string` | `nil` | Document description (dc:description) |
-| `Date` | `*string` | `nil` | Current modification date (dc:date) |
-| `CreationDate` | `*string` | `nil` | Initial creation date (meta:creation-date) |
-| `Language` | `*string` | `nil` | Document language (dc:language) |
-| `Generator` | `*string` | `nil` | Generator/application that created the document (meta:generator) |
-| `EditingDuration` | `*string` | `nil` | Editing duration in ISO 8601 format (meta:editing-duration) |
-| `EditingCycles` | `*string` | `nil` | Number of edits/revisions (meta:editing-cycles) |
-| `PageCount` | `*int32` | `nil` | Document statistics - page count (meta:page-count) |
-| `WordCount` | `*int32` | `nil` | Document statistics - word count (meta:word-count) |
-| `CharacterCount` | `*int32` | `nil` | Document statistics - character count (meta:character-count) |
-| `ParagraphCount` | `*int32` | `nil` | Document statistics - paragraph count (meta:paragraph-count) |
-| `TableCount` | `*int32` | `nil` | Document statistics - table count (meta:table-count) |
-| `ImageCount` | `*int32` | `nil` | Document statistics - image count (meta:image-count) |
-
-
----
-
-#### OpenWebDocumentResponse
-
-OpenWebUI "External" engine response format.
-
-Returned by `PUT /process` for the OpenWebUI external document loader.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `PageContent` | `string` | — | Extracted text content |
-| `Metadata` | `string` | — | Document metadata |
-
-
----
-
 #### OrientationResult
 
 Document orientation detection result.
@@ -3482,23 +2954,6 @@ and visibility state (for presentations).
 | `Hidden` | `*bool` | `nil` | Whether this page is hidden (e.g., in presentations) |
 | `IsBlank` | `*bool` | `nil` | Whether this page is blank (no meaningful text, no images, no tables) A page is considered blank if it has fewer than 3 non-whitespace characters and contains no tables or images. This is useful for filtering out empty pages in scanned documents or PDFs with blank separator pages. |
 | `HasVectorGraphics` | `bool` | — | Whether this page contains non-trivial vector graphics (paths, shapes, curves) Indicates the presence of vector-drawn content such as charts, diagrams, or geometric shapes (e.g., from Adobe InDesign, LaTeX TikZ). These are invisible to `ExtractionResult.images` since they are not embedded as raster XObjects. Set to `true` when path count exceeds a heuristic threshold, signaling that downstream consumers may want to rasterize the page to capture this content. Only populated for PDFs; `nil` for other document types. |
-
-
----
-
-#### PageMarginsPoints
-
-Page margins converted to points (1/72 inch).
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Top` | `*float64` | `nil` | Top |
-| `Right` | `*float64` | `nil` | Right |
-| `Bottom` | `*float64` | `nil` | Bottom |
-| `Left` | `*float64` | `nil` | Left |
-| `Header` | `*float64` | `nil` | Header |
-| `Footer` | `*float64` | `nil` | Footer |
-| `Gutter` | `*float64` | `nil` | Gutter |
 
 
 ---
@@ -3868,33 +3323,6 @@ func (o *PostProcessorConfig) Default() PostProcessorConfig
 
 ---
 
-#### PptxAppProperties
-
-Application properties from docProps/app.xml for PPTX
-
-Contains PowerPoint-specific document metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Application` | `*string` | `nil` | Application name (e.g., "Microsoft Office PowerPoint") |
-| `AppVersion` | `*string` | `nil` | Application version |
-| `TotalTime` | `*int32` | `nil` | Total editing time in minutes |
-| `Company` | `*string` | `nil` | Company name |
-| `DocSecurity` | `*int32` | `nil` | Document security level |
-| `ScaleCrop` | `*bool` | `nil` | Scale crop flag |
-| `LinksUpToDate` | `*bool` | `nil` | Links up to date flag |
-| `SharedDoc` | `*bool` | `nil` | Shared document flag |
-| `HyperlinksChanged` | `*bool` | `nil` | Hyperlinks changed flag |
-| `Slides` | `*int32` | `nil` | Number of slides |
-| `Notes` | `*int32` | `nil` | Number of notes |
-| `HiddenSlides` | `*int32` | `nil` | Number of hidden slides |
-| `MultimediaClips` | `*int32` | `nil` | Number of multimedia clips |
-| `PresentationFormat` | `*string` | `nil` | Presentation format (e.g., "Widescreen", "Standard") |
-| `SlideTitles` | `[]string` | `nil` | Slide titles |
-
-
----
-
 #### PptxExtractionResult
 
 PowerPoint (PPTX) extraction result.
@@ -3999,30 +3427,6 @@ the type in their own code.
 
 ---
 
-#### Recyclable
-
-Trait for types that can be pooled and reused.
-
-Implementing this trait allows a type to be used with `Pool<T>`.
-The `reset()` method should clear the object's state for reuse.
-
-##### Methods
-
-###### Reset()
-
-Reset the object to a reusable state.
-
-This is called when returning an object to the pool.
-Should clear any internal data while preserving capacity.
-
-**Signature:**
-
-```go
-func (o *Recyclable) Reset()
-```
-
----
-
 #### Renderer
 
 Trait for document renderers that convert `InternalDocument` to output strings.
@@ -4060,18 +3464,6 @@ Returns an error if rendering fails.
 ```go
 func (o *Renderer) Render(doc InternalDocument) (string, error)
 ```
-
----
-
-#### ResolvedStyle
-
-Fully resolved (flattened) style after walking the inheritance chain.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `ParagraphProperties` | `string` | — | Paragraph properties |
-| `RunProperties` | `string` | — | Run properties |
-
 
 ---
 
@@ -4193,18 +3585,6 @@ func (o *ServerConfig) MaxMultipartFieldMb() int
 
 ---
 
-#### StreamReader
-
-
----
-
-#### StringBufferPool
-
-Convenience type alias for a pooled String.
-
-
----
-
 #### StructuredData
 
 Structured data (Schema.org, microdata, RDFa) block.
@@ -4249,37 +3629,6 @@ returning structured data that conforms to the schema.
 
 ---
 
-#### StructuredExtractionResponse
-
-Response from structured extraction endpoint.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `StructuredOutput` | `interface{}` | — | Structured data conforming to the provided JSON schema |
-| `Content` | `string` | — | Extracted document text content |
-| `MimeType` | `string` | — | Detected MIME type of the input file |
-
-
----
-
-#### StyleDefinition
-
-A single style definition parsed from `<w:style>` in `word/styles.xml`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Id` | `string` | — | The style ID (`w:styleId` attribute). |
-| `Name` | `*string` | `nil` | Human-readable name (`<w:name w:val="..."/>`). |
-| `StyleType` | `string` | — | Style type: paragraph, character, table, or numbering. |
-| `BasedOn` | `*string` | `nil` | ID of the parent style (`<w:basedOn w:val="..."/>`). |
-| `NextStyle` | `*string` | `nil` | ID of the style to apply to the next paragraph (`<w:next w:val="..."/>`). |
-| `IsDefault` | `bool` | — | Whether this is the default style for its type. |
-| `ParagraphProperties` | `string` | — | Paragraph properties defined directly on this style. |
-| `RunProperties` | `string` | — | Run properties defined directly on this style. |
-
-
----
-
 #### SupportedFormat
 
 A supported document format entry.
@@ -4291,44 +3640,6 @@ Represents a file extension and its corresponding MIME type that Kreuzberg can p
 | `Extension` | `string` | — | File extension (without leading dot), e.g., "pdf", "docx" |
 | `MimeType` | `string` | — | MIME type string, e.g., "application/pdf" |
 
-
----
-
-#### SyncExtractor
-
-Trait for extractors that can work synchronously (WASM-compatible).
-
-This trait defines the synchronous extraction interface for WASM targets and other
-environments where async/tokio runtimes are not available or desirable.
-
-# Implementation
-
-Extractors that need to support WASM should implement this trait in addition to
-the async `DocumentExtractor` trait. This allows the same extractor to work in both
-environments by delegating to the sync implementation.
-
-# MIME Type Validation
-
-The `mime_type` parameter is guaranteed to be already validated.
-
-##### Methods
-
-###### ExtractSync()
-
-Extract content from a byte array synchronously.
-
-This method performs extraction without requiring an async runtime.
-It is called by `extract_bytes_sync()` when the `tokio-runtime` feature is disabled.
-
-**Returns:**
-
-An `InternalDocument` containing the extracted elements, metadata, and tables.
-
-**Signature:**
-
-```go
-func (o *SyncExtractor) ExtractSync(content []byte, mimeType string, config ExtractionConfig) (InternalDocument, error)
-```
 
 ---
 
@@ -4377,66 +3688,6 @@ Stores row/column dimensions and a flat list of cells with position info.
 | `Cols` | `uint32` | — | Number of columns in the table. |
 | `Cells` | `[]GridCell` | `nil` | All cells in row-major order. |
 
-
----
-
-#### TableProperties
-
-Table-level properties from `<w:tblPr>`.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `StyleId` | `*string` | `nil` | Style id |
-| `Width` | `*string` | `nil` | Width |
-| `Alignment` | `*string` | `nil` | Alignment |
-| `Layout` | `*string` | `nil` | Layout |
-| `Look` | `*string` | `nil` | Look |
-| `Borders` | `*string` | `nil` | Borders |
-| `CellMargins` | `*string` | `nil` | Cell margins |
-| `Indent` | `*string` | `nil` | Indent |
-| `Caption` | `*string` | `nil` | Caption |
-
-
----
-
-#### TessdataManager
-
-Manages tessdata file downloading, caching, and manifest generation.
-
-##### Methods
-
-###### CacheDir()
-
-Get the cache directory path.
-
-**Signature:**
-
-```go
-func (o *TessdataManager) CacheDir() string
-```
-###### IsLanguageCached()
-
-Check if a specific language traineddata file is cached.
-
-**Signature:**
-
-```go
-func (o *TessdataManager) IsLanguageCached(lang string) bool
-```
-###### EnsureAllLanguages()
-
-Downloads all tessdata_fast traineddata files to the cache directory.
-
-Skips files that already exist. Returns the count of newly downloaded files.
-
-When the `paddle-ocr` feature is not enabled, no download URLs are available
-and this method always returns `Ok(0)`.
-
-**Signature:**
-
-```go
-func (o *TessdataManager) EnsureAllLanguages() (int, error)
-```
 
 ---
 
@@ -4585,13 +3836,6 @@ Token reduction configuration.
 ```go
 func (o *TokenReductionOptions) Default() TokenReductionOptions
 ```
-
----
-
-#### TracingLayer
-
-A `tower.Layer` that wraps each extraction in a semantic tracing span.
-
 
 ---
 
@@ -4837,40 +4081,6 @@ func (o *Validator) Priority() int32
 
 ---
 
-#### WarmResponse
-
-Cache warm response.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `CacheDir` | `string` | — | Cache directory used |
-| `Downloaded` | `[]string` | — | Models that were downloaded |
-| `AlreadyCached` | `[]string` | — | Models that were already cached |
-
-
----
-
-#### XlsxAppProperties
-
-Application properties from docProps/app.xml for XLSX
-
-Contains Excel-specific document metadata.
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `Application` | `*string` | `nil` | Application name (e.g., "Microsoft Excel") |
-| `AppVersion` | `*string` | `nil` | Application version |
-| `DocSecurity` | `*int32` | `nil` | Document security level |
-| `ScaleCrop` | `*bool` | `nil` | Scale crop flag |
-| `LinksUpToDate` | `*bool` | `nil` | Links up to date flag |
-| `SharedDoc` | `*bool` | `nil` | Shared document flag |
-| `HyperlinksChanged` | `*bool` | `nil` | Hyperlinks changed flag |
-| `Company` | `*string` | `nil` | Company name |
-| `WorksheetNames` | `[]string` | `nil` | Worksheet names |
-
-
----
-
 #### XmlExtractionResult
 
 XML extraction result.
@@ -4930,13 +4140,6 @@ Year range for bibliographic metadata.
 | `Min` | `*uint32` | `nil` | Min |
 | `Max` | `*uint32` | `nil` | Max |
 | `Years` | `[]uint32` | — | Years |
-
-
----
-
-#### ZipBombValidator
-
-Helper struct for validating ZIP archives for security issues.
 
 
 ---
@@ -5091,6 +4294,32 @@ of `ExtractionResult`.
 | `Chunks` | Use TSLP semantic chunks as content (default). |
 | `Raw` | Use raw source code as content. |
 | `Structure` | Emit function/class headings + docstrings (no code bodies). |
+
+
+---
+
+#### ListType
+
+Type of list detection.
+
+| Value | Description |
+|-------|-------------|
+| `Bullet` | Bullet points (-, *, •, etc.) |
+| `Numbered` | Numbered lists (1., 2., etc.) |
+| `Lettered` | Lettered lists (a., b., A., B., etc.) |
+| `Indented` | Indented items |
+
+
+---
+
+#### DrawingType
+
+Whether the drawing is inline or anchored.
+
+| Value | Description |
+|-------|-------------|
+| `Inline` | Inline |
+| `Anchored` | Anchored — Fields: `0`: `string` |
 
 
 ---
@@ -5556,17 +4785,6 @@ Semantic classification of an extracted URI.
 | `Citation` | A citation or bibliographic reference (DOI, academic ref). |
 | `Reference` | A general reference (e.g. `\ref{}` in LaTeX, `:ref:` in RST). |
 | `Email` | An email address (`mailto:` link or bare email). |
-
-
----
-
-#### PoolError
-
-Error type for pool operations.
-
-| Value | Description |
-|-------|-------------|
-| `LockPoisoned` | The pool's internal mutex was poisoned. This indicates a panic occurred while holding the lock. The pool is in a locked state and cannot be recovered. |
 
 
 ---

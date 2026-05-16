@@ -9,5 +9,5 @@ data class Keyword(
     val text: String,
     val score: Float,
     val algorithm: KeywordAlgorithm,
-    val positions: List<Long>?
+    val positions: List<Long>?,
 )

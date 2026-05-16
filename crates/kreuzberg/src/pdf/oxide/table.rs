@@ -582,6 +582,7 @@ mod tests {
             primary_detected: false,
             artifact_type: None,
             char_widths: vec![],
+            heading_level: None,
         }
     }
 

@@ -15,5 +15,5 @@ enum class TableModel {
     SLANET_WIRELESS,
     SLANET_PLUS,
     SLANET_AUTO,
-    DISABLED;
+    DISABLED,
 }

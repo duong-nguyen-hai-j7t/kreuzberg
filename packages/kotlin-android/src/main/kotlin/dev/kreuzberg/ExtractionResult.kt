@@ -31,5 +31,5 @@ data class ExtractionResult(
     val codeIntelligence: String?,
     val llmUsage: List<LlmUsage>?,
     val formattedContent: String?,
-    val ocrInternalDocument: String?
+    val ocrInternalDocument: String?,
 )

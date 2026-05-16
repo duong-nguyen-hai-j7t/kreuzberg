@@ -7,5 +7,5 @@ package dev.kreuzberg
  */
 data class DetectResponse(
     val mimeType: String,
-    val filename: String?
+    val filename: String?,
 )

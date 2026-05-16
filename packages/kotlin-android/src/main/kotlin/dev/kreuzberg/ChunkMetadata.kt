@@ -14,5 +14,5 @@ data class ChunkMetadata(
     val firstPage: Int?,
     val lastPage: Int?,
     val headingContext: HeadingContext?,
-    val imageIndices: List<Int>
+    val imageIndices: List<Int>,
 )

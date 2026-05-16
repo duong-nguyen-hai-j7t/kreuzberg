@@ -16,5 +16,5 @@ data class LlmUsage(
     val outputTokens: Long?,
     val totalTokens: Long?,
     val estimatedCost: Double?,
-    val finishReason: String?
+    val finishReason: String?,
 )

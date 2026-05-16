@@ -6,5 +6,5 @@ package dev.kreuzberg
  * Outlook PST archive metadata.
  */
 data class PstMetadata(
-    val messageCount: Long
+    val messageCount: Long,
 )

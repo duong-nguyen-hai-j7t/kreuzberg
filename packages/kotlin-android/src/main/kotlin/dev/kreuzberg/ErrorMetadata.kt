@@ -7,5 +7,5 @@ package dev.kreuzberg
  */
 data class ErrorMetadata(
     val errorType: String,
-    val message: String
+    val message: String,
 )

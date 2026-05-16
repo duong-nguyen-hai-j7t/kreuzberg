@@ -10,5 +10,5 @@ package dev.kreuzberg
 data class TableGrid(
     val rows: Int,
     val cols: Int,
-    val cells: List<GridCell>
+    val cells: List<GridCell>,
 )

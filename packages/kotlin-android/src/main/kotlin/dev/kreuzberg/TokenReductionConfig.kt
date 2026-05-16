@@ -13,5 +13,5 @@ data class TokenReductionConfig(
     val customStopwords: Map<String, List<String>>?,
     val preservePatterns: List<String>,
     val targetReduction: Float?,
-    val enableSemanticClustering: Boolean
+    val enableSemanticClustering: Boolean,
 )

@@ -14,5 +14,5 @@ data class ImageExtractionConfig(
     val minDpi: Int,
     val maxDpi: Int,
     val maxImagesPerPage: Int?,
-    val classify: Boolean
+    val classify: Boolean,
 )

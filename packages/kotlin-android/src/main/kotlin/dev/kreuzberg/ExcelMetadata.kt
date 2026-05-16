@@ -10,5 +10,5 @@ package dev.kreuzberg
  */
 data class ExcelMetadata(
     val sheetCount: Int?,
-    val sheetNames: List<String>?
+    val sheetNames: List<String>?,
 )

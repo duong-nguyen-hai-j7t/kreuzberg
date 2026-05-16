@@ -10,5 +10,5 @@ data class ElementMetadata(
     val filename: String?,
     val coordinates: String?,
     val elementIndex: Long?,
-    val additional: Map<String, String>
+    val additional: Map<String, String>,
 )

@@ -9,5 +9,5 @@ data class DjotImage(
     val src: String,
     val alt: String,
     val title: String?,
-    val attributes: String?
+    val attributes: String?,
 )

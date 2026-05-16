@@ -16,5 +16,5 @@ data class OcrElement(
     val rotation: OcrRotation?,
     val pageNumber: Int,
     val parentId: String?,
-    val backendMetadata: Map<String, String>
+    val backendMetadata: Map<String, String>,
 )

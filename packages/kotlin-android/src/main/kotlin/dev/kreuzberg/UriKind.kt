@@ -11,5 +11,5 @@ enum class UriKind {
     ANCHOR,
     CITATION,
     REFERENCE,
-    EMAIL;
+    EMAIL,
 }

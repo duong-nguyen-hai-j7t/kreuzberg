@@ -11,5 +11,5 @@ package dev.kreuzberg
 enum class CodeContentMode {
     CHUNKS,
     RAW,
-    STRUCTURE;
+    STRUCTURE,
 }

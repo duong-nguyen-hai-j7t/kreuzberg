@@ -12,5 +12,5 @@ data class HierarchicalBlock(
     val text: String,
     val fontSize: Float,
     val level: String,
-    val bbox: List<Float>?
+    val bbox: List<Float>?,
 )

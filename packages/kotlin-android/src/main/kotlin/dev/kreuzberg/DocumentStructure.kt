@@ -18,5 +18,5 @@ data class DocumentStructure(
     val nodes: List<DocumentNode>,
     val sourceFormat: String?,
     val relationships: List<DocumentRelationship>,
-    val nodeTypes: List<String>
+    val nodeTypes: List<String>,
 )

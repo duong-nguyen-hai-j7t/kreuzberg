@@ -10,5 +10,5 @@ data class HeaderMetadata(
     val text: String,
     val id: String?,
     val depth: Int,
-    val htmlOffset: Int
+    val htmlOffset: Int,
 )

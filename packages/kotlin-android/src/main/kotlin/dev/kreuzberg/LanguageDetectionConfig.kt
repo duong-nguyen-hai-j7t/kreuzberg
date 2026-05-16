@@ -8,5 +8,5 @@ package dev.kreuzberg
 data class LanguageDetectionConfig(
     val enabled: Boolean,
     val minConfidence: Double,
-    val detectMultiple: Boolean
+    val detectMultiple: Boolean,
 )

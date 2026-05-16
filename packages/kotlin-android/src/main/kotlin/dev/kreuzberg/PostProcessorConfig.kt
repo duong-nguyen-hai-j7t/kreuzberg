@@ -10,5 +10,5 @@ data class PostProcessorConfig(
     val enabledProcessors: List<String>?,
     val disabledProcessors: List<String>?,
     val enabledSet: String?,
-    val disabledSet: String?
+    val disabledSet: String?,
 )

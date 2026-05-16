@@ -15,5 +15,5 @@ data class TextExtractionResult(
     val characterCount: Long,
     val headers: List<String>?,
     val links: List<String>?,
-    val codeBlocks: List<String>?
+    val codeBlocks: List<String>?,
 )

@@ -10,6 +10,7 @@ categories = ["text-processing"]
 
 [lib]
 name = "kreuzberg_nif"
+
 crate-type = ["cdylib"]
 
 [dependencies]
