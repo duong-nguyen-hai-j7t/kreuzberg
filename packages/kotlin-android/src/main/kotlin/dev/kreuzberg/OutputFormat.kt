@@ -19,6 +19,6 @@ sealed class OutputFormat {
     object Json : OutputFormat()
     object Structured : OutputFormat()
     data class Custom(
-        val field0: String
+        val value: String
     ) : OutputFormat()
 }

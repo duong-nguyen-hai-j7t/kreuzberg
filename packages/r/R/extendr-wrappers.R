@@ -498,24 +498,6 @@ SecurityLimits$from_json <- function(json) .Call("wrap__SecurityLimits__from_jso
 }
 #' @export
 `[[.SecurityLimits` <- `$.SecurityLimits`
-HwpxExtractor <- new.env(parent = emptyenv())
-HwpxExtractor$default <- function() .Call("wrap__HwpxExtractor__default", PACKAGE = "kreuzberg")
-HwpxExtractor$name <- function() .Call("wrap__HwpxExtractor__name", self, PACKAGE = "kreuzberg")
-HwpxExtractor$version <- function() .Call("wrap__HwpxExtractor__version", self, PACKAGE = "kreuzberg")
-HwpxExtractor$initialize <- function() .Call("wrap__HwpxExtractor__initialize", self, PACKAGE = "kreuzberg")
-HwpxExtractor$shutdown <- function() .Call("wrap__HwpxExtractor__shutdown", self, PACKAGE = "kreuzberg")
-HwpxExtractor$description <- function() .Call("wrap__HwpxExtractor__description", self, PACKAGE = "kreuzberg")
-HwpxExtractor$author <- function() .Call("wrap__HwpxExtractor__author", self, PACKAGE = "kreuzberg")
-HwpxExtractor$supported_mime_types <- function() .Call("wrap__HwpxExtractor__supported_mime_types", self, PACKAGE = "kreuzberg")
-HwpxExtractor$priority <- function() .Call("wrap__HwpxExtractor__priority", self, PACKAGE = "kreuzberg")
-#' @export
-`$.HwpxExtractor` <- function(self, name) {
-  func <- HwpxExtractor[[name]]
-  environment(func) <- environment()
-  func
-}
-#' @export
-`[[.HwpxExtractor` <- `$.HwpxExtractor`
 TokenReductionConfig <- new.env(parent = emptyenv())
 TokenReductionConfig$default <- function() .Call("wrap__TokenReductionConfig__default", PACKAGE = "kreuzberg")
 TokenReductionConfig$from_json <- function(json) .Call("wrap__TokenReductionConfig__from_json", json, PACKAGE = "kreuzberg")
@@ -1066,24 +1048,6 @@ Uri <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.Uri` <- `$.Uri`
-StringBufferPool <- new.env(parent = emptyenv())
-#' @export
-`$.StringBufferPool` <- function(self, name) {
-  func <- StringBufferPool[[name]]
-  environment(func) <- environment()
-  func
-}
-#' @export
-`[[.StringBufferPool` <- `$.StringBufferPool`
-ByteBufferPool <- new.env(parent = emptyenv())
-#' @export
-`$.ByteBufferPool` <- function(self, name) {
-  func <- ByteBufferPool[[name]]
-  environment(func) <- environment()
-  func
-}
-#' @export
-`[[.ByteBufferPool` <- `$.ByteBufferPool`
 InfoResponse <- new.env(parent = emptyenv())
 #' @export
 `$.InfoResponse` <- function(self, name) {

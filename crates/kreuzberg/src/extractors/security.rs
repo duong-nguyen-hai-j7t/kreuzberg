@@ -154,6 +154,7 @@ impl std::error::Error for SecurityError {}
 
 /// Helper struct for validating ZIP archives for security issues.
 #[cfg(any(feature = "archives", feature = "hwpx"))]
+#[cfg_attr(alef, alef(skip))]
 pub struct ZipBombValidator {
     limits: SecurityLimits,
 }

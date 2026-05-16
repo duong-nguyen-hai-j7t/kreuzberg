@@ -281,9 +281,11 @@ impl std::fmt::Display for PoolError {
 impl std::error::Error for PoolError {}
 
 /// Convenience type alias for a pooled String.
+#[cfg_attr(alef, alef(skip))]
 pub type StringBufferPool = Pool<String>;
 
 /// Convenience type alias for a pooled Vec<u8>.
+#[cfg_attr(alef, alef(skip))]
 pub type ByteBufferPool = Pool<Vec<u8>>;
 
 /// Create a pre-configured string buffer pool for batch processing.

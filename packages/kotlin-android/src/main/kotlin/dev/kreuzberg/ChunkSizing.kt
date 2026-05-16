@@ -12,10 +12,60 @@ package dev.kreuzberg
  * available on HuggingFace Hub can be used, including OpenAI-compatible tokenizers
  * (e.g., `Xenova/gpt-4o`, `Xenova/cl100k_base`).
  */
+@com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = ChunkSizingDeserializer::class)
+@com.fasterxml.jackson.databind.annotation.JsonSerialize(using = ChunkSizingSerializer::class)
 sealed class ChunkSizing {
     object Characters : ChunkSizing()
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize
+    @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class Tokenizer(
         val model: String,
         val cacheDir: Path?
     ) : ChunkSizing()
+}
+
+private class ChunkSizingDeserializer : com.fasterxml.jackson.databind.deser.std.StdDeserializer<ChunkSizing>(ChunkSizing::class.java) {
+    @Suppress("LongMethod")
+    override fun deserialize(
+        parser: com.fasterxml.jackson.core.JsonParser,
+        ctx: com.fasterxml.jackson.databind.DeserializationContext,
+    ): ChunkSizing {
+        val node = parser.codec.readTree<com.fasterxml.jackson.databind.node.ObjectNode>(parser)
+        val tag = node.get("type")?.asText()
+        @Suppress("UNCHECKED_CAST")
+        val payload = (node.deepCopy() as com.fasterxml.jackson.databind.node.ObjectNode).apply { remove("type") }
+        return when (tag) {
+            "characters" -> ChunkSizing.Characters
+            "tokenizer" -> ctx.readTreeAsValue<ChunkSizing.Tokenizer>(payload, ChunkSizing.Tokenizer::class.java)
+            else -> throw com.fasterxml.jackson.databind.exc.InvalidFormatException(
+                parser, "Unknown ChunkSizing tag", tag, ChunkSizing::class.java,
+            )
+        }
+    }
+}
+
+private class ChunkSizingSerializer : com.fasterxml.jackson.databind.ser.std.StdSerializer<ChunkSizing>(ChunkSizing::class.java) {
+    @Suppress("LongMethod")
+    override fun serialize(
+        value: ChunkSizing,
+        gen: com.fasterxml.jackson.core.JsonGenerator,
+        provider: com.fasterxml.jackson.databind.SerializerProvider,
+    ) {
+        @Suppress("UNCHECKED_CAST")
+        val mapper = (gen.codec as? com.fasterxml.jackson.databind.ObjectMapper) ?: com.fasterxml.jackson.databind.ObjectMapper().findAndRegisterModules()
+        val node: com.fasterxml.jackson.databind.node.ObjectNode = when (value) {
+            is ChunkSizing.Characters -> {
+                val n = mapper.createObjectNode()
+                n.put("type", "characters")
+                n
+            }
+            is ChunkSizing.Tokenizer -> {
+                @Suppress("UNCHECKED_CAST")
+                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(value as ChunkSizing.Tokenizer) as com.fasterxml.jackson.databind.node.ObjectNode
+                n.put("type", "tokenizer")
+                n
+            }
+        }
+        mapper.writeTree(gen, node)
+    }
 }

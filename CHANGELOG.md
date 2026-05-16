@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0-rc.1] - 2026-05-16
+
+### Changed
+
+- **Alef binding generator v0.16.14**: payload-derived sealed variant parameter names in Kotlin Android (`Pdf(PdfMetadata)` → `val metadata` instead of `val field0`), C# record properties marked `required` on non-nullable refs without defaults, Java records for fields-only DTOs without builder pattern.
+
 ### Fixed
 
 - **MCID-tagged PDF content dropped in markdown/html output**: two

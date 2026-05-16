@@ -21,7 +21,6 @@ typedef struct KREUZBERGBatchBytesItem KREUZBERGBatchBytesItem;
 typedef struct KREUZBERGBatchFileItem KREUZBERGBatchFileItem;
 typedef struct KREUZBERGBibtexMetadata KREUZBERGBibtexMetadata;
 typedef struct KREUZBERGBlockType KREUZBERGBlockType;
-typedef struct KREUZBERGByteBufferPool KREUZBERGByteBufferPool;
 typedef struct KREUZBERGCacheWarmParams KREUZBERGCacheWarmParams;
 typedef struct KREUZBERGCharShape KREUZBERGCharShape;
 typedef struct KREUZBERGChunk KREUZBERGChunk;
@@ -104,7 +103,6 @@ typedef struct KREUZBERGHtmlMetadata KREUZBERGHtmlMetadata;
 typedef struct KREUZBERGHtmlOutputConfig KREUZBERGHtmlOutputConfig;
 typedef struct KREUZBERGHtmlTheme KREUZBERGHtmlTheme;
 typedef struct KREUZBERGHwpImage KREUZBERGHwpImage;
-typedef struct KREUZBERGHwpxExtractor KREUZBERGHwpxExtractor;
 typedef struct KREUZBERGImageExtractionConfig KREUZBERGImageExtractionConfig;
 typedef struct KREUZBERGImageKind KREUZBERGImageKind;
 typedef struct KREUZBERGImageMetadata KREUZBERGImageMetadata;
@@ -192,7 +190,6 @@ typedef struct KREUZBERGResultFormat KREUZBERGResultFormat;
 typedef struct KREUZBERGSecurityLimits KREUZBERGSecurityLimits;
 typedef struct KREUZBERGServerConfig KREUZBERGServerConfig;
 typedef struct KREUZBERGStreamReader KREUZBERGStreamReader;
-typedef struct KREUZBERGStringBufferPool KREUZBERGStringBufferPool;
 typedef struct KREUZBERGStructuredData KREUZBERGStructuredData;
 typedef struct KREUZBERGStructuredDataResult KREUZBERGStructuredDataResult;
 typedef struct KREUZBERGStructuredDataType KREUZBERGStructuredDataType;
@@ -205,7 +202,6 @@ typedef struct KREUZBERGTable KREUZBERGTable;
 typedef struct KREUZBERGTableCell KREUZBERGTableCell;
 typedef struct KREUZBERGTableGrid KREUZBERGTableGrid;
 typedef struct KREUZBERGTableModel KREUZBERGTableModel;
-typedef struct KREUZBERGTessdataManager KREUZBERGTessdataManager;
 typedef struct KREUZBERGTesseractConfig KREUZBERGTesseractConfig;
 typedef struct KREUZBERGTextAnnotation KREUZBERGTextAnnotation;
 typedef struct KREUZBERGTextDirection KREUZBERGTextDirection;
@@ -225,7 +221,6 @@ typedef struct KREUZBERGXmlExtractionResult KREUZBERGXmlExtractionResult;
 typedef struct KREUZBERGXmlMetadata KREUZBERGXmlMetadata;
 typedef struct KREUZBERGYakeParams KREUZBERGYakeParams;
 typedef struct KREUZBERGYearRange KREUZBERGYearRange;
-typedef struct KREUZBERGZipBombValidator KREUZBERGZipBombValidator;
 
 
 /**
@@ -4439,94 +4434,6 @@ uintptr_t kreuzberg_security_limits_max_table_cells(const KREUZBERGSecurityLimit
  * Returned pointers must be freed with the appropriate free function.
  */
 KREUZBERGSecurityLimits *kreuzberg_security_limits_default(void);
-
-/**
- * Free a `ZipBombValidator` handle.
- * # Safety
- * Pointer must have been returned by this library, or be null.
- */
-void kreuzberg_zip_bomb_validator_free(KREUZBERGZipBombValidator *ptr);
-
-/**
- * Free a `HwpxExtractor` handle.
- * # Safety
- * Pointer must have been returned by this library, or be null.
- */
-void kreuzberg_hwpx_extractor_free(KREUZBERGHwpxExtractor *ptr);
-
-/**
- * # Safety
- * Caller must ensure all pointer arguments are valid or null.
- * Returned pointers must be freed with the appropriate free function.
- */
-KREUZBERGHwpxExtractor *kreuzberg_hwpx_extractor_default(void);
-
-/**
- * # Safety
- * Caller must ensure all pointer arguments are valid or null.
- * Returned pointers must be freed with the appropriate free function.
- */
-char *kreuzberg_hwpx_extractor_name(const KREUZBERGHwpxExtractor *this_);
-
-/**
- * # Safety
- * Caller must ensure all pointer arguments are valid or null.
- * Returned pointers must be freed with the appropriate free function.
- */
-char *kreuzberg_hwpx_extractor_version(const KREUZBERGHwpxExtractor *this_);
-
-/**
- * # Safety
- * Caller must ensure all pointer arguments are valid or null.
- * Returned pointers must be freed with the appropriate free function.
- */
-int32_t kreuzberg_hwpx_extractor_initialize(const KREUZBERGHwpxExtractor *this_);
-
-/**
- * # Safety
- * Caller must ensure all pointer arguments are valid or null.
- * Returned pointers must be freed with the appropriate free function.
- */
-int32_t kreuzberg_hwpx_extractor_shutdown(const KREUZBERGHwpxExtractor *this_);
-
-/**
- * # Safety
- * Caller must ensure all pointer arguments are valid or null.
- * Returned pointers must be freed with the appropriate free function.
- */
-char *kreuzberg_hwpx_extractor_description(const KREUZBERGHwpxExtractor *this_);
-
-/**
- * # Safety
- * Caller must ensure all pointer arguments are valid or null.
- * Returned pointers must be freed with the appropriate free function.
- */
-char *kreuzberg_hwpx_extractor_author(const KREUZBERGHwpxExtractor *this_);
-
-/**
- * # Safety
- * Caller must ensure all pointer arguments are valid or null.
- * Returned pointers must be freed with the appropriate free function.
- */
-char *kreuzberg_hwpx_extractor_extract_bytes(const KREUZBERGHwpxExtractor *_this,
-                                             const uint8_t *_content,
-                                             uintptr_t _content_len,
-                                             const char *_mime_type,
-                                             const KREUZBERGExtractionConfig *_config);
-
-/**
- * # Safety
- * Caller must ensure all pointer arguments are valid or null.
- * Returned pointers must be freed with the appropriate free function.
- */
-char *kreuzberg_hwpx_extractor_supported_mime_types(const KREUZBERGHwpxExtractor *this_);
-
-/**
- * # Safety
- * Caller must ensure all pointer arguments are valid or null.
- * Returned pointers must be freed with the appropriate free function.
- */
-int32_t kreuzberg_hwpx_extractor_priority(const KREUZBERGHwpxExtractor *this_);
 
 /**
  * Create a `TokenReductionConfig` from a JSON string. Returns null on failure.
@@ -9349,20 +9256,6 @@ uint32_t kreuzberg_uri_page(const KREUZBERGUri *ptr);
 KREUZBERGUriKind *kreuzberg_uri_kind(const KREUZBERGUri *ptr);
 
 /**
- * Free a `StringBufferPool` handle.
- * # Safety
- * Pointer must have been returned by this library, or be null.
- */
-void kreuzberg_string_buffer_pool_free(KREUZBERGStringBufferPool *ptr);
-
-/**
- * Free a `ByteBufferPool` handle.
- * # Safety
- * Pointer must have been returned by this library, or be null.
- */
-void kreuzberg_byte_buffer_pool_free(KREUZBERGByteBufferPool *ptr);
-
-/**
  * Free a `TracingLayer` handle.
  * # Safety
  * Pointer must have been returned by this library, or be null.
@@ -10550,43 +10443,6 @@ uintptr_t kreuzberg_ocr_cache_stats_total_files(const KREUZBERGOcrCacheStats *pt
  * Pointer must be a valid handle returned by this library.
  */
 double kreuzberg_ocr_cache_stats_total_size_mb(const KREUZBERGOcrCacheStats *ptr);
-
-/**
- * Free a `TessdataManager` handle.
- * # Safety
- * Pointer must have been returned by this library, or be null.
- */
-void kreuzberg_tessdata_manager_free(KREUZBERGTessdataManager *ptr);
-
-/**
- * Get the cache directory path.
- * # Safety
- * Caller must ensure all pointer arguments are valid or null.
- * Returned pointers must be freed with the appropriate free function.
- */
-char *kreuzberg_tessdata_manager_cache_dir(const KREUZBERGTessdataManager *this_);
-
-/**
- * Check if a specific language traineddata file is cached.
- * # Safety
- * Caller must ensure all pointer arguments are valid or null.
- * Returned pointers must be freed with the appropriate free function.
- */
-int32_t kreuzberg_tessdata_manager_is_language_cached(const KREUZBERGTessdataManager *this_,
-                                                      const char *lang);
-
-/**
- * Downloads all tessdata_fast traineddata files to the cache directory.
- *
- * Skips files that already exist. Returns the count of newly downloaded files.
- *
- * When the `paddle-ocr` feature is not enabled, no download URLs are available
- * and this method always returns `Ok(0)`.
- * # Safety
- * Caller must ensure all pointer arguments are valid or null.
- * Returned pointers must be freed with the appropriate free function.
- */
-uintptr_t kreuzberg_tessdata_manager_ensure_all_languages(const KREUZBERGTessdataManager *this_);
 
 /**
  * Create a `PaddleOcrConfig` from a JSON string. Returns null on failure.

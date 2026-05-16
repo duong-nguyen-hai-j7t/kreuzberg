@@ -29,9 +29,7 @@ pub fn build(b: *std.Build) void {
         .root_module = async_module,
         .use_llvm = true,
     });
-    b.installArtifact(async_tests);
     const async_run = b.addRunArtifact(async_tests);
-    async_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&async_run.step);
 
     const batch_module = b.createModule(.{
@@ -46,9 +44,7 @@ pub fn build(b: *std.Build) void {
         .root_module = batch_module,
         .use_llvm = true,
     });
-    b.installArtifact(batch_tests);
     const batch_run = b.addRunArtifact(batch_tests);
-    batch_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&batch_run.step);
 
     const contract_module = b.createModule(.{
@@ -63,9 +59,7 @@ pub fn build(b: *std.Build) void {
         .root_module = contract_module,
         .use_llvm = true,
     });
-    b.installArtifact(contract_tests);
     const contract_run = b.addRunArtifact(contract_tests);
-    contract_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&contract_run.step);
 
     const detection_module = b.createModule(.{
@@ -80,9 +74,7 @@ pub fn build(b: *std.Build) void {
         .root_module = detection_module,
         .use_llvm = true,
     });
-    b.installArtifact(detection_tests);
     const detection_run = b.addRunArtifact(detection_tests);
-    detection_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&detection_run.step);
 
     const embeddings_module = b.createModule(.{
@@ -97,9 +89,7 @@ pub fn build(b: *std.Build) void {
         .root_module = embeddings_module,
         .use_llvm = true,
     });
-    b.installArtifact(embeddings_tests);
     const embeddings_run = b.addRunArtifact(embeddings_tests);
-    embeddings_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&embeddings_run.step);
 
     const error_module = b.createModule(.{
@@ -114,9 +104,7 @@ pub fn build(b: *std.Build) void {
         .root_module = error_module,
         .use_llvm = true,
     });
-    b.installArtifact(error_tests);
     const error_run = b.addRunArtifact(error_tests);
-    error_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&error_run.step);
 
     const format_specific_module = b.createModule(.{
@@ -131,9 +119,7 @@ pub fn build(b: *std.Build) void {
         .root_module = format_specific_module,
         .use_llvm = true,
     });
-    b.installArtifact(format_specific_tests);
     const format_specific_run = b.addRunArtifact(format_specific_tests);
-    format_specific_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&format_specific_run.step);
 
     const registry_module = b.createModule(.{
@@ -148,9 +134,7 @@ pub fn build(b: *std.Build) void {
         .root_module = registry_module,
         .use_llvm = true,
     });
-    b.installArtifact(registry_tests);
     const registry_run = b.addRunArtifact(registry_tests);
-    registry_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&registry_run.step);
 
     const registry_operations_module = b.createModule(.{
@@ -165,9 +149,7 @@ pub fn build(b: *std.Build) void {
         .root_module = registry_operations_module,
         .use_llvm = true,
     });
-    b.installArtifact(registry_operations_tests);
     const registry_operations_run = b.addRunArtifact(registry_operations_tests);
-    registry_operations_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&registry_operations_run.step);
 
     const smoke_module = b.createModule(.{
@@ -182,9 +164,7 @@ pub fn build(b: *std.Build) void {
         .root_module = smoke_module,
         .use_llvm = true,
     });
-    b.installArtifact(smoke_tests);
     const smoke_run = b.addRunArtifact(smoke_tests);
-    smoke_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&smoke_run.step);
 
 }

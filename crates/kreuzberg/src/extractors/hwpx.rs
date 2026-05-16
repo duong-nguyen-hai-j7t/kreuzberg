@@ -19,6 +19,7 @@ use crate::types::internal_builder::InternalDocumentBuilder;
 /// Extractor for Hangul Word Processor XML (.hwpx) files.
 ///
 /// Supports HWPX (Open HWPML), the ZIP-based XML successor to the binary HWP 5.0 format.
+#[cfg_attr(alef, alef(skip))]
 pub struct HwpxExtractor;
 
 impl HwpxExtractor {

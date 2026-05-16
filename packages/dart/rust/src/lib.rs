@@ -563,40 +563,6 @@ pub struct SecurityLimits {
     pub max_table_cells: i64,
 }
 
-#[frb(opaque)]
-pub struct ZipBombValidator {
-    pub(crate) inner: kreuzberg::extractors::security::ZipBombValidator,
-}
-
-impl From<kreuzberg::extractors::security::ZipBombValidator> for ZipBombValidator {
-    fn from(inner: kreuzberg::extractors::security::ZipBombValidator) -> Self {
-        Self { inner }
-    }
-}
-
-impl From<ZipBombValidator> for kreuzberg::extractors::security::ZipBombValidator {
-    fn from(value: ZipBombValidator) -> Self {
-        value.inner
-    }
-}
-
-#[frb(opaque)]
-pub struct HwpxExtractor {
-    pub(crate) inner: kreuzberg::extractors::HwpxExtractor,
-}
-
-impl From<kreuzberg::extractors::HwpxExtractor> for HwpxExtractor {
-    fn from(inner: kreuzberg::extractors::HwpxExtractor) -> Self {
-        Self { inner }
-    }
-}
-
-impl From<HwpxExtractor> for kreuzberg::extractors::HwpxExtractor {
-    fn from(value: HwpxExtractor) -> Self {
-        value.inner
-    }
-}
-
 #[frb(mirror(TokenReductionConfig))]
 pub struct TokenReductionConfig {
     pub level: ReductionLevel,
@@ -1364,40 +1330,6 @@ pub struct Uri {
 }
 
 #[frb(opaque)]
-pub struct StringBufferPool {
-    pub(crate) inner: kreuzberg::utils::pool::StringBufferPool,
-}
-
-impl From<kreuzberg::utils::pool::StringBufferPool> for StringBufferPool {
-    fn from(inner: kreuzberg::utils::pool::StringBufferPool) -> Self {
-        Self { inner }
-    }
-}
-
-impl From<StringBufferPool> for kreuzberg::utils::pool::StringBufferPool {
-    fn from(value: StringBufferPool) -> Self {
-        value.inner
-    }
-}
-
-#[frb(opaque)]
-pub struct ByteBufferPool {
-    pub(crate) inner: kreuzberg::utils::pool::ByteBufferPool,
-}
-
-impl From<kreuzberg::utils::pool::ByteBufferPool> for ByteBufferPool {
-    fn from(inner: kreuzberg::utils::pool::ByteBufferPool) -> Self {
-        Self { inner }
-    }
-}
-
-impl From<ByteBufferPool> for kreuzberg::utils::pool::ByteBufferPool {
-    fn from(value: ByteBufferPool) -> Self {
-        value.inner
-    }
-}
-
-#[frb(opaque)]
 pub struct TracingLayer {
     pub(crate) inner: kreuzberg::service::layers::tracing::TracingLayer,
 }
@@ -1641,23 +1573,6 @@ pub struct OcrCacheStats {
     pub total_size_mb: f64,
 }
 
-#[frb(opaque)]
-pub struct TessdataManager {
-    pub(crate) inner: kreuzberg::ocr::TessdataManager,
-}
-
-impl From<kreuzberg::ocr::TessdataManager> for TessdataManager {
-    fn from(inner: kreuzberg::ocr::TessdataManager) -> Self {
-        Self { inner }
-    }
-}
-
-impl From<TessdataManager> for kreuzberg::ocr::TessdataManager {
-    fn from(value: TessdataManager) -> Self {
-        value.inner
-    }
-}
-
 #[frb(mirror(PaddleOcrConfig))]
 pub struct PaddleOcrConfig {
     pub language: String,
@@ -1732,65 +1647,6 @@ pub struct PdfMetadata {
     pub width: Option<i64>,
     pub height: Option<i64>,
     pub page_count: Option<i64>,
-}
-
-#[allow(unused_imports)]
-use kreuzberg::plugins::DocumentExtractor;
-#[allow(unused_imports)]
-use kreuzberg::plugins::Plugin;
-impl HwpxExtractor {
-    // Method `default` is a static/associated function and is not yet bridged through FRB — skipped.
-    #[frb]
-    pub fn name(&self) -> String {
-        (|v: &str| v.to_string())(self.inner.name())
-    }
-    #[frb]
-    pub fn version(&self) -> String {
-        self.inner.version()
-    }
-    #[frb]
-    pub fn initialize(&self) -> Result<(), String> {
-        self.inner.initialize().map_err(|e| e.to_string())
-    }
-    #[frb]
-    pub fn shutdown(&self) -> Result<(), String> {
-        self.inner.shutdown().map_err(|e| e.to_string())
-    }
-    #[frb]
-    pub fn description(&self) -> String {
-        (|v: &str| v.to_string())(self.inner.description())
-    }
-    #[frb]
-    pub fn author(&self) -> String {
-        (|v: &str| v.to_string())(self.inner.author())
-    }
-    // Method `extract_bytes` has a sanitized return type that cannot be bridged through FRB — skipped.
-    #[frb]
-    pub fn supported_mime_types(&self) -> Vec<String> {
-        (|v: &[&str]| v.iter().map(|s| s.to_string()).collect())(self.inner.supported_mime_types())
-    }
-    #[frb]
-    pub fn priority(&self) -> i64 {
-        (|v| v as i64)(self.inner.priority())
-    }
-}
-
-impl TessdataManager {
-    #[frb]
-    pub fn cache_dir(&self) -> String {
-        (|v: &::std::path::Path| v.to_string_lossy().to_string())(self.inner.cache_dir())
-    }
-    #[frb]
-    pub fn is_language_cached(&self, lang: String) -> bool {
-        self.inner.is_language_cached(&lang)
-    }
-    #[frb]
-    pub fn ensure_all_languages(&self) -> Result<i64, String> {
-        self.inner
-            .ensure_all_languages()
-            .map(|v| v as i64)
-            .map_err(|e| e.to_string())
-    }
 }
 
 #[frb(mirror(ExecutionProviderType))]

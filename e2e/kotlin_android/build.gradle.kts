@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.ManagedVirtualDevice
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -9,13 +10,13 @@ group = "dev.kreuzberg"
 version = "0.1.0"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_25
-    targetCompatibility = JavaVersion.VERSION_25
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 kotlin {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_25)
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
@@ -40,6 +41,11 @@ dependencies {
     testImplementation("com.fasterxml.jackson.core:jackson-annotations:2.18.2")
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.18.2")
     testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.18.2")
+
+    // jackson-module-kotlin registers constructors/properties for Kotlin data
+    // classes, which have no default constructor and cannot be deserialized by
+    // plain Jackson without this module.
+    testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
 
     // jspecify for null-safety annotations on wrapped types
     testImplementation("org.jspecify:jspecify:1.0.0")
@@ -66,4 +72,20 @@ tasks.test {
 
     // Resolve fixture paths (e.g. "docx/fake.docx") against test_documents/
     workingDir = file("${rootDir}/../../test_documents")
+}
+
+// Gradle Managed Virtual Devices for on-device instrumented tests.
+// Run: ./gradlew pixel6api34DebugAndroidTest
+android {
+    testOptions {
+        managedDevices {
+            devices {
+                create<ManagedVirtualDevice>("pixel6api34") {
+                    device = "Pixel 6"
+                    apiLevel = 34
+                    systemImageSource = "aosp"
+                }
+            }
+        }
+    }
 }

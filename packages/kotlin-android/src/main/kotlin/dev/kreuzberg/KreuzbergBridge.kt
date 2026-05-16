@@ -2,6 +2,7 @@
 
 package dev.kreuzberg
 
+@Suppress("TooManyFunctions")
 object KreuzbergBridge {
     init { System.loadLibrary("kreuzberg_jni") }
 
@@ -48,19 +49,4 @@ object KreuzbergBridge {
     external fun nativeGetEmbeddingPreset(name: String): String?
 
     external fun nativeListEmbeddingPresets(): String
-
-    // JNI external funs for client instance methods.
-    external fun nativeHwpxExtractorName(handle: Long): String
-    external fun nativeHwpxExtractorVersion(handle: Long): String
-    external fun nativeHwpxExtractorInitialize(handle: Long)
-    external fun nativeHwpxExtractorShutdown(handle: Long)
-    external fun nativeHwpxExtractorDescription(handle: Long): String
-    external fun nativeHwpxExtractorAuthor(handle: Long): String
-    external fun nativeHwpxExtractorSupportedMimeTypes(handle: Long): String
-    external fun nativeHwpxExtractorPriority(handle: Long): Int
-    external fun nativeFreeHwpxExtractor(handle: Long)
-    external fun nativeTessdataManagerCacheDir(handle: Long): Long
-    external fun nativeTessdataManagerIsLanguageCached(handle: Long, requestJson: String): Boolean
-    external fun nativeTessdataManagerEnsureAllLanguages(handle: Long): Long
-    external fun nativeFreeTessdataManager(handle: Long)
 }

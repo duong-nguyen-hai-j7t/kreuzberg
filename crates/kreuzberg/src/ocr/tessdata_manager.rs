@@ -29,6 +29,7 @@ fn all_download_codes() -> Vec<&'static str> {
 
 /// Manages tessdata file downloading, caching, and manifest generation.
 #[derive(Debug, Clone)]
+#[cfg_attr(alef, alef(skip))]
 pub struct TessdataManager {
     cache_dir: PathBuf,
 }

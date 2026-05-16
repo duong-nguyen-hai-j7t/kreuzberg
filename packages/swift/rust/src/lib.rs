@@ -900,33 +900,6 @@ mod ffi {
     }
 
     extern "Rust" {
-        type ZipBombValidator;
-    }
-
-    extern "Rust" {
-        type HwpxExtractor;
-    }
-
-    extern "Rust" {
-        #[swift_bridge(swift_name = "hwpxExtractorName")]
-        fn hwpx_extractor_name(client: &HwpxExtractor) -> String;
-        #[swift_bridge(swift_name = "hwpxExtractorVersion")]
-        fn hwpx_extractor_version(client: &HwpxExtractor) -> String;
-        #[swift_bridge(swift_name = "hwpxExtractorInitialize")]
-        fn hwpx_extractor_initialize(client: &HwpxExtractor) -> Result<(), String>;
-        #[swift_bridge(swift_name = "hwpxExtractorShutdown")]
-        fn hwpx_extractor_shutdown(client: &HwpxExtractor) -> Result<(), String>;
-        #[swift_bridge(swift_name = "hwpxExtractorDescription")]
-        fn hwpx_extractor_description(client: &HwpxExtractor) -> String;
-        #[swift_bridge(swift_name = "hwpxExtractorAuthor")]
-        fn hwpx_extractor_author(client: &HwpxExtractor) -> String;
-        #[swift_bridge(swift_name = "hwpxExtractorSupportedMimeTypes")]
-        fn hwpx_extractor_supported_mime_types(client: &HwpxExtractor) -> Vec<String>;
-        #[swift_bridge(swift_name = "hwpxExtractorPriority")]
-        fn hwpx_extractor_priority(client: &HwpxExtractor) -> i32;
-    }
-
-    extern "Rust" {
         type TokenReductionConfig;
         #[swift_bridge(init)]
         fn new(
@@ -1947,14 +1920,6 @@ mod ffi {
     }
 
     extern "Rust" {
-        type StringBufferPool;
-    }
-
-    extern "Rust" {
-        type ByteBufferPool;
-    }
-
-    extern "Rust" {
         type TracingLayer;
     }
 
@@ -2172,19 +2137,6 @@ mod ffi {
         fn new(total_files: usize, total_size_mb: f64) -> OcrCacheStats;
         fn total_files(&self) -> usize;
         fn total_size_mb(&self) -> f64;
-    }
-
-    extern "Rust" {
-        type TessdataManager;
-    }
-
-    extern "Rust" {
-        #[swift_bridge(swift_name = "tessdataManagerCacheDir")]
-        fn tessdata_manager_cache_dir(client: &TessdataManager) -> String;
-        #[swift_bridge(swift_name = "tessdataManagerIsLanguageCached")]
-        fn tessdata_manager_is_language_cached(client: &TessdataManager, lang: String) -> bool;
-        #[swift_bridge(swift_name = "tessdataManagerEnsureAllLanguages")]
-        fn tessdata_manager_ensure_all_languages(client: &TessdataManager) -> Result<usize, String>;
     }
 
     extern "Rust" {
@@ -5631,40 +5583,6 @@ impl SecurityLimits {
     }
 }
 
-pub struct ZipBombValidator(pub kreuzberg::extractors::security::ZipBombValidator);
-
-pub struct HwpxExtractor(pub kreuzberg::extractors::HwpxExtractor);
-
-#[allow(unused_imports)]
-use kreuzberg::plugins::DocumentExtractor;
-#[allow(unused_imports)]
-use kreuzberg::plugins::Plugin;
-
-pub fn hwpx_extractor_name(client: &HwpxExtractor) -> String {
-    client.0.name().to_string()
-}
-pub fn hwpx_extractor_version(client: &HwpxExtractor) -> String {
-    client.0.version().to_string()
-}
-pub fn hwpx_extractor_initialize(client: &HwpxExtractor) -> Result<(), String> {
-    client.0.initialize().map_err(|e| e.to_string())
-}
-pub fn hwpx_extractor_shutdown(client: &HwpxExtractor) -> Result<(), String> {
-    client.0.shutdown().map_err(|e| e.to_string())
-}
-pub fn hwpx_extractor_description(client: &HwpxExtractor) -> String {
-    client.0.description().to_string()
-}
-pub fn hwpx_extractor_author(client: &HwpxExtractor) -> String {
-    client.0.author().to_string()
-}
-pub fn hwpx_extractor_supported_mime_types(client: &HwpxExtractor) -> Vec<String> {
-    client.0.supported_mime_types().iter().map(|s| s.to_string()).collect()
-}
-pub fn hwpx_extractor_priority(client: &HwpxExtractor) -> i32 {
-    client.0.priority()
-}
-
 pub struct TokenReductionConfig(pub kreuzberg::TokenReductionConfig);
 impl TokenReductionConfig {
     pub fn new(
@@ -9077,10 +8995,6 @@ impl Uri {
     }
 }
 
-pub struct StringBufferPool(pub kreuzberg::utils::pool::StringBufferPool);
-
-pub struct ByteBufferPool(pub kreuzberg::utils::pool::ByteBufferPool);
-
 pub struct TracingLayer(pub kreuzberg::service::layers::tracing::TracingLayer);
 
 pub struct ApiDoc(pub kreuzberg::api::openapi::ApiDoc);
@@ -9608,18 +9522,6 @@ impl OcrCacheStats {
     pub fn total_size_mb(&self) -> f64 {
         self.0.total_size_mb.clone()
     }
-}
-
-pub struct TessdataManager(pub kreuzberg::ocr::TessdataManager);
-
-pub fn tessdata_manager_cache_dir(client: &TessdataManager) -> String {
-    client.0.cache_dir().to_string_lossy().into_owned()
-}
-pub fn tessdata_manager_is_language_cached(client: &TessdataManager, lang: String) -> bool {
-    client.0.is_language_cached(&lang)
-}
-pub fn tessdata_manager_ensure_all_languages(client: &TessdataManager) -> Result<usize, String> {
-    client.0.ensure_all_languages().map_err(|e| e.to_string())
 }
 
 pub struct PaddleOcrConfig(pub kreuzberg::PaddleOcrConfig);
