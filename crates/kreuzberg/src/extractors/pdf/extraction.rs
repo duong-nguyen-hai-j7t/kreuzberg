@@ -111,6 +111,7 @@ pub(crate) fn extract_all_from_oxide_document(
 
     let images = if images_extraction_enabled || ocr_inline_images {
         let max_images = config.images.as_ref().and_then(|i| i.max_images_per_page);
+        #[cfg_attr(not(feature = "ocr"), allow(unused_mut))]
         let mut extracted = crate::pdf::oxide::images::extract_images_with_data(&mut doc, max_images).map_err(|e| {
             crate::error::KreuzbergError::Parsing {
                 message: format!("pdf_oxide image extraction failed: {e}"),
