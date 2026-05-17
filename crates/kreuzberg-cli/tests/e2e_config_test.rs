@@ -486,7 +486,7 @@ fn test_cli_real_extraction() {
             "--output-format",
             "markdown",
             "--config-json",
-            r#"{"use_cache": false, "enable_ocr": false}"#,
+            r#"{"use_cache": false, "disable_ocr": true}"#,
         ])
         .output()
         .expect("Failed to execute full E2E extraction");
