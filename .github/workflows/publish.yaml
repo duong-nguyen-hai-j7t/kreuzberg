@@ -1629,6 +1629,18 @@ jobs:
           pnpm exec napi artifacts --output-dir artifacts --npm-dir npm
         shell: bash
 
+      - name: Pack platform sub-packages
+        # `publish-npm packages-dir` mode expects *.tgz inputs; napi only
+        # stages the per-platform directories. Run `npm pack` in each so
+        # the publish action has tarballs to upload (or dry-run).
+        working-directory: crates/kreuzberg-node
+        shell: bash
+        run: |
+          for d in npm/*/; do
+            [ -d "$d" ] || continue
+            (cd "$d" && npm pack)
+          done
+
       - name: Publish platform sub-packages
         uses: kreuzberg-dev/actions/publish-npm@v1
         with:
