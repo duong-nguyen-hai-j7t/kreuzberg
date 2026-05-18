@@ -267,6 +267,7 @@ pub struct ModelPaths {
 }
 #[cfg_attr(alef, alef(skip))]
 /// A single model file entry in the cache manifest.
+#[allow(dead_code)] // constructed by `paddle-ocr`; types crate exposes the public shape only
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct ModelManifestEntry {
     /// Relative path within the cache directory (e.g., "paddle-ocr/det/model.onnx").
@@ -280,6 +281,7 @@ pub struct ModelManifestEntry {
 }
 #[cfg_attr(alef, alef(skip))]
 /// Statistics about the PaddleOCR model cache.
+#[allow(dead_code)] // constructed by `paddle-ocr`; types crate exposes the public shape only
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct CacheStats {
     /// Total size of cached models in bytes.

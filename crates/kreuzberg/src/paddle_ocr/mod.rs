@@ -72,6 +72,7 @@ pub const SUPPORTED_LANGUAGES: &[&str] = &[
 ];
 
 /// Check if a language code is supported by PaddleOCR.
+#[allow(dead_code)] // consumed by `paddle-ocr`; types crate ships it for ABI shape
 pub(crate) fn is_language_supported(lang: &str) -> bool {
     SUPPORTED_LANGUAGES.contains(&lang)
 }
@@ -97,6 +98,7 @@ pub(crate) fn is_language_supported(lang: &str) -> bool {
 /// | `devanagari` | Hindi, Marathi, Sanskrit, Nepali |
 /// | `tamil` | Tamil |
 /// | `telugu` | Telugu |
+#[allow(dead_code)] // consumed by `paddle-ocr`; types crate ships it for ABI shape
 pub(crate) fn language_to_script_family(paddle_lang: &str) -> &'static str {
     match paddle_lang {
         "en" => "english",
@@ -115,6 +117,7 @@ pub(crate) fn language_to_script_family(paddle_lang: &str) -> &'static str {
 }
 
 /// Map Kreuzberg language codes to PaddleOCR language codes.
+#[allow(dead_code)] // consumed by `paddle-ocr`; types crate ships it for ABI shape
 pub(crate) fn map_language_code(kreuzberg_code: &str) -> Option<&'static str> {
     match kreuzberg_code {
         // Direct mappings

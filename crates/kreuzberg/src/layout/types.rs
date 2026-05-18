@@ -10,6 +10,7 @@ pub struct BBox {
     pub y2: f32,
 }
 
+#[allow(dead_code)] // helpers consumed by `layout-detection`; types crate ships them as part of `layout-types`
 impl BBox {
     pub(crate) fn new(x1: f32, y1: f32, x2: f32, y2: f32) -> Self {
         Self { x1, y1, x2, y2 }
@@ -98,6 +99,7 @@ pub enum LayoutClass {
     KeyValueRegion,
 }
 
+#[allow(dead_code)] // helpers consumed by `layout-detection`; types crate ships them as part of `layout-types`
 impl LayoutClass {
     /// Map from Docling RT-DETR model label ID (0-16) to LayoutClass.
     pub(crate) fn from_docling_id(id: i64) -> Option<Self> {
@@ -207,11 +209,13 @@ pub struct LayoutDetection {
 
 impl LayoutDetection {
     /// Sort detections by confidence in descending order.
+    #[allow(dead_code)] // consumed by `layout-detection`; types crate ships it as part of `layout-types`
     pub(crate) fn sort_by_confidence_desc(mut detections: Vec<LayoutDetection>) -> Vec<LayoutDetection> {
         detections.sort_by(|a, b| b.confidence.total_cmp(&a.confidence));
         detections
     }
 
+    #[allow(dead_code)] // consumed by `layout-detection`; types crate ships it as part of `layout-types`
     pub(crate) fn new(class_name: LayoutClass, confidence: f32, bbox: BBox) -> Self {
         Self {
             class_name,
@@ -264,6 +268,7 @@ pub struct DetectionResult {
 }
 
 impl DetectionResult {
+    #[allow(dead_code)] // consumed by `layout-detection`; types crate ships it as part of `layout-types`
     pub(crate) fn new(page_width: u32, page_height: u32, detections: Vec<LayoutDetection>) -> Self {
         Self {
             page_width,
