@@ -18,7 +18,7 @@ defmodule Kreuzberg.MixProject do
     [
       licenses: ["Elastic-2.0"],
       links: %{"GitHub" => "https://github.com/kreuzberg-dev/kreuzberg"},
-      files: ~w(lib native .formatter.exs mix.exs README* checksum-*.exs)
+      files: ~w(lib .formatter.exs mix.exs README* native ../../packages/elixir/native/kreuzberg_nif/src/*.ex)
     ]
   end
 
