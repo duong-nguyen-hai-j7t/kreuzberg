@@ -820,6 +820,7 @@ class = "dev.kreuzberg.Kreuzberg"
 function = "extractFile"
 options_type = "ExtractionConfig"
 enum_fields = { outputFormat = "OutputFormat" }
+assert_enum_fields = { "metadata.format" = "FormatMetadata" }
 
 [crates.e2e.call.overrides.csharp]
 class = "KreuzbergLib"
@@ -879,6 +880,12 @@ args = [
 # Missing mime_type will be inferred from the file extension by the e2e generator.
 function = "extract_bytes"
 async = true
+
+[crates.e2e.calls.extract_file.overrides.zig]
+# Zig binding has no async runtime; redirect to the sync variant and parse JSON.
+function = "extract_file_sync"
+async = false
+result_is_json_struct = true
 
 [crates.e2e.calls.extract_file.overrides.php]
 # PHP facade exposes the async variant under the bare name (`extractFile`);
@@ -2683,6 +2690,11 @@ result_is_array = true
 extra_args = ["nil", "nil"]
 
 [crates.e2e.calls.render_pdf_page_to_png.overrides.java]
+result_is_bytes = true
+result_is_simple = true
+extra_args = ["null", "null"]
+
+[crates.e2e.calls.render_pdf_page_to_png.overrides.zig]
 result_is_bytes = true
 result_is_simple = true
 extra_args = ["null", "null"]
