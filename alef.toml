@@ -2646,7 +2646,7 @@ function = "embed_texts_async"
 module = "kreuzberg"
 async = true
 returns_result = true
-skip_languages = ["wasm"]
+skip_languages = ["wasm", "swift"]
 options_type = "EmbeddingConfig"
 args = [
   { name = "texts", field = "input.texts", type = "json_object", owned = true, element_type = "String" },
@@ -2749,6 +2749,11 @@ extra_args = ["null", "null"]
 result_is_bytes = true
 result_is_simple = true
 extra_args = ["NULL", "NULL"]
+
+[crates.e2e.calls.render_pdf_page_to_png.overrides.swift]
+result_is_bytes = true
+result_is_simple = true
+extra_args = ["dpi: nil", "password: nil"]
 
 [crates.e2e.calls.bold.overrides.python]
 function = "bold"
