@@ -10,18 +10,18 @@
  */
 export interface AccelerationConfig {
   /** Execution provider to use for ONNX inference. */
-  provider?: JsExecutionProviderType
+  provider?: JsExecutionProviderType;
   /** GPU device ID (for CUDA/TensorRT). Ignored for CPU/CoreML/Auto. */
-  deviceId?: number
+  deviceId?: number;
 }
 
 /** Types of inline text annotations. */
 export interface AnnotationKind {
-  annotation_type: string
-  url?: string
-  title?: string
-  value?: string
-  name?: string
+  annotation_type: string;
+  url?: string;
+  title?: string;
+  value?: string;
+  name?: string;
 }
 
 /**
@@ -32,11 +32,11 @@ export interface AnnotationKind {
  */
 export interface ArchiveEntry {
   /** Archive-relative file path (e.g. "folder/document.pdf"). */
-  path: string
+  path: string;
   /** Detected MIME type of the file. */
-  mimeType: string
+  mimeType: string;
   /** Full extraction result for this file. */
-  result: ExtractionResult
+  result: ExtractionResult;
 }
 
 /**
@@ -46,15 +46,15 @@ export interface ArchiveEntry {
  */
 export interface ArchiveMetadata {
   /** Archive format ("ZIP", "TAR", "7Z", etc.) */
-  format?: string
+  format?: string;
   /** Total number of files in the archive */
-  fileCount?: number
+  fileCount?: number;
   /** List of file paths within the archive */
-  fileList?: Array<string>
+  fileList?: Array<string>;
   /** Total uncompressed size in bytes */
-  totalSize?: number
+  totalSize?: number;
   /** Compressed size in bytes (if available) */
-  compressedSize?: number
+  compressedSize?: number;
 }
 
 /**
@@ -65,11 +65,11 @@ export interface ArchiveMetadata {
  */
 export interface BatchBytesItem {
   /** The content bytes to extract from */
-  content: Uint8Array | Buffer | Array<number>
+  content: Uint8Array | Buffer | Array<number>;
   /** MIME type of the content (e.g., "application/pdf", "text/html") */
-  mimeType: string
+  mimeType: string;
   /** Per-item configuration overrides (None uses batch-level defaults) */
-  config?: FileExtractionConfig
+  config?: FileExtractionConfig;
 }
 
 /**
@@ -101,7 +101,10 @@ export interface BatchBytesItem {
  *
  * Per-item configuration overrides:
  */
-export declare function batchExtractBytes(items: Array<BatchBytesItem>, config?: ExtractionConfig | undefined | null): Promise<Array<ExtractionResult>>
+export declare function batchExtractBytes(
+  items: Array<BatchBytesItem>,
+  config?: ExtractionConfig | undefined | null,
+): Promise<Array<ExtractionResult>>;
 
 /**
  * Synchronous wrapper for `batch_extract_bytes`.
@@ -113,7 +116,10 @@ export declare function batchExtractBytes(items: Array<BatchBytesItem>, config?:
  *
  * # Example
  */
-export declare function batchExtractBytesSync(items: Array<BatchBytesItem>, config?: ExtractionConfig | undefined | null): Array<ExtractionResult>
+export declare function batchExtractBytesSync(
+  items: Array<BatchBytesItem>,
+  config?: ExtractionConfig | undefined | null,
+): Array<ExtractionResult>;
 
 /**
  * Extract content from multiple files concurrently.
@@ -150,7 +156,10 @@ export declare function batchExtractBytesSync(items: Array<BatchBytesItem>, conf
  *
  * Per-file configuration overrides:
  */
-export declare function batchExtractFiles(items: Array<BatchFileItem>, config?: ExtractionConfig | undefined | null): Promise<Array<ExtractionResult>>
+export declare function batchExtractFiles(
+  items: Array<BatchFileItem>,
+  config?: ExtractionConfig | undefined | null,
+): Promise<Array<ExtractionResult>>;
 
 /**
  * Synchronous wrapper for `batch_extract_files`.
@@ -160,7 +169,10 @@ export declare function batchExtractFiles(items: Array<BatchFileItem>, config?: 
  *
  * # Example
  */
-export declare function batchExtractFilesSync(items: Array<BatchFileItem>, config?: ExtractionConfig | undefined | null): Array<ExtractionResult>
+export declare function batchExtractFilesSync(
+  items: Array<BatchFileItem>,
+  config?: ExtractionConfig | undefined | null,
+): Array<ExtractionResult>;
 
 /**
  * Batch item for file extraction.
@@ -170,47 +182,47 @@ export declare function batchExtractFilesSync(items: Array<BatchFileItem>, confi
  */
 export interface BatchFileItem {
   /** Path to the file to extract from */
-  path: string
+  path: string;
   /** Per-file configuration overrides (None uses batch-level defaults) */
-  config?: FileExtractionConfig
+  config?: FileExtractionConfig;
 }
 
 /** Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-right. */
 export interface BBox {
-  x1: number
-  y1: number
-  x2: number
-  y2: number
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
 }
 
 /** BibTeX bibliography metadata. */
 export interface BibtexMetadata {
   /** Number of entries in the bibliography. */
-  entryCount?: number
-  citationKeys?: Array<string>
-  authors?: Array<string>
-  yearRange?: JsYearRange
-  entryTypes?: Record<string, number>
+  entryCount?: number;
+  citationKeys?: Array<string>;
+  authors?: Array<string>;
+  yearRange?: JsYearRange;
+  entryTypes?: Record<string, number>;
 }
 
 /** Types of block-level elements in Djot. */
 export declare const enum BlockType {
-  Paragraph = 'paragraph',
-  Heading = 'heading',
-  Blockquote = 'blockquote',
-  CodeBlock = 'code_block',
-  ListItem = 'list_item',
-  OrderedList = 'ordered_list',
-  BulletList = 'bullet_list',
-  TaskList = 'task_list',
-  DefinitionList = 'definition_list',
-  DefinitionTerm = 'definition_term',
-  DefinitionDescription = 'definition_description',
-  Div = 'div',
-  Section = 'section',
-  ThematicBreak = 'thematic_break',
-  RawBlock = 'raw_block',
-  MathDisplay = 'math_display'
+  Paragraph = "paragraph",
+  Heading = "heading",
+  Blockquote = "blockquote",
+  CodeBlock = "code_block",
+  ListItem = "list_item",
+  OrderedList = "ordered_list",
+  BulletList = "bullet_list",
+  TaskList = "task_list",
+  DefinitionList = "definition_list",
+  DefinitionTerm = "definition_term",
+  DefinitionDescription = "definition_description",
+  Div = "div",
+  Section = "section",
+  ThematicBreak = "thematic_break",
+  RawBlock = "raw_block",
+  MathDisplay = "math_display",
 }
 
 /**
@@ -222,23 +234,23 @@ export declare const enum BlockType {
  */
 export interface Chunk {
   /** The text content of this chunk. */
-  content: string
+  content: string;
   /**
    * Semantic structural classification of this chunk.
    *
    * Assigned by the heuristic classifier based on content patterns and
    * heading context. Defaults to `ChunkType::Unknown` when no rule matches.
    */
-  chunkType: JsChunkType
+  chunkType: JsChunkType;
   /**
    * Optional embedding vector for this chunk.
    *
    * Only populated when `EmbeddingConfig` is provided in chunking configuration.
    * The dimensionality depends on the chosen embedding model.
    */
-  embedding?: Array<number>
+  embedding?: Array<number>;
   /** Metadata about this chunk's position and properties. */
-  metadata: JsChunkMetadata
+  metadata: JsChunkMetadata;
 }
 
 /**
@@ -258,10 +270,10 @@ export interface Chunk {
  *   fallback path. For best results, pair with an embedding model.
  */
 export declare const enum ChunkerType {
-  Text = 'text',
-  Markdown = 'markdown',
-  Yaml = 'yaml',
-  Semantic = 'semantic'
+  Text = "text",
+  Markdown = "markdown",
+  Yaml = "yaml",
+  Semantic = "semantic",
 }
 
 /**
@@ -281,36 +293,36 @@ export interface ChunkingConfig {
    *
    * Default: 1000
    */
-  max_chars?: number
+  max_chars?: number;
   /**
    * Overlap between chunks (in units determined by `sizing`).
    *
    * Default: 200
    */
-  max_overlap?: number
+  max_overlap?: number;
   /**
    * Whether to trim whitespace from chunk boundaries.
    *
    * Default: true
    */
-  trim?: boolean
+  trim?: boolean;
   /**
    * Type of chunker to use (Text or Markdown).
    *
    * Default: Text
    */
-  chunkerType?: JsChunkerType
+  chunkerType?: JsChunkerType;
   /** Optional embedding configuration for chunk embeddings. */
-  embedding?: JsEmbeddingConfig
+  embedding?: JsEmbeddingConfig;
   /** Use a preset configuration (overrides individual settings if provided). */
-  preset?: string
+  preset?: string;
   /**
    * How to measure chunk size.
    *
    * Default: `Characters` (Unicode character count).
    * Enable `chunking-tiktoken` or `chunking-tokenizers` features for token-based sizing.
    */
-  sizing?: JsChunkSizing
+  sizing?: JsChunkSizing;
   /**
    * When `true` and `chunker_type` is `Markdown`, prepend the heading hierarchy
    * path (e.g. `"# Title > ## Section
@@ -322,7 +334,7 @@ export interface ChunkingConfig {
    *
    * Default: `false`
    */
-  prependHeadingContext?: boolean
+  prependHeadingContext?: boolean;
   /**
    * Optional cosine similarity threshold for semantic topic boundary detection.
    *
@@ -332,46 +344,46 @@ export interface ChunkingConfig {
    * topic boundaries (more, smaller chunks); higher values detect fewer.
    * Range: `0.0..=1.0`.
    */
-  topicThreshold?: number
+  topicThreshold?: number;
 }
 
-export declare function chunkingConfigDefault(): ChunkingConfig
+export declare function chunkingConfigDefault(): ChunkingConfig;
 
 /** Metadata about a chunk's position in the original document. */
 export interface ChunkMetadata {
   /** Byte offset where this chunk starts in the original text (UTF-8 valid boundary). */
-  byteStart: number
+  byteStart: number;
   /** Byte offset where this chunk ends in the original text (UTF-8 valid boundary). */
-  byteEnd: number
+  byteEnd: number;
   /**
    * Number of tokens in this chunk (if available).
    *
    * This is calculated by the embedding model's tokenizer if embeddings are enabled.
    */
-  tokenCount?: number
+  tokenCount?: number;
   /** Zero-based index of this chunk in the document. */
-  chunkIndex: number
+  chunkIndex: number;
   /** Total number of chunks in the document. */
-  totalChunks: number
+  totalChunks: number;
   /**
    * First page number this chunk spans (1-indexed).
    *
    * Only populated when page tracking is enabled in extraction configuration.
    */
-  firstPage?: number
+  firstPage?: number;
   /**
    * Last page number this chunk spans (1-indexed, equal to first_page for single-page chunks).
    *
    * Only populated when page tracking is enabled in extraction configuration.
    */
-  lastPage?: number
+  lastPage?: number;
   /**
    * Heading context when using Markdown chunker.
    *
    * Contains the heading hierarchy this chunk falls under.
    * Only populated when `ChunkerType::Markdown` is used.
    */
-  headingContext?: HeadingContext
+  headingContext?: HeadingContext;
   /**
    * Indices into `ExtractionResult.images` for images on pages covered by this chunk.
    *
@@ -379,7 +391,7 @@ export interface ChunkMetadata {
    * image whose `page_number` falls within `[first_page, last_page]`.
    * Empty when image extraction is disabled or the chunk spans no pages with images.
    */
-  imageIndices: Array<number>
+  imageIndices: Array<number>;
 }
 
 /**
@@ -393,9 +405,9 @@ export interface ChunkMetadata {
  * (e.g., `Xenova/gpt-4o`, `Xenova/cl100k_base`).
  */
 export interface ChunkSizing {
-  type: string
-  model?: string
-  cacheDir?: string
+  type: string;
+  model?: string;
+  cacheDir?: string;
 }
 
 /**
@@ -407,54 +419,54 @@ export interface ChunkSizing {
  */
 export declare const enum ChunkType {
   /** Section heading or document title. */
-  Heading = 'heading',
+  Heading = "heading",
   /** Party list: names, addresses, and signatories. */
-  PartyList = 'party_list',
+  PartyList = "party_list",
   /** Definition clause ("X means…", "X shall mean…"). */
-  Definitions = 'definitions',
+  Definitions = "definitions",
   /** Operative clause containing legal/contractual action verbs. */
-  OperativeClause = 'operative_clause',
+  OperativeClause = "operative_clause",
   /** Signature block with signatures, names, and dates. */
-  SignatureBlock = 'signature_block',
+  SignatureBlock = "signature_block",
   /** Schedule, annex, appendix, or exhibit section. */
-  Schedule = 'schedule',
+  Schedule = "schedule",
   /** Table-like content with aligned columns or repeated patterns. */
-  TableLike = 'table_like',
+  TableLike = "table_like",
   /** Mathematical formula or equation. */
-  Formula = 'formula',
+  Formula = "formula",
   /** Code block or preformatted content. */
-  CodeBlock = 'code_block',
+  CodeBlock = "code_block",
   /** Embedded or referenced image content. */
-  Image = 'image',
+  Image = "image",
   /** Organizational chart or hierarchy diagram. */
-  OrgChart = 'org_chart',
+  OrgChart = "org_chart",
   /** Diagram, figure, or visual illustration. */
-  Diagram = 'diagram',
+  Diagram = "diagram",
   /** Unclassified or mixed content. */
-  Unknown = 'unknown'
+  Unknown = "unknown",
 }
 
 /** Citation file metadata (RIS, PubMed, EndNote). */
 export interface CitationMetadata {
-  citationCount?: number
-  format?: string
-  authors?: Array<string>
-  yearRange?: JsYearRange
-  dois?: Array<string>
-  keywords?: Array<string>
+  citationCount?: number;
+  format?: string;
+  authors?: Array<string>;
+  yearRange?: JsYearRange;
+  dois?: Array<string>;
+  keywords?: Array<string>;
 }
 
-export declare function clearDocumentExtractors(): void
+export declare function clearDocumentExtractors(): void;
 
-export declare function clearEmbeddingBackends(): void
+export declare function clearEmbeddingBackends(): void;
 
-export declare function clearOcrBackends(): void
+export declare function clearOcrBackends(): void;
 
-export declare function clearPostProcessors(): void
+export declare function clearPostProcessors(): void;
 
-export declare function clearRenderers(): void
+export declare function clearRenderers(): void;
 
-export declare function clearValidators(): void
+export declare function clearValidators(): void;
 
 /**
  * Content rendering mode for code extraction.
@@ -464,11 +476,11 @@ export declare function clearValidators(): void
  */
 export declare const enum CodeContentMode {
   /** Use TSLP semantic chunks as content (default). */
-  Chunks = 'chunks',
+  Chunks = "chunks",
   /** Use raw source code as content. */
-  Raw = 'raw',
+  Raw = "raw",
   /** Emit function/class headings + docstrings (no code bodies). */
-  Structure = 'structure'
+  Structure = "structure",
 }
 
 /**
@@ -494,7 +506,7 @@ export interface ContentFilterConfig {
    *
    * Default: `false` (headers are stripped or excluded).
    */
-  includeHeaders?: boolean
+  includeHeaders?: boolean;
   /**
    * Include running footers in extraction output.
    *
@@ -506,7 +518,7 @@ export interface ContentFilterConfig {
    *
    * Default: `false` (footers are stripped or excluded).
    */
-  includeFooters?: boolean
+  includeFooters?: boolean;
   /**
    * Enable the heuristic cross-page repeating text detector.
    *
@@ -523,7 +535,7 @@ export interface ContentFilterConfig {
    *
    * Default: `true`.
    */
-  stripRepeatingText?: boolean
+  stripRepeatingText?: boolean;
   /**
    * Include watermark text in extraction output.
    *
@@ -532,10 +544,10 @@ export interface ContentFilterConfig {
    *
    * Default: `false` (watermarks are stripped).
    */
-  includeWatermarks?: boolean
+  includeWatermarks?: boolean;
 }
 
-export declare function contentFilterConfigDefault(): ContentFilterConfig
+export declare function contentFilterConfigDefault(): ContentFilterConfig;
 
 /**
  * Content layer classification for document nodes.
@@ -544,19 +556,19 @@ export declare function contentFilterConfigDefault(): ContentFilterConfig
  */
 export declare const enum ContentLayer {
   /** Main document body content. */
-  Body = 'body',
+  Body = "body",
   /** Page/section header (running header). */
-  Header = 'header',
+  Header = "header",
   /** Page/section footer (running footer). */
-  Footer = 'footer',
+  Footer = "footer",
   /** Footnote content. */
-  Footnote = 'footnote'
+  Footnote = "footnote",
 }
 
 /** JATS contributor with role. */
 export interface ContributorRole {
-  name: string
-  role?: string
+  name: string;
+  role?: string;
 }
 
 /**
@@ -567,64 +579,64 @@ export interface ContributorRole {
  */
 export interface CoreProperties {
   /** Document title */
-  title?: string
+  title?: string;
   /** Document subject/topic */
-  subject?: string
+  subject?: string;
   /** Document creator/author */
-  creator?: string
+  creator?: string;
   /** Keywords or tags */
-  keywords?: string
+  keywords?: string;
   /** Document description/abstract */
-  description?: string
+  description?: string;
   /** User who last modified the document */
-  lastModifiedBy?: string
+  lastModifiedBy?: string;
   /** Revision number */
-  revision?: string
+  revision?: string;
   /** Creation timestamp (ISO 8601) */
-  created?: string
+  created?: string;
   /** Last modification timestamp (ISO 8601) */
-  modified?: string
+  modified?: string;
   /** Document category */
-  category?: string
+  category?: string;
   /** Content status (Draft, Final, etc.) */
-  contentStatus?: string
+  contentStatus?: string;
   /** Document language */
-  language?: string
+  language?: string;
   /** Unique identifier */
-  identifier?: string
+  identifier?: string;
   /** Document version */
-  version?: string
+  version?: string;
   /** Last print timestamp (ISO 8601) */
-  lastPrinted?: string
+  lastPrinted?: string;
 }
 
 /** CSV/TSV file metadata. */
 export interface CsvMetadata {
-  rowCount?: number
-  columnCount?: number
-  delimiter?: string
-  hasHeader?: boolean
-  columnTypes?: Array<string>
+  rowCount?: number;
+  columnCount?: number;
+  delimiter?: string;
+  hasHeader?: boolean;
+  columnTypes?: Array<string>;
 }
 
 /** dBASE field information. */
 export interface DbfFieldInfo {
-  name: string
-  fieldType: string
+  name: string;
+  fieldType: string;
 }
 
 /** dBASE (DBF) file metadata. */
 export interface DbfMetadata {
-  recordCount?: number
-  fieldCount?: number
-  fields?: Array<JsDbfFieldInfo>
+  recordCount?: number;
+  fieldCount?: number;
+  fields?: Array<JsDbfFieldInfo>;
 }
 
 /** Page-level detection result containing all detections and page metadata. */
 export interface DetectionResult {
-  pageWidth: number
-  pageHeight: number
-  detections: Array<LayoutDetection>
+  pageWidth: number;
+  pageHeight: number;
+  detections: Array<LayoutDetection>;
 }
 
 /**
@@ -633,7 +645,7 @@ export interface DetectionResult {
  * Uses the file extension and optionally the file content to determine the MIME type.
  * Set `check_exists` to `true` to verify the file exists before detection.
  */
-export declare function detectMimeType(path: string, checkExists: boolean): string
+export declare function detectMimeType(path: string, checkExists: boolean): string;
 
 /**
  * Detect MIME type from raw file bytes.
@@ -656,14 +668,14 @@ export declare function detectMimeType(path: string, checkExists: boolean): stri
  *
  * Returns `KreuzbergError.UnsupportedFormat` if MIME type cannot be determined.
  */
-export declare function detectMimeTypeFromBytes(content: Buffer): string
+export declare function detectMimeTypeFromBytes(content: Buffer): string;
 
 /** MIME type detection response. */
 export interface DetectResponse {
   /** Detected MIME type */
-  mimeType: string
+  mimeType: string;
   /** Original filename (if provided) */
-  filename?: string
+  filename?: string;
 }
 
 /**
@@ -681,45 +693,45 @@ export interface DetectResponse {
  */
 export interface DjotContent {
   /** Plain text representation for backwards compatibility */
-  plainText: string
+  plainText: string;
   /** Structured block-level content */
-  blocks: Array<JsFormattedBlock>
+  blocks: Array<JsFormattedBlock>;
   /** Metadata from YAML frontmatter */
-  metadata: JsMetadata
+  metadata: JsMetadata;
   /** Extracted tables as structured data */
-  tables: Array<JsTable>
+  tables: Array<JsTable>;
   /** Extracted images with metadata */
-  images: Array<JsDjotImage>
+  images: Array<JsDjotImage>;
   /** Extracted links with URLs */
-  links: Array<JsDjotLink>
+  links: Array<JsDjotLink>;
   /** Footnote definitions */
-  footnotes: Array<JsFootnote>
+  footnotes: Array<JsFootnote>;
   /** Attributes mapped by element identifier (if present) */
-  attributes: Array<string>
+  attributes: Array<string>;
 }
 
 /** Image element in Djot. */
 export interface DjotImage {
   /** Image source URL or path */
-  src: string
+  src: string;
   /** Alternative text */
-  alt: string
+  alt: string;
   /** Optional title */
-  title?: string
+  title?: string;
   /** Element attributes */
-  attributes?: string
+  attributes?: string;
 }
 
 /** Link element in Djot. */
 export interface DjotLink {
   /** Link URL */
-  url: string
+  url: string;
   /** Link text content */
-  text: string
+  text: string;
   /** Optional title */
-  title?: string
+  title?: string;
   /** Element attributes */
-  attributes?: string
+  attributes?: string;
 }
 
 /**
@@ -730,44 +742,44 @@ export interface DjotLink {
  */
 export interface DocumentNode {
   /** Deterministic identifier (hash of content + position). */
-  id: string
+  id: string;
   /** Node content — tagged enum, type-specific data only. */
-  content: JsNodeContent
+  content: JsNodeContent;
   /** Parent node index (`None` = root-level node). */
-  parent?: number
+  parent?: number;
   /** Child node indices in reading order. */
-  children: Array<number>
+  children: Array<number>;
   /** Content layer classification. */
-  contentLayer: JsContentLayer
+  contentLayer: JsContentLayer;
   /** Page number where this node starts (1-indexed). */
-  page?: number
+  page?: number;
   /** Page number where this node ends (for multi-page tables/sections). */
-  pageEnd?: number
+  pageEnd?: number;
   /** Bounding box in document coordinates. */
-  bbox?: string
+  bbox?: string;
   /**
    * Inline annotations (formatting, links) on this node's text content.
    *
    * Only meaningful for text-carrying nodes; empty for containers.
    */
-  annotations: Array<JsTextAnnotation>
+  annotations: Array<JsTextAnnotation>;
   /**
    * Format-specific key-value attributes.
    *
    * Extensible bag for miscellaneous data without a dedicated typed field: CSS classes,
    * LaTeX environment names, Excel cell formulas, slide layout names, etc.
    */
-  attributes?: Record<string, string>
+  attributes?: Record<string, string>;
 }
 
 /** A resolved relationship between two nodes in the document tree. */
 export interface DocumentRelationship {
   /** Source node index (the referencing node). */
-  source: number
+  source: number;
   /** Target node index (the referenced node). */
-  target: number
+  target: number;
   /** Semantic kind of the relationship. */
-  kind: JsRelationshipKind
+  kind: JsRelationshipKind;
 }
 
 /**
@@ -784,21 +796,21 @@ export interface DocumentRelationship {
  */
 export interface DocumentStructure {
   /** All nodes in document/reading order. */
-  nodes?: Array<JsDocumentNode>
+  nodes?: Array<JsDocumentNode>;
   /**
    * Origin format identifier (e.g. "docx", "pptx", "html", "pdf").
    *
    * Allows renderers to apply format-aware heuristics when converting
    * the document tree to output formats.
    */
-  sourceFormat?: string
+  sourceFormat?: string;
   /**
    * Resolved relationships between nodes (footnote refs, citations, anchor links, etc.).
    *
    * Populated during derivation from the internal document representation.
    * Empty when no relationships are detected.
    */
-  relationships?: Array<JsDocumentRelationship>
+  relationships?: Array<JsDocumentRelationship>;
   /**
    * Sorted, deduplicated list of node type names present in this document.
    *
@@ -809,10 +821,10 @@ export interface DocumentStructure {
    * Empty until that method is called (internal construction paths call it
    * at the end of derivation).
    */
-  nodeTypes?: Array<string>
+  nodeTypes?: Array<string>;
 }
 
-export declare function documentStructureDefault(): DocumentStructure
+export declare function documentStructureDefault(): DocumentStructure;
 
 /**
  * Application properties from docProps/app.xml for DOCX
@@ -821,37 +833,37 @@ export declare function documentStructureDefault(): DocumentStructure
  */
 export interface DocxAppProperties {
   /** Application name (e.g., "Microsoft Office Word") */
-  application?: string
+  application?: string;
   /** Application version */
-  appVersion?: string
+  appVersion?: string;
   /** Template filename */
-  template?: string
+  template?: string;
   /** Total editing time in minutes */
-  totalTime?: number
+  totalTime?: number;
   /** Number of pages */
-  pages?: number
+  pages?: number;
   /** Number of words */
-  words?: number
+  words?: number;
   /** Number of characters (excluding spaces) */
-  characters?: number
+  characters?: number;
   /** Number of characters (including spaces) */
-  charactersWithSpaces?: number
+  charactersWithSpaces?: number;
   /** Number of lines */
-  lines?: number
+  lines?: number;
   /** Number of paragraphs */
-  paragraphs?: number
+  paragraphs?: number;
   /** Company name */
-  company?: string
+  company?: string;
   /** Document security level */
-  docSecurity?: number
+  docSecurity?: number;
   /** Scale crop flag */
-  scaleCrop?: boolean
+  scaleCrop?: boolean;
   /** Links up to date flag */
-  linksUpToDate?: boolean
+  linksUpToDate?: boolean;
   /** Shared document flag */
-  sharedDoc?: boolean
+  sharedDoc?: boolean;
   /** Hyperlinks changed flag */
-  hyperlinksChanged?: boolean
+  hyperlinksChanged?: boolean;
 }
 
 /**
@@ -867,21 +879,21 @@ export interface DocxMetadata {
    * Contains title, creator, subject, keywords, dates, etc.
    * Shared format across DOCX/PPTX/XLSX documents.
    */
-  coreProperties?: CoreProperties
+  coreProperties?: CoreProperties;
   /**
    * Application properties from docProps/app.xml (Word-specific statistics)
    *
    * Contains word count, page count, paragraph count, editing time, etc.
    * DOCX-specific variant of Office application properties.
    */
-  appProperties?: DocxAppProperties
+  appProperties?: DocxAppProperties;
   /**
    * Custom properties from docProps/custom.xml (user-defined properties)
    *
    * Contains key-value pairs defined by users or applications.
    * Values can be strings, numbers, booleans, or dates.
    */
-  customProperties?: Record<string, any>
+  customProperties?: Record<string, any>;
 }
 
 /**
@@ -892,27 +904,27 @@ export interface DocxMetadata {
  */
 export interface Element {
   /** Unique element identifier */
-  elementId: string
+  elementId: string;
   /** Semantic type of this element */
-  elementType: JsElementType
+  elementType: JsElementType;
   /** Text content of the element */
-  text: string
+  text: string;
   /** Metadata about the element */
-  metadata: ElementMetadata
+  metadata: ElementMetadata;
 }
 
 /** Metadata for a semantic element. */
 export interface ElementMetadata {
   /** Page number (1-indexed) */
-  pageNumber?: number
+  pageNumber?: number;
   /** Source filename or document name */
-  filename?: string
+  filename?: string;
   /** Bounding box coordinates if available */
-  coordinates?: string
+  coordinates?: string;
   /** Position index in the element sequence */
-  elementIndex?: number
+  elementIndex?: number;
   /** Additional custom metadata */
-  additional: Record<string, string>
+  additional: Record<string, string>;
 }
 
 /**
@@ -923,27 +935,27 @@ export interface ElementMetadata {
  */
 export declare const enum ElementType {
   /** Document title */
-  Title = 'title',
+  Title = "title",
   /** Main narrative text body */
-  NarrativeText = 'narrative_text',
+  NarrativeText = "narrative_text",
   /** Section heading */
-  Heading = 'heading',
+  Heading = "heading",
   /** List item (bullet, numbered, etc.) */
-  ListItem = 'list_item',
+  ListItem = "list_item",
   /** Table element */
-  Table = 'table',
+  Table = "table",
   /** Image element */
-  Image = 'image',
+  Image = "image",
   /** Page break marker */
-  PageBreak = 'page_break',
+  PageBreak = "page_break",
   /** Code block */
-  CodeBlock = 'code_block',
+  CodeBlock = "code_block",
   /** Block quote */
-  BlockQuote = 'block_quote',
+  BlockQuote = "block_quote",
   /** Footer text */
-  Footer = 'footer',
+  Footer = "footer",
   /** Header text */
-  Header = 'header'
+  Header = "header",
 }
 
 /**
@@ -953,20 +965,20 @@ export declare const enum ElementType {
  */
 export interface EmailAttachment {
   /** Attachment name (from Content-Disposition header) */
-  name?: string
+  name?: string;
   /** Filename of the attachment */
-  filename?: string
+  filename?: string;
   /** MIME type of the attachment */
-  mimeType?: string
+  mimeType?: string;
   /** Size in bytes */
-  size?: number
+  size?: number;
   /** Whether this attachment is an image */
-  isImage: boolean
+  isImage: boolean;
   /**
    * Attachment data (if extracted).
    * Uses `bytes::Bytes` for cheap cloning of large buffers.
    */
-  data?: Uint8Array | Buffer | Array<number>
+  data?: Uint8Array | Buffer | Array<number>;
 }
 
 /** Configuration for email extraction. */
@@ -991,7 +1003,7 @@ export interface EmailConfig {
    * - 932:  Japanese (Shift-JIS)
    * - 936:  Simplified Chinese (GBK)
    */
-  msgFallbackCodepage?: number
+  msgFallbackCodepage?: number;
 }
 
 /**
@@ -1002,29 +1014,29 @@ export interface EmailConfig {
  */
 export interface EmailExtractionResult {
   /** Email subject line */
-  subject?: string
+  subject?: string;
   /** Sender email address */
-  fromEmail?: string
+  fromEmail?: string;
   /** Primary recipient email addresses */
-  toEmails: Array<string>
+  toEmails: Array<string>;
   /** CC recipient email addresses */
-  ccEmails: Array<string>
+  ccEmails: Array<string>;
   /** BCC recipient email addresses */
-  bccEmails: Array<string>
+  bccEmails: Array<string>;
   /** Email date/timestamp */
-  date?: string
+  date?: string;
   /** Message-ID header value */
-  messageId?: string
+  messageId?: string;
   /** Plain text version of the email body */
-  plainText?: string
+  plainText?: string;
   /** HTML version of the email body */
-  htmlContent?: string
+  htmlContent?: string;
   /** Cleaned/processed text content. Aliased as `cleaned_text` for back-compat. */
-  content: string
+  content: string;
   /** List of email attachments */
-  attachments: Array<JsEmailAttachment>
+  attachments: Array<JsEmailAttachment>;
   /** Additional email headers and metadata */
-  metadata: Record<string, string>
+  metadata: Record<string, string>;
 }
 
 /**
@@ -1034,29 +1046,29 @@ export interface EmailExtractionResult {
  */
 export interface EmailMetadata {
   /** Sender's email address */
-  fromEmail?: string
+  fromEmail?: string;
   /** Sender's display name */
-  fromName?: string
+  fromName?: string;
   /** Primary recipients */
-  toEmails?: Array<string>
+  toEmails?: Array<string>;
   /** CC recipients */
-  ccEmails?: Array<string>
+  ccEmails?: Array<string>;
   /** BCC recipients */
-  bccEmails?: Array<string>
+  bccEmails?: Array<string>;
   /** Message-ID header value */
-  messageId?: string
+  messageId?: string;
   /** List of attachment filenames */
-  attachments?: Array<string>
+  attachments?: Array<string>;
 }
 
 /** Embedded file descriptor extracted from the PDF name tree. */
 export interface EmbeddedFile {
   /** The filename as stored in the PDF name tree. */
-  name: string
+  name: string;
   /** Raw file bytes from the embedded stream. */
-  data: Uint8Array | Buffer | Array<number>
+  data: Uint8Array | Buffer | Array<number>;
   /** MIME type if specified in the filespec, otherwise `None`. */
-  mimeType?: string
+  mimeType?: string;
 }
 
 /**
@@ -1067,27 +1079,27 @@ export interface EmbeddedFile {
  */
 export interface EmbeddingConfig {
   /** The embedding model to use (defaults to "balanced" preset if not specified) */
-  model?: JsEmbeddingModelType
+  model?: JsEmbeddingModelType;
   /** Whether to normalize embedding vectors (recommended for cosine similarity) */
-  normalize?: boolean
+  normalize?: boolean;
   /** Batch size for embedding generation */
-  batchSize?: number
+  batchSize?: number;
   /** Show model download progress */
-  showDownloadProgress?: boolean
+  showDownloadProgress?: boolean;
   /**
    * Custom cache directory for model files
    *
    * Defaults to `~/.cache/kreuzberg/embeddings/` if not specified.
    * Allows full customization of model download location.
    */
-  cacheDir?: string
+  cacheDir?: string;
   /**
    * Hardware acceleration for the embedding ONNX model.
    *
    * When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT)
    * is used for inference. Defaults to `None` (auto-select per platform).
    */
-  acceleration?: AccelerationConfig
+  acceleration?: AccelerationConfig;
   /**
    * Maximum wall-clock duration (in seconds) for a single `embed()` call when
    * using [`EmbeddingModelType::Plugin`].
@@ -1101,18 +1113,18 @@ export interface EmbeddingConfig {
    * for common in-process inference; increase for large batches on slow
    * hardware.
    */
-  maxEmbedDurationSecs?: number
+  maxEmbedDurationSecs?: number;
 }
 
-export declare function embeddingConfigDefault(): EmbeddingConfig
+export declare function embeddingConfigDefault(): EmbeddingConfig;
 
 /** Embedding model types supported by Kreuzberg. */
 export interface EmbeddingModelType {
-  type: string
-  name?: string
-  modelId?: string
-  dimensions?: number
-  llm?: LlmConfig
+  type: string;
+  name?: string;
+  modelId?: string;
+  dimensions?: number;
+  llm?: LlmConfig;
 }
 
 /**
@@ -1125,17 +1137,17 @@ export interface EmbeddingModelType {
  * are safe to clone and pass across language boundaries.
  */
 export interface EmbeddingPreset {
-  name: string
-  chunkSize: number
-  overlap: number
+  name: string;
+  chunkSize: number;
+  overlap: number;
   /** HuggingFace repository name for the model. */
-  modelRepo: string
+  modelRepo: string;
   /** Pooling strategy: "cls" or "mean". */
-  pooling: string
+  pooling: string;
   /** Path to the ONNX model file within the repo. */
-  modelFile: string
-  dimensions: number
-  description: string
+  modelFile: string;
+  dimensions: number;
+  description: string;
 }
 
 /**
@@ -1143,7 +1155,10 @@ export interface EmbeddingPreset {
  *
  * Returns a 2D vector where each inner vector is the embedding for the corresponding text.
  */
-export declare function embedTexts(texts: Array<string>, config?: EmbeddingConfig | undefined | null): Array<Array<number>>
+export declare function embedTexts(
+  texts: Array<string>,
+  config?: EmbeddingConfig | undefined | null,
+): Array<Array<number>>;
 
 /**
  * Generate embeddings asynchronously for a list of text strings.
@@ -1167,22 +1182,25 @@ export declare function embedTexts(texts: Array<string>, config?: EmbeddingConfi
  *
  * # Example
  */
-export declare function embedTextsAsync(texts: Array<string>, config?: EmbeddingConfig | undefined | null): Promise<Array<Array<number>>>
+export declare function embedTextsAsync(
+  texts: Array<string>,
+  config?: EmbeddingConfig | undefined | null,
+): Promise<Array<Array<number>>>;
 
 /** EPUB metadata (Dublin Core extensions). */
 export interface EpubMetadata {
-  coverage?: string
-  dcFormat?: string
-  relation?: string
-  source?: string
-  dcType?: string
-  coverImage?: string
+  coverage?: string;
+  dcFormat?: string;
+  relation?: string;
+  source?: string;
+  dcType?: string;
+  coverImage?: string;
 }
 
 /** Error metadata (for batch operations). */
 export interface ErrorMetadata {
-  errorType: string
-  message: string
+  errorType: string;
+  message: string;
 }
 
 /**
@@ -1193,9 +1211,9 @@ export interface ErrorMetadata {
  */
 export interface ExcelMetadata {
   /** Number of sheets in the workbook. */
-  sheetCount?: number
+  sheetCount?: number;
   /** Names of all sheets in the workbook. */
-  sheetNames?: Array<string>
+  sheetNames?: Array<string>;
 }
 
 /**
@@ -1206,21 +1224,21 @@ export interface ExcelMetadata {
  */
 export interface ExcelSheet {
   /** Sheet name as it appears in Excel */
-  name: string
+  name: string;
   /** Sheet content converted to Markdown tables */
-  markdown: string
+  markdown: string;
   /** Number of rows */
-  rowCount: number
+  rowCount: number;
   /** Number of columns */
-  colCount: number
+  colCount: number;
   /** Total number of non-empty cells */
-  cellCount: number
+  cellCount: number;
   /**
    * Pre-extracted table cells (2D vector of cell values)
    * Populated during markdown generation to avoid re-parsing markdown.
    * None for empty sheets.
    */
-  tableCells?: Array<Array<string>>
+  tableCells?: Array<Array<string>>;
 }
 
 /**
@@ -1231,9 +1249,9 @@ export interface ExcelSheet {
  */
 export interface ExcelWorkbook {
   /** All sheets in the workbook */
-  sheets: Array<JsExcelSheet>
+  sheets: Array<JsExcelSheet>;
   /** Workbook-level metadata (author, creation date, etc.) */
-  metadata: Record<string, string>
+  metadata: Record<string, string>;
 }
 
 /**
@@ -1244,15 +1262,15 @@ export interface ExcelWorkbook {
  */
 export declare const enum ExecutionProviderType {
   /** Auto-select: CoreML on macOS, CUDA on Linux, CPU elsewhere. */
-  Auto = 'auto',
+  Auto = "auto",
   /** CPU execution provider (always available). */
-  Cpu = 'cpu',
+  Cpu = "cpu",
   /** Apple CoreML (macOS/iOS Neural Engine + GPU). */
-  CoreMl = 'coreml',
+  CoreMl = "coreml",
   /** NVIDIA CUDA GPU acceleration. */
-  Cuda = 'cuda',
+  Cuda = "cuda",
   /** NVIDIA TensorRT (optimized CUDA inference). */
-  TensorRt = 'tensorrt'
+  TensorRt = "tensorrt",
 }
 
 /**
@@ -1282,7 +1300,11 @@ export declare const enum ExecutionProviderType {
  *
  * # Example
  */
-export declare function extractBytes(content: Buffer, mimeType: string, config?: ExtractionConfig | undefined | null): Promise<ExtractionResult>
+export declare function extractBytes(
+  content: Buffer,
+  mimeType: string,
+  config?: ExtractionConfig | undefined | null,
+): Promise<ExtractionResult>;
 
 /**
  * Synchronous wrapper for `extract_bytes`.
@@ -1295,7 +1317,11 @@ export declare function extractBytes(content: Buffer, mimeType: string, config?:
  *
  * # Example
  */
-export declare function extractBytesSync(content: Buffer, mimeType: string, config?: ExtractionConfig | undefined | null): ExtractionResult
+export declare function extractBytesSync(
+  content: Buffer,
+  mimeType: string,
+  config?: ExtractionConfig | undefined | null,
+): ExtractionResult;
 
 /**
  * Extracted image from a document.
@@ -1309,69 +1335,69 @@ export interface ExtractedImage {
    * Raw image data (PNG, JPEG, WebP, etc. bytes).
    * Uses `bytes::Bytes` for cheap cloning of large buffers.
    */
-  data: Uint8Array | Buffer | Array<number>
+  data: Uint8Array | Buffer | Array<number>;
   /**
    * Image format (e.g., "jpeg", "png", "webp")
    * Uses Cow<'static, str> to avoid allocation for static literals.
    */
-  format: string
+  format: string;
   /** Zero-indexed position of this image in the document/page */
-  imageIndex: number
+  imageIndex: number;
   /** Page/slide number where image was found (1-indexed) */
-  pageNumber?: number
+  pageNumber?: number;
   /** Image width in pixels */
-  width?: number
+  width?: number;
   /** Image height in pixels */
-  height?: number
+  height?: number;
   /** Colorspace information (e.g., "RGB", "CMYK", "Gray") */
-  colorspace?: string
+  colorspace?: string;
   /** Bits per color component (e.g., 8, 16) */
-  bitsPerComponent?: number
+  bitsPerComponent?: number;
   /** Whether this image is a mask image */
-  isMask: boolean
+  isMask: boolean;
   /** Optional description of the image */
-  description?: string
+  description?: string;
   /**
    * Nested OCR extraction result (if image was OCRed)
    *
    * When OCR is performed on this image, the result is embedded here
    * rather than in a separate collection, making the relationship explicit.
    */
-  ocrResult?: ExtractionResult
+  ocrResult?: ExtractionResult;
   /**
    * Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top).
    * Only populated for PDF-extracted images when position data is available from the PDF extractor.
    */
-  boundingBox?: string
+  boundingBox?: string;
   /**
    * Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX).
    * Used for rendering image references when the binary data is not extracted.
    */
-  sourcePath?: string
+  sourcePath?: string;
   /**
    * Heuristic classification of what this image likely depicts.
    * `None` if classification was disabled or inconclusive.
    */
-  imageKind?: JsImageKind
+  imageKind?: JsImageKind;
   /** Confidence score for `image_kind`, in the range 0.0 to 1.0. */
-  kindConfidence?: number
+  kindConfidence?: number;
   /**
    * Identifier shared across images that form a single logical figure
    * (e.g. all raster tiles of one technical drawing). `None` for singletons.
    */
-  clusterId?: number
+  clusterId?: number;
 }
 
 /** Image metadata extracted from an image file. */
 export interface ExtractedImageMetadata {
   /** Image width in pixels */
-  width: number
+  width: number;
   /** Image height in pixels */
-  height: number
+  height: number;
   /** Image format (e.g., "PNG", "JPEG") */
-  format: string
+  format: string;
   /** EXIF data if available */
-  exifData: Record<string, string>
+  exifData: Record<string, string>;
 }
 
 /**
@@ -1402,7 +1428,11 @@ export interface ExtractedImageMetadata {
  *
  * # Example
  */
-export declare function extractFile(path: string, mimeType?: string | undefined | null, config?: ExtractionConfig | undefined | null): Promise<ExtractionResult>
+export declare function extractFile(
+  path: string,
+  mimeType?: string | undefined | null,
+  config?: ExtractionConfig | undefined | null,
+): Promise<ExtractionResult>;
 
 /**
  * Synchronous wrapper for `extract_file`.
@@ -1418,7 +1448,11 @@ export declare function extractFile(path: string, mimeType?: string | undefined 
  *
  * # Example
  */
-export declare function extractFileSync(path: string, mimeType?: string | undefined | null, config?: ExtractionConfig | undefined | null): ExtractionResult
+export declare function extractFileSync(
+  path: string,
+  mimeType?: string | undefined | null,
+  config?: ExtractionConfig | undefined | null,
+): ExtractionResult;
 
 /**
  * Main extraction configuration.
@@ -1430,13 +1464,13 @@ export declare function extractFileSync(path: string, mimeType?: string | undefi
  */
 export interface ExtractionConfig {
   /** Enable caching of extraction results */
-  useCache?: boolean
+  useCache?: boolean;
   /** Enable quality post-processing */
-  enableQualityProcessing?: boolean
+  enableQualityProcessing?: boolean;
   /** OCR configuration (None = OCR disabled) */
-  ocr?: JsOcrConfig
+  ocr?: JsOcrConfig;
   /** Force OCR even for searchable PDFs */
-  forceOcr?: boolean
+  forceOcr?: boolean;
   /**
    * Force OCR on specific pages only (1-indexed page numbers, must be >= 1).
    *
@@ -1445,7 +1479,7 @@ export interface ExtractionConfig {
    * Only applies to PDF documents. Duplicates are automatically deduplicated.
    * An `ocr` config is recommended for backend/language selection; defaults are used if absent.
    */
-  forceOcrPages?: Array<number>
+  forceOcrPages?: Array<number>;
   /**
    * Disable OCR entirely, even for images.
    *
@@ -1457,9 +1491,9 @@ export interface ExtractionConfig {
    *
    * *Added in v4.7.0.*
    */
-  disableOcr?: boolean
+  disableOcr?: boolean;
   /** Text chunking configuration (None = chunking disabled) */
-  chunking?: JsChunkingConfig
+  chunking?: JsChunkingConfig;
   /**
    * Content filtering configuration (None = use extractor defaults).
    *
@@ -1467,28 +1501,28 @@ export interface ExtractionConfig {
    * repeating text) is included in or stripped from extraction results.
    * See [`ContentFilterConfig`] for per-field documentation.
    */
-  contentFilter?: ContentFilterConfig
+  contentFilter?: ContentFilterConfig;
   /** Image extraction configuration (None = no image extraction) */
-  images?: JsImageExtractionConfig
+  images?: JsImageExtractionConfig;
   /** PDF-specific options (None = use defaults) */
-  pdfOptions?: JsPdfConfig
+  pdfOptions?: JsPdfConfig;
   /** Token reduction configuration (None = no token reduction) */
-  tokenReduction?: JsTokenReductionOptions
+  tokenReduction?: JsTokenReductionOptions;
   /** Language detection configuration (None = no language detection) */
-  languageDetection?: JsLanguageDetectionConfig
+  languageDetection?: JsLanguageDetectionConfig;
   /** Page extraction configuration (None = no page tracking) */
-  pages?: JsPageConfig
+  pages?: JsPageConfig;
   /** Keyword extraction configuration (None = no keyword extraction) */
-  keywords?: JsKeywordConfig
+  keywords?: JsKeywordConfig;
   /** Post-processor configuration (None = use defaults) */
-  postprocessor?: JsPostProcessorConfig
+  postprocessor?: JsPostProcessorConfig;
   /**
    * HTML to Markdown conversion options (None = use defaults)
    *
    * Configure how HTML documents are converted to Markdown, including heading styles,
    * list formatting, code block styles, and preprocessing options.
    */
-  htmlOptions?: string
+  htmlOptions?: string;
   /**
    * Styled HTML output configuration.
    *
@@ -1499,7 +1533,7 @@ export interface ExtractionConfig {
    *
    * When `None`, the existing plain comrak-based HTML renderer is used.
    */
-  htmlOutput?: JsHtmlOutputConfig
+  htmlOutput?: JsHtmlOutputConfig;
   /**
    * Default per-file timeout in seconds for batch extraction.
    *
@@ -1507,14 +1541,14 @@ export interface ExtractionConfig {
    * unless overridden by [`FileExtractionConfig::timeout_secs`].
    * `None` means no timeout (unbounded extraction time).
    */
-  extractionTimeoutSecs?: number
+  extractionTimeoutSecs?: number;
   /**
    * Maximum concurrent extractions in batch operations (None = (num_cpus × 1.5).ceil()).
    *
    * Limits parallelism to prevent resource exhaustion when processing
    * large batches. Defaults to (num_cpus × 1.5).ceil() when not set.
    */
-  maxConcurrentExtractions?: number
+  maxConcurrentExtractions?: number;
   /**
    * Result structure format
    *
@@ -1522,7 +1556,7 @@ export interface ExtractionConfig {
    * content in the `content` field, or element-based format with semantic
    * elements (for Unstructured-compatible output).
    */
-  resultFormat?: JsResultFormat
+  resultFormat?: JsResultFormat;
   /**
    * Security limits for archive extraction.
    *
@@ -1533,7 +1567,7 @@ export interface ExtractionConfig {
    * ingests user-controlled bytes.
    * When `None`, default limits are used.
    */
-  securityLimits?: JsSecurityLimits
+  securityLimits?: JsSecurityLimits;
   /**
    * Content text format (default: Plain).
    *
@@ -1547,7 +1581,7 @@ export interface ExtractionConfig {
    * formatted output. The `formatted_content` field may be populated
    * when format conversion is applied.
    */
-  outputFormat?: JsOutputFormat
+  outputFormat?: JsOutputFormat;
   /**
    * Layout detection configuration (None = layout detection disabled).
    *
@@ -1560,7 +1594,7 @@ export interface ExtractionConfig {
    * present whenever the `layout-types` feature is active (which includes
    * `layout-detection` as well as the no-ORT target groups).
    */
-  layout?: JsLayoutDetectionConfig
+  layout?: JsLayoutDetectionConfig;
   /**
    * Run layout detection on the non-OCR PDF markdown path.
    *
@@ -1571,7 +1605,7 @@ export interface ExtractionConfig {
    * (~150-300ms/page CPU, ~20-50ms/page GPU). Default: `false`.
    * Requires the `layout-detection` feature.
    */
-  useLayoutForMarkdown?: boolean
+  useLayoutForMarkdown?: boolean;
   /**
    * Enable structured document tree output.
    *
@@ -1581,7 +1615,7 @@ export interface ExtractionConfig {
    *
    * Independent of `result_format` — can be combined with Unified or ElementBased.
    */
-  includeDocumentStructure?: boolean
+  includeDocumentStructure?: boolean;
   /**
    * Hardware acceleration configuration for ONNX Runtime models.
    *
@@ -1589,7 +1623,7 @@ export interface ExtractionConfig {
    * models. When `None`, uses platform defaults (CoreML on macOS, CUDA on
    * Linux, CPU on Windows).
    */
-  acceleration?: AccelerationConfig
+  acceleration?: AccelerationConfig;
   /**
    * Cache namespace for tenant isolation.
    *
@@ -1597,7 +1631,7 @@ export interface ExtractionConfig {
    * Must be alphanumeric, hyphens, or underscores only (max 64 chars).
    * Different namespaces have isolated cache spaces on the same filesystem.
    */
-  cacheNamespace?: string
+  cacheNamespace?: string;
   /**
    * Per-request cache TTL in seconds.
    *
@@ -1605,14 +1639,14 @@ export interface ExtractionConfig {
    * When `0`, caching is completely skipped (no read or write).
    * When `None`, the global TTL applies.
    */
-  cacheTtlSecs?: number
+  cacheTtlSecs?: number;
   /**
    * Email extraction configuration (None = use defaults).
    *
    * Currently supports configuring the fallback codepage for MSG files
    * that do not specify one. See `EmailConfig` for details.
    */
-  email?: EmailConfig
+  email?: EmailConfig;
   /**
    * Concurrency limits for constrained environments (None = use defaults).
    *
@@ -1620,19 +1654,19 @@ export interface ExtractionConfig {
    * (when `max_concurrent_extractions` is unset) the batch concurrency
    * semaphore. See `ConcurrencyConfig` for details.
    */
-  concurrency?: string
+  concurrency?: string;
   /**
    * Maximum recursion depth for archive extraction (default: 3).
    * Set to 0 to disable recursive extraction (legacy behavior).
    */
-  maxArchiveDepth?: number
+  maxArchiveDepth?: number;
   /**
    * Tree-sitter language pack configuration (None = tree-sitter disabled).
    *
    * When set, enables code file extraction using tree-sitter parsers.
    * Controls grammar download behavior and code analysis options.
    */
-  treeSitter?: JsTreeSitterConfig
+  treeSitter?: JsTreeSitterConfig;
   /**
    * Structured extraction via LLM (None = disabled).
    *
@@ -1640,7 +1674,7 @@ export interface ExtractionConfig {
    * provided JSON schema. The structured response is stored in
    * `ExtractionResult::structured_output`.
    */
-  structuredExtraction?: JsStructuredExtractionConfig
+  structuredExtraction?: JsStructuredExtractionConfig;
   /**
    * Cancellation token for this extraction (None = no external cancellation).
    *
@@ -1652,16 +1686,16 @@ export interface ExtractionConfig {
    * The field is excluded from serialization because `CancellationToken` is a
    * runtime handle, not a configuration value.
    */
-  cancelToken?: string
+  cancelToken?: string;
 }
 
-export declare function extractionConfigDefault(): ExtractionConfig
+export declare function extractionConfigDefault(): ExtractionConfig;
 
 /** How the extracted text was produced. */
 export declare const enum ExtractionMethod {
-  Native = 'native',
-  Ocr = 'ocr',
-  Mixed = 'mixed'
+  Native = "native",
+  Ocr = "ocr",
+  Mixed = "mixed",
 }
 
 /**
@@ -1670,18 +1704,18 @@ export declare const enum ExtractionMethod {
  * This is the main result type returned by all extraction functions.
  */
 export interface ExtractionResult {
-  content?: string
-  mimeType?: string
-  metadata?: JsMetadata
+  content?: string;
+  mimeType?: string;
+  metadata?: JsMetadata;
   /**
    * Extraction strategy used to produce the returned text.
    *
    * Populated when the extractor can reliably distinguish native text extraction,
    * OCR-only extraction, or mixed native/OCR output.
    */
-  extractionMethod?: JsExtractionMethod
-  tables?: Array<JsTable>
-  detectedLanguages?: Array<string>
+  extractionMethod?: JsExtractionMethod;
+  tables?: Array<JsTable>;
+  detectedLanguages?: Array<string>;
   /**
    * Text chunks when chunking is enabled.
    *
@@ -1689,7 +1723,7 @@ export interface ExtractionResult {
    * overlapping chunks for efficient processing. Each chunk contains the text,
    * optional embeddings (if enabled), and metadata about its position.
    */
-  chunks?: Array<JsChunk>
+  chunks?: Array<JsChunk>;
   /**
    * Extracted images from the document.
    *
@@ -1697,14 +1731,14 @@ export interface ExtractionResult {
    * contains all images found in the document with their raw data and metadata.
    * Each image may optionally contain a nested `ocr_result` if OCR was performed.
    */
-  images?: Array<JsExtractedImage>
+  images?: Array<JsExtractedImage>;
   /**
    * Per-page content when page extraction is enabled.
    *
    * When page extraction is configured, the document is split into per-page content
    * with tables and images mapped to their respective pages.
    */
-  pages?: Array<JsPageContent>
+  pages?: Array<JsPageContent>;
   /**
    * Semantic elements when element-based result format is enabled.
    *
@@ -1712,7 +1746,7 @@ export interface ExtractionResult {
    * elements with type classification, unique identifiers, and metadata for
    * Unstructured-compatible element-based processing.
    */
-  elements?: Array<JsElement>
+  elements?: Array<JsElement>;
   /**
    * Rich Djot content structure (when extracting Djot documents).
    *
@@ -1728,7 +1762,7 @@ export interface ExtractionResult {
    *
    * Always `None` for non-Djot documents.
    */
-  djotContent?: DjotContent
+  djotContent?: DjotContent;
   /**
    * OCR elements with full spatial and confidence metadata.
    *
@@ -1744,7 +1778,7 @@ export interface ExtractionResult {
    *
    * Only populated when `OcrElementConfig.include_elements` is true.
    */
-  ocrElements?: Array<JsOcrElement>
+  ocrElements?: Array<JsOcrElement>;
   /**
    * Structured document tree (when document structure extraction is enabled).
    *
@@ -1758,7 +1792,7 @@ export interface ExtractionResult {
    *
    * Independent of `result_format` — can be combined with Unified or ElementBased.
    */
-  document?: DocumentStructure
+  document?: DocumentStructure;
   /**
    * Extracted keywords when keyword extraction is enabled.
    *
@@ -1766,14 +1800,14 @@ export interface ExtractionResult {
    * the extracted keywords with scores, algorithm info, and position data.
    * Previously stored in `metadata.additional["keywords"]`.
    */
-  extractedKeywords?: Array<JsKeyword>
+  extractedKeywords?: Array<JsKeyword>;
   /**
    * Document quality score from quality analysis.
    *
    * A value between 0.0 and 1.0 indicating the overall text quality.
    * Previously stored in `metadata.additional["quality_score"]`.
    */
-  qualityScore?: number
+  qualityScore?: number;
   /**
    * Non-fatal warnings collected during processing pipeline stages.
    *
@@ -1782,7 +1816,7 @@ export interface ExtractionResult {
    * but may indicate degraded results.
    * Previously stored as individual keys in `metadata.additional`.
    */
-  processingWarnings?: Array<JsProcessingWarning>
+  processingWarnings?: Array<JsProcessingWarning>;
   /**
    * PDF annotations extracted from the document.
    *
@@ -1790,7 +1824,7 @@ export interface ExtractionResult {
    * this field contains text notes, highlights, links, stamps, and other
    * annotations found in PDF documents.
    */
-  annotations?: Array<PdfAnnotation>
+  annotations?: Array<PdfAnnotation>;
   /**
    * Nested extraction results from archive contents.
    *
@@ -1798,7 +1832,7 @@ export interface ExtractionResult {
    * full extraction result. Set to `None` for non-archive formats.
    * Use `max_archive_depth` in config to control recursion depth.
    */
-  children?: Array<JsArchiveEntry>
+  children?: Array<JsArchiveEntry>;
   /**
    * URIs/links discovered during document extraction.
    *
@@ -1806,7 +1840,7 @@ export interface ExtractionResult {
    * other URI-like references found in the document. Always extracted when
    * present in the source document.
    */
-  uris?: Array<JsUri>
+  uris?: Array<JsUri>;
   /**
    * Structured extraction output from LLM-based JSON schema extraction.
    *
@@ -1814,7 +1848,7 @@ export interface ExtractionResult {
    * extracted document content is sent to a VLM with the provided JSON schema.
    * The response is parsed and stored here as a JSON value matching the schema.
    */
-  structuredOutput?: any
+  structuredOutput?: any;
   /**
    * Code intelligence results from tree-sitter analysis.
    *
@@ -1826,7 +1860,7 @@ export interface ExtractionResult {
    * C#, …) can deserialize it as a raw JSON object rather than a typed struct.
    * The underlying type is `tree_sitter_language_pack::ProcessResult`.
    */
-  codeIntelligence?: any
+  codeIntelligence?: any;
   /**
    * LLM token usage and cost data for all LLM calls made during this extraction.
    *
@@ -1836,7 +1870,7 @@ export interface ExtractionResult {
    *
    * `None` when no LLM was used.
    */
-  llmUsage?: Array<JsLlmUsage>
+  llmUsage?: Array<JsLlmUsage>;
   /**
    * Pre-rendered content in the requested output format.
    *
@@ -1844,7 +1878,7 @@ export interface ExtractionResult {
    * element data. `apply_output_format` swaps this into `content` at the end
    * of the pipeline, after post-processors have operated on plain text.
    */
-  formattedContent?: string
+  formattedContent?: string;
   /**
    * Structured hOCR document for the OCR+layout pipeline.
    *
@@ -1852,17 +1886,17 @@ export interface ExtractionResult {
    * paragraph structure with bounding boxes and confidence scores. The layout
    * classification step enriches these elements before final rendering.
    */
-  ocrInternalDocument?: string
+  ocrInternalDocument?: string;
 }
 
 /** Convert from an OCR result. */
-export declare function extractionResultFromOcr(ocr: JsOcrExtractionResult): ExtractionResult
+export declare function extractionResultFromOcr(ocr: JsOcrExtractionResult): ExtractionResult;
 
 /** FictionBook (FB2) metadata. */
 export interface FictionBookMetadata {
-  genres?: Array<string>
-  sequences?: Array<string>
-  annotation?: string
+  genres?: Array<string>;
+  sequences?: Array<string>;
+  annotation?: string;
 }
 
 /**
@@ -1886,43 +1920,43 @@ export interface FictionBookMetadata {
  */
 export interface FileExtractionConfig {
   /** Override quality post-processing for this file. */
-  enableQualityProcessing?: boolean
+  enableQualityProcessing?: boolean;
   /** Override OCR configuration for this file (None in the Option = use batch default). */
-  ocr?: JsOcrConfig
+  ocr?: JsOcrConfig;
   /** Override force OCR for this file. */
-  forceOcr?: boolean
+  forceOcr?: boolean;
   /** Override force OCR pages for this file (1-indexed page numbers). */
-  forceOcrPages?: Array<number>
+  forceOcrPages?: Array<number>;
   /** Override disable OCR for this file. */
-  disableOcr?: boolean
+  disableOcr?: boolean;
   /** Override chunking configuration for this file. */
-  chunking?: JsChunkingConfig
+  chunking?: JsChunkingConfig;
   /** Override content filtering configuration for this file. */
-  contentFilter?: ContentFilterConfig
+  contentFilter?: ContentFilterConfig;
   /** Override image extraction configuration for this file. */
-  images?: JsImageExtractionConfig
+  images?: JsImageExtractionConfig;
   /** Override PDF options for this file. */
-  pdfOptions?: JsPdfConfig
+  pdfOptions?: JsPdfConfig;
   /** Override token reduction for this file. */
-  tokenReduction?: JsTokenReductionOptions
+  tokenReduction?: JsTokenReductionOptions;
   /** Override language detection for this file. */
-  languageDetection?: JsLanguageDetectionConfig
+  languageDetection?: JsLanguageDetectionConfig;
   /** Override page extraction for this file. */
-  pages?: JsPageConfig
+  pages?: JsPageConfig;
   /** Override keyword extraction for this file. */
-  keywords?: JsKeywordConfig
+  keywords?: JsKeywordConfig;
   /** Override post-processor for this file. */
-  postprocessor?: JsPostProcessorConfig
+  postprocessor?: JsPostProcessorConfig;
   /** Override HTML conversion options for this file. */
-  htmlOptions?: string
+  htmlOptions?: string;
   /** Override result format for this file. */
-  resultFormat?: JsResultFormat
+  resultFormat?: JsResultFormat;
   /** Override output content format for this file. */
-  outputFormat?: JsOutputFormat
+  outputFormat?: JsOutputFormat;
   /** Override document structure output for this file. */
-  includeDocumentStructure?: boolean
+  includeDocumentStructure?: boolean;
   /** Override layout detection for this file. */
-  layout?: JsLayoutDetectionConfig
+  layout?: JsLayoutDetectionConfig;
   /**
    * Override per-file extraction timeout in seconds.
    *
@@ -1930,9 +1964,9 @@ export interface FileExtractionConfig {
    * specified duration. A timed-out file produces an error result without
    * affecting other files in the batch.
    */
-  timeoutSecs?: number
+  timeoutSecs?: number;
   /** Override tree-sitter configuration for this file. */
-  treeSitter?: JsTreeSitterConfig
+  treeSitter?: JsTreeSitterConfig;
   /**
    * Override structured extraction configuration for this file.
    *
@@ -1940,15 +1974,15 @@ export interface FileExtractionConfig {
    * for this specific file. The extracted content is sent to a VLM/LLM
    * and the response is parsed according to the provided schema.
    */
-  structuredExtraction?: JsStructuredExtractionConfig
+  structuredExtraction?: JsStructuredExtractionConfig;
 }
 
 /** Footnote in Djot. */
 export interface Footnote {
   /** Footnote label */
-  label: string
+  label: string;
   /** Footnote content blocks */
-  content: Array<FormattedBlock>
+  content: Array<FormattedBlock>;
 }
 
 /**
@@ -1958,27 +1992,27 @@ export interface Footnote {
  * type-safe, clean metadata without nested optionals.
  */
 export interface FormatMetadata {
-  format_type: string
-  code?: string
-  pdf?: PdfMetadata
-  docx?: DocxMetadata
-  excel?: ExcelMetadata
-  email?: EmailMetadata
-  pptx?: PptxMetadata
-  archive?: ArchiveMetadata
-  image?: ImageMetadata
-  xml?: XmlMetadata
-  text?: TextMetadata
-  html?: HtmlMetadata
-  ocr?: OcrMetadata
-  csv?: CsvMetadata
-  bibtex?: BibtexMetadata
-  citation?: CitationMetadata
-  fictionBook?: FictionBookMetadata
-  dbf?: DbfMetadata
-  jats?: JatsMetadata
-  epub?: EpubMetadata
-  pst?: PstMetadata
+  format_type: string;
+  code?: string;
+  pdf?: PdfMetadata;
+  docx?: DocxMetadata;
+  excel?: ExcelMetadata;
+  email?: EmailMetadata;
+  pptx?: PptxMetadata;
+  archive?: ArchiveMetadata;
+  image?: ImageMetadata;
+  xml?: XmlMetadata;
+  text?: TextMetadata;
+  html?: HtmlMetadata;
+  ocr?: OcrMetadata;
+  csv?: CsvMetadata;
+  bibtex?: BibtexMetadata;
+  citation?: CitationMetadata;
+  fictionBook?: FictionBookMetadata;
+  dbf?: DbfMetadata;
+  jats?: JatsMetadata;
+  epub?: EpubMetadata;
+  pst?: PstMetadata;
 }
 
 /**
@@ -1988,26 +2022,26 @@ export interface FormatMetadata {
  */
 export interface FormattedBlock {
   /** Type of block element */
-  blockType: JsBlockType
+  blockType: JsBlockType;
   /** Heading level (1-6) for headings, or nesting level for lists */
-  level?: number
+  level?: number;
   /** Inline content within the block */
-  inlineContent: Array<JsInlineElement>
+  inlineContent: Array<JsInlineElement>;
   /** Element attributes (classes, IDs, key-value pairs) */
-  attributes?: string
+  attributes?: string;
   /** Language identifier for code blocks */
-  language?: string
+  language?: string;
   /** Raw code content for code blocks */
-  code?: string
+  code?: string;
   /** Nested blocks for containers (blockquotes, list items, divs) */
-  children: Array<FormattedBlock>
+  children: Array<FormattedBlock>;
 }
 
 export declare const enum FracType {
-  Bar = 'Bar',
-  NoBar = 'NoBar',
-  Linear = 'Linear',
-  Skewed = 'Skewed'
+  Bar = "Bar",
+  NoBar = "NoBar",
+  Linear = "Linear",
+  Skewed = "Skewed",
 }
 
 /**
@@ -2016,7 +2050,7 @@ export declare const enum FracType {
  * Returns `None` if no preset with the given name exists. Returns an owned
  * clone so the value is safe to pass across FFI boundaries.
  */
-export declare function getEmbeddingPreset(name: string): EmbeddingPreset | null
+export declare function getEmbeddingPreset(name: string): EmbeddingPreset | null;
 
 /**
  * Get file extensions for a given MIME type.
@@ -2033,38 +2067,38 @@ export declare function getEmbeddingPreset(name: string): EmbeddingPreset | null
  *
  * # Example
  */
-export declare function getExtensionsForMime(mimeType: string): Array<string>
+export declare function getExtensionsForMime(mimeType: string): Array<string>;
 
 /** Individual grid cell with position and span metadata. */
 export interface GridCell {
   /** Cell text content. */
-  content: string
+  content: string;
   /** Zero-indexed row position. */
-  row: number
+  row: number;
   /** Zero-indexed column position. */
-  col: number
+  col: number;
   /** Number of rows this cell spans. */
-  rowSpan: number
+  rowSpan: number;
   /** Number of columns this cell spans. */
-  colSpan: number
+  colSpan: number;
   /** Whether this is a header cell. */
-  isHeader: boolean
+  isHeader: boolean;
   /** Bounding box for this cell (if available). */
-  bbox?: string
+  bbox?: string;
 }
 
 /** Header/heading element metadata. */
 export interface HeaderMetadata {
   /** Header level: 1 (h1) through 6 (h6) */
-  level: number
+  level: number;
   /** Normalized text content of the header */
-  text: string
+  text: string;
   /** HTML id attribute if present */
-  id?: string
+  id?: string;
   /** Document tree depth at the header element */
-  depth: number
+  depth: number;
   /** Byte offset in original HTML document */
-  htmlOffset: number
+  htmlOffset: number;
 }
 
 /**
@@ -2077,15 +2111,15 @@ export interface HeadingContext {
    * The heading hierarchy from document root to this chunk's section.
    * Index 0 is the outermost (h1), last element is the most specific.
    */
-  headings: Array<JsHeadingLevel>
+  headings: Array<JsHeadingLevel>;
 }
 
 /** A single heading in the hierarchy. */
 export interface HeadingLevel {
   /** Heading depth (1 = h1, 2 = h2, etc.) */
-  level: number
+  level: number;
   /** The text content of the heading. */
-  text: string
+  text: string;
 }
 
 /**
@@ -2096,9 +2130,9 @@ export interface HeadingLevel {
  */
 export interface HierarchicalBlock {
   /** The text content of this block */
-  text: string
+  text: string;
   /** The font size of the text in this block */
-  fontSize: number
+  fontSize: number;
   /**
    * The hierarchy level of this block (H1-H6 or Body)
    *
@@ -2111,13 +2145,13 @@ export interface HierarchicalBlock {
    * - "h6": Senary heading
    * - "body": Body text (no heading level)
    */
-  level: string
+  level: string;
   /**
    * Bounding box information for the block
    *
    * Contains coordinates as (left, top, right, bottom) in PDF units.
    */
-  bbox?: Array<number>
+  bbox?: Array<number>;
 }
 
 /**
@@ -2129,16 +2163,16 @@ export interface HierarchicalBlock {
  */
 export interface HierarchyConfig {
   /** Enable hierarchy extraction */
-  enabled?: boolean
+  enabled?: boolean;
   /**
    * Number of font size clusters to use for hierarchy levels (1-7)
    *
    * Default: 6, which provides H1-H6 heading levels with body text.
    * Larger values create more fine-grained hierarchy levels.
    */
-  kClusters?: number
+  kClusters?: number;
   /** Include bounding box information in hierarchy blocks */
-  includeBbox?: boolean
+  includeBbox?: boolean;
   /**
    * OCR coverage threshold for smart OCR triggering (0.0-1.0)
    *
@@ -2146,10 +2180,10 @@ export interface HierarchyConfig {
    * OCR is triggered when text blocks cover less than this fraction of the page.
    * Default: 0.5 (trigger OCR if less than 50% of page has text)
    */
-  ocrCoverageThreshold?: number
+  ocrCoverageThreshold?: number;
 }
 
-export declare function hierarchyConfigDefault(): HierarchyConfig
+export declare function hierarchyConfigDefault(): HierarchyConfig;
 
 /**
  * HTML metadata extracted from HTML documents.
@@ -2159,44 +2193,44 @@ export declare function hierarchyConfigDefault(): HierarchyConfig
  */
 export interface HtmlMetadata {
   /** Document title from `<title>` tag */
-  title?: string
+  title?: string;
   /** Document description from `<meta name="description">` tag */
-  description?: string
+  description?: string;
   /** Document keywords from `<meta name="keywords">` tag, split on commas */
-  keywords?: Array<string>
+  keywords?: Array<string>;
   /** Document author from `<meta name="author">` tag */
-  author?: string
+  author?: string;
   /** Canonical URL from `<link rel="canonical">` tag */
-  canonicalUrl?: string
+  canonicalUrl?: string;
   /** Base URL from `<base href="">` tag for resolving relative URLs */
-  baseHref?: string
+  baseHref?: string;
   /** Document language from `lang` attribute */
-  language?: string
+  language?: string;
   /** Document text direction from `dir` attribute */
-  textDirection?: JsTextDirection
+  textDirection?: JsTextDirection;
   /**
    * Open Graph metadata (og:* properties) for social media
    * Keys like "title", "description", "image", "url", etc.
    */
-  openGraph?: Record<string, string>
+  openGraph?: Record<string, string>;
   /**
    * Twitter Card metadata (twitter:* properties)
    * Keys like "card", "site", "creator", "title", "description", "image", etc.
    */
-  twitterCard?: Record<string, string>
+  twitterCard?: Record<string, string>;
   /**
    * Additional meta tags not covered by specific fields
    * Keys are meta name/property attributes, values are content
    */
-  metaTags?: Record<string, string>
+  metaTags?: Record<string, string>;
   /** Extracted header elements with hierarchy */
-  headers?: Array<HeaderMetadata>
+  headers?: Array<HeaderMetadata>;
   /** Extracted hyperlinks with type classification */
-  links?: Array<LinkMetadata>
+  links?: Array<LinkMetadata>;
   /** Extracted images with source and dimensions */
-  images?: Array<ImageMetadataType>
+  images?: Array<ImageMetadataType>;
   /** Extracted structured data blocks */
-  structuredData?: Array<StructuredData>
+  structuredData?: Array<StructuredData>;
 }
 
 /**
@@ -2214,21 +2248,21 @@ export interface HtmlOutputConfig {
    * Inline CSS string injected into the output after the theme stylesheet.
    * Concatenated after `css_file` content when both are set.
    */
-  css?: string
+  css?: string;
   /**
    * Path to a CSS file loaded once at renderer construction time.
    * Concatenated before `css` when both are set.
    */
-  cssFile?: string
+  cssFile?: string;
   /** Built-in colour/typography theme. Default: [`HtmlTheme::Unstyled`]. */
-  theme?: JsHtmlTheme
+  theme?: JsHtmlTheme;
   /**
    * CSS class prefix applied to every emitted class name.
    *
    * Default: `"kb-"`. Change this if your host application already uses
    * classes that start with `kb-`.
    */
-  classPrefix?: string
+  classPrefix?: string;
   /**
    * When `true` (default), write the resolved CSS into a `<style>` block
    * immediately after the opening `<div class="{prefix}doc">`.
@@ -2236,10 +2270,10 @@ export interface HtmlOutputConfig {
    * Set to `false` to emit only the structural markup and wire up your
    * own stylesheet targeting the `kb-*` class names.
    */
-  embedCss?: boolean
+  embedCss?: boolean;
 }
 
-export declare function htmlOutputConfigDefault(): HtmlOutputConfig
+export declare function htmlOutputConfigDefault(): HtmlOutputConfig;
 
 /** Built-in HTML theme selection. */
 export declare const enum HtmlTheme {
@@ -2248,41 +2282,41 @@ export declare const enum HtmlTheme {
    * measure. CSS custom properties (`--kb-*`) are all defined so user CSS
    * can override individual values.
    */
-  Default = 'default',
+  Default = "default",
   /** GitHub Markdown-inspired palette and spacing. */
-  GitHub = 'github',
+  GitHub = "github",
   /** Dark background, light text. */
-  Dark = 'dark',
+  Dark = "dark",
   /** Minimal light theme with generous whitespace. */
-  Light = 'light',
+  Light = "light",
   /**
    * No built-in stylesheet emitted. CSS custom properties are still defined
    * on `:root` so user stylesheets can reference `var(--kb-*)` tokens.
    */
-  Unstyled = 'unstyled'
+  Unstyled = "unstyled",
 }
 
 /** Image extraction configuration. */
 export interface ImageExtractionConfig {
   /** Extract images from documents */
-  extractImages?: boolean
+  extractImages?: boolean;
   /** Target DPI for image normalization */
-  targetDpi?: number
+  targetDpi?: number;
   /** Maximum dimension for images (width or height) */
-  maxImageDimension?: number
+  maxImageDimension?: number;
   /**
    * Whether to inject image reference placeholders into markdown output.
    * When `true` (default), image references like `![Image 1](embedded:p1_i0)`
    * are appended to the markdown. Set to `false` to extract images as data
    * without polluting the markdown output.
    */
-  injectPlaceholders?: boolean
+  injectPlaceholders?: boolean;
   /** Automatically adjust DPI based on image content */
-  autoAdjustDpi?: boolean
+  autoAdjustDpi?: boolean;
   /** Minimum DPI threshold */
-  minDpi?: number
+  minDpi?: number;
   /** Maximum DPI threshold */
-  maxDpi?: number
+  maxDpi?: number;
   /**
    * Maximum number of image objects to extract per PDF page.
    *
@@ -2294,40 +2328,40 @@ export interface ImageExtractionConfig {
    *
    * `None` (default) means no limit — all images are extracted.
    */
-  maxImagesPerPage?: number
+  maxImagesPerPage?: number;
   /**
    * When `true` (default), extracted images are classified by kind and grouped
    * into clusters where they appear to belong to one figure.
    */
-  classify?: boolean
+  classify?: boolean;
 }
 
-export declare function imageExtractionConfigDefault(): ImageExtractionConfig
+export declare function imageExtractionConfigDefault(): ImageExtractionConfig;
 
 /** Heuristic classification of what an image likely depicts. */
 export declare const enum ImageKind {
   /** Photographic image (natural scene, photograph) */
-  Photograph = 'photograph',
+  Photograph = "photograph",
   /** Technical or schematic diagram */
-  Diagram = 'diagram',
+  Diagram = "diagram",
   /** Chart, graph, or plot */
-  Chart = 'chart',
+  Chart = "chart",
   /** Freehand or technical drawing */
-  Drawing = 'drawing',
+  Drawing = "drawing",
   /** Text-heavy image (scanned text, document) */
-  TextBlock = 'text_block',
+  TextBlock = "text_block",
   /** Decorative element or border */
-  Decoration = 'decoration',
+  Decoration = "decoration",
   /** Logo or brand mark */
-  Logo = 'logo',
+  Logo = "logo",
   /** Small icon */
-  Icon = 'icon',
+  Icon = "icon",
   /** Fragment of a larger tiled image (tile of a technical drawing) */
-  TileFragment = 'tile_fragment',
+  TileFragment = "tile_fragment",
   /** Mask or transparency map */
-  Mask = 'mask',
+  Mask = "mask",
   /** Could not classify with reasonable confidence */
-  Unknown = 'unknown'
+  Unknown = "unknown",
 }
 
 /**
@@ -2337,29 +2371,29 @@ export declare const enum ImageKind {
  */
 export interface ImageMetadata {
   /** Image width in pixels */
-  width?: number
+  width?: number;
   /** Image height in pixels */
-  height?: number
+  height?: number;
   /** Image format (e.g., "PNG", "JPEG", "TIFF") */
-  format?: string
+  format?: string;
   /** EXIF metadata tags */
-  exif?: Record<string, string>
+  exif?: Record<string, string>;
 }
 
 /** Image element metadata. */
 export interface ImageMetadataType {
   /** Image source (URL, data URI, or SVG content) */
-  src: string
+  src: string;
   /** Alternative text from alt attribute */
-  alt?: string
+  alt?: string;
   /** Title attribute */
-  title?: string
+  title?: string;
   /** Image dimensions as (width, height) if available */
-  dimensions?: Array<number>
+  dimensions?: Array<number>;
   /** Image type classification */
-  imageType: JsImageType
+  imageType: JsImageType;
   /** Additional attributes as key-value pairs */
-  attributes: Array<string>
+  attributes: Array<string>;
 }
 
 /**
@@ -2371,22 +2405,22 @@ export interface ImageMetadataType {
  */
 export interface ImagePreprocessingConfig {
   /** Target DPI for the image (300 is standard, 600 for small text). */
-  targetDpi?: number
+  targetDpi?: number;
   /** Auto-detect and correct image rotation. */
-  autoRotate?: boolean
+  autoRotate?: boolean;
   /** Correct skew (tilted images). */
-  deskew?: boolean
+  deskew?: boolean;
   /** Remove noise from the image. */
-  denoise?: boolean
+  denoise?: boolean;
   /** Enhance contrast for better text visibility. */
-  contrastEnhance?: boolean
+  contrastEnhance?: boolean;
   /** Binarization method: "otsu", "sauvola", "adaptive". */
-  binarizationMethod?: string
+  binarizationMethod?: string;
   /** Invert colors (white text on black → black on white). */
-  invertColors?: boolean
+  invertColors?: boolean;
 }
 
-export declare function imagePreprocessingConfigDefault(): ImagePreprocessingConfig
+export declare function imagePreprocessingConfigDefault(): ImagePreprocessingConfig;
 
 /**
  * Image preprocessing metadata.
@@ -2396,41 +2430,41 @@ export declare function imagePreprocessingConfigDefault(): ImagePreprocessingCon
  */
 export interface ImagePreprocessingMetadata {
   /** Original image dimensions (width, height) in pixels */
-  originalDimensions: Array<number>
+  originalDimensions: Array<number>;
   /** Original image DPI (horizontal, vertical) */
-  originalDpi: Array<number>
+  originalDpi: Array<number>;
   /** Target DPI from configuration */
-  targetDpi: number
+  targetDpi: number;
   /** Scaling factor applied to the image */
-  scaleFactor: number
+  scaleFactor: number;
   /** Whether DPI was auto-adjusted based on content */
-  autoAdjusted: boolean
+  autoAdjusted: boolean;
   /** Final DPI after processing */
-  finalDpi: number
+  finalDpi: number;
   /** New dimensions after resizing (if resized) */
-  newDimensions?: Array<number>
+  newDimensions?: Array<number>;
   /** Resampling algorithm used ("LANCZOS3", "CATMULLROM", etc.) */
-  resampleMethod: string
+  resampleMethod: string;
   /** Whether dimensions were clamped to max_image_dimension */
-  dimensionClamped: boolean
+  dimensionClamped: boolean;
   /** Calculated optimal DPI (if auto_adjust_dpi enabled) */
-  calculatedDpi?: number
+  calculatedDpi?: number;
   /** Whether resize was skipped (dimensions already optimal) */
-  skippedResize: boolean
+  skippedResize: boolean;
   /** Error message if resize failed */
-  resizeError?: string
+  resizeError?: string;
 }
 
 /** Image type classification. */
 export declare const enum ImageType {
   /** Data URI image */
-  DataUri = 'data-uri',
+  DataUri = "data-uri",
   /** Inline SVG */
-  InlineSvg = 'inline-svg',
+  InlineSvg = "inline-svg",
   /** External image URL */
-  External = 'external',
+  External = "external",
   /** Relative path image */
-  Relative = 'relative'
+  Relative = "relative",
 }
 
 /**
@@ -2440,76 +2474,76 @@ export declare const enum ImageType {
  */
 export interface InlineElement {
   /** Type of inline element */
-  elementType: JsInlineType
+  elementType: JsInlineType;
   /** Text content */
-  content: string
+  content: string;
   /** Element attributes */
-  attributes?: string
+  attributes?: string;
   /** Additional metadata (e.g., href for links, src/alt for images) */
-  metadata?: Record<string, string>
+  metadata?: Record<string, string>;
 }
 
 /** Types of inline elements in Djot. */
 export declare const enum InlineType {
-  Text = 'text',
-  Strong = 'strong',
-  Emphasis = 'emphasis',
-  Highlight = 'highlight',
-  Subscript = 'subscript',
-  Superscript = 'superscript',
-  Insert = 'insert',
-  Delete = 'delete',
-  Code = 'code',
-  Link = 'link',
-  Image = 'image',
-  Span = 'span',
-  Math = 'math',
-  RawInline = 'raw_inline',
-  FootnoteRef = 'footnote_ref',
-  Symbol = 'symbol'
+  Text = "text",
+  Strong = "strong",
+  Emphasis = "emphasis",
+  Highlight = "highlight",
+  Subscript = "subscript",
+  Superscript = "superscript",
+  Insert = "insert",
+  Delete = "delete",
+  Code = "code",
+  Link = "link",
+  Image = "image",
+  Span = "span",
+  Math = "math",
+  RawInline = "raw_inline",
+  FootnoteRef = "footnote_ref",
+  Symbol = "symbol",
 }
 
 /** JATS (Journal Article Tag Suite) metadata. */
 export interface JatsMetadata {
-  copyright?: string
-  license?: string
-  historyDates?: Record<string, string>
-  contributorRoles?: Array<JsContributorRole>
+  copyright?: string;
+  license?: string;
+  historyDates?: Record<string, string>;
+  contributorRoles?: Array<JsContributorRole>;
 }
 
 /** Extracted keyword with metadata. */
 export interface Keyword {
   /** The keyword text. */
-  text: string
+  text: string;
   /** Relevance score (higher is better, algorithm-specific range). */
-  score: number
+  score: number;
   /** Algorithm that extracted this keyword. */
-  algorithm: JsKeywordAlgorithm
+  algorithm: JsKeywordAlgorithm;
   /** Optional positions where keyword appears in text (character offsets). */
-  positions?: Array<number>
+  positions?: Array<number>;
 }
 
 /** Keyword algorithm selection. */
 export declare const enum KeywordAlgorithm {
   /** YAKE (Yet Another Keyword Extractor) - statistical approach */
-  Yake = 'yake',
+  Yake = "yake",
   /** RAKE (Rapid Automatic Keyword Extraction) - co-occurrence based */
-  Rake = 'rake'
+  Rake = "rake",
 }
 
 /** Keyword extraction configuration. */
 export interface KeywordConfig {
   /** Algorithm to use for extraction. */
-  algorithm?: JsKeywordAlgorithm
+  algorithm?: JsKeywordAlgorithm;
   /** Maximum number of keywords to extract (default: 10). */
-  maxKeywords?: number
+  maxKeywords?: number;
   /**
    * Minimum score threshold (0.0-1.0, default: 0.0).
    *
    * Keywords with scores below this threshold are filtered out.
    * Note: Score ranges differ between algorithms.
    */
-  minScore?: number
+  minScore?: number;
   /**
    * N-gram range for keyword extraction (min, max).
    *
@@ -2517,32 +2551,32 @@ export interface KeywordConfig {
    * (1, 2) = unigrams and bigrams
    * (1, 3) = unigrams, bigrams, and trigrams (default)
    */
-  ngramRange?: Array<number>
+  ngramRange?: Array<number>;
   /**
    * Language code for stopword filtering (e.g., "en", "de", "fr").
    *
    * If None, no stopword filtering is applied.
    */
-  language?: string
+  language?: string;
   /** YAKE-specific tuning parameters. */
-  yakeParams?: YakeParams
+  yakeParams?: YakeParams;
   /** RAKE-specific tuning parameters. */
-  rakeParams?: RakeParams
+  rakeParams?: RakeParams;
 }
 
-export declare function keywordConfigDefault(): KeywordConfig
+export declare function keywordConfigDefault(): KeywordConfig;
 
 /** Language detection configuration. */
 export interface LanguageDetectionConfig {
   /** Enable language detection */
-  enabled?: boolean
+  enabled?: boolean;
   /** Minimum confidence threshold (0.0-1.0) */
-  minConfidence?: number
+  minConfidence?: number;
   /** Detect multiple languages in the document */
-  detectMultiple?: boolean
+  detectMultiple?: boolean;
 }
 
-export declare function languageDetectionConfigDefault(): LanguageDetectionConfig
+export declare function languageDetectionConfigDefault(): LanguageDetectionConfig;
 
 /**
  * The 17 canonical document layout classes.
@@ -2554,30 +2588,30 @@ export declare function languageDetectionConfigDefault(): LanguageDetectionConfi
  * Wire format is snake_case in all serializers (JSON, TOML, YAML).
  */
 export declare const enum LayoutClass {
-  Caption = 'caption',
-  Footnote = 'footnote',
-  Formula = 'formula',
-  ListItem = 'list_item',
-  PageFooter = 'page_footer',
-  PageHeader = 'page_header',
-  Picture = 'picture',
-  SectionHeader = 'section_header',
-  Table = 'table',
-  Text = 'text',
-  Title = 'title',
-  DocumentIndex = 'document_index',
-  Code = 'code',
-  CheckboxSelected = 'checkbox_selected',
-  CheckboxUnselected = 'checkbox_unselected',
-  Form = 'form',
-  KeyValueRegion = 'key_value_region'
+  Caption = "caption",
+  Footnote = "footnote",
+  Formula = "formula",
+  ListItem = "list_item",
+  PageFooter = "page_footer",
+  PageHeader = "page_header",
+  Picture = "picture",
+  SectionHeader = "section_header",
+  Table = "table",
+  Text = "text",
+  Title = "title",
+  DocumentIndex = "document_index",
+  Code = "code",
+  CheckboxSelected = "checkbox_selected",
+  CheckboxUnselected = "checkbox_unselected",
+  Form = "form",
+  KeyValueRegion = "key_value_region",
 }
 
 /** A single layout detection result. */
 export interface LayoutDetection {
-  className: JsLayoutClass
-  confidence: number
-  bbox: BBox
+  className: JsLayoutClass;
+  confidence: number;
+  bbox: BBox;
 }
 
 /**
@@ -2589,26 +2623,26 @@ export interface LayoutDetection {
  */
 export interface LayoutDetectionConfig {
   /** Confidence threshold override (None = use model default). */
-  confidenceThreshold?: number
+  confidenceThreshold?: number;
   /** Whether to apply postprocessing heuristics (default: true). */
-  applyHeuristics?: boolean
+  applyHeuristics?: boolean;
   /**
    * Table structure recognition model.
    *
    * Controls which model is used for table cell detection within layout-detected
    * table regions. Defaults to [`TableModel::Tatr`].
    */
-  tableModel?: JsTableModel
+  tableModel?: JsTableModel;
   /**
    * Hardware acceleration for ONNX models (layout detection + table structure).
    *
    * When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT)
    * is used for inference. Defaults to `None` (auto-select per platform).
    */
-  acceleration?: AccelerationConfig
+  acceleration?: AccelerationConfig;
 }
 
-export declare function layoutDetectionConfigDefault(): LayoutDetectionConfig
+export declare function layoutDetectionConfigDefault(): LayoutDetectionConfig;
 
 /**
  * A detected layout region on a page.
@@ -2619,49 +2653,49 @@ export declare function layoutDetectionConfigDefault(): LayoutDetectionConfig
  */
 export interface LayoutRegion {
   /** Layout class name (e.g. "picture", "table", "text", "section_header"). */
-  className?: string
+  className?: string;
   /** Confidence score from the layout detection model (0.0 to 1.0). */
-  confidence?: number
+  confidence?: number;
   /** Bounding box in document coordinate space. */
-  boundingBox?: string
+  boundingBox?: string;
   /** Fraction of the page area covered by this region (0.0 to 1.0). */
-  areaFraction?: number
+  areaFraction?: number;
 }
 
 /** Link element metadata. */
 export interface LinkMetadata {
   /** The href URL value */
-  href: string
+  href: string;
   /** Link text content (normalized) */
-  text: string
+  text: string;
   /** Optional title attribute */
-  title?: string
+  title?: string;
   /** Link type classification */
-  linkType: JsLinkType
+  linkType: JsLinkType;
   /** Rel attribute values */
-  rel: Array<string>
+  rel: Array<string>;
   /** Additional attributes as key-value pairs */
-  attributes: Array<string>
+  attributes: Array<string>;
 }
 
 /** Link type classification. */
 export declare const enum LinkType {
   /** Anchor link (#section) */
-  Anchor = 'anchor',
+  Anchor = "anchor",
   /** Internal link (same domain) */
-  Internal = 'internal',
+  Internal = "internal",
   /** External link (different domain) */
-  External = 'external',
+  External = "external",
   /** Email link (mailto:) */
-  Email = 'email',
+  Email = "email",
   /** Phone link (tel:) */
-  Phone = 'phone',
+  Phone = "phone",
   /** Other link type */
-  Other = 'other'
+  Other = "other",
 }
 
 /** List names of all registered document extractors. */
-export declare function listDocumentExtractors(): Array<string>
+export declare function listDocumentExtractors(): Array<string>;
 
 /**
  * List the names of all registered embedding backends.
@@ -2669,14 +2703,14 @@ export declare function listDocumentExtractors(): Array<string>
  * Used by `kreuzberg-cli` and the api/mcp endpoints; excluded from the
  * language bindings via `alef.toml [exclude].functions`.
  */
-export declare function listEmbeddingBackends(): Array<string>
+export declare function listEmbeddingBackends(): Array<string>;
 
 /**
  * List the names of all available embedding presets.
  *
  * Returns owned `String`s so the values are safe to pass across FFI boundaries.
  */
-export declare function listEmbeddingPresets(): Array<string>
+export declare function listEmbeddingPresets(): Array<string>;
 
 /**
  * List all registered OCR backends.
@@ -2689,7 +2723,7 @@ export declare function listEmbeddingPresets(): Array<string>
  *
  * # Example
  */
-export declare function listOcrBackends(): Array<string>
+export declare function listOcrBackends(): Array<string>;
 
 /**
  * List all registered post-processor names.
@@ -2704,7 +2738,7 @@ export declare function listOcrBackends(): Array<string>
  *
  * # Example
  */
-export declare function listPostProcessors(): Array<string>
+export declare function listPostProcessors(): Array<string>;
 
 /**
  * List names of all registered renderers.
@@ -2713,22 +2747,22 @@ export declare function listPostProcessors(): Array<string>
  *
  * Returns an error if the registry lock is poisoned.
  */
-export declare function listRenderers(): Array<string>
+export declare function listRenderers(): Array<string>;
 
 /** Type of list detection. */
 export declare const enum ListType {
   /** Bullet points (-, *, •, etc.) */
-  Bullet = 'Bullet',
+  Bullet = "Bullet",
   /** Numbered lists (1., 2., etc.) */
-  Numbered = 'Numbered',
+  Numbered = "Numbered",
   /** Lettered lists (a., b., A., B., etc.) */
-  Lettered = 'Lettered',
+  Lettered = "Lettered",
   /** Indented items */
-  Indented = 'Indented'
+  Indented = "Indented",
 }
 
 /** List names of all registered validators. */
-export declare function listValidators(): Array<string>
+export declare function listValidators(): Array<string>;
 
 /**
  * Configuration for an LLM provider/model via liter-llm.
@@ -2751,22 +2785,22 @@ export interface LlmConfig {
    * Examples: `"openai/gpt-4o"`, `"anthropic/claude-sonnet-4-20250514"`,
    * `"groq/llama-3.1-70b-versatile"`.
    */
-  model?: string
+  model?: string;
   /**
    * API key for the provider. When `None`, liter-llm falls back to
    * the provider's standard environment variable (e.g., `OPENAI_API_KEY`).
    */
-  apiKey?: string
+  apiKey?: string;
   /** Custom base URL override for the provider endpoint. */
-  baseUrl?: string
+  baseUrl?: string;
   /** Request timeout in seconds (default: 60). */
-  timeoutSecs?: number
+  timeoutSecs?: number;
   /** Maximum retry attempts (default: 3). */
-  maxRetries?: number
+  maxRetries?: number;
   /** Sampling temperature for generation tasks. */
-  temperature?: number
+  temperature?: number;
   /** Maximum tokens to generate. */
-  maxTokens?: number
+  maxTokens?: number;
 }
 
 /**
@@ -2778,22 +2812,22 @@ export interface LlmConfig {
  */
 export interface LlmUsage {
   /** The LLM model identifier (e.g. "openai/gpt-4o", "anthropic/claude-sonnet-4-20250514"). */
-  model?: string
+  model?: string;
   /**
    * The pipeline stage that triggered this LLM call
    * (e.g. "vlm_ocr", "structured_extraction", "embeddings").
    */
-  source?: string
+  source?: string;
   /** Number of input/prompt tokens consumed. */
-  inputTokens?: number
+  inputTokens?: number;
   /** Number of output/completion tokens generated. */
-  outputTokens?: number
+  outputTokens?: number;
   /** Total tokens (input + output). */
-  totalTokens?: number
+  totalTokens?: number;
   /** Estimated cost in USD based on the provider's published pricing. */
-  estimatedCost?: number
+  estimatedCost?: number;
   /** Why the model stopped generating (e.g. "stop", "length", "content_filter"). */
-  finishReason?: string
+  finishReason?: string;
 }
 
 /**
@@ -2804,60 +2838,60 @@ export interface LlmUsage {
  */
 export interface Metadata {
   /** Document title */
-  title?: string
+  title?: string;
   /** Document subject or description */
-  subject?: string
+  subject?: string;
   /** Primary author(s) - always Vec for consistency */
-  authors?: Array<string>
+  authors?: Array<string>;
   /** Keywords/tags - always Vec for consistency */
-  keywords?: Array<string>
+  keywords?: Array<string>;
   /** Primary language (ISO 639 code) */
-  language?: string
+  language?: string;
   /** Creation timestamp (ISO 8601 format) */
-  createdAt?: string
+  createdAt?: string;
   /** Last modification timestamp (ISO 8601 format) */
-  modifiedAt?: string
+  modifiedAt?: string;
   /** User who created the document */
-  createdBy?: string
+  createdBy?: string;
   /** User who last modified the document */
-  modifiedBy?: string
+  modifiedBy?: string;
   /** Page/slide/sheet structure with boundaries */
-  pages?: JsPageStructure
+  pages?: JsPageStructure;
   /**
    * Format-specific metadata (discriminated union)
    *
    * Contains detailed metadata specific to the document format.
    * Serialized as a nested `"format"` object with a `format_type` discriminator field.
    */
-  format?: JsFormatMetadata
+  format?: JsFormatMetadata;
   /** Image preprocessing metadata (when OCR preprocessing was applied) */
-  imagePreprocessing?: ImagePreprocessingMetadata
+  imagePreprocessing?: ImagePreprocessingMetadata;
   /** JSON schema (for structured data extraction) */
-  jsonSchema?: any
+  jsonSchema?: any;
   /** Error metadata (for batch operations) */
-  error?: JsErrorMetadata
+  error?: JsErrorMetadata;
   /**
    * Extraction duration in milliseconds (for benchmarking).
    *
    * This field is populated by batch extraction to provide per-file timing
    * information. It's `None` for single-file extraction (which uses external timing).
    */
-  extractionDurationMs?: number
+  extractionDurationMs?: number;
   /** Document category (from frontmatter or classification). */
-  category?: string
+  category?: string;
   /** Document tags (from frontmatter). */
-  tags?: Array<string>
+  tags?: Array<string>;
   /** Document version string (from frontmatter). */
-  documentVersion?: string
+  documentVersion?: string;
   /** Abstract or summary text (from frontmatter). */
-  abstractText?: string
+  abstractText?: string;
   /**
    * Output format identifier (e.g., "markdown", "html", "text").
    *
    * Set by the output format pipeline stage when format conversion is applied.
    * Previously stored in `metadata.additional["output_format"]`.
    */
-  outputFormat?: string
+  outputFormat?: string;
   /**
    * Whether OCR was used during extraction.
    *
@@ -2865,26 +2899,26 @@ export interface Metadata {
    * (Tesseract, PaddleOCR, VLM, etc.) and used that output as the primary
    * or fallback text. `false` means native text extraction was used exclusively.
    */
-  ocrUsed?: boolean
+  ocrUsed?: boolean;
   /**
    * Additional custom fields from postprocessors.
    *
    * Serialized as a nested `"additional"` object (not flattened at root level).
    * Uses `Cow<'static, str>` keys so static string keys avoid allocation.
    */
-  additional?: Record<string, any>
+  additional?: Record<string, any>;
 }
 
 /** Combined paths to all models needed for OCR (backward compatibility). */
 export interface ModelPaths {
   /** Path to the detection model directory. */
-  detModel: string
+  detModel: string;
   /** Path to the classification model directory. */
-  clsModel: string
+  clsModel: string;
   /** Path to the recognition model directory. */
-  recModel: string
+  recModel: string;
   /** Path to the character dictionary file. */
-  dictFile: string
+  dictFile: string;
 }
 
 /**
@@ -2894,39 +2928,39 @@ export interface ModelPaths {
  * Go/Java/TypeScript bindings.
  */
 export interface NodeContent {
-  node_type: string
-  text?: string
-  level?: number
-  ordered?: boolean
-  grid?: TableGrid
-  description?: string
-  imageIndex?: number
-  src?: string
-  language?: string
-  label?: string
-  headingLevel?: number
-  headingText?: string
-  number?: number
-  title?: string
-  term?: string
-  definition?: string
-  key?: string
-  kind?: string
-  format?: string
-  content?: string
-  entries?: Array<string>
+  node_type: string;
+  text?: string;
+  level?: number;
+  ordered?: boolean;
+  grid?: TableGrid;
+  description?: string;
+  imageIndex?: number;
+  src?: string;
+  language?: string;
+  label?: string;
+  headingLevel?: number;
+  headingText?: string;
+  number?: number;
+  title?: string;
+  term?: string;
+  definition?: string;
+  key?: string;
+  kind?: string;
+  format?: string;
+  content?: string;
+  entries?: Array<string>;
 }
 
 /** OCR backend types. */
 export declare const enum OcrBackendType {
   /** Tesseract OCR (native Rust binding) */
-  Tesseract = 'Tesseract',
+  Tesseract = "Tesseract",
   /** EasyOCR (Python-based, via FFI) */
-  EasyOCR = 'EasyOCR',
+  EasyOCR = "EasyOCR",
   /** PaddleOCR (Python-based, via FFI) */
-  PaddleOCR = 'PaddleOCR',
+  PaddleOCR = "PaddleOCR",
   /** Custom/third-party OCR backend */
-  Custom = 'Custom'
+  Custom = "Custom",
 }
 
 /**
@@ -2936,17 +2970,17 @@ export declare const enum OcrBackendType {
  * (from PaddleOCR and rotated text detection).
  */
 export interface OcrBoundingGeometry {
-  type: string
-  left?: number
-  top?: number
-  width?: number
-  height?: number
-  points?: string
+  type: string;
+  left?: number;
+  top?: number;
+  width?: number;
+  height?: number;
+  points?: string;
 }
 
 export interface OcrCacheStats {
-  totalFiles?: number
-  totalSizeMb?: number
+  totalFiles?: number;
+  totalSizeMb?: number;
 }
 
 /**
@@ -2962,13 +2996,13 @@ export interface OcrConfidence {
    * PaddleOCR provides this as `box_score`, Tesseract doesn't have a direct equivalent.
    * Range: 0.0 to 1.0 (or None if not available).
    */
-  detection?: number
+  detection?: number;
   /**
    * Recognition confidence: how confident about the text content.
    *
    * Range: 0.0 to 1.0.
    */
-  recognition?: number
+  recognition?: number;
 }
 
 /** OCR configuration. */
@@ -2982,17 +3016,17 @@ export interface OcrConfig {
    *
    * Defaults to `true`. When `false`, all other OCR settings are ignored.
    */
-  enabled?: boolean
+  enabled?: boolean;
   /** OCR backend: tesseract, easyocr, paddleocr */
-  backend?: string
+  backend?: string;
   /** Language code (e.g., "eng", "deu") */
-  language?: string
+  language?: string;
   /** Tesseract-specific configuration (optional) */
-  tesseractConfig?: JsTesseractConfig
+  tesseractConfig?: JsTesseractConfig;
   /** Output format for OCR results (optional, for format conversion) */
-  outputFormat?: JsOutputFormat
+  outputFormat?: JsOutputFormat;
   /** PaddleOCR-specific configuration (optional, JSON passthrough) */
-  paddleOcrConfig?: any
+  paddleOcrConfig?: any;
   /**
    * Arbitrary per-call options passed through to the backend unchanged.
    *
@@ -3015,20 +3049,20 @@ export interface OcrConfig {
    * { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 }
    * ```
    */
-  backendOptions?: any
+  backendOptions?: any;
   /** OCR element extraction configuration */
-  elementConfig?: JsOcrElementConfig
+  elementConfig?: JsOcrElementConfig;
   /**
    * Quality thresholds for the native-text-to-OCR fallback decision.
    * When None, uses compiled defaults (matching previous hardcoded behavior).
    */
-  qualityThresholds?: OcrQualityThresholds
+  qualityThresholds?: OcrQualityThresholds;
   /**
    * Multi-backend OCR pipeline configuration. When set, enables weighted
    * fallback across multiple OCR backends based on output quality.
    * When None, uses the single `backend` field (same as today).
    */
-  pipeline?: OcrPipelineConfig
+  pipeline?: OcrPipelineConfig;
   /**
    * Enable automatic page rotation based on orientation detection.
    *
@@ -3037,28 +3071,28 @@ export interface OcrConfig {
    * rotated with high confidence, the image is corrected before recognition.
    * This is critical for handling rotated scanned documents.
    */
-  autoRotate?: boolean
+  autoRotate?: boolean;
   /**
    * VLM (Vision Language Model) OCR configuration.
    *
    * Required when `backend` is `"vlm"`. Uses liter-llm to send page
    * images to a vision model for text extraction.
    */
-  vlmConfig?: LlmConfig
+  vlmConfig?: LlmConfig;
   /**
    * Custom Jinja2 prompt template for VLM OCR.
    *
    * When `None`, uses the default template. Available variables:
    * - `{{ language }}` — The document language code (e.g., "eng", "deu").
    */
-  vlmPrompt?: string
+  vlmPrompt?: string;
   /**
    * Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection).
    *
    * Not user-configurable via config files — injected at runtime from
    * `ExtractionConfig::acceleration` before each `process_image` call.
    */
-  acceleration?: AccelerationConfig
+  acceleration?: AccelerationConfig;
   /**
    * Caller-supplied Tesseract `traineddata` bytes per language code.
    *
@@ -3071,10 +3105,10 @@ export interface OcrConfig {
    * Skipped by serde to keep config files small — supply via the typed API
    * at runtime.
    */
-  tessdataBytes?: Record<string, Uint8Array | Buffer | Array<number>>
+  tessdataBytes?: Record<string, Uint8Array | Buffer | Array<number>>;
 }
 
-export declare function ocrConfigDefault(): OcrConfig
+export declare function ocrConfigDefault(): OcrConfig;
 
 /**
  * A unified OCR element representing detected text with full metadata.
@@ -3084,25 +3118,25 @@ export declare function ocrConfigDefault(): OcrConfig
  */
 export interface OcrElement {
   /** The recognized text content. */
-  text?: string
+  text?: string;
   /** Bounding geometry (rectangle or quadrilateral). */
-  geometry?: JsOcrBoundingGeometry
+  geometry?: JsOcrBoundingGeometry;
   /** Confidence scores for detection and recognition. */
-  confidence?: OcrConfidence
+  confidence?: OcrConfidence;
   /** Hierarchical level (word, line, block, page). */
-  level?: JsOcrElementLevel
+  level?: JsOcrElementLevel;
   /** Rotation information (if detected). */
-  rotation?: OcrRotation
+  rotation?: OcrRotation;
   /** Page number (1-indexed). */
-  pageNumber?: number
+  pageNumber?: number;
   /**
    * Parent element ID for hierarchical relationships.
    *
    * Only used for Tesseract output which has word -> line -> block hierarchy.
    */
-  parentId?: string
+  parentId?: string;
   /** Backend-specific metadata that doesn't fit the unified schema. */
-  backendMetadata?: Record<string, any>
+  backendMetadata?: Record<string, any>;
 }
 
 /**
@@ -3116,26 +3150,26 @@ export interface OcrElementConfig {
    *
    * When true, the `ocr_elements` field in `ExtractionResult` will be populated.
    */
-  includeElements?: boolean
+  includeElements?: boolean;
   /**
    * Minimum hierarchical level to include.
    *
    * Elements below this level (e.g., words when min_level is Line) will be excluded.
    */
-  minLevel?: JsOcrElementLevel
+  minLevel?: JsOcrElementLevel;
   /**
    * Minimum recognition confidence threshold (0.0-1.0).
    *
    * Elements with confidence below this threshold will be filtered out.
    */
-  minConfidence?: number
+  minConfidence?: number;
   /**
    * Whether to build hierarchical relationships between elements.
    *
    * When true, `parent_id` fields will be populated based on spatial containment.
    * Only meaningful for Tesseract output.
    */
-  buildHierarchy?: boolean
+  buildHierarchy?: boolean;
 }
 
 /**
@@ -3146,13 +3180,13 @@ export interface OcrElementConfig {
  */
 export declare const enum OcrElementLevel {
   /** Individual word */
-  Word = 'word',
+  Word = "word",
   /** Line of text (default for PaddleOCR) */
-  Line = 'line',
+  Line = "line",
   /** Paragraph or text block */
-  Block = 'block',
+  Block = "block",
   /** Page-level element */
-  Page = 'page'
+  Page = "page",
 }
 
 /**
@@ -3163,24 +3197,24 @@ export declare const enum OcrElementLevel {
  */
 export interface OcrExtractionResult {
   /** Recognized text content */
-  content: string
+  content: string;
   /** Original MIME type of the processed image */
-  mimeType: string
+  mimeType: string;
   /** OCR processing metadata (confidence scores, language, etc.) */
-  metadata: Record<string, any>
+  metadata: Record<string, any>;
   /** Tables detected and extracted via OCR */
-  tables: Array<JsOcrTable>
+  tables: Array<JsOcrTable>;
   /**
    * Structured OCR elements with bounding boxes and confidence scores.
    * Available when TSV output is requested or table detection is enabled.
    */
-  ocrElements?: Array<JsOcrElement>
+  ocrElements?: Array<JsOcrElement>;
   /**
    * Structured document produced from hOCR parsing.
    * Carries paragraph structure, bounding boxes, and confidence scores
    * that the flattened `content` string discards.
    */
-  internalDocument?: string
+  internalDocument?: string;
 }
 
 /**
@@ -3190,15 +3224,15 @@ export interface OcrExtractionResult {
  */
 export interface OcrMetadata {
   /** OCR language code(s) used */
-  language?: string
+  language?: string;
   /** Tesseract Page Segmentation Mode (PSM) */
-  psm?: number
+  psm?: number;
   /** Output format (e.g., "text", "hocr") */
-  outputFormat?: string
+  outputFormat?: string;
   /** Number of tables detected */
-  tableCount?: number
-  tableRows?: number
-  tableCols?: number
+  tableCount?: number;
+  tableRows?: number;
+  tableCols?: number;
 }
 
 /**
@@ -3210,25 +3244,25 @@ export interface OcrMetadata {
  */
 export interface OcrPipelineConfig {
   /** Ordered list of backends to try. Sorted by priority (descending) at runtime. */
-  stages: Array<OcrPipelineStage>
+  stages: Array<OcrPipelineStage>;
   /** Quality thresholds for deciding whether to accept a result or try the next backend. */
-  qualityThresholds: OcrQualityThresholds
+  qualityThresholds: OcrQualityThresholds;
 }
 
 /** A single backend stage in the OCR pipeline. */
 export interface OcrPipelineStage {
   /** Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name. */
-  backend: string
+  backend: string;
   /** Priority weight (higher = tried first). Stages are sorted by priority descending. */
-  priority: number
+  priority: number;
   /** Language override for this stage (None = use parent OcrConfig.language). */
-  language?: string
+  language?: string;
   /** Tesseract-specific config override for this stage. */
-  tesseractConfig?: JsTesseractConfig
+  tesseractConfig?: JsTesseractConfig;
   /** PaddleOCR-specific config for this stage. */
-  paddleOcrConfig?: any
+  paddleOcrConfig?: any;
   /** VLM config override for this pipeline stage. */
-  vlmConfig?: LlmConfig
+  vlmConfig?: LlmConfig;
   /**
    * Arbitrary per-call options passed through to the backend unchanged.
    *
@@ -3243,7 +3277,7 @@ export interface OcrPipelineStage {
    * { "mode": "fast", "enable_layout": true }
    * ```
    */
-  backendOptions?: any
+  backendOptions?: any;
 }
 
 /**
@@ -3254,53 +3288,53 @@ export interface OcrPipelineStage {
  */
 export interface OcrQualityThresholds {
   /** Minimum total non-whitespace characters to consider text substantive. */
-  minTotalNonWhitespace?: number
+  minTotalNonWhitespace?: number;
   /** Minimum non-whitespace characters per page on average. */
-  minNonWhitespacePerPage?: number
+  minNonWhitespacePerPage?: number;
   /** Minimum character count for a word to be "meaningful". */
-  minMeaningfulWordLen?: number
+  minMeaningfulWordLen?: number;
   /** Minimum count of meaningful words before text is accepted. */
-  minMeaningfulWords?: number
+  minMeaningfulWords?: number;
   /** Minimum alphanumeric ratio (non-whitespace chars that are alphanumeric). */
-  minAlnumRatio?: number
+  minAlnumRatio?: number;
   /** Minimum Unicode replacement characters (U+FFFD) to trigger OCR fallback. */
-  minGarbageChars?: number
+  minGarbageChars?: number;
   /** Maximum fraction of short (1-2 char) words before text is considered fragmented. */
-  maxFragmentedWordRatio?: number
+  maxFragmentedWordRatio?: number;
   /**
    * Critical fragmentation threshold — triggers OCR regardless of meaningful words.
    * Normal English text has ~20-30% short words. 80%+ is definitive garbage.
    */
-  criticalFragmentedWordRatio?: number
+  criticalFragmentedWordRatio?: number;
   /** Minimum average word length. Below this with enough words indicates garbled extraction. */
-  minAvgWordLength?: number
+  minAvgWordLength?: number;
   /** Minimum word count before average word length check applies. */
-  minWordsForAvgLengthCheck?: number
+  minWordsForAvgLengthCheck?: number;
   /** Minimum consecutive word repetition ratio to detect column scrambling. */
-  minConsecutiveRepeatRatio?: number
+  minConsecutiveRepeatRatio?: number;
   /** Minimum word count before consecutive repetition check is applied. */
-  minWordsForRepeatCheck?: number
+  minWordsForRepeatCheck?: number;
   /** Minimum character count for "substantive markdown" OCR skip gate. */
-  substantiveMinChars?: number
+  substantiveMinChars?: number;
   /** Minimum character count for "non-text content" OCR skip gate. */
-  nonTextMinChars?: number
+  nonTextMinChars?: number;
   /** Alphanumeric+whitespace ratio threshold for skip decisions. */
-  alnumWsRatioThreshold?: number
+  alnumWsRatioThreshold?: number;
   /**
    * Minimum quality score (0.0-1.0) for a pipeline stage result to be accepted.
    * If the result from a backend scores below this, try the next backend.
    */
-  pipelineMinQuality?: number
+  pipelineMinQuality?: number;
 }
 
-export declare function ocrQualityThresholdsDefault(): OcrQualityThresholds
+export declare function ocrQualityThresholdsDefault(): OcrQualityThresholds;
 
 /** Rotation information for an OCR element. */
 export interface OcrRotation {
   /** Rotation angle in degrees (0, 90, 180, 270 for PaddleOCR). */
-  angleDegrees: number
+  angleDegrees: number;
   /** Confidence score for the rotation detection. */
-  confidence?: number
+  confidence?: number;
 }
 
 /**
@@ -3310,33 +3344,33 @@ export interface OcrRotation {
  */
 export interface OcrTable {
   /** Table cells as a 2D vector (rows × columns) */
-  cells: Array<Array<string>>
+  cells: Array<Array<string>>;
   /** Markdown representation of the table */
-  markdown: string
+  markdown: string;
   /** Page number where the table was found (1-indexed) */
-  pageNumber: number
+  pageNumber: number;
   /** Bounding box of the table in pixel coordinates (from OCR word positions). */
-  boundingBox?: JsOcrTableBoundingBox
+  boundingBox?: JsOcrTableBoundingBox;
 }
 
 /** Bounding box for an OCR-detected table in pixel coordinates. */
 export interface OcrTableBoundingBox {
   /** Left x-coordinate (pixels) */
-  left: number
+  left: number;
   /** Top y-coordinate (pixels) */
-  top: number
+  top: number;
   /** Right x-coordinate (pixels) */
-  right: number
+  right: number;
   /** Bottom y-coordinate (pixels) */
-  bottom: number
+  bottom: number;
 }
 
 /** Document orientation detection result. */
 export interface OrientationResult {
   /** Detected orientation in degrees (0, 90, 180, or 270). */
-  degrees: number
+  degrees: number;
   /** Confidence score (0.0-1.0). */
-  confidence: number
+  confidence: number;
 }
 
 /**
@@ -3350,22 +3384,22 @@ export interface OrientationResult {
  */
 export declare const enum OutputFormat {
   /** Plain text content only (default) */
-  Plain = 'plain',
+  Plain = "plain",
   /** Markdown format */
-  Markdown = 'markdown',
+  Markdown = "markdown",
   /** Djot markup format */
-  Djot = 'djot',
+  Djot = "djot",
   /** HTML format */
-  Html = 'html',
+  Html = "html",
   /** JSON tree format with heading-driven sections. */
-  Json = 'json',
+  Json = "json",
   /** Structured JSON format with full OCR element metadata. */
-  Structured = 'structured',
+  Structured = "structured",
   /**
    * Custom renderer registered via the RendererRegistry.
    * The string is the renderer name (e.g., "docx", "latex").
    */
-  Custom = 'custom'
+  Custom = "custom",
 }
 
 /**
@@ -3375,37 +3409,37 @@ export declare const enum OutputFormat {
  */
 export declare const enum PaddleLanguage {
   /** English */
-  English = 'English',
+  English = "English",
   /** Simplified Chinese */
-  Chinese = 'Chinese',
+  Chinese = "Chinese",
   /** Japanese */
-  Japanese = 'Japanese',
+  Japanese = "Japanese",
   /** Korean */
-  Korean = 'Korean',
+  Korean = "Korean",
   /** German */
-  German = 'German',
+  German = "German",
   /** French */
-  French = 'French',
+  French = "French",
   /** Latin script (covers most European languages) */
-  Latin = 'Latin',
+  Latin = "Latin",
   /** Cyrillic (Russian and related) */
-  Cyrillic = 'Cyrillic',
+  Cyrillic = "Cyrillic",
   /** Traditional Chinese */
-  TraditionalChinese = 'TraditionalChinese',
+  TraditionalChinese = "TraditionalChinese",
   /** Thai */
-  Thai = 'Thai',
+  Thai = "Thai",
   /** Greek */
-  Greek = 'Greek',
+  Greek = "Greek",
   /** East Slavic (Russian, Ukrainian, Belarusian) */
-  EastSlavic = 'EastSlavic',
+  EastSlavic = "EastSlavic",
   /** Arabic (Arabic, Persian, Urdu) */
-  Arabic = 'Arabic',
+  Arabic = "Arabic",
   /** Devanagari (Hindi, Marathi, Sanskrit, Nepali) */
-  Devanagari = 'Devanagari',
+  Devanagari = "Devanagari",
   /** Tamil */
-  Tamil = 'Tamil',
+  Tamil = "Tamil",
   /** Telugu */
-  Telugu = 'Telugu'
+  Telugu = "Telugu",
 }
 
 /**
@@ -3418,63 +3452,63 @@ export declare const enum PaddleLanguage {
  */
 export interface PaddleOcrConfig {
   /** Language code (e.g., "en", "ch", "jpn", "kor", "deu", "fra") */
-  language?: string
+  language?: string;
   /** Optional custom cache directory for model files */
-  cacheDir?: string
+  cacheDir?: string;
   /**
    * Enable angle classification for rotated text (default: false).
    * Can misfire on short text regions, rotating crops incorrectly before recognition.
    */
-  useAngleCls?: boolean
+  useAngleCls?: boolean;
   /** Enable table structure detection (default: false) */
-  enableTableDetection?: boolean
+  enableTableDetection?: boolean;
   /**
    * Database threshold for text detection (default: 0.3)
    * Range: 0.0-1.0, higher values require more confident detections
    */
-  detDbThresh?: number
+  detDbThresh?: number;
   /**
    * Box threshold for text bounding box refinement (default: 0.5)
    * Range: 0.0-1.0
    */
-  detDbBoxThresh?: number
+  detDbBoxThresh?: number;
   /**
    * Unclip ratio for expanding text bounding boxes (default: 1.6)
    * Controls the expansion of detected text regions
    */
-  detDbUnclipRatio?: number
+  detDbUnclipRatio?: number;
   /**
    * Maximum side length for detection image (default: 960)
    * Larger images may be resized to this limit for faster inference
    */
-  detLimitSideLen?: number
+  detLimitSideLen?: number;
   /**
    * Batch size for recognition inference (default: 6)
    * Number of text regions to process simultaneously
    */
-  recBatchNum?: number
+  recBatchNum?: number;
   /**
    * Padding in pixels added around the image before detection (default: 10).
    * Large values can include surrounding content like table gridlines.
    */
-  padding?: number
+  padding?: number;
   /**
    * Minimum recognition confidence score for text lines (default: 0.5).
    * Text regions with recognition confidence below this threshold are discarded.
    * Matches PaddleOCR Python's `drop_score` parameter.
    * Range: 0.0-1.0
    */
-  dropScore?: number
+  dropScore?: number;
   /**
    * Model tier controlling detection/recognition model size and accuracy trade-off.
    * - `"mobile"` (default): Lightweight models (~4.5MB detection, ~16.5MB recognition), fast download and inference
    * - `"server"`: Large, high-accuracy models (~88MB detection, ~84MB recognition), best for GPU or complex documents
    */
-  modelTier?: string
+  modelTier?: string;
 }
 
 /** Creates a default configuration with English language support. */
-export declare function paddleOcrConfigDefault(): PaddleOcrConfig
+export declare function paddleOcrConfigDefault(): PaddleOcrConfig;
 
 /**
  * Enables or disables angle classification for rotated text.
@@ -3483,7 +3517,10 @@ export declare function paddleOcrConfigDefault(): PaddleOcrConfig
  *
  * * `enable` - Whether to enable angle classification
  */
-export declare function paddleOcrConfigWithAngleCls(cfg: PaddleOcrConfig, enable: boolean): PaddleOcrConfig
+export declare function paddleOcrConfigWithAngleCls(
+  cfg: PaddleOcrConfig,
+  enable: boolean,
+): PaddleOcrConfig;
 
 /**
  * Sets a custom cache directory for model files.
@@ -3494,7 +3531,10 @@ export declare function paddleOcrConfigWithAngleCls(cfg: PaddleOcrConfig, enable
  *
  * # Examples
  */
-export declare function paddleOcrConfigWithCacheDir(cfg: PaddleOcrConfig, path: string): PaddleOcrConfig
+export declare function paddleOcrConfigWithCacheDir(
+  cfg: PaddleOcrConfig,
+  path: string,
+): PaddleOcrConfig;
 
 /**
  * Sets the box threshold for text bounding box refinement.
@@ -3503,7 +3543,10 @@ export declare function paddleOcrConfigWithCacheDir(cfg: PaddleOcrConfig, path: 
  *
  * * `threshold` - Box threshold (0.0-1.0)
  */
-export declare function paddleOcrConfigWithDetDbBoxThresh(cfg: PaddleOcrConfig, threshold: number): PaddleOcrConfig
+export declare function paddleOcrConfigWithDetDbBoxThresh(
+  cfg: PaddleOcrConfig,
+  threshold: number,
+): PaddleOcrConfig;
 
 /**
  * Sets the database threshold for text detection.
@@ -3512,7 +3555,10 @@ export declare function paddleOcrConfigWithDetDbBoxThresh(cfg: PaddleOcrConfig, 
  *
  * * `threshold` - Detection threshold (0.0-1.0)
  */
-export declare function paddleOcrConfigWithDetDbThresh(cfg: PaddleOcrConfig, threshold: number): PaddleOcrConfig
+export declare function paddleOcrConfigWithDetDbThresh(
+  cfg: PaddleOcrConfig,
+  threshold: number,
+): PaddleOcrConfig;
 
 /**
  * Sets the unclip ratio for expanding text bounding boxes.
@@ -3521,7 +3567,10 @@ export declare function paddleOcrConfigWithDetDbThresh(cfg: PaddleOcrConfig, thr
  *
  * * `ratio` - Unclip ratio (typically 1.5-2.0)
  */
-export declare function paddleOcrConfigWithDetDbUnclipRatio(cfg: PaddleOcrConfig, ratio: number): PaddleOcrConfig
+export declare function paddleOcrConfigWithDetDbUnclipRatio(
+  cfg: PaddleOcrConfig,
+  ratio: number,
+): PaddleOcrConfig;
 
 /**
  * Sets the maximum side length for detection images.
@@ -3530,7 +3579,10 @@ export declare function paddleOcrConfigWithDetDbUnclipRatio(cfg: PaddleOcrConfig
  *
  * * `length` - Maximum side length in pixels
  */
-export declare function paddleOcrConfigWithDetLimitSideLen(cfg: PaddleOcrConfig, length: number): PaddleOcrConfig
+export declare function paddleOcrConfigWithDetLimitSideLen(
+  cfg: PaddleOcrConfig,
+  length: number,
+): PaddleOcrConfig;
 
 /**
  * Sets the minimum recognition confidence threshold.
@@ -3539,7 +3591,10 @@ export declare function paddleOcrConfigWithDetLimitSideLen(cfg: PaddleOcrConfig,
  *
  * * `score` - Minimum confidence (0.0-1.0), text below this is dropped
  */
-export declare function paddleOcrConfigWithDropScore(cfg: PaddleOcrConfig, score: number): PaddleOcrConfig
+export declare function paddleOcrConfigWithDropScore(
+  cfg: PaddleOcrConfig,
+  score: number,
+): PaddleOcrConfig;
 
 /**
  * Sets the model tier controlling detection/recognition model size.
@@ -3548,7 +3603,10 @@ export declare function paddleOcrConfigWithDropScore(cfg: PaddleOcrConfig, score
  *
  * * `tier` - `"mobile"` (default, lightweight, faster) or `"server"` (high accuracy, GPU/complex documents)
  */
-export declare function paddleOcrConfigWithModelTier(cfg: PaddleOcrConfig, tier: string): PaddleOcrConfig
+export declare function paddleOcrConfigWithModelTier(
+  cfg: PaddleOcrConfig,
+  tier: string,
+): PaddleOcrConfig;
 
 /**
  * Sets padding in pixels added around images before detection.
@@ -3557,7 +3615,10 @@ export declare function paddleOcrConfigWithModelTier(cfg: PaddleOcrConfig, tier:
  *
  * * `padding` - Padding in pixels (0-100)
  */
-export declare function paddleOcrConfigWithPadding(cfg: PaddleOcrConfig, padding: number): PaddleOcrConfig
+export declare function paddleOcrConfigWithPadding(
+  cfg: PaddleOcrConfig,
+  padding: number,
+): PaddleOcrConfig;
 
 /**
  * Sets the batch size for recognition inference.
@@ -3566,7 +3627,10 @@ export declare function paddleOcrConfigWithPadding(cfg: PaddleOcrConfig, padding
  *
  * * `batch_size` - Number of text regions to process simultaneously
  */
-export declare function paddleOcrConfigWithRecBatchNum(cfg: PaddleOcrConfig, batchSize: number): PaddleOcrConfig
+export declare function paddleOcrConfigWithRecBatchNum(
+  cfg: PaddleOcrConfig,
+  batchSize: number,
+): PaddleOcrConfig;
 
 /**
  * Enables or disables table structure detection.
@@ -3577,7 +3641,10 @@ export declare function paddleOcrConfigWithRecBatchNum(cfg: PaddleOcrConfig, bat
  *
  * # Examples
  */
-export declare function paddleOcrConfigWithTableDetection(cfg: PaddleOcrConfig, enable: boolean): PaddleOcrConfig
+export declare function paddleOcrConfigWithTableDetection(
+  cfg: PaddleOcrConfig,
+  enable: boolean,
+): PaddleOcrConfig;
 
 /**
  * Byte offset boundary for a page.
@@ -3588,11 +3655,11 @@ export declare function paddleOcrConfigWithTableDetection(cfg: PaddleOcrConfig, 
  */
 export interface PageBoundary {
   /** Byte offset where this page starts in the content string (UTF-8 valid boundary, inclusive) */
-  byteStart: number
+  byteStart: number;
   /** Byte offset where this page ends in the content string (UTF-8 valid boundary, exclusive) */
-  byteEnd: number
+  byteEnd: number;
   /** Page number (1-indexed) */
-  pageNumber: number
+  pageNumber: number;
 }
 
 /**
@@ -3606,9 +3673,9 @@ export interface PageBoundary {
  */
 export interface PageConfig {
   /** Extract pages as separate array (ExtractionResult.pages) */
-  extractPages?: boolean
+  extractPages?: boolean;
   /** Insert page markers in main content string */
-  insertPageMarkers?: boolean
+  insertPageMarkers?: boolean;
   /**
    * Page marker format (use {page_num} placeholder)
    * Default: "
@@ -3617,10 +3684,10 @@ export interface PageConfig {
 
   "
    */
-  markerFormat?: string
+  markerFormat?: string;
 }
 
-export declare function pageConfigDefault(): PageConfig
+export declare function pageConfigDefault(): PageConfig;
 
 /**
  * Content for a single page/slide.
@@ -3640,29 +3707,29 @@ export declare function pageConfigDefault(): PageConfig
  */
 export interface PageContent {
   /** Page number (1-indexed) */
-  pageNumber: number
+  pageNumber: number;
   /** Text content for this page */
-  content: string
+  content: string;
   /**
    * Tables found on this page (uses Arc for memory efficiency)
    *
    * Serializes as Vec<Table> for JSON compatibility while maintaining
    * Arc semantics in-memory for zero-copy sharing.
    */
-  tables: Array<JsTable>
+  tables: Array<JsTable>;
   /**
    * Indices into `ExtractionResult.images` for images found on this page.
    *
    * Each value is a zero-based index into the top-level `images` collection.
    * Only populated when `extract_images = true` in the extraction config.
    */
-  imageIndices: Array<number>
+  imageIndices: Array<number>;
   /**
    * Hierarchy information for the page (when hierarchy extraction is enabled)
    *
    * Contains text hierarchy levels (H1-H6) extracted from the page content.
    */
-  hierarchy?: JsPageHierarchy
+  hierarchy?: JsPageHierarchy;
   /**
    * Whether this page is blank (no meaningful text content)
    *
@@ -3670,14 +3737,14 @@ export interface PageContent {
    * A page is blank if it has fewer than 3 non-whitespace characters
    * and contains no tables or images.
    */
-  isBlank?: boolean
+  isBlank?: boolean;
   /**
    * Layout detection regions for this page (when layout detection is enabled).
    *
    * Contains detected layout regions with class, confidence, bounding box,
    * and area fraction. Only populated when layout detection is configured.
    */
-  layoutRegions?: Array<JsLayoutRegion>
+  layoutRegions?: Array<JsLayoutRegion>;
 }
 
 /**
@@ -3688,9 +3755,9 @@ export interface PageContent {
  */
 export interface PageHierarchy {
   /** Number of hierarchy blocks on this page */
-  blockCount: number
+  blockCount: number;
   /** Hierarchical blocks with heading levels */
-  blocks: Array<JsHierarchicalBlock>
+  blocks: Array<JsHierarchicalBlock>;
 }
 
 /**
@@ -3701,17 +3768,17 @@ export interface PageHierarchy {
  */
 export interface PageInfo {
   /** Page number (1-indexed) */
-  number: number
+  number: number;
   /** Page title (usually for presentations) */
-  title?: string
+  title?: string;
   /** Dimensions in points (PDF) or pixels (images): (width, height) */
-  dimensions?: Array<number>
+  dimensions?: Array<number>;
   /** Number of images on this page */
-  imageCount?: number
+  imageCount?: number;
   /** Number of tables on this page */
-  tableCount?: number
+  tableCount?: number;
   /** Whether this page is hidden (e.g., in presentations) */
-  hidden?: boolean
+  hidden?: boolean;
   /**
    * Whether this page is blank (no meaningful text, no images, no tables)
    *
@@ -3719,7 +3786,7 @@ export interface PageInfo {
    * and contains no tables or images. This is useful for filtering out empty pages
    * in scanned documents or PDFs with blank separator pages.
    */
-  isBlank?: boolean
+  isBlank?: boolean;
   /**
    * Whether this page contains non-trivial vector graphics (paths, shapes, curves)
    *
@@ -3732,7 +3799,7 @@ export interface PageInfo {
    *
    * Only populated for PDFs; `None` for other document types.
    */
-  hasVectorGraphics: boolean
+  hasVectorGraphics: boolean;
 }
 
 /**
@@ -3743,18 +3810,18 @@ export interface PageInfo {
  */
 export interface PageStructure {
   /** Total number of pages/slides/sheets */
-  totalCount: number
+  totalCount: number;
   /** Type of paginated unit */
-  unitType: JsPageUnitType
+  unitType: JsPageUnitType;
   /**
    * Character offset boundaries for each page
    *
    * Maps character ranges in the extracted content to page numbers.
    * Used for chunk page range calculation.
    */
-  boundaries?: Array<JsPageBoundary>
+  boundaries?: Array<JsPageBoundary>;
   /** Detailed per-page metadata (optional, only when needed) */
-  pages?: Array<JsPageInfo>
+  pages?: Array<JsPageInfo>;
 }
 
 /**
@@ -3764,47 +3831,47 @@ export interface PageStructure {
  */
 export declare const enum PageUnitType {
   /** Standard document pages (PDF, DOCX, images) */
-  Page = 'page',
+  Page = "page",
   /** Presentation slides (PPTX, ODP) */
-  Slide = 'slide',
+  Slide = "slide",
   /** Spreadsheet sheets (XLSX, ODS) */
-  Sheet = 'sheet'
+  Sheet = "sheet",
 }
 
 /** A PDF annotation extracted from a document page. */
 export interface PdfAnnotation {
   /** The type of annotation. */
-  annotationType: JsPdfAnnotationType
+  annotationType: JsPdfAnnotationType;
   /** Text content of the annotation (e.g., comment text, link URL). */
-  content?: string
+  content?: string;
   /** Page number where the annotation appears (1-indexed). */
-  pageNumber: number
+  pageNumber: number;
   /** Bounding box of the annotation on the page. */
-  boundingBox?: string
+  boundingBox?: string;
 }
 
 /** Type of PDF annotation. */
 export declare const enum PdfAnnotationType {
   /** Sticky note / text annotation */
-  Text = 'text',
+  Text = "text",
   /** Highlighted text region */
-  Highlight = 'highlight',
+  Highlight = "highlight",
   /** Hyperlink annotation */
-  Link = 'link',
+  Link = "link",
   /** Rubber stamp annotation */
-  Stamp = 'stamp',
+  Stamp = "stamp",
   /** Underline text markup */
-  Underline = 'underline',
+  Underline = "underline",
   /** Strikeout text markup */
-  StrikeOut = 'strike_out',
+  StrikeOut = "strike_out",
   /** Any other annotation type */
-  Other = 'other'
+  Other = "other",
 }
 
 /** PDF-specific configuration. */
 export interface PdfConfig {
   /** Extract images from PDF */
-  extractImages?: boolean
+  extractImages?: boolean;
   /**
    * Extract tables from PDF.
    *
@@ -3813,28 +3880,28 @@ export interface PdfConfig {
    * `pdf::oxide::table::extract_tables_heuristic`. Set to `false` to skip
    * both passes — `tables` will then be empty in the result.
    */
-  extractTables?: boolean
+  extractTables?: boolean;
   /** List of passwords to try when opening encrypted PDFs */
-  passwords?: Array<string>
+  passwords?: Array<string>;
   /** Extract PDF metadata */
-  extractMetadata?: boolean
+  extractMetadata?: boolean;
   /** Hierarchy extraction configuration (None = hierarchy extraction disabled) */
-  hierarchy?: JsHierarchyConfig
+  hierarchy?: JsHierarchyConfig;
   /**
    * Extract PDF annotations (text notes, highlights, links, stamps).
    * Default: false
    */
-  extractAnnotations?: boolean
+  extractAnnotations?: boolean;
   /**
    * Top margin fraction (0.0–1.0) of page height to exclude headers/running heads.
    * Default: 0.06 (6%)
    */
-  topMarginFraction?: number
+  topMarginFraction?: number;
   /**
    * Bottom margin fraction (0.0–1.0) of page height to exclude footers/page numbers.
    * Default: 0.05 (5%)
    */
-  bottomMarginFraction?: number
+  bottomMarginFraction?: number;
   /**
    * Allow single-column pseudo tables in extraction results.
    *
@@ -3844,7 +3911,7 @@ export interface PdfConfig {
    * to be emitted as tables. Other quality filters (density, sparsity, prose
    * detection) still apply.
    */
-  allowSingleColumnTables?: boolean
+  allowSingleColumnTables?: boolean;
   /**
    * Perform OCR on inline images extracted from PDF pages and attach the
    * recognized text to each `ExtractedImage.ocr_result`. Requires Tesseract
@@ -3853,10 +3920,10 @@ export interface PdfConfig {
    * gracefully (the image is returned without OCR text rather than failing
    * the whole extraction). Default: `false`.
    */
-  ocrInlineImages?: boolean
+  ocrInlineImages?: boolean;
 }
 
-export declare function pdfConfigDefault(): PdfConfig
+export declare function pdfConfigDefault(): PdfConfig;
 
 /**
  * PDF-specific metadata.
@@ -3867,34 +3934,34 @@ export declare function pdfConfigDefault(): PdfConfig
  */
 export interface PdfMetadata {
   /** PDF version (e.g., "1.7", "2.0") */
-  pdfVersion?: string
+  pdfVersion?: string;
   /** PDF producer (application that created the PDF) */
-  producer?: string
+  producer?: string;
   /** Whether the PDF is encrypted/password-protected */
-  isEncrypted?: boolean
+  isEncrypted?: boolean;
   /** First page width in points (1/72 inch) */
-  width?: number
+  width?: number;
   /** First page height in points (1/72 inch) */
-  height?: number
+  height?: number;
   /** Total number of pages in the PDF document */
-  pageCount?: number
+  pageCount?: number;
 }
 
 /** Post-processor configuration. */
 export interface PostProcessorConfig {
   /** Enable post-processors */
-  enabled?: boolean
+  enabled?: boolean;
   /** Whitelist of processor names to run (None = all enabled) */
-  enabledProcessors?: Array<string>
+  enabledProcessors?: Array<string>;
   /** Blacklist of processor names to skip (None = none disabled) */
-  disabledProcessors?: Array<string>
+  disabledProcessors?: Array<string>;
   /** Pre-computed AHashSet for O(1) enabled processor lookup */
-  enabledSet?: Array<string>
+  enabledSet?: Array<string>;
   /** Pre-computed AHashSet for O(1) disabled processor lookup */
-  disabledSet?: Array<string>
+  disabledSet?: Array<string>;
 }
 
-export declare function postProcessorConfigDefault(): PostProcessorConfig
+export declare function postProcessorConfigDefault(): PostProcessorConfig;
 
 /**
  * Application properties from docProps/app.xml for PPTX
@@ -3903,35 +3970,35 @@ export declare function postProcessorConfigDefault(): PostProcessorConfig
  */
 export interface PptxAppProperties {
   /** Application name (e.g., "Microsoft Office PowerPoint") */
-  application?: string
+  application?: string;
   /** Application version */
-  appVersion?: string
+  appVersion?: string;
   /** Total editing time in minutes */
-  totalTime?: number
+  totalTime?: number;
   /** Company name */
-  company?: string
+  company?: string;
   /** Document security level */
-  docSecurity?: number
+  docSecurity?: number;
   /** Scale crop flag */
-  scaleCrop?: boolean
+  scaleCrop?: boolean;
   /** Links up to date flag */
-  linksUpToDate?: boolean
+  linksUpToDate?: boolean;
   /** Shared document flag */
-  sharedDoc?: boolean
+  sharedDoc?: boolean;
   /** Hyperlinks changed flag */
-  hyperlinksChanged?: boolean
+  hyperlinksChanged?: boolean;
   /** Number of slides */
-  slides?: number
+  slides?: number;
   /** Number of notes */
-  notes?: number
+  notes?: number;
   /** Number of hidden slides */
-  hiddenSlides?: number
+  hiddenSlides?: number;
   /** Number of multimedia clips */
-  multimediaClips?: number
+  multimediaClips?: number;
   /** Presentation format (e.g., "Widescreen", "Standard") */
-  presentationFormat?: string
+  presentationFormat?: string;
   /** Slide titles */
-  slideTitles?: Array<string>
+  slideTitles?: Array<string>;
 }
 
 /**
@@ -3941,32 +4008,32 @@ export interface PptxAppProperties {
  */
 export interface PptxExtractionResult {
   /** Extracted text content from all slides */
-  content: string
+  content: string;
   /** Presentation metadata */
-  metadata: JsPptxMetadata
+  metadata: JsPptxMetadata;
   /** Total number of slides */
-  slideCount: number
+  slideCount: number;
   /** Total number of embedded images */
-  imageCount: number
+  imageCount: number;
   /** Total number of tables */
-  tableCount: number
+  tableCount: number;
   /** Extracted images from the presentation */
-  images: Array<ExtractedImage>
+  images: Array<ExtractedImage>;
   /** Slide structure with boundaries (when page tracking is enabled) */
-  pageStructure?: JsPageStructure
+  pageStructure?: JsPageStructure;
   /** Per-slide content (when page tracking is enabled) */
-  pageContents?: Array<JsPageContent>
+  pageContents?: Array<JsPageContent>;
   /** Structured document representation */
-  document?: DocumentStructure
+  document?: DocumentStructure;
   /** Hyperlinks discovered in slides as (url, optional_label) pairs. */
-  hyperlinks: Array<string>
+  hyperlinks: Array<string>;
   /**
    * Office metadata extracted from docProps/core.xml and docProps/app.xml.
    *
    * Contains keys like "title", "author", "created_by", "subject", "keywords",
    * "modified_by", "created_at", "modified_at", etc.
    */
-  officeMetadata: Record<string, string>
+  officeMetadata: Record<string, string>;
 }
 
 /**
@@ -3976,13 +4043,13 @@ export interface PptxExtractionResult {
  */
 export interface PptxMetadata {
   /** Total number of slides in the presentation */
-  slideCount?: number
+  slideCount?: number;
   /** Names of slides (if available) */
-  slideNames?: Array<string>
+  slideNames?: Array<string>;
   /** Number of embedded images */
-  imageCount?: number
+  imageCount?: number;
   /** Number of tables */
-  tableCount?: number
+  tableCount?: number;
 }
 
 /**
@@ -4001,7 +4068,7 @@ export declare const enum ProcessingStage {
    * - Entity extraction (NER)
    * - Text quality scoring
    */
-  Early = 'Early',
+  Early = "Early",
   /**
    * Middle stage - content transformation.
    *
@@ -4011,7 +4078,7 @@ export declare const enum ProcessingStage {
    * - Text summarization
    * - Semantic analysis
    */
-  Middle = 'Middle',
+  Middle = "Middle",
   /**
    * Late stage - final enrichment.
    *
@@ -4021,7 +4088,7 @@ export declare const enum ProcessingStage {
    * - Final validation
    * - Output formatting
    */
-  Late = 'Late'
+  Late = "Late",
 }
 
 /**
@@ -4035,40 +4102,40 @@ export interface ProcessingWarning {
    * The pipeline stage or feature that produced this warning
    * (e.g., "embedding", "chunking", "language_detection", "output_format").
    */
-  source: string
+  source: string;
   /** Human-readable description of what went wrong. */
-  message: string
+  message: string;
 }
 
 /** Page Segmentation Mode for Tesseract OCR */
 export declare const enum PSMMode {
-  OsdOnly = 'OsdOnly',
-  AutoOsd = 'AutoOsd',
-  AutoOnly = 'AutoOnly',
-  Auto = 'Auto',
-  SingleColumn = 'SingleColumn',
-  SingleBlockVertical = 'SingleBlockVertical',
-  SingleBlock = 'SingleBlock',
-  SingleLine = 'SingleLine',
-  SingleWord = 'SingleWord',
-  CircleWord = 'CircleWord',
-  SingleChar = 'SingleChar'
+  OsdOnly = "OsdOnly",
+  AutoOsd = "AutoOsd",
+  AutoOnly = "AutoOnly",
+  Auto = "Auto",
+  SingleColumn = "SingleColumn",
+  SingleBlockVertical = "SingleBlockVertical",
+  SingleBlock = "SingleBlock",
+  SingleLine = "SingleLine",
+  SingleWord = "SingleWord",
+  CircleWord = "CircleWord",
+  SingleChar = "SingleChar",
 }
 
 /** Outlook PST archive metadata. */
 export interface PstMetadata {
-  messageCount?: number
+  messageCount?: number;
 }
 
 /** RAKE-specific parameters. */
 export interface RakeParams {
   /** Minimum word length to consider (default: 1). */
-  minWordLength?: number
+  minWordLength?: number;
   /** Maximum words in a keyword phrase (default: 3). */
-  maxWordsPerPhrase?: number
+  maxWordsPerPhrase?: number;
 }
 
-export declare function rakeParamsDefault(): RakeParams
+export declare function rakeParamsDefault(): RakeParams;
 
 /**
  * Pre-computed table markdown for a table detection region.
@@ -4080,49 +4147,49 @@ export declare function rakeParamsDefault(): RakeParams
  */
 export interface RecognizedTable {
   /** Detection bbox that this table corresponds to (for matching). */
-  detectionBbox: BBox
+  detectionBbox: BBox;
   /** Table cells as a 2D vector (rows × columns). */
-  cells: Array<Array<string>>
+  cells: Array<Array<string>>;
   /** Rendered markdown table. */
-  markdown: string
+  markdown: string;
 }
 
 export declare const enum ReductionLevel {
-  Off = 'Off',
-  Light = 'Light',
-  Moderate = 'Moderate',
-  Aggressive = 'Aggressive',
-  Maximum = 'Maximum'
+  Off = "Off",
+  Light = "Light",
+  Moderate = "Moderate",
+  Aggressive = "Aggressive",
+  Maximum = "Maximum",
 }
 
-export declare function registerDocumentExtractor(obj: object): void
+export declare function registerDocumentExtractor(obj: object): void;
 
-export declare function registerEmbeddingBackend(obj: object): void
+export declare function registerEmbeddingBackend(obj: object): void;
 
-export declare function registerOcrBackend(obj: object): void
+export declare function registerOcrBackend(obj: object): void;
 
-export declare function registerPostProcessor(obj: object): void
+export declare function registerPostProcessor(obj: object): void;
 
-export declare function registerRenderer(obj: object): void
+export declare function registerRenderer(obj: object): void;
 
-export declare function registerValidator(obj: object): void
+export declare function registerValidator(obj: object): void;
 
 /** Semantic kind of a relationship between document elements. */
 export declare const enum RelationshipKind {
   /** Footnote marker -> footnote definition. */
-  FootnoteReference = 'footnote_reference',
+  FootnoteReference = "footnote_reference",
   /** Citation marker -> bibliography entry. */
-  CitationReference = 'citation_reference',
+  CitationReference = "citation_reference",
   /** Internal anchor link (`#id`) -> target heading/element. */
-  InternalLink = 'internal_link',
+  InternalLink = "internal_link",
   /** Caption paragraph -> figure/table it describes. */
-  Caption = 'caption',
+  Caption = "caption",
   /** Label -> labeled element (HTML `<label for>`, LaTeX `\label{}`). */
-  Label = 'label',
+  Label = "label",
   /** TOC entry -> target section. */
-  TocEntry = 'toc_entry',
+  TocEntry = "toc_entry",
   /** Cross-reference (LaTeX `\ref{}`, DOCX cross-reference field). */
-  CrossReference = 'cross_reference'
+  CrossReference = "cross_reference",
 }
 
 /**
@@ -4143,7 +4210,12 @@ export declare const enum RelationshipKind {
  * Returns `KreuzbergError.Parsing` if the PDF cannot be opened, authenticated,
  * or rendered, or if `page_index` is out of range.
  */
-export declare function renderPdfPageToPng(pdfBytes: Buffer, pageIndex: number, dpi?: number | undefined | null, password?: string | undefined | null): Buffer
+export declare function renderPdfPageToPng(
+  pdfBytes: Buffer,
+  pageIndex: number,
+  dpi?: number | undefined | null,
+  password?: string | undefined | null,
+): Buffer;
 
 /**
  * Result-shape selection for extraction results.
@@ -4154,9 +4226,9 @@ export declare function renderPdfPageToPng(pdfBytes: Buffer, pageIndex: number, 
  */
 export declare const enum ResultFormat {
   /** Unified format with all content in `content` field */
-  Unified = 'unified',
+  Unified = "unified",
   /** Element-based format with semantic element extraction */
-  ElementBased = 'element_based'
+  ElementBased = "element_based",
 }
 
 /**
@@ -4167,13 +4239,13 @@ export declare const enum ResultFormat {
  */
 export interface SecurityLimits {
   /** Maximum uncompressed size for archives (500 MB) */
-  maxArchiveSize?: number
+  maxArchiveSize?: number;
   /** Maximum compression ratio before flagging as potential bomb (100:1) */
-  maxCompressionRatio?: number
+  maxCompressionRatio?: number;
   /** Maximum number of files in archive (10,000) */
-  maxFilesInArchive?: number
+  maxFilesInArchive?: number;
   /** Maximum nesting depth for structures (100) */
-  maxNestingDepth?: number
+  maxNestingDepth?: number;
   /**
    * Maximum length of any single XML entity / attribute / token (1 MiB).
    * This is a per-token cap, NOT a total cap — billion-laughs class
@@ -4181,18 +4253,18 @@ export interface SecurityLimits {
    * here, while normal long text content (a paragraph, a CDATA block) is
    * caught by `max_content_size` instead.
    */
-  maxEntityLength?: number
+  maxEntityLength?: number;
   /** Maximum string growth per document (100 MB) */
-  maxContentSize?: number
+  maxContentSize?: number;
   /** Maximum iterations per operation */
-  maxIterations?: number
+  maxIterations?: number;
   /** Maximum XML depth (100 levels) */
-  maxXmlDepth?: number
+  maxXmlDepth?: number;
   /** Maximum cells per table (100,000) */
-  maxTableCells?: number
+  maxTableCells?: number;
 }
 
-export declare function securityLimitsDefault(): SecurityLimits
+export declare function securityLimitsDefault(): SecurityLimits;
 
 /**
  * API server configuration.
@@ -4210,9 +4282,9 @@ export declare function securityLimitsDefault(): SecurityLimits
  */
 export interface ServerConfig {
   /** Server host address (e.g., "127.0.0.1", "0.0.0.0") */
-  host?: string
+  host?: string;
   /** Server port number */
-  port?: number
+  port?: number;
   /**
    * CORS allowed origins. Empty vector means allow all origins.
    *
@@ -4220,40 +4292,40 @@ export interface ServerConfig {
    * If populated with specific origins (e.g., `"https://example.com"`), only
    * those origins will be allowed.
    */
-  corsOrigins?: Array<string>
+  corsOrigins?: Array<string>;
   /** Maximum size of request body in bytes (default: 100 MB) */
-  maxRequestBodyBytes?: number
+  maxRequestBodyBytes?: number;
   /** Maximum size of multipart fields in bytes (default: 100 MB) */
-  maxMultipartFieldBytes?: number
+  maxMultipartFieldBytes?: number;
 }
 
-export declare function serverConfigDefault(): ServerConfig
+export declare function serverConfigDefault(): ServerConfig;
 
 /** Structured data (Schema.org, microdata, RDFa) block. */
 export interface StructuredData {
   /** Type of structured data */
-  dataType: JsStructuredDataType
+  dataType: JsStructuredDataType;
   /** Raw JSON string representation */
-  rawJson: string
+  rawJson: string;
   /** Schema type if detectable (e.g., "Article", "Event", "Product") */
-  schemaType?: string
+  schemaType?: string;
 }
 
 export interface StructuredDataResult {
-  content: string
-  format: string
-  metadata: Record<string, string>
-  textFields: Array<string>
+  content: string;
+  format: string;
+  metadata: Record<string, string>;
+  textFields: Array<string>;
 }
 
 /** Structured data type classification. */
 export declare const enum StructuredDataType {
   /** JSON-LD structured data */
-  JsonLd = 'json-ld',
+  JsonLd = "json-ld",
   /** Microdata */
-  Microdata = 'microdata',
+  Microdata = "microdata",
   /** RDFa */
-  RDFa = 'rdfa'
+  RDFa = "rdfa",
 }
 
 /**
@@ -4281,13 +4353,13 @@ export declare const enum StructuredDataType {
  */
 export interface StructuredExtractionConfig {
   /** JSON Schema defining the desired output structure. */
-  schema: any
+  schema: any;
   /** Schema name passed to the LLM's structured output mode. */
-  schemaName: string
+  schemaName: string;
   /** Optional schema description for the LLM. */
-  schemaDescription?: string
+  schemaDescription?: string;
   /** Enable strict mode — output must exactly match the schema. */
-  strict: boolean
+  strict: boolean;
   /**
    * Custom Jinja2 extraction prompt template. When `None`, a default template is used.
    *
@@ -4297,9 +4369,9 @@ export interface StructuredExtractionConfig {
    * - `{{ schema_name }}` — The schema name.
    * - `{{ schema_description }}` — The schema description (may be empty).
    */
-  prompt?: string
+  prompt?: string;
   /** LLM configuration for the extraction. */
-  llm: LlmConfig
+  llm: LlmConfig;
 }
 
 /**
@@ -4309,9 +4381,9 @@ export interface StructuredExtractionConfig {
  */
 export interface SupportedFormat {
   /** File extension (without leading dot), e.g., "pdf", "docx" */
-  extension: string
+  extension: string;
   /** MIME type string, e.g., "application/pdf" */
-  mimeType: string
+  mimeType: string;
 }
 
 /**
@@ -4322,16 +4394,16 @@ export interface SupportedFormat {
  */
 export interface Table {
   /** Table cells as a 2D vector (rows × columns) */
-  cells?: Array<Array<string>>
+  cells?: Array<Array<string>>;
   /** Markdown representation of the table */
-  markdown?: string
+  markdown?: string;
   /** Page number where the table was found (1-indexed) */
-  pageNumber?: number
+  pageNumber?: number;
   /**
    * Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top).
    * Only populated for PDF-extracted tables when position data is available.
    */
-  boundingBox?: string
+  boundingBox?: string;
 }
 
 /**
@@ -4341,13 +4413,13 @@ export interface Table {
  */
 export interface TableCell {
   /** Cell content as text */
-  content?: string
+  content?: string;
   /** Row span (number of rows this cell spans) */
-  rowSpan?: number
+  rowSpan?: number;
   /** Column span (number of columns this cell spans) */
-  colSpan?: number
+  colSpan?: number;
   /** Whether this is a header cell */
-  isHeader?: boolean
+  isHeader?: boolean;
 }
 
 /**
@@ -4357,11 +4429,11 @@ export interface TableCell {
  */
 export interface TableGrid {
   /** Number of rows in the table. */
-  rows?: number
+  rows?: number;
   /** Number of columns in the table. */
-  cols?: number
+  cols?: number;
   /** All cells in row-major order. */
-  cells?: Array<JsGridCell>
+  cells?: Array<JsGridCell>;
 }
 
 /**
@@ -4373,20 +4445,20 @@ export interface TableGrid {
  */
 export declare const enum TableModel {
   /** TATR (Table Transformer) -- default, 30MB, DETR-based row/column detection. */
-  Tatr = 'tatr',
+  Tatr = "tatr",
   /** SLANeXT wired variant -- 365MB, optimized for bordered tables. */
-  SlanetWired = 'slanet_wired',
+  SlanetWired = "slanet_wired",
   /** SLANeXT wireless variant -- 365MB, optimized for borderless tables. */
-  SlanetWireless = 'slanet_wireless',
+  SlanetWireless = "slanet_wireless",
   /** SLANet-plus -- 7.78MB, lightweight general-purpose. */
-  SlanetPlus = 'slanet_plus',
+  SlanetPlus = "slanet_plus",
   /**
    * Classifier-routed SLANeXT: auto-select wired/wireless per table.
    * Uses PP-LCNet classifier (6.78MB) + both SLANeXT variants (730MB total).
    */
-  SlanetAuto = 'slanet_auto',
+  SlanetAuto = "slanet_auto",
   /** Disable table structure model inference entirely; use heuristic path only. */
-  Disabled = 'disabled'
+  Disabled = "disabled",
 }
 
 /**
@@ -4398,7 +4470,7 @@ export declare const enum TableModel {
  */
 export interface TesseractConfig {
   /** Language code (e.g., "eng", "deu", "fra") */
-  language?: string
+  language?: string;
   /**
    * Page Segmentation Mode (0-13).
    *
@@ -4407,9 +4479,9 @@ export interface TesseractConfig {
    * - 6: Assume a single uniform block of text (WASM default — avoids layout-analysis hang)
    * - 11: Sparse text with no particular order
    */
-  psm?: number
+  psm?: number;
   /** Output format ("text" or "markdown") */
-  outputFormat?: string
+  outputFormat?: string;
   /**
    * OCR Engine Mode (0-3).
    *
@@ -4418,53 +4490,53 @@ export interface TesseractConfig {
    * - 2: Legacy + LSTM
    * - 3: Default (based on what's available)
    */
-  oem?: number
+  oem?: number;
   /**
    * Minimum confidence threshold (0.0-100.0).
    *
    * Words with confidence below this threshold may be rejected or flagged.
    */
-  minConfidence?: number
+  minConfidence?: number;
   /**
    * Image preprocessing configuration.
    *
    * Controls how images are preprocessed before OCR. Can significantly
    * improve quality for scanned documents or low-quality images.
    */
-  preprocessing?: ImagePreprocessingConfig
+  preprocessing?: ImagePreprocessingConfig;
   /** Enable automatic table detection and reconstruction */
-  enableTableDetection?: boolean
+  enableTableDetection?: boolean;
   /** Minimum confidence threshold for table detection (0.0-1.0) */
-  tableMinConfidence?: number
+  tableMinConfidence?: number;
   /** Column threshold for table detection (pixels) */
-  tableColumnThreshold?: number
+  tableColumnThreshold?: number;
   /** Row threshold ratio for table detection (0.0-1.0) */
-  tableRowThresholdRatio?: number
+  tableRowThresholdRatio?: number;
   /** Enable OCR result caching */
-  useCache?: boolean
+  useCache?: boolean;
   /** Use pre-adapted templates for character classification */
-  classifyUsePreAdaptedTemplates?: boolean
+  classifyUsePreAdaptedTemplates?: boolean;
   /** Enable N-gram language model */
-  languageModelNgramOn?: boolean
+  languageModelNgramOn?: boolean;
   /** Don't reject good words during block-level processing */
-  tesseditDontBlkrejGoodWds?: boolean
+  tesseditDontBlkrejGoodWds?: boolean;
   /** Don't reject good words during row-level processing */
-  tesseditDontRowrejGoodWds?: boolean
+  tesseditDontRowrejGoodWds?: boolean;
   /** Enable dictionary correction */
-  tesseditEnableDictCorrection?: boolean
+  tesseditEnableDictCorrection?: boolean;
   /** Whitelist of allowed characters (empty = all allowed) */
-  tesseditCharWhitelist?: string
+  tesseditCharWhitelist?: string;
   /** Blacklist of forbidden characters (empty = none forbidden) */
-  tesseditCharBlacklist?: string
+  tesseditCharBlacklist?: string;
   /** Use primary language params model */
-  tesseditUsePrimaryParamsModel?: boolean
+  tesseditUsePrimaryParamsModel?: boolean;
   /** Variable-width space detection */
-  textordSpaceSizeIsVariable?: boolean
+  textordSpaceSizeIsVariable?: boolean;
   /** Use adaptive thresholding method */
-  thresholdingMethod?: boolean
+  thresholdingMethod?: boolean;
 }
 
-export declare function tesseractConfigDefault(): TesseractConfig
+export declare function tesseractConfigDefault(): TesseractConfig;
 
 /**
  * Inline text annotation — byte-range based formatting and links.
@@ -4474,21 +4546,21 @@ export declare function tesseractConfigDefault(): TesseractConfig
  */
 export interface TextAnnotation {
   /** Start byte offset in the node's text content (inclusive). */
-  start: number
+  start: number;
   /** End byte offset in the node's text content (exclusive). */
-  end: number
+  end: number;
   /** Annotation type. */
-  kind: JsAnnotationKind
+  kind: JsAnnotationKind;
 }
 
 /** Text direction enumeration for HTML documents. */
 export declare const enum TextDirection {
   /** Left-to-right text direction */
-  LeftToRight = 'ltr',
+  LeftToRight = "ltr",
   /** Right-to-left text direction */
-  RightToLeft = 'rtl',
+  RightToLeft = "rtl",
   /** Automatic text direction detection */
-  Auto = 'auto'
+  Auto = "auto",
 }
 
 /**
@@ -4499,19 +4571,19 @@ export declare const enum TextDirection {
  */
 export interface TextExtractionResult {
   /** Extracted text content */
-  content: string
+  content: string;
   /** Number of lines */
-  lineCount: number
+  lineCount: number;
   /** Number of words */
-  wordCount: number
+  wordCount: number;
   /** Number of characters */
-  characterCount: number
+  characterCount: number;
   /** Markdown headers (text only, Markdown files only) */
-  headers?: Array<string>
+  headers?: Array<string>;
   /** Markdown links as (text, URL) tuples (Markdown files only) */
-  links?: Array<string>
+  links?: Array<string>;
   /** Code blocks as (language, code) tuples (Markdown files only) */
-  codeBlocks?: Array<string>
+  codeBlocks?: Array<string>;
 }
 
 /**
@@ -4522,44 +4594,44 @@ export interface TextExtractionResult {
  */
 export interface TextMetadata {
   /** Number of lines in the document */
-  lineCount?: number
+  lineCount?: number;
   /** Number of words */
-  wordCount?: number
+  wordCount?: number;
   /** Number of characters */
-  characterCount?: number
+  characterCount?: number;
   /** Markdown headers (headings text only, for Markdown files) */
-  headers?: Array<string>
+  headers?: Array<string>;
   /** Markdown links as (text, url) tuples (for Markdown files) */
-  links?: Array<string>
+  links?: Array<string>;
   /** Code blocks as (language, code) tuples (for Markdown files) */
-  codeBlocks?: Array<string>
+  codeBlocks?: Array<string>;
 }
 
 export interface TokenReductionConfig {
-  level?: JsReductionLevel
-  languageHint?: string
-  preserveMarkdown?: boolean
-  preserveCode?: boolean
-  semanticThreshold?: number
-  enableParallel?: boolean
-  useSimd?: boolean
-  customStopwords?: Record<string, Array<string>>
-  preservePatterns?: Array<string>
-  targetReduction?: number
-  enableSemanticClustering?: boolean
+  level?: JsReductionLevel;
+  languageHint?: string;
+  preserveMarkdown?: boolean;
+  preserveCode?: boolean;
+  semanticThreshold?: number;
+  enableParallel?: boolean;
+  useSimd?: boolean;
+  customStopwords?: Record<string, Array<string>>;
+  preservePatterns?: Array<string>;
+  targetReduction?: number;
+  enableSemanticClustering?: boolean;
 }
 
-export declare function tokenReductionConfigDefault(): TokenReductionConfig
+export declare function tokenReductionConfigDefault(): TokenReductionConfig;
 
 /** Token reduction configuration. */
 export interface TokenReductionOptions {
   /** Reduction mode: "off", "light", "moderate", "aggressive", "maximum" */
-  mode?: string
+  mode?: string;
   /** Preserve important words (capitalized, technical terms) */
-  preserveImportantWords?: boolean
+  preserveImportantWords?: boolean;
 }
 
-export declare function tokenReductionOptionsDefault(): TokenReductionOptions
+export declare function tokenReductionOptionsDefault(): TokenReductionOptions;
 
 /**
  * Configuration for tree-sitter language pack integration.
@@ -4586,22 +4658,22 @@ export interface TreeSitterConfig {
    * When `false`, tree-sitter analysis is completely skipped even if
    * the config section is present.
    */
-  enabled?: boolean
+  enabled?: boolean;
   /**
    * Custom cache directory for downloaded grammars.
    *
    * When `None`, uses the default: `~/.cache/tree-sitter-language-pack/v{version}/libs/`.
    */
-  cacheDir?: string
+  cacheDir?: string;
   /** Languages to pre-download on init (e.g., `["python", "rust"]`). */
-  languages?: Array<string>
+  languages?: Array<string>;
   /** Language groups to pre-download (e.g., `["web", "systems", "scripting"]`). */
-  groups?: Array<string>
+  groups?: Array<string>;
   /** Processing options for code analysis. */
-  process?: JsTreeSitterProcessConfig
+  process?: JsTreeSitterProcessConfig;
 }
 
-export declare function treeSitterConfigDefault(): TreeSitterConfig
+export declare function treeSitterConfigDefault(): TreeSitterConfig;
 
 /**
  * Processing options for tree-sitter code analysis.
@@ -4610,38 +4682,38 @@ export declare function treeSitterConfigDefault(): TreeSitterConfig
  */
 export interface TreeSitterProcessConfig {
   /** Extract structural items (functions, classes, structs, etc.). Default: true. */
-  structure?: boolean
+  structure?: boolean;
   /** Extract import statements. Default: true. */
-  imports?: boolean
+  imports?: boolean;
   /** Extract export statements. Default: true. */
-  exports?: boolean
+  exports?: boolean;
   /** Extract comments. Default: false. */
-  comments?: boolean
+  comments?: boolean;
   /** Extract docstrings. Default: false. */
-  docstrings?: boolean
+  docstrings?: boolean;
   /** Extract symbol definitions. Default: false. */
-  symbols?: boolean
+  symbols?: boolean;
   /** Include parse diagnostics. Default: false. */
-  diagnostics?: boolean
+  diagnostics?: boolean;
   /** Maximum chunk size in bytes. `None` disables chunking. */
-  chunkMaxSize?: number
+  chunkMaxSize?: number;
   /** Content rendering mode for code extraction. */
-  contentMode?: JsCodeContentMode
+  contentMode?: JsCodeContentMode;
 }
 
-export declare function treeSitterProcessConfigDefault(): TreeSitterProcessConfig
+export declare function treeSitterProcessConfigDefault(): TreeSitterProcessConfig;
 
-export declare function unregisterDocumentExtractor(name: string): void
+export declare function unregisterDocumentExtractor(name: string): void;
 
-export declare function unregisterEmbeddingBackend(name: string): void
+export declare function unregisterEmbeddingBackend(name: string): void;
 
-export declare function unregisterOcrBackend(name: string): void
+export declare function unregisterOcrBackend(name: string): void;
 
-export declare function unregisterPostProcessor(name: string): void
+export declare function unregisterPostProcessor(name: string): void;
 
-export declare function unregisterRenderer(name: string): void
+export declare function unregisterRenderer(name: string): void;
 
-export declare function unregisterValidator(name: string): void
+export declare function unregisterValidator(name: string): void;
 
 /**
  * A URI extracted from a document.
@@ -4652,29 +4724,29 @@ export declare function unregisterValidator(name: string): void
  */
 export interface Uri {
   /** The URL or path string. */
-  url: string
+  url: string;
   /** Optional display text / label for the link. */
-  label?: string
+  label?: string;
   /** Optional page number where the URI was found (1-indexed). */
-  page?: number
+  page?: number;
   /** Semantic classification of the URI. */
-  kind: JsUriKind
+  kind: JsUriKind;
 }
 
 /** Semantic classification of an extracted URI. */
 export declare const enum UriKind {
   /** A clickable hyperlink (web URL, file link). */
-  Hyperlink = 'hyperlink',
+  Hyperlink = "hyperlink",
   /** An image or media resource reference. */
-  Image = 'image',
+  Image = "image",
   /** An internal anchor or cross-reference target. */
-  Anchor = 'anchor',
+  Anchor = "anchor",
   /** A citation or bibliographic reference (DOI, academic ref). */
-  Citation = 'citation',
+  Citation = "citation",
   /** A general reference (e.g. `\ref{}` in LaTeX, `:ref:` in RST). */
-  Reference = 'reference',
+  Reference = "reference",
   /** An email address (`mailto:` link or bare email). */
-  Email = 'email'
+  Email = "email",
 }
 
 /**
@@ -4684,23 +4756,23 @@ export declare const enum UriKind {
  */
 export interface XlsxAppProperties {
   /** Application name (e.g., "Microsoft Excel") */
-  application?: string
+  application?: string;
   /** Application version */
-  appVersion?: string
+  appVersion?: string;
   /** Document security level */
-  docSecurity?: number
+  docSecurity?: number;
   /** Scale crop flag */
-  scaleCrop?: boolean
+  scaleCrop?: boolean;
   /** Links up to date flag */
-  linksUpToDate?: boolean
+  linksUpToDate?: boolean;
   /** Shared document flag */
-  sharedDoc?: boolean
+  sharedDoc?: boolean;
   /** Hyperlinks changed flag */
-  hyperlinksChanged?: boolean
+  hyperlinksChanged?: boolean;
   /** Company name */
-  company?: string
+  company?: string;
   /** Worksheet names */
-  worksheetNames?: Array<string>
+  worksheetNames?: Array<string>;
 }
 
 /**
@@ -4711,11 +4783,11 @@ export interface XlsxAppProperties {
  */
 export interface XmlExtractionResult {
   /** Extracted text content (XML structure filtered out) */
-  content: string
+  content: string;
   /** Total number of XML elements processed */
-  elementCount: number
+  elementCount: number;
   /** List of unique element names found (sorted) */
-  uniqueElements: Array<string>
+  uniqueElements: Array<string>;
 }
 
 /**
@@ -4725,9 +4797,9 @@ export interface XmlExtractionResult {
  */
 export interface XmlMetadata {
   /** Total number of XML elements processed */
-  elementCount?: number
+  elementCount?: number;
   /** List of unique element tag names (sorted) */
-  uniqueElements?: Array<string>
+  uniqueElements?: Array<string>;
 }
 
 /** YAKE-specific parameters. */
@@ -4737,14 +4809,14 @@ export interface YakeParams {
    *
    * Controls the context window for computing co-occurrence statistics.
    */
-  windowSize?: number
+  windowSize?: number;
 }
 
-export declare function yakeParamsDefault(): YakeParams
+export declare function yakeParamsDefault(): YakeParams;
 
 /** Year range for bibliographic metadata. */
 export interface YearRange {
-  min?: number
-  max?: number
-  years: Array<number>
+  min?: number;
+  max?: number;
+  years: Array<number>;
 }
