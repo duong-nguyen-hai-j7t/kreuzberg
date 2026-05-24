@@ -3764,6 +3764,7 @@ dependencies = [
 name = "kreuzberg-dart"
 version = "5.0.0-rc.1"
 dependencies = [
+ "ahash",
  "async-trait",
  "flutter_rust_bridge",
  "kreuzberg",

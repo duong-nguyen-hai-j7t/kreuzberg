@@ -8716,7 +8716,14 @@ pub fn list_validators() -> Result<Vec<String>, String> {
 /// the metadata bonus simply isn't applied in that case. Texts shorter than
 /// `MIN_TEXT_LENGTH` short-circuit to `0.1` regardless of metadata.
 pub fn calculate_quality_score(text: String, metadata: Option<std::collections::HashMap<String, String>>) -> f64 {
-    kreuzberg::text::quality::calculate_quality_score(&text, &metadata) as f64
+    let converted_metadata = metadata.map(|m| {
+        let mut ahash_map = ahash::AHashMap::new();
+        for (k, v) in m.into_iter() {
+            ahash_map.insert(std::borrow::Cow::Owned(k), serde_json::Value::String(v));
+        }
+        ahash_map
+    });
+    kreuzberg::text::quality::calculate_quality_score(&text, converted_metadata.as_ref()) as f64
 }
 
 /// Generate embeddings asynchronously for a list of text strings.
