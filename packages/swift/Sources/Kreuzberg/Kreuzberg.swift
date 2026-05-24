@@ -1962,7 +1962,33 @@ internal extension GridCell {
 ///
 /// Annotations reference byte offsets into the node's text content,
 /// enabling precise identification of formatted regions.
-public typealias TextAnnotation = RustBridge.TextAnnotation
+public struct TextAnnotation: Codable, Sendable, Hashable {
+    /// Start byte offset in the node's text content (inclusive).
+    public let start: UInt32
+    /// End byte offset in the node's text content (exclusive).
+    public let end: UInt32
+    /// Annotation type.
+    public let kind: AnnotationKind
+    public init(start: UInt32, end: UInt32, kind: AnnotationKind) {
+        self.start = start
+        self.end = end
+        self.kind = kind
+    }
+}
+
+// MARK: - Internal FFI conversions for TextAnnotation
+internal extension TextAnnotation {
+    init(_ rb: RustBridge.TextAnnotationRef) throws {
+        self.start = rb.start()
+        self.end = rb.end()
+        self.kind = try AnnotationKind(rb.kind())
+    }
+    func intoRust() throws -> RustBridge.TextAnnotation {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.textAnnotationFromJson(json)
+    }
+}
 
 /// General extraction result used by the core extraction API.
 ///
@@ -6341,7 +6367,8 @@ public func gridCellFromJson(_ json: String) throws -> GridCell {
 }
 
 public func textAnnotationFromJson(_ json: String) throws -> TextAnnotation {
-    return try RustBridge.textAnnotationFromJson(json)
+    let data = json.data(using: .utf8) ?? Data()
+    return try JSONDecoder().decode(TextAnnotation.self, from: data)
 }
 
 public func extractionResultFromJson(_ json: String) throws -> ExtractionResult {
