@@ -41,5 +41,5 @@ data class FormattedBlock(
     /** Raw code content for code blocks */
     val code: String? = null,
     /** Nested blocks for containers (blockquotes, list items, divs) */
-    val children: List<FormattedBlock> = emptyList()
+    val children: List<FormattedBlock> = emptyList(),
 )

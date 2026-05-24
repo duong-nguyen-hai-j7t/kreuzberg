@@ -59,5 +59,5 @@ data class DocxAppProperties(
     /** Shared document flag */
     val sharedDoc: Boolean? = null,
     /** Hyperlinks changed flag */
-    val hyperlinksChanged: Boolean? = null
+    val hyperlinksChanged: Boolean? = null,
 )

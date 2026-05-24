@@ -29,5 +29,5 @@ data class StructuredData(
     /** Raw JSON string representation */
     val rawJson: String,
     /** Schema type if detectable (e.g., "Article", "Event", "Product") */
-    val schemaType: String? = null
+    val schemaType: String? = null,
 )

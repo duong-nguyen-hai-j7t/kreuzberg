@@ -37,5 +37,5 @@ data class GridCell(
     /** Whether this is a header cell. */
     val isHeader: Boolean,
     /** Bounding box for this cell (if available). */
-    val bbox: BoundingBox? = null
+    val bbox: BoundingBox? = null,
 )

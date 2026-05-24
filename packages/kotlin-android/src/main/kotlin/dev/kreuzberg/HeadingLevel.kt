@@ -27,5 +27,5 @@ data class HeadingLevel(
     /** Heading depth (1 = h1, 2 = h2, etc.) */
     val level: Byte,
     /** The text content of the heading. */
-    val text: String
+    val text: String,
 )

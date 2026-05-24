@@ -37,5 +37,5 @@ data class ArchiveMetadata(
     /** Total uncompressed size in bytes */
     val totalSize: Long = 0L,
     /** Compressed size in bytes (if available) */
-    val compressedSize: Long? = null
+    val compressedSize: Long? = null,
 )

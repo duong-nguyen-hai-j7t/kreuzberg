@@ -37,5 +37,5 @@ data class OcrMetadata(
     /** Number of tables detected */
     val tableCount: Int = 0,
     val tableRows: Int? = null,
-    val tableCols: Int? = null
+    val tableCols: Int? = null,
 )

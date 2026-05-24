@@ -41,5 +41,5 @@ data class EmailMetadata(
     /** Message-ID header value */
     val messageId: String? = null,
     /** List of attachment filenames */
-    val attachments: List<String> = emptyList()
+    val attachments: List<String> = emptyList(),
 )

@@ -31,5 +31,5 @@ data class DjotLink(
     /** Optional title */
     val title: String? = null,
     /** Element attributes */
-    val attributes: String? = null
+    val attributes: String? = null,
 )

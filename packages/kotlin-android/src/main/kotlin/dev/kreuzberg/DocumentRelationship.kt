@@ -29,5 +29,5 @@ data class DocumentRelationship(
     /** Target node index (the referenced node). */
     val target: Int,
     /** Semantic kind of the relationship. */
-    val kind: RelationshipKind
+    val kind: RelationshipKind,
 )

@@ -35,5 +35,5 @@ data class ImageMetadataType(
     /** Image type classification */
     val imageType: ImageType,
     /** Additional attributes as key-value pairs */
-    val attributes: List<List<String>> = emptyList()
+    val attributes: List<List<String>> = emptyList(),
 )

@@ -25,8 +25,8 @@ package dev.kreuzberg
 /**
  * Plain text and Markdown extraction result.
  *
- * Contains the extracted text along with statistics and,
- * for Markdown files, structural elements like headers and links.
+ * Contains the extracted text along with statistics and, for Markdown files, structural elements
+ * like headers and links.
  */
 data class TextExtractionResult(
     /** Extracted text content */
@@ -42,5 +42,5 @@ data class TextExtractionResult(
     /** Markdown links as (text, URL) tuples (Markdown files only) */
     val links: List<List<String>>? = null,
     /** Code blocks as (language, code) tuples (Markdown files only) */
-    val codeBlocks: List<List<String>>? = null
+    val codeBlocks: List<List<String>>? = null,
 )

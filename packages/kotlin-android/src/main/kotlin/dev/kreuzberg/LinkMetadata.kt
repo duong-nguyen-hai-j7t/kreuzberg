@@ -35,5 +35,5 @@ data class LinkMetadata(
     /** Rel attribute values */
     val rel: List<String> = emptyList(),
     /** Additional attributes as key-value pairs */
-    val attributes: List<List<String>> = emptyList()
+    val attributes: List<List<String>> = emptyList(),
 )

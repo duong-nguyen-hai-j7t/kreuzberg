@@ -10093,8 +10093,7 @@ pub enum OutputFormat {
     Html,
     Json,
     Structured,
-    /// Data variants not directly bridgeable — represented as Unknown.
-    Unknown,
+    Custom,
 }
 
 impl From<kreuzberg::OutputFormat> for OutputFormat {
@@ -10106,7 +10105,7 @@ impl From<kreuzberg::OutputFormat> for OutputFormat {
             kreuzberg::OutputFormat::Html => Self::Html,
             kreuzberg::OutputFormat::Json => Self::Json,
             kreuzberg::OutputFormat::Structured => Self::Structured,
-            _ => Self::Unknown,
+            kreuzberg::OutputFormat::Custom(..) => Self::Custom,
         }
     }
 }
@@ -10120,7 +10119,7 @@ impl OutputFormat {
             Self::Html => "html".to_string(),
             Self::Json => "json".to_string(),
             Self::Structured => "structured".to_string(),
-            Self::Unknown => "unknown".to_string(),
+            Self::Custom => "custom".to_string(),
         }
     }
 }
@@ -10223,15 +10222,14 @@ impl ChunkerType {
 
 pub enum ChunkSizing {
     Characters,
-    /// Data variants not directly bridgeable — represented as Unknown.
-    Unknown,
+    Tokenizer,
 }
 
 impl From<kreuzberg::ChunkSizing> for ChunkSizing {
     fn from(val: kreuzberg::ChunkSizing) -> Self {
         match val {
             kreuzberg::ChunkSizing::Characters => Self::Characters,
-            _ => Self::Unknown,
+            kreuzberg::ChunkSizing::Tokenizer { .. } => Self::Tokenizer,
         }
     }
 }
@@ -10240,20 +10238,25 @@ impl ChunkSizing {
     pub fn to_string(&self) -> String {
         match self {
             Self::Characters => "characters".to_string(),
-            Self::Unknown => "unknown".to_string(),
+            Self::Tokenizer => "tokenizer".to_string(),
         }
     }
 }
 
 pub enum EmbeddingModelType {
-    /// Data variants not directly bridgeable — represented as Unknown.
-    Unknown,
+    Preset,
+    Custom,
+    Llm,
+    Plugin,
 }
 
 impl From<kreuzberg::EmbeddingModelType> for EmbeddingModelType {
     fn from(val: kreuzberg::EmbeddingModelType) -> Self {
         match val {
-            _ => Self::Unknown,
+            kreuzberg::EmbeddingModelType::Preset { .. } => Self::Preset,
+            kreuzberg::EmbeddingModelType::Custom { .. } => Self::Custom,
+            kreuzberg::EmbeddingModelType::Llm { .. } => Self::Llm,
+            kreuzberg::EmbeddingModelType::Plugin { .. } => Self::Plugin,
         }
     }
 }
@@ -10261,7 +10264,10 @@ impl From<kreuzberg::EmbeddingModelType> for EmbeddingModelType {
 impl EmbeddingModelType {
     pub fn to_string(&self) -> String {
         match self {
-            Self::Unknown => "unknown".to_string(),
+            Self::Preset => "preset".to_string(),
+            Self::Custom => "custom".to_string(),
+            Self::Llm => "llm".to_string(),
+            Self::Plugin => "plugin".to_string(),
         }
     }
 }
@@ -10673,20 +10679,51 @@ impl ContentLayer {
 }
 
 pub enum NodeContent {
+    Title,
+    Heading,
+    Paragraph,
+    List,
+    ListItem,
+    Table,
+    Image,
+    Code,
     Quote,
+    Formula,
+    Footnote,
+    Group,
     PageBreak,
+    Slide,
     DefinitionList,
-    /// Data variants not directly bridgeable — represented as Unknown.
-    Unknown,
+    DefinitionItem,
+    Citation,
+    Admonition,
+    RawBlock,
+    MetadataBlock,
 }
 
 impl From<kreuzberg::NodeContent> for NodeContent {
     fn from(val: kreuzberg::NodeContent) -> Self {
         match val {
+            kreuzberg::NodeContent::Title { .. } => Self::Title,
+            kreuzberg::NodeContent::Heading { .. } => Self::Heading,
+            kreuzberg::NodeContent::Paragraph { .. } => Self::Paragraph,
+            kreuzberg::NodeContent::List { .. } => Self::List,
+            kreuzberg::NodeContent::ListItem { .. } => Self::ListItem,
+            kreuzberg::NodeContent::Table { .. } => Self::Table,
+            kreuzberg::NodeContent::Image { .. } => Self::Image,
+            kreuzberg::NodeContent::Code { .. } => Self::Code,
             kreuzberg::NodeContent::Quote => Self::Quote,
+            kreuzberg::NodeContent::Formula { .. } => Self::Formula,
+            kreuzberg::NodeContent::Footnote { .. } => Self::Footnote,
+            kreuzberg::NodeContent::Group { .. } => Self::Group,
             kreuzberg::NodeContent::PageBreak => Self::PageBreak,
+            kreuzberg::NodeContent::Slide { .. } => Self::Slide,
             kreuzberg::NodeContent::DefinitionList => Self::DefinitionList,
-            _ => Self::Unknown,
+            kreuzberg::NodeContent::DefinitionItem { .. } => Self::DefinitionItem,
+            kreuzberg::NodeContent::Citation { .. } => Self::Citation,
+            kreuzberg::NodeContent::Admonition { .. } => Self::Admonition,
+            kreuzberg::NodeContent::RawBlock { .. } => Self::RawBlock,
+            kreuzberg::NodeContent::MetadataBlock { .. } => Self::MetadataBlock,
         }
     }
 }
@@ -10694,10 +10731,26 @@ impl From<kreuzberg::NodeContent> for NodeContent {
 impl NodeContent {
     pub fn to_string(&self) -> String {
         match self {
+            Self::Title => "title".to_string(),
+            Self::Heading => "heading".to_string(),
+            Self::Paragraph => "paragraph".to_string(),
+            Self::List => "list".to_string(),
+            Self::ListItem => "list_item".to_string(),
+            Self::Table => "table".to_string(),
+            Self::Image => "image".to_string(),
+            Self::Code => "code".to_string(),
             Self::Quote => "quote".to_string(),
+            Self::Formula => "formula".to_string(),
+            Self::Footnote => "footnote".to_string(),
+            Self::Group => "group".to_string(),
             Self::PageBreak => "page_break".to_string(),
+            Self::Slide => "slide".to_string(),
             Self::DefinitionList => "definition_list".to_string(),
-            Self::Unknown => "unknown".to_string(),
+            Self::DefinitionItem => "definition_item".to_string(),
+            Self::Citation => "citation".to_string(),
+            Self::Admonition => "admonition".to_string(),
+            Self::RawBlock => "raw_block".to_string(),
+            Self::MetadataBlock => "metadata_block".to_string(),
         }
     }
 }
@@ -10710,9 +10763,11 @@ pub enum AnnotationKind {
     Code,
     Subscript,
     Superscript,
+    Link,
     Highlight,
-    /// Data variants not directly bridgeable — represented as Unknown.
-    Unknown,
+    Color,
+    FontSize,
+    Custom,
 }
 
 impl From<kreuzberg::AnnotationKind> for AnnotationKind {
@@ -10725,8 +10780,11 @@ impl From<kreuzberg::AnnotationKind> for AnnotationKind {
             kreuzberg::AnnotationKind::Code => Self::Code,
             kreuzberg::AnnotationKind::Subscript => Self::Subscript,
             kreuzberg::AnnotationKind::Superscript => Self::Superscript,
+            kreuzberg::AnnotationKind::Link { .. } => Self::Link,
             kreuzberg::AnnotationKind::Highlight => Self::Highlight,
-            _ => Self::Unknown,
+            kreuzberg::AnnotationKind::Color { .. } => Self::Color,
+            kreuzberg::AnnotationKind::FontSize { .. } => Self::FontSize,
+            kreuzberg::AnnotationKind::Custom { .. } => Self::Custom,
         }
     }
 }
@@ -10741,8 +10799,11 @@ impl AnnotationKind {
             Self::Code => "code".to_string(),
             Self::Subscript => "subscript".to_string(),
             Self::Superscript => "superscript".to_string(),
+            Self::Link => "link".to_string(),
             Self::Highlight => "highlight".to_string(),
-            Self::Unknown => "unknown".to_string(),
+            Self::Color => "color".to_string(),
+            Self::FontSize => "font_size".to_string(),
+            Self::Custom => "custom".to_string(),
         }
     }
 }
@@ -10953,14 +11014,51 @@ impl ElementType {
 }
 
 pub enum FormatMetadata {
-    /// Data variants not directly bridgeable — represented as Unknown.
-    Unknown,
+    Pdf,
+    Docx,
+    Excel,
+    Email,
+    Pptx,
+    Archive,
+    Image,
+    Xml,
+    Text,
+    Html,
+    Ocr,
+    Csv,
+    Bibtex,
+    Citation,
+    FictionBook,
+    Dbf,
+    Jats,
+    Epub,
+    Pst,
+    Code,
 }
 
 impl From<kreuzberg::FormatMetadata> for FormatMetadata {
     fn from(val: kreuzberg::FormatMetadata) -> Self {
         match val {
-            _ => Self::Unknown,
+            kreuzberg::FormatMetadata::Pdf(..) => Self::Pdf,
+            kreuzberg::FormatMetadata::Docx(..) => Self::Docx,
+            kreuzberg::FormatMetadata::Excel(..) => Self::Excel,
+            kreuzberg::FormatMetadata::Email(..) => Self::Email,
+            kreuzberg::FormatMetadata::Pptx(..) => Self::Pptx,
+            kreuzberg::FormatMetadata::Archive(..) => Self::Archive,
+            kreuzberg::FormatMetadata::Image(..) => Self::Image,
+            kreuzberg::FormatMetadata::Xml(..) => Self::Xml,
+            kreuzberg::FormatMetadata::Text(..) => Self::Text,
+            kreuzberg::FormatMetadata::Html(..) => Self::Html,
+            kreuzberg::FormatMetadata::Ocr(..) => Self::Ocr,
+            kreuzberg::FormatMetadata::Csv(..) => Self::Csv,
+            kreuzberg::FormatMetadata::Bibtex(..) => Self::Bibtex,
+            kreuzberg::FormatMetadata::Citation(..) => Self::Citation,
+            kreuzberg::FormatMetadata::FictionBook(..) => Self::FictionBook,
+            kreuzberg::FormatMetadata::Dbf(..) => Self::Dbf,
+            kreuzberg::FormatMetadata::Jats(..) => Self::Jats,
+            kreuzberg::FormatMetadata::Epub(..) => Self::Epub,
+            kreuzberg::FormatMetadata::Pst(..) => Self::Pst,
+            kreuzberg::FormatMetadata::Code(..) => Self::Code,
         }
     }
 }
@@ -10968,7 +11066,26 @@ impl From<kreuzberg::FormatMetadata> for FormatMetadata {
 impl FormatMetadata {
     pub fn to_string(&self) -> String {
         match self {
-            Self::Unknown => "unknown".to_string(),
+            Self::Pdf => "pdf".to_string(),
+            Self::Docx => "docx".to_string(),
+            Self::Excel => "excel".to_string(),
+            Self::Email => "email".to_string(),
+            Self::Pptx => "pptx".to_string(),
+            Self::Archive => "archive".to_string(),
+            Self::Image => "image".to_string(),
+            Self::Xml => "xml".to_string(),
+            Self::Text => "text".to_string(),
+            Self::Html => "html".to_string(),
+            Self::Ocr => "ocr".to_string(),
+            Self::Csv => "csv".to_string(),
+            Self::Bibtex => "bibtex".to_string(),
+            Self::Citation => "citation".to_string(),
+            Self::FictionBook => "fiction_book".to_string(),
+            Self::Dbf => "dbf".to_string(),
+            Self::Jats => "jats".to_string(),
+            Self::Epub => "epub".to_string(),
+            Self::Pst => "pst".to_string(),
+            Self::Code => "code".to_string(),
         }
     }
 }
@@ -11090,14 +11207,15 @@ impl StructuredDataType {
 }
 
 pub enum OcrBoundingGeometry {
-    /// Data variants not directly bridgeable — represented as Unknown.
-    Unknown,
+    Rectangle,
+    Quadrilateral,
 }
 
 impl From<kreuzberg::OcrBoundingGeometry> for OcrBoundingGeometry {
     fn from(val: kreuzberg::OcrBoundingGeometry) -> Self {
         match val {
-            _ => Self::Unknown,
+            kreuzberg::OcrBoundingGeometry::Rectangle { .. } => Self::Rectangle,
+            kreuzberg::OcrBoundingGeometry::Quadrilateral { .. } => Self::Quadrilateral,
         }
     }
 }
@@ -11105,7 +11223,8 @@ impl From<kreuzberg::OcrBoundingGeometry> for OcrBoundingGeometry {
 impl OcrBoundingGeometry {
     pub fn to_string(&self) -> String {
         match self {
-            Self::Unknown => "unknown".to_string(),
+            Self::Rectangle => "rectangle".to_string(),
+            Self::Quadrilateral => "quadrilateral".to_string(),
         }
     }
 }

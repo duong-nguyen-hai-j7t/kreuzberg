@@ -33,5 +33,5 @@ data class ElementMetadata(
     /** Position index in the element sequence */
     val elementIndex: Long? = null,
     /** Additional custom metadata */
-    val additional: Map<String, String> = emptyMap()
+    val additional: Map<String, String> = emptyMap(),
 )

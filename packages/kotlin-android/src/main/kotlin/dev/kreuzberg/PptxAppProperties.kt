@@ -57,5 +57,5 @@ data class PptxAppProperties(
     /** Presentation format (e.g., "Widescreen", "Standard") */
     val presentationFormat: String? = null,
     /** Slide titles */
-    val slideTitles: List<String> = emptyList()
+    val slideTitles: List<String> = emptyList(),
 )

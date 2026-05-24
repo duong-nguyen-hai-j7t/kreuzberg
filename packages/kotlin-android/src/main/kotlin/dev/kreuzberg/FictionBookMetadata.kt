@@ -26,5 +26,5 @@ package dev.kreuzberg
 data class FictionBookMetadata(
     val genres: List<String> = emptyList(),
     val sequences: List<String> = emptyList(),
-    val annotation: String? = null
+    val annotation: String? = null,
 )

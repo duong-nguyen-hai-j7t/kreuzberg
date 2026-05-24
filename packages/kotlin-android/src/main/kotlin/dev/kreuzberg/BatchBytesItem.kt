@@ -25,8 +25,8 @@ package dev.kreuzberg
 /**
  * Batch item for byte array extraction.
  *
- * Used with `batch_extract_bytes` and `batch_extract_bytes_sync`
- * to represent a single item in a batch extraction job.
+ * Used with `batch_extract_bytes` and `batch_extract_bytes_sync` to represent a single item in a
+ * batch extraction job.
  */
 data class BatchBytesItem(
     /** The content bytes to extract from */
@@ -34,5 +34,5 @@ data class BatchBytesItem(
     /** MIME type of the content (e.g., "application/pdf", "text/html") */
     val mimeType: String,
     /** Per-item configuration overrides (None uses batch-level defaults) */
-    val config: FileExtractionConfig? = null
+    val config: FileExtractionConfig? = null,
 )

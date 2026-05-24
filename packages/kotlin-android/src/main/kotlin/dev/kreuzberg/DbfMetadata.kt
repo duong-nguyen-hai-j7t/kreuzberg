@@ -26,5 +26,5 @@ package dev.kreuzberg
 data class DbfMetadata(
     val recordCount: Long = 0L,
     val fieldCount: Long = 0L,
-    val fields: List<DbfFieldInfo> = emptyList()
+    val fields: List<DbfFieldInfo> = emptyList(),
 )

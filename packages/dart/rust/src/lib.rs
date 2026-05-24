@@ -6139,7 +6139,7 @@ impl From<kreuzberg::NodeContent> for NodeContent {
             kreuzberg::NodeContent::MetadataBlock { entries } => NodeContent::MetadataBlock {
                 entries: entries
                     .into_iter()
-                    .map(|e| serde_json::to_string(&e).unwrap_or_default())
+                    .map(|(a, b)| vec![a.to_string(), b.to_string()])
                     .collect(),
             },
         }
@@ -8401,6 +8401,7 @@ impl From<KeywordAlgorithm> for kreuzberg::KeywordAlgorithm {
 /// Extract content from a byte array.
 ///
 /// This is the main entry point for in-memory extraction. It performs the following steps:
+///
 /// 1. Validate MIME type
 /// 2. Handle legacy format conversion if needed
 /// 3. Select appropriate extractor from registry
@@ -8429,6 +8430,7 @@ pub async fn extract_bytes(
 /// Extract content from a file.
 ///
 /// This is the main entry point for file-based extraction. It performs the following steps:
+///
 /// 1. Check cache for existing result (if caching enabled)
 /// 2. Detect or validate MIME type
 /// 3. Select appropriate extractor from registry
@@ -8545,6 +8547,7 @@ pub fn batch_extract_bytes_sync(
 /// taken from the batch-level `config`.
 ///
 ///   per-file configuration overrides.
+///
 /// * `config` - Batch-level extraction configuration (provides defaults and batch settings)
 ///
 /// **Returns:**
@@ -8588,6 +8591,7 @@ pub async fn batch_extract_files(
 /// the batch-level defaults for that item.
 ///
 ///   MIME type, and optional per-item configuration overrides.
+///
 /// * `config` - Batch-level extraction configuration
 ///
 /// **Returns:**

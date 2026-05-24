@@ -33,5 +33,5 @@ data class HeaderMetadata(
     /** Document tree depth at the header element */
     val depth: Int,
     /** Byte offset in original HTML document */
-    val htmlOffset: Int
+    val htmlOffset: Int,
 )

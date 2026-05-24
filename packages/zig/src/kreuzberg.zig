@@ -94,6 +94,7 @@ pub const ContentFilterConfig = struct {
     ///
     /// - PDF: Disables top-margin furniture stripping and prevents the layout
     ///   model from treating `PageHeader`-classified regions as furniture.
+    ///
     /// - DOCX: Includes document headers in text output.
     /// - RTF/ODT: Headers already included; this is a no-op when true.
     /// - HTML/EPUB: Keeps `<header>` element content.
@@ -104,6 +105,7 @@ pub const ContentFilterConfig = struct {
     ///
     /// - PDF: Disables bottom-margin furniture stripping and prevents the layout
     ///   model from treating `PageFooter`-classified regions as furniture.
+    ///
     /// - DOCX: Includes document footers in text output.
     /// - RTF/ODT: Footers already included; this is a no-op when true.
     /// - HTML/EPUB: Keeps `<footer>` element content.
@@ -145,6 +147,7 @@ pub const EmailConfig = struct {
     /// emitted. Users should verify output when supplying unusual values.
     ///
     /// Common values:
+    ///
     /// - 1250: Central European (Polish, Czech, Hungarian, etc.)
     /// - 1251: Cyrillic (Russian, Ukrainian, Bulgarian, etc.)
     /// - 1252: Western European (default)
@@ -252,6 +255,7 @@ pub const ExtractionConfig = struct {
     /// Content text format (default: Plain).
     ///
     /// Controls the format of the extracted content:
+    ///
     /// - `Plain`: Raw extracted text (default)
     /// - `Markdown`: Markdown formatted output
     /// - `Djot`: Djot markup format (requires djot feature)
@@ -355,6 +359,7 @@ pub const ExtractionConfig = struct {
 ///
 /// The following `ExtractionConfig` fields are batch-level only and
 /// cannot be overridden per file:
+///
 /// - `max_concurrent_extractions` — controls batch parallelism
 /// - `use_cache` — global caching policy
 /// - `acceleration` — shared ONNX execution provider
@@ -581,6 +586,7 @@ pub const StructuredExtractionConfig = struct {
     /// Custom Jinja2 extraction prompt template. When `null`, a default template is used.
     ///
     /// Available template variables:
+    ///
     /// - `{{ content }}` — The extracted document text.
     /// - `{{ schema }}` — The JSON schema as a formatted string.
     /// - `{{ schema_name }}` — The schema name.
@@ -737,6 +743,7 @@ pub const OcrConfig = struct {
     /// Custom Jinja2 prompt template for VLM OCR.
     ///
     /// When `null`, uses the default template. Available variables:
+    ///
     /// - `{{ language }}` — The document language code (e.g., "eng", "deu").
     vlm_prompt: ?[]const u8,
     /// Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection).
@@ -1241,6 +1248,7 @@ pub const PdfAnnotation = struct {
 /// Comprehensive Djot document structure with semantic preservation.
 ///
 /// This type captures the full richness of Djot markup, including:
+///
 /// - Block-level structures (headings, lists, blockquotes, code blocks, etc.)
 /// - Inline formatting (emphasis, strong, highlight, subscript, superscript, etc.)
 /// - Attributes (classes, IDs, key-value pairs)
@@ -1494,6 +1502,7 @@ pub const ExtractionResult = struct {
     ///
     /// When extracting Djot documents with structured extraction enabled,
     /// this field contains the full semantic structure including:
+    ///
     /// - Block-level elements with nesting
     /// - Inline formatting with attributes
     /// - Links, images, footnotes
@@ -1508,6 +1517,7 @@ pub const ExtractionResult = struct {
     ///
     /// When OCR is performed with element extraction enabled, this field contains
     /// the structured representation of detected text including:
+    ///
     /// - Bounding geometry (rectangles or quadrilaterals)
     /// - Confidence scores (detection and recognition)
     /// - Rotation information
@@ -1522,6 +1532,7 @@ pub const ExtractionResult = struct {
     ///
     /// When `include_document_structure` is true in `ExtractionConfig`, this field
     /// contains the full hierarchical representation of the document including:
+    ///
     /// - Heading-driven section nesting
     /// - Table grids with cell-level metadata
     /// - Content layer classification (body, header, footer, footnote)
@@ -2044,6 +2055,7 @@ pub const TesseractConfig = struct {
     /// Page Segmentation Mode (0-13).
     ///
     /// Common values:
+    ///
     /// - 3: Fully automatic page segmentation (native default)
     /// - 6: Assume a single uniform block of text (WASM default — avoids layout-analysis hang)
     /// - 11: Sparse text with no particular order
@@ -2673,6 +2685,7 @@ pub const PageInfo = struct {
 /// # Performance
 ///
 /// Uses Arc-wrapped tables and images for memory efficiency:
+///
 /// - `Vec<Arc<Table>>` enables zero-copy sharing of table data
 /// - `Vec<Arc<ExtractedImage>>` enables zero-copy sharing of image data
 /// - Maintains exact JSON compatibility via custom Serialize/Deserialize
@@ -2750,6 +2763,7 @@ pub const HierarchicalBlock = struct {
     /// The hierarchy level of this block (H1-H6 or Body)
     ///
     /// Levels correspond to HTML heading tags:
+    ///
     /// - "h1": Top-level heading
     /// - "h2": Secondary heading
     /// - "h3": Tertiary heading
@@ -2932,6 +2946,7 @@ pub const PaddleOcrConfig = struct {
     /// Range: 0.0-1.0
     drop_score: f32,
     /// Model tier controlling detection/recognition model size and accuracy trade-off.
+    ///
     /// - `"mobile"` (default): Lightweight models (~4.5MB detection, ~16.5MB recognition), fast download and inference
     /// - `"server"`: Large, high-accuracy models (~88MB detection, ~84MB recognition), best for GPU or complex documents
     model_tier: []const u8,
@@ -3231,6 +3246,7 @@ pub const ProcessingStage = enum {
     /// Early stage - foundational processing.
     ///
     /// Use for:
+    ///
     /// - Language detection
     /// - Character encoding normalization
     /// - Entity extraction (NER)
@@ -3239,6 +3255,7 @@ pub const ProcessingStage = enum {
     /// Middle stage - content transformation.
     ///
     /// Use for:
+    ///
     /// - Keyword extraction
     /// - Token reduction
     /// - Text summarization
@@ -3247,6 +3264,7 @@ pub const ProcessingStage = enum {
     /// Late stage - final enrichment.
     ///
     /// Use for:
+    ///
     /// - Custom user hooks
     /// - Analytics/logging
     /// - Final validation
@@ -3798,6 +3816,7 @@ pub const LayoutClass = enum {
 /// Extract content from a byte array.
 ///
 /// This is the main entry point for in-memory extraction. It performs the following steps:
+///
 /// 1. Validate MIME type
 /// 2. Handle legacy format conversion if needed
 /// 3. Select appropriate extractor from registry
@@ -3836,6 +3855,7 @@ pub fn extract_bytes(content: []const u8, mime_type: []const u8, config: []const
 /// Extract content from a file.
 ///
 /// This is the main entry point for file-based extraction. It performs the following steps:
+///
 /// 1. Check cache for existing result (if caching enabled)
 /// 2. Detect or validate MIME type
 /// 3. Select appropriate extractor from registry
@@ -4002,6 +4022,7 @@ pub fn batch_extract_bytes_sync(items: []const u8, config: []const u8) Kreuzberg
 /// taken from the batch-level `config`.
 ///
 ///   per-file configuration overrides.
+///
 /// * `config` - Batch-level extraction configuration (provides defaults and batch settings)
 ///
 /// **Returns:**
@@ -4051,6 +4072,7 @@ pub fn batch_extract_files(items: []const u8, config: []const u8) KreuzbergError
 /// the batch-level defaults for that item.
 ///
 ///   MIME type, and optional per-item configuration overrides.
+///
 /// * `config` - Batch-level extraction configuration
 ///
 /// **Returns:**

@@ -25,8 +25,8 @@ package dev.kreuzberg
 /**
  * Text/Markdown metadata.
  *
- * Extracted from plain text and Markdown files. Includes word counts and,
- * for Markdown, structural elements like headers and links.
+ * Extracted from plain text and Markdown files. Includes word counts and, for Markdown, structural
+ * elements like headers and links.
  */
 data class TextMetadata(
     /** Number of lines in the document */
@@ -40,5 +40,5 @@ data class TextMetadata(
     /** Markdown links as (text, url) tuples (for Markdown files) */
     val links: List<List<String>>? = null,
     /** Code blocks as (language, code) tuples (for Markdown files) */
-    val codeBlocks: List<List<String>>? = null
+    val codeBlocks: List<List<String>>? = null,
 )

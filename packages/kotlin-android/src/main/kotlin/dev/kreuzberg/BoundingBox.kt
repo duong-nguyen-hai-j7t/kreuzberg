@@ -31,5 +31,5 @@ data class BoundingBox(
     /** Right x-coordinate */
     val x1: Double = 0.0,
     /** Top y-coordinate */
-    val y1: Double = 0.0
+    val y1: Double = 0.0,
 )
