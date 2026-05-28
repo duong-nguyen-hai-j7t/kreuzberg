@@ -421,6 +421,16 @@ package_name = "kreuzberg"
 exclude_functions = [
   "calculate_quality_score",
 ]
+exclude_types = [
+  # Internal DTO used only at the FFI boundary (JSON-marshalled). Generated
+  # Go bindings don't surface this type to consumers, so trait-bridge stubs
+  # must substitute it with json.RawMessage / []byte.
+  "InternalDocument",
+  # SyncExtractor is a Rust-only marker trait for selecting the sync
+  # extraction path; not exposed via the Go bindings — substitute with
+  # json.RawMessage in trait-bridge stubs.
+  "SyncExtractor",
+]
 
 [crates.java]
 package = "dev.kreuzberg"

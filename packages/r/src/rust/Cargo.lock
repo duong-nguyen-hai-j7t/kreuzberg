@@ -2261,9 +2261,9 @@ dependencies = [
 
 [[package]]
 name = "html-to-markdown-rs"
-version = "3.5.2"
+version = "3.5.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "59ec288c724d6dd146d82cfea8cf6dd0b0109722aa7009f14a41b07575664975"
+checksum = "18985b27aaf3c40f7f33b9f3d0cd0a0b5a0413e63625ed7aedff21fbe2a46ade"
 dependencies = [
  "ahash",
  "astral-tl",
@@ -3136,9 +3136,9 @@ checksum = "92daf443525c4cce67b150400bc2316076100ce0b3686209eb8cf3c31612e6f0"
 
 [[package]]
 name = "liter-llm"
-version = "1.4.0-rc.34"
+version = "1.4.0-rc.39"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7035d8b7780f5dde50306a77880e602c87c11f939eb051d3e5342a6b8ba9c02"
+checksum = "59e7a826e44e630bf45cc243d83ff5ae62ad2d2c70142c77dc85791d56bf2489"
 dependencies = [
  "base64 0.22.1",
  "bytes",
@@ -3352,9 +3352,9 @@ dependencies = [
 
 [[package]]
 name = "memchr"
-version = "2.8.0"
+version = "2.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f8ca58f447f06ed17d5fc4043ce1b10dd205e060fb3ce5b979b8ed8e59ff3f79"
+checksum = "6b947ae49db0d222b1dbc6b113ce7248a3fc3a6ca21b696717bfc000ba4484d8"
 
 [[package]]
 name = "memmap2"
@@ -4590,9 +4590,9 @@ checksum = "dc897dd8d9e8bd1ed8cdad82b5966c3e0ecae09fb1907d58efaa013543185d0a"
 
 [[package]]
 name = "reqwest"
-version = "0.13.3"
+version = "0.13.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62e0021ea2c22aed41653bc7e1419abb2c97e038ff2c33d0e1309e49a97deec0"
+checksum = "219c5811de6525e5416c7d5d53bb656d3afdbc6c5af816e0802bcfa42dbdc1c3"
 dependencies = [
  "base64 0.22.1",
  "bytes",
