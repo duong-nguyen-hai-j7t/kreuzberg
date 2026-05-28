@@ -69,7 +69,6 @@ extern void goRendererFreeUserData(void*);
 import "C"
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"runtime/cgo"

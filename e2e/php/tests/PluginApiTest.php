@@ -21,12 +21,12 @@ final class PluginApiTest extends TestCase
     {
         $stub = new class implements \Kreuzberg\DocumentExtractor {
             public function name(): string { return 'test-extractor'; }
-            public function extractBytes($content, $mime_type, $config): mixed { return '{}'; }
-            public function extractFile($path, $mime_type, $config): mixed { return '{}'; }
-            public function supportedMimeTypes(): mixed { return []; }
+            public function extract_bytes($content, $mime_type, $config): mixed { return '{}'; }
+            public function extract_file($path, $mime_type, $config): mixed { return '{}'; }
+            public function supported_mime_types(): mixed { return []; }
             public function priority(): mixed { return 1; }
-            public function canHandle($_path, $_mime_type): mixed { return false; }
-            public function asSyncExtractor(): mixed { return null; }
+            public function can_handle($_path, $_mime_type): mixed { return false; }
+            public function as_sync_extractor(): mixed { return null; }
             public function version(): mixed { return ''; }
             public function initialize(): void {}
             public function shutdown(): void {}
@@ -65,14 +65,14 @@ final class PluginApiTest extends TestCase
     {
         $stub = new class implements \Kreuzberg\OcrBackend {
             public function name(): string { return 'test-backend'; }
-            public function processImage($image_bytes, $config): mixed { return '{}'; }
-            public function processImageFile($path, $config): mixed { return '{}'; }
-            public function supportsLanguage($lang): mixed { return false; }
-            public function backendType(): mixed { return '{}'; }
-            public function supportedLanguages(): mixed { return []; }
-            public function supportsTableDetection(): mixed { return false; }
-            public function supportsDocumentProcessing(): mixed { return false; }
-            public function processDocument($_path, $_config): mixed { return '{}'; }
+            public function process_image($image_bytes, $config): mixed { return '{}'; }
+            public function process_image_file($path, $config): mixed { return '{}'; }
+            public function supports_language($lang): mixed { return false; }
+            public function backend_type(): mixed { return '{}'; }
+            public function supported_languages(): mixed { return []; }
+            public function supports_table_detection(): mixed { return false; }
+            public function supports_document_processing(): mixed { return false; }
+            public function process_document($_path, $_config): mixed { return '{}'; }
             public function version(): mixed { return ''; }
             public function initialize(): void {}
             public function shutdown(): void {}
@@ -92,9 +92,9 @@ final class PluginApiTest extends TestCase
         $stub = new class implements \Kreuzberg\PostProcessor {
             public function name(): string { return 'test-processor'; }
             public function process($result, $config): void {}
-            public function processingStage(): mixed { return '{}'; }
-            public function shouldProcess($_result, $_config): mixed { return false; }
-            public function estimatedDurationMs($_result): mixed { return 1; }
+            public function processing_stage(): mixed { return '{}'; }
+            public function should_process($_result, $_config): mixed { return false; }
+            public function estimated_duration_ms($_result): mixed { return 1; }
             public function priority(): mixed { return 1; }
             public function version(): mixed { return ''; }
             public function initialize(): void {}
@@ -134,7 +134,7 @@ final class PluginApiTest extends TestCase
         $stub = new class implements \Kreuzberg\Validator {
             public function name(): string { return 'test-validator'; }
             public function validate($result, $config): void {}
-            public function shouldValidate($_result, $_config): mixed { return false; }
+            public function should_validate($_result, $_config): mixed { return false; }
             public function priority(): mixed { return 1; }
             public function version(): mixed { return ''; }
             public function initialize(): void {}
