@@ -38,7 +38,7 @@ RSpec.describe 'plugin_api' do
         nil
       end
       def version = '1.0.0'
-      def dimensions = 0
+      def dimensions = 1
       def embed(texts) = []
     end.new
     Kreuzberg.register_embedding_backend(stub_register_embedding_backend_trait_bridge, 'test-embedding-backend')

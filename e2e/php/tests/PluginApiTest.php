@@ -21,8 +21,17 @@ final class PluginApiTest extends TestCase
     {
         $stub = new class implements \Kreuzberg\DocumentExtractor {
             public function name(): string { return 'test-extractor'; }
-            public function extract_bytes($content, $mime_type, $config): mixed { return '{}'; }
-            public function supported_mime_types(): mixed { return []; }
+            public function extractBytes($content, $mime_type, $config): mixed { return '{}'; }
+            public function extractFile($path, $mime_type, $config): mixed { return '{}'; }
+            public function supportedMimeTypes(): mixed { return []; }
+            public function priority(): mixed { return 1; }
+            public function canHandle($_path, $_mime_type): mixed { return false; }
+            public function asSyncExtractor(): mixed { return null; }
+            public function version(): mixed { return ''; }
+            public function initialize(): void {}
+            public function shutdown(): void {}
+            public function description(): mixed { return ''; }
+            public function author(): mixed { return ''; }
         };
         $this->expectNotToPerformAssertions();
         $result = Kreuzberg::registerDocumentExtractor($stub);
@@ -36,8 +45,13 @@ final class PluginApiTest extends TestCase
     {
         $stub = new class implements \Kreuzberg\EmbeddingBackend {
             public function name(): string { return 'test-embedding-backend'; }
-            public function dimensions(): mixed { return 0; }
+            public function dimensions(): mixed { return 1; }
             public function embed($texts): mixed { return []; }
+            public function version(): mixed { return ''; }
+            public function initialize(): void {}
+            public function shutdown(): void {}
+            public function description(): mixed { return ''; }
+            public function author(): mixed { return ''; }
         };
         $this->expectNotToPerformAssertions();
         $result = Kreuzberg::registerEmbeddingBackend($stub);
@@ -51,9 +65,19 @@ final class PluginApiTest extends TestCase
     {
         $stub = new class implements \Kreuzberg\OcrBackend {
             public function name(): string { return 'test-backend'; }
-            public function process_image($image_bytes, $config): mixed { return '{}'; }
-            public function supports_language($lang): mixed { return false; }
-            public function backend_type(): mixed { return '{}'; }
+            public function processImage($image_bytes, $config): mixed { return '{}'; }
+            public function processImageFile($path, $config): mixed { return '{}'; }
+            public function supportsLanguage($lang): mixed { return false; }
+            public function backendType(): mixed { return '{}'; }
+            public function supportedLanguages(): mixed { return []; }
+            public function supportsTableDetection(): mixed { return false; }
+            public function supportsDocumentProcessing(): mixed { return false; }
+            public function processDocument($_path, $_config): mixed { return '{}'; }
+            public function version(): mixed { return ''; }
+            public function initialize(): void {}
+            public function shutdown(): void {}
+            public function description(): mixed { return ''; }
+            public function author(): mixed { return ''; }
         };
         $this->expectNotToPerformAssertions();
         $result = Kreuzberg::registerOcrBackend($stub);
@@ -68,7 +92,15 @@ final class PluginApiTest extends TestCase
         $stub = new class implements \Kreuzberg\PostProcessor {
             public function name(): string { return 'test-processor'; }
             public function process($result, $config): void {}
-            public function processing_stage(): mixed { return '{}'; }
+            public function processingStage(): mixed { return '{}'; }
+            public function shouldProcess($_result, $_config): mixed { return false; }
+            public function estimatedDurationMs($_result): mixed { return 1; }
+            public function priority(): mixed { return 1; }
+            public function version(): mixed { return ''; }
+            public function initialize(): void {}
+            public function shutdown(): void {}
+            public function description(): mixed { return ''; }
+            public function author(): mixed { return ''; }
         };
         $this->expectNotToPerformAssertions();
         $result = Kreuzberg::registerPostProcessor($stub);
@@ -83,6 +115,11 @@ final class PluginApiTest extends TestCase
         $stub = new class implements \Kreuzberg\Renderer {
             public function name(): string { return 'test-renderer'; }
             public function render($doc): mixed { return ''; }
+            public function version(): mixed { return ''; }
+            public function initialize(): void {}
+            public function shutdown(): void {}
+            public function description(): mixed { return ''; }
+            public function author(): mixed { return ''; }
         };
         $this->expectNotToPerformAssertions();
         $result = Kreuzberg::registerRenderer($stub);
@@ -97,6 +134,13 @@ final class PluginApiTest extends TestCase
         $stub = new class implements \Kreuzberg\Validator {
             public function name(): string { return 'test-validator'; }
             public function validate($result, $config): void {}
+            public function shouldValidate($_result, $_config): mixed { return false; }
+            public function priority(): mixed { return 1; }
+            public function version(): mixed { return ''; }
+            public function initialize(): void {}
+            public function shutdown(): void {}
+            public function description(): mixed { return ''; }
+            public function author(): mixed { return ''; }
         };
         $this->expectNotToPerformAssertions();
         $result = Kreuzberg::registerValidator($stub);

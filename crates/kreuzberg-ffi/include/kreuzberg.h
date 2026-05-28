@@ -1580,6 +1580,7 @@ typedef struct KREUZBERGKreuzbergOcrBackendVTable {
    */
   int32_t (*process_image)(const void *user_data,
                            const uint8_t *image_bytes,
+                           uintptr_t image_bytes_len,
                            const char *config,
                            char **out_result,
                            char **out_error);
@@ -2135,6 +2136,7 @@ typedef struct KREUZBERGKreuzbergDocumentExtractorVTable {
    */
   int32_t (*extract_bytes)(const void *user_data,
                            const uint8_t *content,
+                           uintptr_t content_len,
                            const char *mime_type,
                            const char *config,
                            char **out_result,
