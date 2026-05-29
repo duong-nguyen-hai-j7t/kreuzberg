@@ -1671,14 +1671,14 @@ class ChunkingConfig {
   final double? topicThreshold;
 
   const ChunkingConfig({
-    required this.maxCharacters,
-    required this.overlap,
-    required this.trim,
-    required this.chunkerType,
+    this.maxCharacters,
+    this.overlap,
+    this.trim,
+    this.chunkerType,
     this.embedding,
     this.preset,
-    required this.sizing,
-    required this.prependHeadingContext,
+    this.sizing,
+    this.prependHeadingContext,
     this.topicThreshold,
   });
 
@@ -3029,10 +3029,10 @@ class EmbeddingConfig {
   final PlatformInt64? maxEmbedDurationSecs;
 
   const EmbeddingConfig({
-    required this.model,
-    required this.normalize,
-    required this.batchSize,
-    required this.showDownloadProgress,
+    this.model,
+    this.normalize,
+    this.batchSize,
+    this.showDownloadProgress,
     this.cacheDir,
     this.acceleration,
     this.maxEmbedDurationSecs,
@@ -3708,8 +3708,8 @@ class ExtractionConfig {
   final String? cancelToken;
 
   const ExtractionConfig({
-    required this.useCache,
-    required this.enableQualityProcessing,
+    this.useCache,
+    this.enableQualityProcessing,
     this.ocr,
     required this.forceOcr,
     this.forceOcrPages,
@@ -4312,46 +4312,46 @@ class Footnote {
 sealed class FormatMetadata with _$FormatMetadata {
   const FormatMetadata._();
 
-  const factory FormatMetadata.pdf({required PdfMetadata field0}) =
+  const factory FormatMetadata.pdf({required PdfMetadata metadata}) =
       FormatMetadata_Pdf;
-  const factory FormatMetadata.docx({required DocxMetadata field0}) =
+  const factory FormatMetadata.docx({required DocxMetadata metadata}) =
       FormatMetadata_Docx;
-  const factory FormatMetadata.excel({required ExcelMetadata field0}) =
+  const factory FormatMetadata.excel({required ExcelMetadata metadata}) =
       FormatMetadata_Excel;
-  const factory FormatMetadata.email({required EmailMetadata field0}) =
+  const factory FormatMetadata.email({required EmailMetadata metadata}) =
       FormatMetadata_Email;
-  const factory FormatMetadata.pptx({required PptxMetadata field0}) =
+  const factory FormatMetadata.pptx({required PptxMetadata metadata}) =
       FormatMetadata_Pptx;
-  const factory FormatMetadata.archive({required ArchiveMetadata field0}) =
+  const factory FormatMetadata.archive({required ArchiveMetadata metadata}) =
       FormatMetadata_Archive;
-  const factory FormatMetadata.image({required ImageMetadata field0}) =
+  const factory FormatMetadata.image({required ImageMetadata metadata}) =
       FormatMetadata_Image;
-  const factory FormatMetadata.xml({required XmlMetadata field0}) =
+  const factory FormatMetadata.xml({required XmlMetadata metadata}) =
       FormatMetadata_Xml;
-  const factory FormatMetadata.text({required TextMetadata field0}) =
+  const factory FormatMetadata.text({required TextMetadata metadata}) =
       FormatMetadata_Text;
-  const factory FormatMetadata.html({required HtmlMetadata field0}) =
+  const factory FormatMetadata.html({required HtmlMetadata metadata}) =
       FormatMetadata_Html;
-  const factory FormatMetadata.ocr({required OcrMetadata field0}) =
+  const factory FormatMetadata.ocr({required OcrMetadata metadata}) =
       FormatMetadata_Ocr;
-  const factory FormatMetadata.csv({required CsvMetadata field0}) =
+  const factory FormatMetadata.csv({required CsvMetadata metadata}) =
       FormatMetadata_Csv;
-  const factory FormatMetadata.bibtex({required BibtexMetadata field0}) =
+  const factory FormatMetadata.bibtex({required BibtexMetadata metadata}) =
       FormatMetadata_Bibtex;
-  const factory FormatMetadata.citation({required CitationMetadata field0}) =
+  const factory FormatMetadata.citation({required CitationMetadata metadata}) =
       FormatMetadata_Citation;
   const factory FormatMetadata.fictionBook({
-    required FictionBookMetadata field0,
+    required FictionBookMetadata metadata,
   }) = FormatMetadata_FictionBook;
-  const factory FormatMetadata.dbf({required DbfMetadata field0}) =
+  const factory FormatMetadata.dbf({required DbfMetadata metadata}) =
       FormatMetadata_Dbf;
-  const factory FormatMetadata.jats({required JatsMetadata field0}) =
+  const factory FormatMetadata.jats({required JatsMetadata metadata}) =
       FormatMetadata_Jats;
-  const factory FormatMetadata.epub({required EpubMetadata field0}) =
+  const factory FormatMetadata.epub({required EpubMetadata metadata}) =
       FormatMetadata_Epub;
-  const factory FormatMetadata.pst({required PstMetadata field0}) =
+  const factory FormatMetadata.pst({required PstMetadata metadata}) =
       FormatMetadata_Pst;
-  const factory FormatMetadata.code({required String field0}) =
+  const factory FormatMetadata.code({required String value}) =
       FormatMetadata_Code;
 }
 
@@ -6996,7 +6996,7 @@ sealed class OutputFormat with _$OutputFormat {
 
   /// Custom renderer registered via the RendererRegistry.
   /// The string is the renderer name (e.g., "docx", "latex").
-  const factory OutputFormat.custom({required String field0}) =
+  const factory OutputFormat.custom({required String value}) =
       OutputFormat_Custom;
 }
 
