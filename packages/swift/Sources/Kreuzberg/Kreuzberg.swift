@@ -7252,7 +7252,8 @@ public func extractBytesSync(content: [UInt8], mimeType: String, config: Extract
 /// let results = batch_extract_files_sync(items, &config)?;
 /// ```
 public func batchExtractFilesSync(items: [BatchFileItem], config: ExtractionConfig) throws -> [ExtractionResult] {
-    return try RustBridge.batchExtractFilesSync(items, config)
+    let _rb_items: RustVec<BatchFileItem> = { let v = RustVec<BatchFileItem>(); for x in items { v.push(value: x) }; return v }()
+    return try RustBridge.batchExtractFilesSync(_rb_items, config)
 }
 
 /// Synchronous wrapper for `batch_extract_bytes`.
@@ -7280,7 +7281,8 @@ public func batchExtractFilesSync(items: [BatchFileItem], config: ExtractionConf
 /// let results = batch_extract_bytes_sync(items, &config)?;
 /// ```
 public func batchExtractBytesSync(items: [BatchBytesItem], config: ExtractionConfig) throws -> [ExtractionResult] {
-    return try RustBridge.batchExtractBytesSync(items, config)
+    let _rb_items: RustVec<BatchBytesItem> = { let v = RustVec<BatchBytesItem>(); for x in items { v.push(value: x) }; return v }()
+    return try RustBridge.batchExtractBytesSync(_rb_items, config)
 }
 
 /// Extract content from multiple files concurrently.
@@ -7346,8 +7348,9 @@ public func batchExtractBytesSync(items: [BatchBytesItem], config: ExtractionCon
 /// let results = batch_extract_files(items, &config).await?;
 /// ```
 public func batchExtractFiles(items: [BatchFileItem], config: ExtractionConfig) async throws -> [ExtractionResult] {
+    let _rb_items: RustVec<BatchFileItem> = { let v = RustVec<BatchFileItem>(); for x in items { v.push(value: x) }; return v }()
     return try await Task.detached(priority: .userInitiated) {
-        let result = try RustBridge.batchExtractFiles(items, config)
+        let result = try RustBridge.batchExtractFiles(_rb_items, config)
         return result
     }.value
 }
@@ -7408,8 +7411,9 @@ public func batchExtractFiles(items: [BatchFileItem], config: ExtractionConfig) 
 /// let results = batch_extract_bytes(items, &config).await?;
 /// ```
 public func batchExtractBytes(items: [BatchBytesItem], config: ExtractionConfig) async throws -> [ExtractionResult] {
+    let _rb_items: RustVec<BatchBytesItem> = { let v = RustVec<BatchBytesItem>(); for x in items { v.push(value: x) }; return v }()
     return try await Task.detached(priority: .userInitiated) {
-        let result = try RustBridge.batchExtractBytes(items, config)
+        let result = try RustBridge.batchExtractBytes(_rb_items, config)
         return result
     }.value
 }
@@ -7570,8 +7574,9 @@ public func listValidators() throws -> [String] {
 public func embedTextsAsync(texts: [String], config: EmbeddingConfig) async throws -> [[Float]] {
     let _rb_texts: RustVec<RustString> = { let v = RustVec<RustString>(); for s in texts { v.push(value: RustString(s)) }; return v }()
     return try await Task.detached(priority: .userInitiated) {
-        let result = try RustBridge.embedTextsAsync(_rb_texts, config)
-        return result
+        let _rb_result = try RustBridge.embedTextsAsync(_rb_texts, config).toString()
+        let _rb_data = _rb_result.data(using: .utf8) ?? Data()
+        return try JSONDecoder().decode([[Float]].self, from: _rb_data)
     }.value
 }
 

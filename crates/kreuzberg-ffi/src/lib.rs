@@ -13427,15 +13427,34 @@ pub unsafe extern "C" fn kreuzberg_email_attachment_is_image(ptr: *const kreuzbe
 /// # Safety
 /// Pointer must be a valid handle returned by this library.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn kreuzberg_email_attachment_data(ptr: *const kreuzberg::EmailAttachment) -> *mut u8 {
+pub unsafe extern "C" fn kreuzberg_email_attachment_data(
+    ptr: *const kreuzberg::EmailAttachment,
+    out_len: *mut usize,
+) -> *mut u8 {
     if ptr.is_null() {
         return std::ptr::null_mut();
     }
     // SAFETY: null check above guarantees ptr is a valid pointer.
     let obj = unsafe { &*ptr };
     match &obj.data {
-        Some(val) => val.as_ptr() as *mut u8,
-        None => std::ptr::null_mut(),
+        Some(val) => {
+            if !out_len.is_null() {
+                // SAFETY: null check above guarantees out_len is a valid pointer.
+                unsafe {
+                    *out_len = val.len();
+                }
+            }
+            val.as_ptr() as *mut u8
+        }
+        None => {
+            if !out_len.is_null() {
+                // SAFETY: null check above guarantees out_len is a valid pointer.
+                unsafe {
+                    *out_len = 0;
+                }
+            }
+            std::ptr::null_mut()
+        }
     }
 }
 

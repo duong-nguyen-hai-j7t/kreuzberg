@@ -9,7 +9,8 @@
   "input": {
     "backend": {
       "type": "test",
-      "name": "test-embedding-backend"
+      "name": "test-embedding-backend",
+      "dimensions": 768
     }
   },
   "args": [

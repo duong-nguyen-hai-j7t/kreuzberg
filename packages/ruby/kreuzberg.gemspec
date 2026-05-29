@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
 
   spec.files         = Dir.glob(%w[lib/**/* ext/**/* sig/**/* Steepfile]).reject { |f| f.include?("/native/target/") || f.include?("/native/tmp/") }
   spec.require_paths = ["lib"]
-  spec.extensions    = ["ext/kreuzberg_rb/extconf.rb"]
+  spec.extensions    = ["ext/kreuzberg_rb/native/extconf.rb"]
 
   spec.add_dependency "rb_sys", "~> 0.9"
   spec.add_dependency "sorbet-runtime", "~> 0.5"

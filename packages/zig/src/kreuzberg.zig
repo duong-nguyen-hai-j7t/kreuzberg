@@ -4596,11 +4596,11 @@ pub const IOcrBackend = extern struct {
     ///     OcrBackendType::Tesseract
     /// }
     /// ```
-    backend_type: ?*const fn (user_data: ?*anyopaque) callconv(.c) [*c]const u8 = null,
+    backend_type: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 = null,
     /// Optional: Get a list of all supported languages.
     ///
     /// Defaults to empty list. Override to provide comprehensive language support info.
-    supported_languages: ?*const fn (user_data: ?*anyopaque) callconv(.c) [*c]const u8 = null,
+    supported_languages: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 = null,
     /// Optional: Check if the backend supports table detection.
     ///
     /// Defaults to `false`. Override if your backend can detect and extract tables.
@@ -4735,16 +4735,32 @@ pub fn make_ocr_backend_vtable(comptime T: type, instance: *T) IOcrBackend {
         }.thunk,
 
         .backend_type = struct {
-            fn thunk(ud: ?*anyopaque) callconv(.c) [*c]const u8 {
+            fn thunk(ud: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                return self.backend_type();
+                const value = self.backend_type();
+                if (value != null and out_result != null) {
+                    const zig_str = value.?;
+                    var len: usize = 0;
+                    while (zig_str[len] != 0) : (len += 1) {}
+                    const c_str = c.kreuzberg_string_new(@ptrCast(zig_str), len);
+                    out_result.*.* = c_str;
+                }
+                return 0;
             }
         }.thunk,
 
         .supported_languages = struct {
-            fn thunk(ud: ?*anyopaque) callconv(.c) [*c]const u8 {
+            fn thunk(ud: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                return self.supported_languages();
+                const value = self.supported_languages();
+                if (value != null and out_result != null) {
+                    const zig_str = value.?;
+                    var len: usize = 0;
+                    while (zig_str[len] != 0) : (len += 1) {}
+                    const c_str = c.kreuzberg_string_new(@ptrCast(zig_str), len);
+                    out_result.*.* = c_str;
+                }
+                return 0;
             }
         }.thunk,
 
@@ -4872,7 +4888,7 @@ pub const IPostProcessor = extern struct {
     ///     ProcessingStage::Early  // Run before other processors
     /// }
     /// ```
-    processing_stage: ?*const fn (user_data: ?*anyopaque) callconv(.c) [*c]const u8 = null,
+    processing_stage: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 = null,
     /// Optional: Check if this processor should run for a given result.
     ///
     /// Allows conditional processing based on MIME type, metadata, or content.
@@ -5011,9 +5027,17 @@ pub fn make_post_processor_vtable(comptime T: type, instance: *T) IPostProcessor
         }.thunk,
 
         .processing_stage = struct {
-            fn thunk(ud: ?*anyopaque) callconv(.c) [*c]const u8 {
+            fn thunk(ud: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                return self.processing_stage();
+                const value = self.processing_stage();
+                if (value != null and out_result != null) {
+                    const zig_str = value.?;
+                    var len: usize = 0;
+                    while (zig_str[len] != 0) : (len += 1) {}
+                    const c_str = c.kreuzberg_string_new(@ptrCast(zig_str), len);
+                    out_result.*.* = c_str;
+                }
+                return 0;
             }
         }.thunk,
 
@@ -5513,7 +5537,7 @@ pub const IDocumentExtractor = extern struct {
     /// # Returns
     ///
     /// A slice of MIME type strings.
-    supported_mime_types: ?*const fn (user_data: ?*anyopaque) callconv(.c) [*c]const u8 = null,
+    supported_mime_types: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 = null,
     /// Get the priority of this extractor.
     ///
     /// Higher priority extractors are preferred when multiple extractors
@@ -5655,9 +5679,17 @@ pub fn make_document_extractor_vtable(comptime T: type, instance: *T) IDocumentE
         }.thunk,
 
         .supported_mime_types = struct {
-            fn thunk(ud: ?*anyopaque) callconv(.c) [*c]const u8 {
+            fn thunk(ud: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                return self.supported_mime_types();
+                const value = self.supported_mime_types();
+                if (value != null and out_result != null) {
+                    const zig_str = value.?;
+                    var len: usize = 0;
+                    while (zig_str[len] != 0) : (len += 1) {}
+                    const c_str = c.kreuzberg_string_new(@ptrCast(zig_str), len);
+                    out_result.*.* = c_str;
+                }
+                return 0;
             }
         }.thunk,
 

@@ -11536,7 +11536,11 @@ impl kreuzberg::OcrBackend for ROcrBackendBridge {
         match result {
             Err(_) => Default::default(),
             Ok(val) => {
-                let int_val = val.as_integer().unwrap_or(0) != 0;
+                let int_val = val
+                    .as_integer()
+                    .map(|i| i != 0)
+                    .or_else(|| val.as_real().map(|r| r != 0.0))
+                    .unwrap_or(false);
                 int_val
             }
         }
@@ -12165,7 +12169,11 @@ impl kreuzberg::EmbeddingBackend for REmbeddingBackendBridge {
         match result {
             Err(_) => Default::default(),
             Ok(val) => {
-                let int_val = val.as_integer().unwrap_or(0) as usize;
+                let int_val = val
+                    .as_integer()
+                    .map(|i| i as usize)
+                    .or_else(|| val.as_real().map(|r| r as usize))
+                    .unwrap_or_default();
                 int_val
             }
         }

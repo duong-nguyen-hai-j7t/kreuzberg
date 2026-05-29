@@ -58,6 +58,7 @@ public sealed class OcrBackendBridge : IDisposable {
 
     internal readonly IOcrBackend _impl;
     private readonly GCHandle _implHandle;
+    private readonly GCHandle _delegatesHandle;
     internal IntPtr _vtable;
     private bool _disposed;
     private readonly object[] _delegates;
@@ -113,10 +114,11 @@ public sealed class OcrBackendBridge : IDisposable {
 
     public OcrBackendBridge(IOcrBackend impl) {
         _impl = impl ?? throw new ArgumentNullException(nameof(impl));
-        _implHandle = GCHandle.Alloc(impl, GCHandleType.Normal);
+        _implHandle = GCHandle.Alloc(impl, GCHandleType.Pinned);
+        _delegates = new object[13];
+        _delegatesHandle = GCHandle.Alloc(_delegates, GCHandleType.Normal);
         _vtable = IntPtr.Zero;
         _disposed = false;
-        _delegates = new object[13];
         // Allocate unique bridge ID for registry lookup during callbacks
         lock (_registryLock) {
             _bridgeId = new IntPtr(_nextBridgeId++);
@@ -289,7 +291,15 @@ public sealed class OcrBackendBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
+            try {
+                outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            } catch {
+                try {
+                    outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8("Callback error (exception marshalling failed)");
+                } catch {
+                    outError = IntPtr.Zero;
+                }
+            }
             return 1;
         } finally {
             if (_bridgeFromRegistry != null) {
@@ -310,7 +320,15 @@ public sealed class OcrBackendBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
+            try {
+                outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            } catch {
+                try {
+                    outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8("Callback error (exception marshalling failed)");
+                } catch {
+                    outError = IntPtr.Zero;
+                }
+            }
             return 1;
         } finally {
             if (_bridgeFromRegistry != null) {
@@ -341,7 +359,15 @@ public sealed class OcrBackendBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
+            try {
+                outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            } catch {
+                try {
+                    outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8("Callback error (exception marshalling failed)");
+                } catch {
+                    outError = IntPtr.Zero;
+                }
+            }
             return 1;
         } finally {
             if (_bridgeFromRegistry != null) {
@@ -358,7 +384,15 @@ public sealed class OcrBackendBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
+            try {
+                outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            } catch {
+                try {
+                    outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8("Callback error (exception marshalling failed)");
+                } catch {
+                    outError = IntPtr.Zero;
+                }
+            }
             return 1;
         } finally {
             if (_bridgeFromRegistry != null) {
@@ -405,7 +439,15 @@ public sealed class OcrBackendBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
+            try {
+                outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            } catch {
+                try {
+                    outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8("Callback error (exception marshalling failed)");
+                } catch {
+                    outError = IntPtr.Zero;
+                }
+            }
             return 1;
         } finally {
             if (_bridgeFromRegistry != null) {
@@ -432,6 +474,10 @@ public sealed class OcrBackendBridge : IDisposable {
 
         if (_implHandle.IsAllocated) {
             _implHandle.Free();
+        }
+
+        if (_delegatesHandle.IsAllocated) {
+            _delegatesHandle.Free();
         }
     }
 }
@@ -559,6 +605,7 @@ public sealed class PostProcessorBridge : IDisposable {
 
     internal readonly IPostProcessor _impl;
     private readonly GCHandle _implHandle;
+    private readonly GCHandle _delegatesHandle;
     internal IntPtr _vtable;
     private bool _disposed;
     private readonly object[] _delegates;
@@ -605,10 +652,11 @@ public sealed class PostProcessorBridge : IDisposable {
 
     public PostProcessorBridge(IPostProcessor impl) {
         _impl = impl ?? throw new ArgumentNullException(nameof(impl));
-        _implHandle = GCHandle.Alloc(impl, GCHandleType.Normal);
+        _implHandle = GCHandle.Alloc(impl, GCHandleType.Pinned);
+        _delegates = new object[10];
+        _delegatesHandle = GCHandle.Alloc(_delegates, GCHandleType.Normal);
         _vtable = IntPtr.Zero;
         _disposed = false;
-        _delegates = new object[10];
         // Allocate unique bridge ID for registry lookup during callbacks
         lock (_registryLock) {
             _bridgeId = new IntPtr(_nextBridgeId++);
@@ -788,7 +836,15 @@ public sealed class PostProcessorBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
+            try {
+                outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            } catch {
+                try {
+                    outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8("Callback error (exception marshalling failed)");
+                } catch {
+                    outError = IntPtr.Zero;
+                }
+            }
             return 1;
         } finally {
             if (_bridgeFromRegistry != null) {
@@ -873,6 +929,10 @@ public sealed class PostProcessorBridge : IDisposable {
 
         if (_implHandle.IsAllocated) {
             _implHandle.Free();
+        }
+
+        if (_delegatesHandle.IsAllocated) {
+            _delegatesHandle.Free();
         }
     }
 }
@@ -994,6 +1054,7 @@ public sealed class ValidatorBridge : IDisposable {
 
     internal readonly IValidator _impl;
     private readonly GCHandle _implHandle;
+    private readonly GCHandle _delegatesHandle;
     internal IntPtr _vtable;
     private bool _disposed;
     private readonly object[] _delegates;
@@ -1034,10 +1095,11 @@ public sealed class ValidatorBridge : IDisposable {
 
     public ValidatorBridge(IValidator impl) {
         _impl = impl ?? throw new ArgumentNullException(nameof(impl));
-        _implHandle = GCHandle.Alloc(impl, GCHandleType.Normal);
+        _implHandle = GCHandle.Alloc(impl, GCHandleType.Pinned);
+        _delegates = new object[8];
+        _delegatesHandle = GCHandle.Alloc(_delegates, GCHandleType.Normal);
         _vtable = IntPtr.Zero;
         _disposed = false;
-        _delegates = new object[8];
         // Allocate unique bridge ID for registry lookup during callbacks
         lock (_registryLock) {
             _bridgeId = new IntPtr(_nextBridgeId++);
@@ -1261,6 +1323,10 @@ public sealed class ValidatorBridge : IDisposable {
         if (_implHandle.IsAllocated) {
             _implHandle.Free();
         }
+
+        if (_delegatesHandle.IsAllocated) {
+            _delegatesHandle.Free();
+        }
     }
 }
 
@@ -1378,6 +1444,7 @@ public sealed class EmbeddingBackendBridge : IDisposable {
 
     internal readonly IEmbeddingBackend _impl;
     private readonly GCHandle _implHandle;
+    private readonly GCHandle _delegatesHandle;
     internal IntPtr _vtable;
     private bool _disposed;
     private readonly object[] _delegates;
@@ -1415,10 +1482,11 @@ public sealed class EmbeddingBackendBridge : IDisposable {
 
     public EmbeddingBackendBridge(IEmbeddingBackend impl) {
         _impl = impl ?? throw new ArgumentNullException(nameof(impl));
-        _implHandle = GCHandle.Alloc(impl, GCHandleType.Normal);
+        _implHandle = GCHandle.Alloc(impl, GCHandleType.Pinned);
+        _delegates = new object[7];
+        _delegatesHandle = GCHandle.Alloc(_delegates, GCHandleType.Normal);
         _vtable = IntPtr.Zero;
         _disposed = false;
-        _delegates = new object[7];
         // Allocate unique bridge ID for registry lookup during callbacks
         lock (_registryLock) {
             _bridgeId = new IntPtr(_nextBridgeId++);
@@ -1594,7 +1662,15 @@ public sealed class EmbeddingBackendBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
+            try {
+                outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            } catch {
+                try {
+                    outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8("Callback error (exception marshalling failed)");
+                } catch {
+                    outError = IntPtr.Zero;
+                }
+            }
             return 1;
         } finally {
             if (_bridgeFromRegistry != null) {
@@ -1621,6 +1697,10 @@ public sealed class EmbeddingBackendBridge : IDisposable {
 
         if (_implHandle.IsAllocated) {
             _implHandle.Free();
+        }
+
+        if (_delegatesHandle.IsAllocated) {
+            _delegatesHandle.Free();
         }
     }
 }
@@ -1751,6 +1831,7 @@ public sealed class DocumentExtractorBridge : IDisposable {
 
     internal readonly IDocumentExtractor _impl;
     private readonly GCHandle _implHandle;
+    private readonly GCHandle _delegatesHandle;
     internal IntPtr _vtable;
     private bool _disposed;
     private readonly object[] _delegates;
@@ -1800,10 +1881,11 @@ public sealed class DocumentExtractorBridge : IDisposable {
 
     public DocumentExtractorBridge(IDocumentExtractor impl) {
         _impl = impl ?? throw new ArgumentNullException(nameof(impl));
-        _implHandle = GCHandle.Alloc(impl, GCHandleType.Normal);
+        _implHandle = GCHandle.Alloc(impl, GCHandleType.Pinned);
+        _delegates = new object[11];
+        _delegatesHandle = GCHandle.Alloc(_delegates, GCHandleType.Normal);
         _vtable = IntPtr.Zero;
         _disposed = false;
-        _delegates = new object[11];
         // Allocate unique bridge ID for registry lookup during callbacks
         lock (_registryLock) {
             _bridgeId = new IntPtr(_nextBridgeId++);
@@ -1967,7 +2049,15 @@ public sealed class DocumentExtractorBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
+            try {
+                outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            } catch {
+                try {
+                    outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8("Callback error (exception marshalling failed)");
+                } catch {
+                    outError = IntPtr.Zero;
+                }
+            }
             return 1;
         } finally {
             if (_bridgeFromRegistry != null) {
@@ -1989,7 +2079,15 @@ public sealed class DocumentExtractorBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
+            try {
+                outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            } catch {
+                try {
+                    outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8("Callback error (exception marshalling failed)");
+                } catch {
+                    outError = IntPtr.Zero;
+                }
+            }
             return 1;
         } finally {
             if (_bridgeFromRegistry != null) {
@@ -2006,7 +2104,15 @@ public sealed class DocumentExtractorBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
+            try {
+                outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            } catch {
+                try {
+                    outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8("Callback error (exception marshalling failed)");
+                } catch {
+                    outError = IntPtr.Zero;
+                }
+            }
             return 1;
         } finally {
             if (_bridgeFromRegistry != null) {
@@ -2052,7 +2158,15 @@ public sealed class DocumentExtractorBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
+            try {
+                outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            } catch {
+                try {
+                    outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8("Callback error (exception marshalling failed)");
+                } catch {
+                    outError = IntPtr.Zero;
+                }
+            }
             return 1;
         } finally {
             if (_bridgeFromRegistry != null) {
@@ -2079,6 +2193,10 @@ public sealed class DocumentExtractorBridge : IDisposable {
 
         if (_implHandle.IsAllocated) {
             _implHandle.Free();
+        }
+
+        if (_delegatesHandle.IsAllocated) {
+            _delegatesHandle.Free();
         }
     }
 }
@@ -2194,6 +2312,7 @@ public sealed class RendererBridge : IDisposable {
 
     internal readonly IRenderer _impl;
     private readonly GCHandle _implHandle;
+    private readonly GCHandle _delegatesHandle;
     internal IntPtr _vtable;
     private bool _disposed;
     private readonly object[] _delegates;
@@ -2228,10 +2347,11 @@ public sealed class RendererBridge : IDisposable {
 
     public RendererBridge(IRenderer impl) {
         _impl = impl ?? throw new ArgumentNullException(nameof(impl));
-        _implHandle = GCHandle.Alloc(impl, GCHandleType.Normal);
+        _implHandle = GCHandle.Alloc(impl, GCHandleType.Pinned);
+        _delegates = new object[6];
+        _delegatesHandle = GCHandle.Alloc(_delegates, GCHandleType.Normal);
         _vtable = IntPtr.Zero;
         _disposed = false;
-        _delegates = new object[6];
         // Allocate unique bridge ID for registry lookup during callbacks
         lock (_registryLock) {
             _bridgeId = new IntPtr(_nextBridgeId++);
@@ -2388,7 +2508,15 @@ public sealed class RendererBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
+            try {
+                outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            } catch {
+                try {
+                    outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8("Callback error (exception marshalling failed)");
+                } catch {
+                    outError = IntPtr.Zero;
+                }
+            }
             return 1;
         } finally {
             if (_bridgeFromRegistry != null) {
@@ -2415,6 +2543,10 @@ public sealed class RendererBridge : IDisposable {
 
         if (_implHandle.IsAllocated) {
             _implHandle.Free();
+        }
+
+        if (_delegatesHandle.IsAllocated) {
+            _delegatesHandle.Free();
         }
     }
 }

@@ -7381,7 +7381,8 @@ int32_t kreuzberg_email_attachment_is_image(const KREUZBERGEmailAttachment *ptr)
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-uint8_t *kreuzberg_email_attachment_data(const KREUZBERGEmailAttachment *ptr);
+uint8_t *kreuzberg_email_attachment_data(const KREUZBERGEmailAttachment *ptr,
+                                         uintptr_t *out_len);
 
 /**
  * Create a `OcrExtractionResult` from a JSON string. Returns null on failure.
