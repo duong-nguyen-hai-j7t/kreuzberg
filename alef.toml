@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.20.12"
+alef_version = "0.20.14"
 languages = [
   "python",
   "node",
@@ -497,6 +497,13 @@ exclude_types = [
 ]
 exclude_fields = ["ExtractionResult.ocr_internal_document", "OcrExtractionResult.internal_document"]
 exclude_functions = [
+  # batch_extract_* return Vec<ExtractionResult> which swift-bridge cannot auto-convert to [ExtractionResult].
+  # RustVec<T> iteration yields T.SelfRef which has no symmetric init from the value type.
+  # Hand-written adapters in BatchExtractAdapters.swift provide proper conversion.
+  "batch_extract_files_sync",
+  "batch_extract_bytes_sync",
+  "batch_extract_files",
+  "batch_extract_bytes",
   # Returns Option<&'static EmbeddingPreset> but EmbeddingPreset: !Serialize — cannot JSON-bridge
   "get_preset",
   "calculate_quality_score",
