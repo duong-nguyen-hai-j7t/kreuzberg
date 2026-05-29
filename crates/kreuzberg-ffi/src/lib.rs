@@ -29194,13 +29194,23 @@ pub struct KreuzbergOcrBackendVTable {
     /// OcrBackendType::Tesseract
     /// }
     /// ```
-    pub backend_type:
-        Option<unsafe extern "C" fn(user_data: *const std::ffi::c_void, out_result: *mut *mut std::ffi::c_char) -> i32>,
+    pub backend_type: Option<
+        unsafe extern "C" fn(
+            user_data: *const std::ffi::c_void,
+            out_result: *mut *mut std::ffi::c_char,
+            out_error: *mut *mut std::ffi::c_char,
+        ) -> i32,
+    >,
     /// Optional: Get a list of all supported languages.
     ///
     /// Defaults to empty list. Override to provide comprehensive language support info.
-    pub supported_languages:
-        Option<unsafe extern "C" fn(user_data: *const std::ffi::c_void, out_result: *mut *mut std::ffi::c_char) -> i32>,
+    pub supported_languages: Option<
+        unsafe extern "C" fn(
+            user_data: *const std::ffi::c_void,
+            out_result: *mut *mut std::ffi::c_char,
+            out_error: *mut *mut std::ffi::c_char,
+        ) -> i32,
+    >,
     /// Optional: Check if the backend supports table detection.
     ///
     /// Defaults to `false`. Override if your backend can detect and extract tables.
@@ -29518,9 +29528,10 @@ impl kreuzberg::OcrBackend for KreuzbergOcrBackendBridge {
             return Default::default();
         };
         let mut _out_result: *mut std::ffi::c_char = std::ptr::null_mut();
+        let mut _out_error: *mut std::ffi::c_char = std::ptr::null_mut();
         // SAFETY: fp is a valid non-null function pointer; all temporaries outlive this call;
         // user_data validity is the caller's responsibility (documented in the vtable API).
-        let _rc = unsafe { fp(self.user_data, &mut _out_result) };
+        let _rc = unsafe { fp(self.user_data, &mut _out_result, &mut _out_error) };
         if _out_result.is_null() {
             return Default::default();
         }
@@ -29535,9 +29546,10 @@ impl kreuzberg::OcrBackend for KreuzbergOcrBackendBridge {
             return Vec::new();
         };
         let mut _out_result: *mut std::ffi::c_char = std::ptr::null_mut();
+        let mut _out_error: *mut std::ffi::c_char = std::ptr::null_mut();
         // SAFETY: fp is a valid non-null function pointer; all temporaries outlive this call;
         // user_data validity is the caller's responsibility (documented in the vtable API).
-        let _rc = unsafe { fp(self.user_data, &mut _out_result) };
+        let _rc = unsafe { fp(self.user_data, &mut _out_result, &mut _out_error) };
         if _out_result.is_null() {
             return Default::default();
         }
@@ -31234,8 +31246,13 @@ pub struct KreuzbergDocumentExtractorVTable {
     /// # Returns
     ///
     /// A slice of MIME type strings.
-    pub supported_mime_types:
-        Option<unsafe extern "C" fn(user_data: *const std::ffi::c_void, out_result: *mut *mut std::ffi::c_char) -> i32>,
+    pub supported_mime_types: Option<
+        unsafe extern "C" fn(
+            user_data: *const std::ffi::c_void,
+            out_result: *mut *mut std::ffi::c_char,
+            out_error: *mut *mut std::ffi::c_char,
+        ) -> i32,
+    >,
     /// Get the priority of this extractor.
     ///
     /// Higher priority extractors are preferred when multiple extractors
@@ -31332,9 +31349,10 @@ impl KreuzbergDocumentExtractorBridge {
         // Cache supported_mime_types() result for the lifetime of the bridge (required: returns &[&str]).
         let supported_mime_types_strs: &'static [&'static str] = if let Some(fp) = vtable.supported_mime_types {
             let mut _out_result: *mut std::ffi::c_char = std::ptr::null_mut();
+            let mut _out_error: *mut std::ffi::c_char = std::ptr::null_mut();
             // SAFETY: fp is a valid non-null function pointer; user_data validity is the caller's
             // responsibility (documented in the vtable API contract).
-            let _rc = unsafe { fp(user_data, &mut _out_result) };
+            let _rc = unsafe { fp(user_data, &mut _out_result, &mut _out_error) };
             if _out_result.is_null() {
                 &[]
             } else {

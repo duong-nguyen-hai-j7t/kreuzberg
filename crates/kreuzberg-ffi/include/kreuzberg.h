@@ -1641,14 +1641,16 @@ typedef struct KREUZBERGKreuzbergOcrBackendVTable {
    * ```
    */
   int32_t (*backend_type)(const void *user_data,
-                          char **out_result);
+                          char **out_result,
+                          char **out_error);
   /**
    * Optional: Get a list of all supported languages.
    *
    * Defaults to empty list. Override to provide comprehensive language support info.
    */
   int32_t (*supported_languages)(const void *user_data,
-                                 char **out_result);
+                                 char **out_result,
+                                 char **out_error);
   /**
    * Optional: Check if the backend supports table detection.
    *
@@ -2180,7 +2182,8 @@ typedef struct KREUZBERGKreuzbergDocumentExtractorVTable {
    * A slice of MIME type strings.
    */
   int32_t (*supported_mime_types)(const void *user_data,
-                                  char **out_result);
+                                  char **out_result,
+                                  char **out_error);
   /**
    * Get the priority of this extractor.
    *
