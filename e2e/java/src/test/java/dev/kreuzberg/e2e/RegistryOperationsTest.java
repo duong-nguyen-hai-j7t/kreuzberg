@@ -20,6 +20,7 @@ class RegistryOperationsTest {
         // Get file extensions for DOCX MIME type
         var result = Kreuzberg.getExtensionsForMime("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 
+
     }
 
 
@@ -28,6 +29,7 @@ class RegistryOperationsTest {
         // Get file extensions for HTML MIME type
         var result = Kreuzberg.getExtensionsForMime("text/html");
 
+
     }
 
 
@@ -35,6 +37,7 @@ class RegistryOperationsTest {
     void testExtensionsPdf() throws Exception {
         // Get file extensions for PDF MIME type
         var result = Kreuzberg.getExtensionsForMime("application/pdf");
+
 
     }
 

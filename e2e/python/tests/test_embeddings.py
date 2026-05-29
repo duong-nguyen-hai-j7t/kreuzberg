@@ -14,6 +14,7 @@ from kreuzberg import (
 )
 
 
+
 def _alef_e2e_text(value: object) -> str:
     return "" if value is None else str(value)
 

@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace Kreuzberg\E2e;
 
 use PHPUnit\Framework\TestCase;
-use Kreuzberg\Kreuzberg;use Kreuzberg\ExtractionConfig;
+use Kreuzberg\Kreuzberg;
+use Kreuzberg\ExtractionConfig;
+
 /** E2e tests for category: embedding_backend_management. */
 final class EmbeddingBackendManagementTest extends TestCase
 {

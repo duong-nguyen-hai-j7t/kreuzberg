@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace Kreuzberg\E2e;
 
 use PHPUnit\Framework\TestCase;
-use Kreuzberg\Kreuzberg;use Kreuzberg\ExtractionConfig;
+use Kreuzberg\Kreuzberg;
+use Kreuzberg\ExtractionConfig;
+
 /** E2e tests for category: pdf. */
 final class PdfTest extends TestCase
 {
@@ -24,6 +26,7 @@ final class PdfTest extends TestCase
 
             $this->assertGreaterThanOrEqual(100, strlen($result));
 
+
     }
 
 
@@ -32,6 +35,7 @@ final class PdfTest extends TestCase
     {
         $this->expectException(\Exception::class);        $pdf_bytesBytes = file_get_contents("pdf/fake_memo.pdf");
         if ($pdf_bytesBytes === false) { $this->fail("failed to read fixture: pdf/fake_memo.pdf"); }
-        Kreuzberg::renderPdfPageToPng($pdf_bytesBytes, 999);    }
+        Kreuzberg::renderPdfPageToPng($pdf_bytesBytes, 999);
+    }
 
 }

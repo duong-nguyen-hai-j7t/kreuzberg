@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace Kreuzberg\E2e;
 
 use PHPUnit\Framework\TestCase;
-use Kreuzberg\Kreuzberg;use Kreuzberg\ExtractionConfig;
+use Kreuzberg\Kreuzberg;
+use Kreuzberg\ExtractionConfig;
+
 /** E2e tests for category: smoke. */
 final class SmokeTest extends TestCase
 {
@@ -32,6 +34,7 @@ final class SmokeTest extends TestCase
     if (str_contains($result->content, "world")) { $found = true; }
     $this->assertTrue($found, 'expected to contain at least one of the specified values');
 
+
     }
 
 
@@ -49,6 +52,7 @@ final class SmokeTest extends TestCase
     if (str_contains($result->content, "document")) { $found = true; }
     if (str_contains($result->content, "text")) { $found = true; }
     $this->assertTrue($found, 'expected to contain at least one of the specified values');
+
 
     }
 
@@ -68,6 +72,7 @@ final class SmokeTest extends TestCase
     if (str_contains($result->content, "Product")) { $found = true; }
     $this->assertTrue($found, 'expected to contain at least one of the specified values');
 
+
     }
 
 
@@ -78,6 +83,7 @@ final class SmokeTest extends TestCase
         $result = Kreuzberg::extractFile("images/sample.png", null, $config);
 
             $this->assertEquals("image/png", trim($result->mimeType));
+
 
     }
 
@@ -90,6 +96,7 @@ final class SmokeTest extends TestCase
 
             $this->assertEquals("application/json", trim($result->mimeType));
             $this->assertGreaterThanOrEqual(5, strlen($result->content));
+
 
     }
 
@@ -107,6 +114,7 @@ final class SmokeTest extends TestCase
     if (str_contains($result->content, "To Whom it May Concern")) { $found = true; }
     $this->assertTrue($found, 'expected to contain at least one of the specified values');
 
+
     }
 
 
@@ -118,6 +126,7 @@ final class SmokeTest extends TestCase
 
             $this->assertEquals("text/plain", trim($result->mimeType));
             $this->assertGreaterThanOrEqual(5, strlen($result->content));
+
 
     }
 
@@ -140,6 +149,7 @@ final class SmokeTest extends TestCase
     $this->assertStringContainsString("PHI", $result->content);
     $this->assertStringContainsString("TOR", $result->content);
         // skipped: field 'tables' not available on result type        // skipped: field 'metadata.format.excel.sheet_count' not available on result type        // skipped: field 'metadata.format.excel.sheet_names' not available on result type
+
     }
 
 }

@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace Kreuzberg\E2e;
 
 use PHPUnit\Framework\TestCase;
-use Kreuzberg\Kreuzberg;use Kreuzberg\ExtractionConfig;
+use Kreuzberg\Kreuzberg;
+use Kreuzberg\ExtractionConfig;
+
 /** E2e tests for category: format_specific. */
 final class FormatSpecificTest extends TestCase
 {
@@ -24,6 +26,7 @@ final class FormatSpecificTest extends TestCase
 
             $this->assertGreaterThanOrEqual(20, strlen($result->content));
 
+
     }
 
 
@@ -36,6 +39,7 @@ final class FormatSpecificTest extends TestCase
 
             $this->assertGreaterThanOrEqual(20, strlen($result->content));
             $this->assertStringContainsString("Hello from HWPX", $result->content);
+
 
     }
 
@@ -52,6 +56,7 @@ final class FormatSpecificTest extends TestCase
     if (str_contains($result->content, "Mallori")) { $found = true; }
     if (str_contains($result->content, "May")) { $found = true; }
     $this->assertTrue($found, 'expected to contain at least one of the specified values');
+
 
     }
 

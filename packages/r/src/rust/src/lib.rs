@@ -11532,18 +11532,12 @@ impl kreuzberg::OcrBackend for ROcrBackendBridge {
         let args = extendr_api::Pairlist::from_pairs(&[("lang", extendr_api::Robj::from(lang))]);
         let result = fn_robj.call(args);
 
-        // R callbacks return JSON-encoded strings (e.g. via `jsonlite::toJSON`). Parse the string
-        // payload back into the trait return type. Note: `extendr_api::Robj` does not implement
-        // `serde::Serialize`, so we cannot serialize it directly — the caller must serialize on
-        // the R side.
+        // Primitive return: extract directly from Robj without JSON deserialization
         match result {
             Err(_) => Default::default(),
             Ok(val) => {
-                let payload = val.as_str().unwrap_or("");
-                match serde_json::from_str::<bool>(payload) {
-                    Ok(parsed) => parsed,
-                    Err(_) => Default::default(),
-                }
+                let int_val = val.as_integer().unwrap_or(0) != 0;
+                int_val
             }
         }
     }
@@ -12167,18 +12161,12 @@ impl kreuzberg::EmbeddingBackend for REmbeddingBackendBridge {
 
         let result = fn_robj.call(extendr_api::Pairlist::new());
 
-        // R callbacks return JSON-encoded strings (e.g. via `jsonlite::toJSON`). Parse the string
-        // payload back into the trait return type. Note: `extendr_api::Robj` does not implement
-        // `serde::Serialize`, so we cannot serialize it directly — the caller must serialize on
-        // the R side.
+        // Primitive return: extract directly from Robj without JSON deserialization
         match result {
             Err(_) => Default::default(),
             Ok(val) => {
-                let payload = val.as_str().unwrap_or("");
-                match serde_json::from_str::<usize>(payload) {
-                    Ok(parsed) => parsed,
-                    Err(_) => Default::default(),
-                }
+                let int_val = val.as_integer().unwrap_or(0) as usize;
+                int_val
             }
         }
     }

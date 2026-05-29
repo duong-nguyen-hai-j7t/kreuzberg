@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace Kreuzberg\E2e;
 
 use PHPUnit\Framework\TestCase;
-use Kreuzberg\Kreuzberg;use Kreuzberg\EmbeddingConfig;
+use Kreuzberg\Kreuzberg;
+use Kreuzberg\EmbeddingConfig;
+
 /** E2e tests for category: embed_extra. */
 final class EmbedExtraTest extends TestCase
 {

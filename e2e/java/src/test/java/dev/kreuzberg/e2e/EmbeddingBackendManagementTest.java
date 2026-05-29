@@ -20,6 +20,7 @@ class EmbeddingBackendManagementTest {
         // Clear all embedding backends and verify list is empty
         Kreuzberg.clearEmbeddingBackends();
 
+
     }
 
 
@@ -27,6 +28,7 @@ class EmbeddingBackendManagementTest {
     void testEmbeddingBackendsList() throws Exception {
         // List all registered embedding backends
         var result = Kreuzberg.listEmbeddingBackends();
+
 
     }
 

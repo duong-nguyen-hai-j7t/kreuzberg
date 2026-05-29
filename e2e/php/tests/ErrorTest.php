@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace Kreuzberg\E2e;
 
 use PHPUnit\Framework\TestCase;
-use Kreuzberg\Kreuzberg;use Kreuzberg\ExtractionConfig;
+use Kreuzberg\Kreuzberg;
+use Kreuzberg\ExtractionConfig;
+
 /** E2e tests for category: error. */
 final class ErrorTest extends TestCase
 {
@@ -34,7 +36,8 @@ final class ErrorTest extends TestCase
         $this->expectException(\Exception::class);        $contentBytes = file_get_contents("text/plain.txt");
         if ($contentBytes === false) { $this->fail("failed to read fixture: text/plain.txt"); }
         $config = \Kreuzberg\ExtractionConfig::from_json('{}');
-        Kreuzberg::extractBytesSync($contentBytes, "", $config);    }
+        Kreuzberg::extractBytesSync($contentBytes, "", $config);
+    }
 
 
     /** extract_bytes force+disable OCR */
@@ -43,7 +46,8 @@ final class ErrorTest extends TestCase
         $this->expectException(\Exception::class);        $contentBytes = file_get_contents("text/fake_text.txt");
         if ($contentBytes === false) { $this->fail("failed to read fixture: text/fake_text.txt"); }
         $config = \Kreuzberg\ExtractionConfig::from_json(json_encode(["disableOcr" => true, "forceOcr" => true]));
-        Kreuzberg::extractBytesSync($contentBytes, "text/plain", $config);    }
+        Kreuzberg::extractBytesSync($contentBytes, "text/plain", $config);
+    }
 
 
     /** Error when extracting with invalid MIME type format */
@@ -52,7 +56,8 @@ final class ErrorTest extends TestCase
         $this->expectException(\Exception::class);        $contentBytes = file_get_contents("text/plain.txt");
         if ($contentBytes === false) { $this->fail("failed to read fixture: text/plain.txt"); }
         $config = \Kreuzberg\ExtractionConfig::from_json('{}');
-        Kreuzberg::extractBytesSync($contentBytes, "not-a-mime", $config);    }
+        Kreuzberg::extractBytesSync($contentBytes, "not-a-mime", $config);
+    }
 
 
     /** Error when extracting with unsupported MIME type */
@@ -61,6 +66,7 @@ final class ErrorTest extends TestCase
         $this->expectException(\Exception::class);        $contentBytes = file_get_contents("text/plain.txt");
         if ($contentBytes === false) { $this->fail("failed to read fixture: text/plain.txt"); }
         $config = \Kreuzberg\ExtractionConfig::from_json('{}');
-        Kreuzberg::extractBytesSync($contentBytes, "application/x-nonexistent", $config);    }
+        Kreuzberg::extractBytesSync($contentBytes, "application/x-nonexistent", $config);
+    }
 
 }

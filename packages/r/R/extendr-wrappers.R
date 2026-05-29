@@ -2687,6 +2687,254 @@ FormatMetadata <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.FormatMetadata` <- `$.FormatMetadata`
+#' Create a ExecutionProviderType enum value
+#'
+#' Returns the default ExecutionProviderType variant.
+#'
+#' @return A ExecutionProviderType enum value
+#' @export
+ExecutionProviderType  <- function() list() |> structure(class = "ExecutionProviderType")
+
+#' Create a HtmlTheme enum value
+#'
+#' Returns the default HtmlTheme variant.
+#'
+#' @return A HtmlTheme enum value
+#' @export
+HtmlTheme  <- function() list() |> structure(class = "HtmlTheme")
+
+#' Create a TableModel enum value
+#'
+#' Returns the default TableModel variant.
+#'
+#' @return A TableModel enum value
+#' @export
+TableModel  <- function() list() |> structure(class = "TableModel")
+
+#' Create a ChunkerType enum value
+#'
+#' Returns the default ChunkerType variant.
+#'
+#' @return A ChunkerType enum value
+#' @export
+ChunkerType  <- function() list() |> structure(class = "ChunkerType")
+
+#' Create a CodeContentMode enum value
+#'
+#' Returns the default CodeContentMode variant.
+#'
+#' @return A CodeContentMode enum value
+#' @export
+CodeContentMode  <- function() list() |> structure(class = "CodeContentMode")
+
+#' Create a ListType enum value
+#'
+#' Returns the default ListType variant.
+#'
+#' @return A ListType enum value
+#' @export
+ListType  <- function() list() |> structure(class = "ListType")
+
+#' Create a FracType enum value
+#'
+#' Returns the default FracType variant.
+#'
+#' @return A FracType enum value
+#' @export
+FracType  <- function() list() |> structure(class = "FracType")
+
+#' Create a OcrBackendType enum value
+#'
+#' Returns the default OcrBackendType variant.
+#'
+#' @return A OcrBackendType enum value
+#' @export
+OcrBackendType  <- function() list() |> structure(class = "OcrBackendType")
+
+#' Create a ProcessingStage enum value
+#'
+#' Returns the default ProcessingStage variant.
+#'
+#' @return A ProcessingStage enum value
+#' @export
+ProcessingStage  <- function() list() |> structure(class = "ProcessingStage")
+
+#' Create a ReductionLevel enum value
+#'
+#' Returns the default ReductionLevel variant.
+#'
+#' @return A ReductionLevel enum value
+#' @export
+ReductionLevel  <- function() list() |> structure(class = "ReductionLevel")
+
+#' Create a PdfAnnotationType enum value
+#'
+#' Returns the default PdfAnnotationType variant.
+#'
+#' @return A PdfAnnotationType enum value
+#' @export
+PdfAnnotationType  <- function() list() |> structure(class = "PdfAnnotationType")
+
+#' Create a BlockType enum value
+#'
+#' Returns the default BlockType variant.
+#'
+#' @return A BlockType enum value
+#' @export
+BlockType  <- function() list() |> structure(class = "BlockType")
+
+#' Create a InlineType enum value
+#'
+#' Returns the default InlineType variant.
+#'
+#' @return A InlineType enum value
+#' @export
+InlineType  <- function() list() |> structure(class = "InlineType")
+
+#' Create a RelationshipKind enum value
+#'
+#' Returns the default RelationshipKind variant.
+#'
+#' @return A RelationshipKind enum value
+#' @export
+RelationshipKind  <- function() list() |> structure(class = "RelationshipKind")
+
+#' Create a ContentLayer enum value
+#'
+#' Returns the default ContentLayer variant.
+#'
+#' @return A ContentLayer enum value
+#' @export
+ContentLayer  <- function() list() |> structure(class = "ContentLayer")
+
+#' Create a ExtractionMethod enum value
+#'
+#' Returns the default ExtractionMethod variant.
+#'
+#' @return A ExtractionMethod enum value
+#' @export
+ExtractionMethod  <- function() list() |> structure(class = "ExtractionMethod")
+
+#' Create a ChunkType enum value
+#'
+#' Returns the default ChunkType variant.
+#'
+#' @return A ChunkType enum value
+#' @export
+ChunkType  <- function() list() |> structure(class = "ChunkType")
+
+#' Create a ImageKind enum value
+#'
+#' Returns the default ImageKind variant.
+#'
+#' @return A ImageKind enum value
+#' @export
+ImageKind  <- function() list() |> structure(class = "ImageKind")
+
+#' Create a ResultFormat enum value
+#'
+#' Returns the default ResultFormat variant.
+#'
+#' @return A ResultFormat enum value
+#' @export
+ResultFormat  <- function() list() |> structure(class = "ResultFormat")
+
+#' Create a ElementType enum value
+#'
+#' Returns the default ElementType variant.
+#'
+#' @return A ElementType enum value
+#' @export
+ElementType  <- function() list() |> structure(class = "ElementType")
+
+#' Create a TextDirection enum value
+#'
+#' Returns the default TextDirection variant.
+#'
+#' @return A TextDirection enum value
+#' @export
+TextDirection  <- function() list() |> structure(class = "TextDirection")
+
+#' Create a LinkType enum value
+#'
+#' Returns the default LinkType variant.
+#'
+#' @return A LinkType enum value
+#' @export
+LinkType  <- function() list() |> structure(class = "LinkType")
+
+#' Create a ImageType enum value
+#'
+#' Returns the default ImageType variant.
+#'
+#' @return A ImageType enum value
+#' @export
+ImageType  <- function() list() |> structure(class = "ImageType")
+
+#' Create a StructuredDataType enum value
+#'
+#' Returns the default StructuredDataType variant.
+#'
+#' @return A StructuredDataType enum value
+#' @export
+StructuredDataType  <- function() list() |> structure(class = "StructuredDataType")
+
+#' Create a OcrElementLevel enum value
+#'
+#' Returns the default OcrElementLevel variant.
+#'
+#' @return A OcrElementLevel enum value
+#' @export
+OcrElementLevel  <- function() list() |> structure(class = "OcrElementLevel")
+
+#' Create a PageUnitType enum value
+#'
+#' Returns the default PageUnitType variant.
+#'
+#' @return A PageUnitType enum value
+#' @export
+PageUnitType  <- function() list() |> structure(class = "PageUnitType")
+
+#' Create a UriKind enum value
+#'
+#' Returns the default UriKind variant.
+#'
+#' @return A UriKind enum value
+#' @export
+UriKind  <- function() list() |> structure(class = "UriKind")
+
+#' Create a KeywordAlgorithm enum value
+#'
+#' Returns the default KeywordAlgorithm variant.
+#'
+#' @return A KeywordAlgorithm enum value
+#' @export
+KeywordAlgorithm  <- function() list() |> structure(class = "KeywordAlgorithm")
+
+#' Create a PSMMode enum value
+#'
+#' Returns the default PSMMode variant.
+#'
+#' @return A PSMMode enum value
+#' @export
+PSMMode  <- function() list() |> structure(class = "PSMMode")
+
+#' Create a PaddleLanguage enum value
+#'
+#' Returns the default PaddleLanguage variant.
+#'
+#' @return A PaddleLanguage enum value
+#' @export
+PaddleLanguage  <- function() list() |> structure(class = "PaddleLanguage")
+
+#' Create a LayoutClass enum value
+#'
+#' Returns the default LayoutClass variant.
+#'
+#' @return A LayoutClass enum value
+#' @export
+LayoutClass  <- function() list() |> structure(class = "LayoutClass")
+
 #' How chunk size is measured
 #'
 #' Defaults to `Characters` (Unicode character count). When using token-based sizing,

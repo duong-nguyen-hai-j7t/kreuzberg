@@ -20,6 +20,7 @@ class CodeTest {
         // Test language detection from shebang line via bytes input
         var result = Kreuzberg.extractFileSync(java.nio.file.Path.of("code/script.sh"), "text/x-source-code", ExtractionConfig.builder().build());
 assertEquals("text/x-source-code", result.mimeType().trim());assertTrue(result.content().length() >= 10, "expected length >= 10");assertTrue(result.content().contains("build"), "expected to contain: " + "build");assertTrue(result.content().contains("clean"), "expected to contain: " + "clean");
+
     }
 
 }

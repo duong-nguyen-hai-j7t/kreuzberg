@@ -20,6 +20,7 @@ class AsyncTest {
         // Async extract_bytes call on PDF document
         var result = Kreuzberg.extractBytes(java.nio.file.Files.readAllBytes(java.nio.file.Path.of("pdf/fake_memo.pdf")), "application/pdf", ExtractionConfig.builder().build());
 assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.content().length() >= 50, "expected length >= 50");
+
     }
 
 
@@ -37,6 +38,7 @@ assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.cont
 
             Kreuzberg.extractBytes(java.nio.file.Files.readAllBytes(java.nio.file.Path.of("text/plain.txt")), "", config);
         });
+
     }
 
 
@@ -54,6 +56,7 @@ assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.cont
 
             Kreuzberg.extractBytes(java.nio.file.Files.readAllBytes(java.nio.file.Path.of("text/plain.txt")), "application/x-nonexistent", config);
         });
+
     }
 
 }

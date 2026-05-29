@@ -4582,7 +4582,7 @@ pub const IOcrBackend = extern struct {
     ///     self.languages.contains(&lang.to_string())
     /// }
     /// ```
-    supports_language: ?*const fn (user_data: ?*anyopaque, lang: [*c]const u8, out_result: ?*?[*c]u8) callconv(.c) i32 = null,
+    supports_language: ?*const fn (user_data: ?*anyopaque, lang: [*c]const u8) callconv(.c) i32 = null,
     /// Get the backend type identifier.
     ///
     /// # Returns
@@ -4596,19 +4596,19 @@ pub const IOcrBackend = extern struct {
     ///     OcrBackendType::Tesseract
     /// }
     /// ```
-    backend_type: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) [*c]const u8 = null,
+    backend_type: ?*const fn (user_data: ?*anyopaque) callconv(.c) [*c]const u8 = null,
     /// Optional: Get a list of all supported languages.
     ///
     /// Defaults to empty list. Override to provide comprehensive language support info.
-    supported_languages: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) [*c]const u8 = null,
+    supported_languages: ?*const fn (user_data: ?*anyopaque) callconv(.c) [*c]const u8 = null,
     /// Optional: Check if the backend supports table detection.
     ///
     /// Defaults to `false`. Override if your backend can detect and extract tables.
-    supports_table_detection: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 = null,
+    supports_table_detection: ?*const fn (user_data: ?*anyopaque) callconv(.c) i32 = null,
     /// Check if the backend supports direct document-level processing (e.g. for PDFs).
     ///
     /// Defaults to `false`. Override if the backend has optimized document processing.
-    supports_document_processing: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 = null,
+    supports_document_processing: ?*const fn (user_data: ?*anyopaque) callconv(.c) i32 = null,
     /// Process a document file directly via OCR.
     ///
     /// Only called if `supports_document_processing` returns `true`.
@@ -4703,8 +4703,8 @@ pub fn make_ocr_backend_vtable(comptime T: type, instance: *T) IOcrBackend {
         .process_image = struct {
             fn thunk(ud: ?*anyopaque, image_bytes_ptr: [*c]const u8, image_bytes_len: usize, config: [*c]const u8, out_result: ?*?[*c]u8, out_error: ?*?[*c]u8) callconv(.c) i32 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                const image_bytes_slice = image_bytes_ptr[0..image_bytes_len];
-                if (self.process_image(image_bytes_slice, config)) |value| {
+                _ = image_bytes_len;
+                if (self.process_image(image_bytes_ptr, config)) |value| {
                     _ = value; _ = out_result; unreachable; // complex return: implement manually
                 } else |err| {
                     _ = err;
@@ -4728,41 +4728,36 @@ pub fn make_ocr_backend_vtable(comptime T: type, instance: *T) IOcrBackend {
         }.thunk,
 
         .supports_language = struct {
-            fn thunk(ud: ?*anyopaque, lang: [*c]const u8, out_result: ?*?[*c]u8) callconv(.c) i32 {
+            fn thunk(ud: ?*anyopaque, lang: [*c]const u8) callconv(.c) i32 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                _ = out_result;
                 return self.supports_language(lang);
             }
         }.thunk,
 
         .backend_type = struct {
-            fn thunk(ud: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) [*c]const u8 {
+            fn thunk(ud: ?*anyopaque) callconv(.c) [*c]const u8 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                _ = out_result;
                 return self.backend_type();
             }
         }.thunk,
 
         .supported_languages = struct {
-            fn thunk(ud: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) [*c]const u8 {
+            fn thunk(ud: ?*anyopaque) callconv(.c) [*c]const u8 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                _ = out_result;
                 return self.supported_languages();
             }
         }.thunk,
 
         .supports_table_detection = struct {
-            fn thunk(ud: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 {
+            fn thunk(ud: ?*anyopaque) callconv(.c) i32 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                _ = out_result;
                 return self.supports_table_detection();
             }
         }.thunk,
 
         .supports_document_processing = struct {
-            fn thunk(ud: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 {
+            fn thunk(ud: ?*anyopaque) callconv(.c) i32 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                _ = out_result;
                 return self.supports_document_processing();
             }
         }.thunk,
@@ -4877,7 +4872,7 @@ pub const IPostProcessor = extern struct {
     ///     ProcessingStage::Early  // Run before other processors
     /// }
     /// ```
-    processing_stage: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) [*c]const u8 = null,
+    processing_stage: ?*const fn (user_data: ?*anyopaque) callconv(.c) [*c]const u8 = null,
     /// Optional: Check if this processor should run for a given result.
     ///
     /// Allows conditional processing based on MIME type, metadata, or content.
@@ -4900,7 +4895,7 @@ pub const IPostProcessor = extern struct {
     ///     result.mime_type == "application/pdf"
     /// }
     /// ```
-    should_process: ?*const fn (user_data: ?*anyopaque, _result: [*c]const u8, _config: [*c]const u8, out_result: ?*?[*c]u8) callconv(.c) i32 = null,
+    should_process: ?*const fn (user_data: ?*anyopaque, _result: [*c]const u8, _config: [*c]const u8) callconv(.c) i32 = null,
     /// Optional: Estimate processing time in milliseconds.
     ///
     /// Used for logging and debugging. Defaults to 0 (unknown).
@@ -4912,13 +4907,13 @@ pub const IPostProcessor = extern struct {
     /// # Returns
     ///
     /// Estimated processing time in milliseconds.
-    estimated_duration_ms: ?*const fn (user_data: ?*anyopaque, _result: [*c]const u8, out_result: ?*?[*c]u8) callconv(.c) u64 = null,
+    estimated_duration_ms: ?*const fn (user_data: ?*anyopaque, _result: [*c]const u8) callconv(.c) u64 = null,
     /// Execution priority within the processing stage.
     ///
     /// Higher values run first within the same `ProcessingStage`. Defaults to 50.
     /// Use 0-49 for fallback processors, 50 for normal processors, and 51-255
     /// for high-priority processors that should run early in their stage.
-    priority: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 = null,
+    priority: ?*const fn (user_data: ?*anyopaque) callconv(.c) i32 = null,
     /// Called by the Rust runtime when the bridge is dropped.
     /// Use this to release any Zig-side state held via `user_data`.
     free_user_data: ?*const fn (user_data: ?*anyopaque) callconv(.c) void = null,
@@ -5016,33 +5011,29 @@ pub fn make_post_processor_vtable(comptime T: type, instance: *T) IPostProcessor
         }.thunk,
 
         .processing_stage = struct {
-            fn thunk(ud: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) [*c]const u8 {
+            fn thunk(ud: ?*anyopaque) callconv(.c) [*c]const u8 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                _ = out_result;
                 return self.processing_stage();
             }
         }.thunk,
 
         .should_process = struct {
-            fn thunk(ud: ?*anyopaque, _result: [*c]const u8, _config: [*c]const u8, out_result: ?*?[*c]u8) callconv(.c) i32 {
+            fn thunk(ud: ?*anyopaque, _result: [*c]const u8, _config: [*c]const u8) callconv(.c) i32 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                _ = out_result;
                 return self.should_process(_result, _config);
             }
         }.thunk,
 
         .estimated_duration_ms = struct {
-            fn thunk(ud: ?*anyopaque, _result: [*c]const u8, out_result: ?*?[*c]u8) callconv(.c) u64 {
+            fn thunk(ud: ?*anyopaque, _result: [*c]const u8) callconv(.c) u64 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                _ = out_result;
                 return self.estimated_duration_ms(_result);
             }
         }.thunk,
 
         .priority = struct {
-            fn thunk(ud: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 {
+            fn thunk(ud: ?*anyopaque) callconv(.c) i32 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                _ = out_result;
                 return self.priority();
             }
         }.thunk,
@@ -5180,7 +5171,7 @@ pub const IValidator = extern struct {
     ///     result.mime_type == "application/pdf"
     /// }
     /// ```
-    should_validate: ?*const fn (user_data: ?*anyopaque, _result: [*c]const u8, _config: [*c]const u8, out_result: ?*?[*c]u8) callconv(.c) i32 = null,
+    should_validate: ?*const fn (user_data: ?*anyopaque, _result: [*c]const u8, _config: [*c]const u8) callconv(.c) i32 = null,
     /// Optional: Get the validation priority.
     ///
     /// Higher priority validators run first. Useful for ordering validation checks
@@ -5200,7 +5191,7 @@ pub const IValidator = extern struct {
     ///     100
     /// }
     /// ```
-    priority: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 = null,
+    priority: ?*const fn (user_data: ?*anyopaque) callconv(.c) i32 = null,
     /// Called by the Rust runtime when the bridge is dropped.
     /// Use this to release any Zig-side state held via `user_data`.
     free_user_data: ?*const fn (user_data: ?*anyopaque) callconv(.c) void = null,
@@ -5298,17 +5289,15 @@ pub fn make_validator_vtable(comptime T: type, instance: *T) IValidator {
         }.thunk,
 
         .should_validate = struct {
-            fn thunk(ud: ?*anyopaque, _result: [*c]const u8, _config: [*c]const u8, out_result: ?*?[*c]u8) callconv(.c) i32 {
+            fn thunk(ud: ?*anyopaque, _result: [*c]const u8, _config: [*c]const u8) callconv(.c) i32 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                _ = out_result;
                 return self.should_validate(_result, _config);
             }
         }.thunk,
 
         .priority = struct {
-            fn thunk(ud: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 {
+            fn thunk(ud: ?*anyopaque) callconv(.c) i32 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                _ = out_result;
                 return self.priority();
             }
         }.thunk,
@@ -5339,7 +5328,7 @@ pub const IEmbeddingBackend = extern struct {
 
     /// Embedding vector dimension. Must be `> 0` and must match the length of
     /// every vector returned by `embed`.
-    dimensions: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) usize = null,
+    dimensions: ?*const fn (user_data: ?*anyopaque) callconv(.c) usize = null,
     /// Embed a batch of texts, returning one vector per input in order.
     ///
     /// # Errors
@@ -5431,9 +5420,8 @@ pub fn make_embedding_backend_vtable(comptime T: type, instance: *T) IEmbeddingB
             }
         }.thunk,
         .dimensions = struct {
-            fn thunk(ud: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) usize {
+            fn thunk(ud: ?*anyopaque) callconv(.c) usize {
                 const self: *T = @ptrCast(@alignCast(ud));
-                _ = out_result;
                 return self.dimensions();
             }
         }.thunk,
@@ -5525,7 +5513,7 @@ pub const IDocumentExtractor = extern struct {
     /// # Returns
     ///
     /// A slice of MIME type strings.
-    supported_mime_types: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) [*c]const u8 = null,
+    supported_mime_types: ?*const fn (user_data: ?*anyopaque) callconv(.c) [*c]const u8 = null,
     /// Get the priority of this extractor.
     ///
     /// Higher priority extractors are preferred when multiple extractors
@@ -5542,7 +5530,7 @@ pub const IDocumentExtractor = extern struct {
     /// # Returns
     ///
     /// Priority value (default: 50)
-    priority: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 = null,
+    priority: ?*const fn (user_data: ?*anyopaque) callconv(.c) i32 = null,
     /// Optional: Check if this extractor can handle a specific file.
     ///
     /// Allows for more sophisticated detection beyond MIME types.
@@ -5556,12 +5544,7 @@ pub const IDocumentExtractor = extern struct {
     /// # Returns
     ///
     /// `true` if the extractor can handle this file, `false` otherwise.
-    can_handle: ?*const fn (user_data: ?*anyopaque, _path: [*c]const u8, _mime_type: [*c]const u8, out_result: ?*?[*c]u8) callconv(.c) i32 = null,
-    /// Attempt to get a reference to this extractor as a SyncExtractor.
-    ///
-    /// Returns None if the extractor doesn't support synchronous extraction.
-    /// This is used for WASM and other sync-only environments.
-    as_sync_extractor: ?*const fn (user_data: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) [*c]const u8 = null,
+    can_handle: ?*const fn (user_data: ?*anyopaque, _path: [*c]const u8, _mime_type: [*c]const u8) callconv(.c) i32 = null,
     /// Called by the Rust runtime when the bridge is dropped.
     /// Use this to release any Zig-side state held via `user_data`.
     free_user_data: ?*const fn (user_data: ?*anyopaque) callconv(.c) void = null,
@@ -5647,8 +5630,8 @@ pub fn make_document_extractor_vtable(comptime T: type, instance: *T) IDocumentE
         .extract_bytes = struct {
             fn thunk(ud: ?*anyopaque, content_ptr: [*c]const u8, content_len: usize, mime_type: [*c]const u8, config: [*c]const u8, out_result: ?*?[*c]u8, out_error: ?*?[*c]u8) callconv(.c) i32 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                const content_slice = content_ptr[0..content_len];
-                if (self.extract_bytes(content_slice, mime_type, config)) |value| {
+                _ = content_len;
+                if (self.extract_bytes(content_ptr, mime_type, config)) |value| {
                     _ = value; _ = out_result; unreachable; // complex return: implement manually
                 } else |err| {
                     _ = err;
@@ -5672,34 +5655,23 @@ pub fn make_document_extractor_vtable(comptime T: type, instance: *T) IDocumentE
         }.thunk,
 
         .supported_mime_types = struct {
-            fn thunk(ud: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) [*c]const u8 {
+            fn thunk(ud: ?*anyopaque) callconv(.c) [*c]const u8 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                _ = out_result;
                 return self.supported_mime_types();
             }
         }.thunk,
 
         .priority = struct {
-            fn thunk(ud: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) i32 {
+            fn thunk(ud: ?*anyopaque) callconv(.c) i32 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                _ = out_result;
                 return self.priority();
             }
         }.thunk,
 
         .can_handle = struct {
-            fn thunk(ud: ?*anyopaque, _path: [*c]const u8, _mime_type: [*c]const u8, out_result: ?*?[*c]u8) callconv(.c) i32 {
+            fn thunk(ud: ?*anyopaque, _path: [*c]const u8, _mime_type: [*c]const u8) callconv(.c) i32 {
                 const self: *T = @ptrCast(@alignCast(ud));
-                _ = out_result;
                 return self.can_handle(_path, _mime_type);
-            }
-        }.thunk,
-
-        .as_sync_extractor = struct {
-            fn thunk(ud: ?*anyopaque, out_result: ?*?[*c]u8) callconv(.c) [*c]const u8 {
-                const self: *T = @ptrCast(@alignCast(ud));
-                _ = out_result;
-                return self.as_sync_extractor();
             }
         }.thunk,
 

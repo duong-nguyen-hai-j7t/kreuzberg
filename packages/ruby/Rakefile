@@ -5,7 +5,8 @@ Bundler::GemHelper.install_tasks name: "kreuzberg"
 require "rake/extensiontask"
 require "rspec/core/rake_task"
 
-GEMSPEC = Gem::Specification.load(File.expand_path("kreuzberg.gemspec", __dir__))
+GEM_ROOT = __dir__
+GEMSPEC = Gem::Specification.load(File.expand_path("kreuzberg.gemspec", GEM_ROOT))
 
 Rake::ExtensionTask.new("kreuzberg_rb", GEMSPEC) do |ext|
   ext.lib_dir = "lib"

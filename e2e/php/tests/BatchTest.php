@@ -10,7 +10,11 @@ declare(strict_types=1);
 namespace Kreuzberg\E2e;
 
 use PHPUnit\Framework\TestCase;
-use Kreuzberg\Kreuzberg;use Kreuzberg\BatchBytesItem;use Kreuzberg\BatchFileItem;use Kreuzberg\ExtractionConfig;
+use Kreuzberg\Kreuzberg;
+use Kreuzberg\BatchBytesItem;
+use Kreuzberg\BatchFileItem;
+use Kreuzberg\ExtractionConfig;
+
 /** E2e tests for category: batch. */
 final class BatchTest extends TestCase
 {
@@ -32,6 +36,7 @@ final class BatchTest extends TestCase
 
             $this->assertGreaterThanOrEqual(1, count($result));
 
+
     }
 
 
@@ -51,6 +56,7 @@ final class BatchTest extends TestCase
         $result = Kreuzberg::batchExtractBytesSync([], \Kreuzberg\ExtractionConfig::from_json('{}'));
 
             $this->assertCount(0, $result);
+
 
     }
 

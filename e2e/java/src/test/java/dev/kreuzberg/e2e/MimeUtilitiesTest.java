@@ -20,6 +20,7 @@ class MimeUtilitiesTest {
         // Detect MIME type from file bytes
         var result = Kreuzberg.detectMimeTypeFromBytes(java.nio.file.Files.readAllBytes(java.nio.file.Path.of("pdf/fake_memo.pdf")));
         // skipped: field 'result' not available on result type
+
     }
 
 
@@ -28,6 +29,7 @@ class MimeUtilitiesTest {
         // Detect MIME type from PNG image bytes
         var result = Kreuzberg.detectMimeTypeFromBytes(java.nio.file.Files.readAllBytes(java.nio.file.Path.of("images/test_hello_world.png")));
         // skipped: field 'result' not available on result type
+
     }
 
 
@@ -36,6 +38,7 @@ class MimeUtilitiesTest {
         // Get file extensions for a MIME type
         var result = Kreuzberg.getExtensionsForMime("application/pdf");
         // skipped: field 'result' not available on result type
+
     }
 
 }

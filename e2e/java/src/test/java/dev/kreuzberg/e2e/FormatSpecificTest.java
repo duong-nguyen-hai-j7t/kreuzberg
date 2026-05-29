@@ -20,6 +20,7 @@ class FormatSpecificTest {
         // Standalone DOCX extraction using extract_bytes_sync
         var result = Kreuzberg.extractBytesSync(java.nio.file.Files.readAllBytes(java.nio.file.Path.of("docx/fake.docx")), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", ExtractionConfig.builder().build());
 assertTrue(result.content().length() >= 20, "expected length >= 20");
+
     }
 
 
@@ -28,6 +29,7 @@ assertTrue(result.content().length() >= 20, "expected length >= 20");
         // Standalone HWPX extraction using extract_bytes_sync
         var result = Kreuzberg.extractBytesSync(java.nio.file.Files.readAllBytes(java.nio.file.Path.of("hwpx/simple.hwpx")), "application/haansofthwpx", ExtractionConfig.builder().build());
 assertTrue(result.content().length() >= 20, "expected length >= 20");assertTrue(result.content().contains("Hello from HWPX"), "expected to contain: " + "Hello from HWPX");
+
     }
 
 
@@ -36,6 +38,7 @@ assertTrue(result.content().length() >= 20, "expected length >= 20");assertTrue(
         // Standalone PDF text extraction using extract_bytes_sync
         var result = Kreuzberg.extractBytesSync(java.nio.file.Files.readAllBytes(java.nio.file.Path.of("pdf/fake_memo.pdf")), "application/pdf", ExtractionConfig.builder().build());
 assertTrue(result.content().length() >= 50, "expected length >= 50");assertTrue(result.content().contains("Mallori") || result.content().contains("May"), "expected to contain at least one of the specified values");
+
     }
 
 
@@ -44,6 +47,7 @@ assertTrue(result.content().length() >= 50, "expected length >= 50");assertTrue(
         // PPTX presentation extraction using extract_file_sync
         var result = Kreuzberg.extractFileSync(java.nio.file.Path.of("pptx/simple.pptx"), "application/vnd.openxmlformats-officedocument.presentationml.presentation", ExtractionConfig.builder().build());
 
+
     }
 
 
@@ -51,6 +55,7 @@ assertTrue(result.content().length() >= 50, "expected length >= 50");assertTrue(
     void testFormatXlsx() throws Exception {
         // XLSX spreadsheet extraction using extract_file_sync
         var result = Kreuzberg.extractFileSync(java.nio.file.Path.of("xlsx/stanley_cups.xlsx"), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", ExtractionConfig.builder().build());
+
 
     }
 

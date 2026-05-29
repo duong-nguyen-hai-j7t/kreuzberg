@@ -12,6 +12,7 @@ test_that("register_document_extractor_trait_bridge: register_document_extractor
   )
   invisible(register_document_extractor(r_backend = r_backend_register_document_extractor_trait_bridge))
   expect_true(TRUE)
+  unregister_document_extractor("test-extractor")
 })
 
 test_that("register_embedding_backend_trait_bridge: register_embedding_backend: trait bridge", {
@@ -22,6 +23,7 @@ test_that("register_embedding_backend_trait_bridge: register_embedding_backend: 
   )
   invisible(register_embedding_backend(r_backend = r_backend_register_embedding_backend_trait_bridge))
   expect_true(TRUE)
+  unregister_embedding_backend("test-embedding-backend")
 })
 
 test_that("register_ocr_backend_trait_bridge: register_ocr_backend: trait bridge", {
@@ -33,6 +35,7 @@ test_that("register_ocr_backend_trait_bridge: register_ocr_backend: trait bridge
   )
   invisible(register_ocr_backend(r_backend = r_backend_register_ocr_backend_trait_bridge))
   expect_true(TRUE)
+  unregister_ocr_backend("test-backend")
 })
 
 test_that("register_post_processor_trait_bridge: register_post_processor: trait bridge", {
@@ -43,6 +46,7 @@ test_that("register_post_processor_trait_bridge: register_post_processor: trait 
   )
   invisible(register_post_processor(r_backend = r_backend_register_post_processor_trait_bridge))
   expect_true(TRUE)
+  unregister_post_processor("test-processor")
 })
 
 test_that("register_renderer_trait_bridge: register_renderer: trait bridge", {
@@ -52,6 +56,7 @@ test_that("register_renderer_trait_bridge: register_renderer: trait bridge", {
   )
   invisible(register_renderer(r_backend = r_backend_register_renderer_trait_bridge))
   expect_true(TRUE)
+  unregister_renderer("test-renderer")
 })
 
 test_that("register_validator_trait_bridge: register_validator: trait bridge", {
@@ -61,6 +66,7 @@ test_that("register_validator_trait_bridge: register_validator: trait bridge", {
   )
   invisible(register_validator(r_backend = r_backend_register_validator_trait_bridge))
   expect_true(TRUE)
+  unregister_validator("test-validator")
 })
 
 test_that("unregister_document_extractor_after_register: unregister_document_extractor", {

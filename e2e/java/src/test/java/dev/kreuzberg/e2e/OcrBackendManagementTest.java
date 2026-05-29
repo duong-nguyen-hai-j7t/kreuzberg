@@ -20,6 +20,7 @@ class OcrBackendManagementTest {
         // Clear all OCR backends and verify list is empty
         Kreuzberg.clearOcrBackends();
 
+
     }
 
 
@@ -28,6 +29,7 @@ class OcrBackendManagementTest {
         // List all registered OCR backends
         var result = Kreuzberg.listOcrBackends();
 
+
     }
 
 
@@ -35,6 +37,7 @@ class OcrBackendManagementTest {
     void testOcrBackendsUnregister() throws Exception {
         // Unregister nonexistent OCR backend gracefully
         Kreuzberg.unregisterOcrBackend("nonexistent-backend-xyz");
+
 
     }
 

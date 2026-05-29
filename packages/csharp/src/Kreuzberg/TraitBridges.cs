@@ -62,6 +62,7 @@ public sealed class OcrBackendBridge : IDisposable {
     private bool _disposed;
     private readonly object[] _delegates;
     private readonly IntPtr _bridgeId;
+    private int _callbackRefCount = 0;
 
     // Static registry: maps bridge ID (IntPtr) to bridge instance
     // This prevents GC while Rust holds the bridge ID as userData.
@@ -288,8 +289,12 @@ public sealed class OcrBackendBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
             return 1;
+        } finally {
+            if (_bridgeFromRegistry != null) {
+                try { _bridgeFromRegistry.DecrementCallbackRef(); } catch { /* Bridge already removed from registry */ }
+            }
         }
     }
 
@@ -305,8 +310,12 @@ public sealed class OcrBackendBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
             return 1;
+        } finally {
+            if (_bridgeFromRegistry != null) {
+                try { _bridgeFromRegistry.DecrementCallbackRef(); } catch { /* Bridge already removed from registry */ }
+            }
         }
     }
 
@@ -332,8 +341,12 @@ public sealed class OcrBackendBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
             return 1;
+        } finally {
+            if (_bridgeFromRegistry != null) {
+                try { _bridgeFromRegistry.DecrementCallbackRef(); } catch { /* Bridge already removed from registry */ }
+            }
         }
     }
 
@@ -345,8 +358,12 @@ public sealed class OcrBackendBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
             return 1;
+        } finally {
+            if (_bridgeFromRegistry != null) {
+                try { _bridgeFromRegistry.DecrementCallbackRef(); } catch { /* Bridge already removed from registry */ }
+            }
         }
     }
 
@@ -388,8 +405,12 @@ public sealed class OcrBackendBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
             return 1;
+        } finally {
+            if (_bridgeFromRegistry != null) {
+                try { _bridgeFromRegistry.DecrementCallbackRef(); } catch { /* Bridge already removed from registry */ }
+            }
         }
     }
 
@@ -542,6 +563,7 @@ public sealed class PostProcessorBridge : IDisposable {
     private bool _disposed;
     private readonly object[] _delegates;
     private readonly IntPtr _bridgeId;
+    private int _callbackRefCount = 0;
 
     // Static registry: maps bridge ID (IntPtr) to bridge instance
     // This prevents GC while Rust holds the bridge ID as userData.
@@ -657,13 +679,30 @@ public sealed class PostProcessorBridge : IDisposable {
     /// <summary>Called by Rust via FreeUserDataCallback when done with this bridge</summary>
     internal static void FreeUserData(IntPtr bridgeId) {
         lock (_registryLock) {
-            // Remove bridge from registry to stop accepting new callbacks.
-            // Do NOT call bridge.Dispose() here — Rust may still be inside a callback
-            // (via reverse P/Invoke) when this is called. Disposing while a callback
-            // is executing causes NullReferenceException when the callback tries to
-            // access bridge._impl. Let the GC clean up the bridge when no more
-            // references exist.
-            _bridgeRegistry.Remove(bridgeId);
+            // Mark bridge as disposed but DON'T remove from registry yet.
+            // Callbacks in flight will still be able to look it up and execute safely.
+            // The bridge will stay alive as long as _callbackRefCount > 0.
+            if (_bridgeRegistry.TryGetValue(bridgeId, out var bridge)) {
+                bridge._disposed = true;
+            }
+        }
+    }
+
+    private void IncrementCallbackRef() {
+        lock (_registryLock) {
+            _callbackRefCount++;
+        }
+    }
+
+    private void DecrementCallbackRef() {
+        lock (_registryLock) {
+            if (_callbackRefCount > 0) {
+                _callbackRefCount--;
+            }
+            // Once refcount reaches 0 and bridge is disposed, remove from registry
+            if (_callbackRefCount == 0 && _disposed) {
+                _bridgeRegistry.Remove(_bridgeId);
+            }
         }
     }
 
@@ -749,8 +788,12 @@ public sealed class PostProcessorBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
             return 1;
+        } finally {
+            if (_bridgeFromRegistry != null) {
+                try { _bridgeFromRegistry.DecrementCallbackRef(); } catch { /* Bridge already removed from registry */ }
+            }
         }
     }
 
@@ -955,6 +998,7 @@ public sealed class ValidatorBridge : IDisposable {
     private bool _disposed;
     private readonly object[] _delegates;
     private readonly IntPtr _bridgeId;
+    private int _callbackRefCount = 0;
 
     // Static registry: maps bridge ID (IntPtr) to bridge instance
     // This prevents GC while Rust holds the bridge ID as userData.
@@ -1054,13 +1098,30 @@ public sealed class ValidatorBridge : IDisposable {
     /// <summary>Called by Rust via FreeUserDataCallback when done with this bridge</summary>
     internal static void FreeUserData(IntPtr bridgeId) {
         lock (_registryLock) {
-            // Remove bridge from registry to stop accepting new callbacks.
-            // Do NOT call bridge.Dispose() here — Rust may still be inside a callback
-            // (via reverse P/Invoke) when this is called. Disposing while a callback
-            // is executing causes NullReferenceException when the callback tries to
-            // access bridge._impl. Let the GC clean up the bridge when no more
-            // references exist.
-            _bridgeRegistry.Remove(bridgeId);
+            // Mark bridge as disposed but DON'T remove from registry yet.
+            // Callbacks in flight will still be able to look it up and execute safely.
+            // The bridge will stay alive as long as _callbackRefCount > 0.
+            if (_bridgeRegistry.TryGetValue(bridgeId, out var bridge)) {
+                bridge._disposed = true;
+            }
+        }
+    }
+
+    private void IncrementCallbackRef() {
+        lock (_registryLock) {
+            _callbackRefCount++;
+        }
+    }
+
+    private void DecrementCallbackRef() {
+        lock (_registryLock) {
+            if (_callbackRefCount > 0) {
+                _callbackRefCount--;
+            }
+            // Once refcount reaches 0 and bridge is disposed, remove from registry
+            if (_callbackRefCount == 0 && _disposed) {
+                _bridgeRegistry.Remove(_bridgeId);
+            }
         }
     }
 
@@ -1321,6 +1382,7 @@ public sealed class EmbeddingBackendBridge : IDisposable {
     private bool _disposed;
     private readonly object[] _delegates;
     private readonly IntPtr _bridgeId;
+    private int _callbackRefCount = 0;
 
     // Static registry: maps bridge ID (IntPtr) to bridge instance
     // This prevents GC while Rust holds the bridge ID as userData.
@@ -1412,13 +1474,30 @@ public sealed class EmbeddingBackendBridge : IDisposable {
     /// <summary>Called by Rust via FreeUserDataCallback when done with this bridge</summary>
     internal static void FreeUserData(IntPtr bridgeId) {
         lock (_registryLock) {
-            // Remove bridge from registry to stop accepting new callbacks.
-            // Do NOT call bridge.Dispose() here — Rust may still be inside a callback
-            // (via reverse P/Invoke) when this is called. Disposing while a callback
-            // is executing causes NullReferenceException when the callback tries to
-            // access bridge._impl. Let the GC clean up the bridge when no more
-            // references exist.
-            _bridgeRegistry.Remove(bridgeId);
+            // Mark bridge as disposed but DON'T remove from registry yet.
+            // Callbacks in flight will still be able to look it up and execute safely.
+            // The bridge will stay alive as long as _callbackRefCount > 0.
+            if (_bridgeRegistry.TryGetValue(bridgeId, out var bridge)) {
+                bridge._disposed = true;
+            }
+        }
+    }
+
+    private void IncrementCallbackRef() {
+        lock (_registryLock) {
+            _callbackRefCount++;
+        }
+    }
+
+    private void DecrementCallbackRef() {
+        lock (_registryLock) {
+            if (_callbackRefCount > 0) {
+                _callbackRefCount--;
+            }
+            // Once refcount reaches 0 and bridge is disposed, remove from registry
+            if (_callbackRefCount == 0 && _disposed) {
+                _bridgeRegistry.Remove(_bridgeId);
+            }
         }
     }
 
@@ -1515,8 +1594,12 @@ public sealed class EmbeddingBackendBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
             return 1;
+        } finally {
+            if (_bridgeFromRegistry != null) {
+                try { _bridgeFromRegistry.DecrementCallbackRef(); } catch { /* Bridge already removed from registry */ }
+            }
         }
     }
 
@@ -1672,6 +1755,7 @@ public sealed class DocumentExtractorBridge : IDisposable {
     private bool _disposed;
     private readonly object[] _delegates;
     private readonly IntPtr _bridgeId;
+    private int _callbackRefCount = 0;
 
     // Static registry: maps bridge ID (IntPtr) to bridge instance
     // This prevents GC while Rust holds the bridge ID as userData.
@@ -1883,8 +1967,12 @@ public sealed class DocumentExtractorBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
             return 1;
+        } finally {
+            if (_bridgeFromRegistry != null) {
+                try { _bridgeFromRegistry.DecrementCallbackRef(); } catch { /* Bridge already removed from registry */ }
+            }
         }
     }
 
@@ -1901,8 +1989,12 @@ public sealed class DocumentExtractorBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
             return 1;
+        } finally {
+            if (_bridgeFromRegistry != null) {
+                try { _bridgeFromRegistry.DecrementCallbackRef(); } catch { /* Bridge already removed from registry */ }
+            }
         }
     }
 
@@ -1914,8 +2006,12 @@ public sealed class DocumentExtractorBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
             return 1;
+        } finally {
+            if (_bridgeFromRegistry != null) {
+                try { _bridgeFromRegistry.DecrementCallbackRef(); } catch { /* Bridge already removed from registry */ }
+            }
         }
     }
 
@@ -1956,8 +2052,12 @@ public sealed class DocumentExtractorBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
             return 1;
+        } finally {
+            if (_bridgeFromRegistry != null) {
+                try { _bridgeFromRegistry.DecrementCallbackRef(); } catch { /* Bridge already removed from registry */ }
+            }
         }
     }
 
@@ -2098,6 +2198,7 @@ public sealed class RendererBridge : IDisposable {
     private bool _disposed;
     private readonly object[] _delegates;
     private readonly IntPtr _bridgeId;
+    private int _callbackRefCount = 0;
 
     // Static registry: maps bridge ID (IntPtr) to bridge instance
     // This prevents GC while Rust holds the bridge ID as userData.
@@ -2181,13 +2282,30 @@ public sealed class RendererBridge : IDisposable {
     /// <summary>Called by Rust via FreeUserDataCallback when done with this bridge</summary>
     internal static void FreeUserData(IntPtr bridgeId) {
         lock (_registryLock) {
-            // Remove bridge from registry to stop accepting new callbacks.
-            // Do NOT call bridge.Dispose() here — Rust may still be inside a callback
-            // (via reverse P/Invoke) when this is called. Disposing while a callback
-            // is executing causes NullReferenceException when the callback tries to
-            // access bridge._impl. Let the GC clean up the bridge when no more
-            // references exist.
-            _bridgeRegistry.Remove(bridgeId);
+            // Mark bridge as disposed but DON'T remove from registry yet.
+            // Callbacks in flight will still be able to look it up and execute safely.
+            // The bridge will stay alive as long as _callbackRefCount > 0.
+            if (_bridgeRegistry.TryGetValue(bridgeId, out var bridge)) {
+                bridge._disposed = true;
+            }
+        }
+    }
+
+    private void IncrementCallbackRef() {
+        lock (_registryLock) {
+            _callbackRefCount++;
+        }
+    }
+
+    private void DecrementCallbackRef() {
+        lock (_registryLock) {
+            if (_callbackRefCount > 0) {
+                _callbackRefCount--;
+            }
+            // Once refcount reaches 0 and bridge is disposed, remove from registry
+            if (_callbackRefCount == 0 && _disposed) {
+                _bridgeRegistry.Remove(_bridgeId);
+            }
         }
     }
 
@@ -2270,8 +2388,12 @@ public sealed class RendererBridge : IDisposable {
             return 0;
         } catch (Exception ex) {
             outResult = IntPtr.Zero;
-            outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name);
+            try { outError = global::System.Runtime.InteropServices.Marshal.StringToCoTaskMemUTF8(ex.Message ?? ex.GetType().Name); } catch { outError = IntPtr.Zero; }
             return 1;
+        } finally {
+            if (_bridgeFromRegistry != null) {
+                try { _bridgeFromRegistry.DecrementCallbackRef(); } catch { /* Bridge already removed from registry */ }
+            }
         }
     }
 

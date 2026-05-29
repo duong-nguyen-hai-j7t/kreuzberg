@@ -23,6 +23,7 @@ class EmbeddingsTest {
 
         var result = Kreuzberg.embedTexts(java.util.Arrays.asList(JsonUtil.fromJson("\"Hello world\"", String.class), JsonUtil.fromJson("\"Test\"", String.class)), config);
         // skipped: field 'embeddings' not available on result type
+
     }
 
 
@@ -31,6 +32,7 @@ class EmbeddingsTest {
         // get_embedding_preset: known preset
         var result = Kreuzberg.getEmbeddingPreset("balanced");
 
+
     }
 
 
@@ -38,6 +40,7 @@ class EmbeddingsTest {
     void testGetEmbeddingPresetNominal() throws Exception {
         // get_embedding_preset: nominal case
         var result = Kreuzberg.getEmbeddingPreset("balanced");
+
 
     }
 
@@ -48,6 +51,7 @@ class EmbeddingsTest {
         var result = Kreuzberg.getEmbeddingPreset("nonexistent-xyz");
         assertNull(result, "expected empty value");
 
+
     }
 
 
@@ -56,6 +60,7 @@ class EmbeddingsTest {
         // list_embedding_presets: returns at least one
         var result = Kreuzberg.listEmbeddingPresets();
 assertFalse(result.isEmpty(), "expected non-empty value");
+
     }
 
 }

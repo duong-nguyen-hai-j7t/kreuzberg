@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace Kreuzberg\E2e;
 
 use PHPUnit\Framework\TestCase;
-use Kreuzberg\Kreuzberg;use Kreuzberg\ExtractionConfig;
+use Kreuzberg\Kreuzberg;
+use Kreuzberg\ExtractionConfig;
+
 /** E2e tests for category: mime_utilities. */
 final class MimeUtilitiesTest extends TestCase
 {
@@ -24,6 +26,7 @@ final class MimeUtilitiesTest extends TestCase
         $result = Kreuzberg::detectMimeTypeFromBytes($contentBytes);
 
         // skipped: field 'result' not available on result type
+
     }
 
 
@@ -36,6 +39,7 @@ final class MimeUtilitiesTest extends TestCase
         $result = Kreuzberg::detectMimeTypeFromBytes($contentBytes);
 
         // skipped: field 'result' not available on result type
+
     }
 
 
@@ -46,6 +50,7 @@ final class MimeUtilitiesTest extends TestCase
         $result = Kreuzberg::getExtensionsForMime("application/pdf");
 
         // skipped: field 'result' not available on result type
+
     }
 
 }

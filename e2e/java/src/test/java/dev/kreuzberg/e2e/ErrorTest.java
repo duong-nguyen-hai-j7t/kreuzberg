@@ -22,6 +22,7 @@ class ErrorTest {
 
         var result = Kreuzberg.extractBytesSync(java.nio.file.Files.readAllBytes(java.nio.file.Path.of("text/empty.txt")), "text/plain", config);
 
+
     }
 
 
@@ -39,6 +40,7 @@ class ErrorTest {
 
             Kreuzberg.extractBytesSync(java.nio.file.Files.readAllBytes(java.nio.file.Path.of("text/plain.txt")), "", config);
         });
+
     }
 
 
@@ -56,6 +58,7 @@ class ErrorTest {
 
             Kreuzberg.extractBytesSync(java.nio.file.Files.readAllBytes(java.nio.file.Path.of("text/fake_text.txt")), "text/plain", config);
         });
+
     }
 
 
@@ -73,6 +76,7 @@ class ErrorTest {
 
             Kreuzberg.extractBytesSync(java.nio.file.Files.readAllBytes(java.nio.file.Path.of("text/plain.txt")), "not-a-mime", config);
         });
+
     }
 
 
@@ -90,6 +94,7 @@ class ErrorTest {
 
             Kreuzberg.extractBytesSync(java.nio.file.Files.readAllBytes(java.nio.file.Path.of("text/plain.txt")), "application/x-nonexistent", config);
         });
+
     }
 
 }

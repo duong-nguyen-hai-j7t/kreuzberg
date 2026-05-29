@@ -22,6 +22,7 @@ class BatchTest {
         // batch_extract_bytes_sync invalid MIME
         var result = Kreuzberg.batchExtractBytesSync(java.util.Arrays.asList(new BatchBytesItem(new byte[] {(byte) 72, (byte) 101, (byte) 108, (byte) 108, (byte) 111}, "application/x-nonexistent", null)), ExtractionConfig.builder().build());
 
+
     }
 
 
@@ -30,6 +31,7 @@ class BatchTest {
         // batch_extract_bytes: happy path with mixed inputs
         var result = Kreuzberg.batchExtractBytes(java.util.Arrays.asList(new BatchBytesItem(new byte[] {(byte) 72, (byte) 101, (byte) 108, (byte) 108, (byte) 111, (byte) 44, (byte) 32, (byte) 119, (byte) 111, (byte) 114, (byte) 108, (byte) 100, (byte) 33}, "text/plain", null), new BatchBytesItem(new byte[] {(byte) 60, (byte) 104, (byte) 116, (byte) 109, (byte) 108, (byte) 62, (byte) 60, (byte) 98, (byte) 111, (byte) 100, (byte) 121, (byte) 62, (byte) 84, (byte) 101, (byte) 115, (byte) 116, (byte) 60, (byte) 47, (byte) 98, (byte) 111, (byte) 100, (byte) 121, (byte) 62, (byte) 60, (byte) 47, (byte) 104, (byte) 116, (byte) 109, (byte) 108, (byte) 62}, "text/html", null)), ExtractionConfig.builder().build());
 assertTrue(result.size() >= 1, "expected at least 1 elements");
+
     }
 
 
@@ -37,6 +39,7 @@ assertTrue(result.size() >= 1, "expected at least 1 elements");
     void testBatchExtractBytesMixedFormat() throws Exception {
         // batch_extract_bytes: handles unsupported MIME gracefully
         var result = Kreuzberg.batchExtractBytes(java.util.Arrays.asList(new BatchBytesItem(new byte[] {(byte) 80, (byte) 68, (byte) 70, (byte) 32, (byte) 112, (byte) 108, (byte) 97, (byte) 99, (byte) 101, (byte) 104, (byte) 111, (byte) 108, (byte) 100, (byte) 101, (byte) 114}, "application/x-unknown", null)), ExtractionConfig.builder().build());
+
 
     }
 
@@ -46,6 +49,7 @@ assertTrue(result.size() >= 1, "expected at least 1 elements");
         // batch_extract_bytes_sync: empty batch
         var result = Kreuzberg.batchExtractBytesSync(java.util.Arrays.asList(), ExtractionConfig.builder().build());
 assertEquals(0, result.size(), "expected exactly 0 elements");
+
     }
 
 
@@ -53,6 +57,7 @@ assertEquals(0, result.size(), "expected exactly 0 elements");
     void testBatchExtractBytesSyncInvalidMime() throws Exception {
         // batch_extract_bytes_sync: unsupported MIME
         var result = Kreuzberg.batchExtractBytesSync(java.util.Arrays.asList(new BatchBytesItem(new byte[] {(byte) 100, (byte) 97, (byte) 116, (byte) 97}, "application/x-unknown", null)), ExtractionConfig.builder().build());
+
 
     }
 
@@ -62,6 +67,7 @@ assertEquals(0, result.size(), "expected exactly 0 elements");
         // Extract text from multiple files asynchronously
         var result = Kreuzberg.batchExtractFiles(java.util.Arrays.asList(new BatchFileItem(java.nio.file.Paths.get("pdf/fake_memo.pdf"), null), new BatchFileItem(java.nio.file.Paths.get("text/fake_text.txt"), null)), ExtractionConfig.builder().build());
 
+
     }
 
 
@@ -69,6 +75,7 @@ assertEquals(0, result.size(), "expected exactly 0 elements");
     void testBatchFileAsyncNotFound() throws Exception {
         // batch_extract_file async nonexistent
         var result = Kreuzberg.batchExtractFiles(java.util.Arrays.asList(new BatchFileItem(java.nio.file.Paths.get("/nonexistent/a.pdf"), null)), ExtractionConfig.builder().build());
+
 
     }
 
@@ -78,6 +85,7 @@ assertEquals(0, result.size(), "expected exactly 0 elements");
         // batch_extract_file_sync nonexistent
         var result = Kreuzberg.batchExtractFilesSync(java.util.Arrays.asList(new BatchFileItem(java.nio.file.Paths.get("/nonexistent/a.pdf"), null), new BatchFileItem(java.nio.file.Paths.get("/nonexistent/b.txt"), null)), ExtractionConfig.builder().build());
 
+
     }
 
 
@@ -86,6 +94,7 @@ assertEquals(0, result.size(), "expected exactly 0 elements");
         // batch_extract_file_sync mixed
         var result = Kreuzberg.batchExtractFilesSync(java.util.Arrays.asList(new BatchFileItem(java.nio.file.Paths.get("text/plain.txt"), null), new BatchFileItem(java.nio.file.Paths.get("/nonexistent/missing.pdf"), null)), ExtractionConfig.builder().build());
 
+
     }
 
 
@@ -93,6 +102,7 @@ assertEquals(0, result.size(), "expected exactly 0 elements");
     void testBatchFileSyncBasic() throws Exception {
         // Extract text from multiple files synchronously
         var result = Kreuzberg.batchExtractFilesSync(java.util.Arrays.asList(new BatchFileItem(java.nio.file.Paths.get("pdf/fake_memo.pdf"), null), new BatchFileItem(java.nio.file.Paths.get("text/fake_text.txt"), null)), ExtractionConfig.builder().build());
+
 
     }
 

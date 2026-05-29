@@ -31,6 +31,8 @@ class PluginApiTest {
 
         Kreuzberg.registerDocumentExtractor(new TestStubRegisterDocumentExtractorTraitBridge());
 
+        Kreuzberg.unregisterDocumentExtractor("test-extractor");
+
     }
 
 
@@ -49,6 +51,8 @@ class PluginApiTest {
 }
 
         Kreuzberg.registerEmbeddingBackend(new TestStubRegisterEmbeddingBackendTraitBridge());
+
+        Kreuzberg.unregisterEmbeddingBackend("test-embedding-backend");
 
     }
 
@@ -73,6 +77,8 @@ class PluginApiTest {
 
         Kreuzberg.registerOcrBackend(new TestStubRegisterOcrBackendTraitBridge());
 
+        Kreuzberg.unregisterOcrBackend("test-backend");
+
     }
 
 
@@ -92,6 +98,8 @@ class PluginApiTest {
 
         Kreuzberg.registerPostProcessor(new TestStubRegisterPostProcessorTraitBridge());
 
+        Kreuzberg.unregisterPostProcessor("test-processor");
+
     }
 
 
@@ -106,6 +114,8 @@ class PluginApiTest {
 }
 
         Kreuzberg.registerRenderer(new TestStubRegisterRendererTraitBridge());
+
+        Kreuzberg.unregisterRenderer("test-renderer");
 
     }
 
@@ -122,6 +132,8 @@ class PluginApiTest {
 
         Kreuzberg.registerValidator(new TestStubRegisterValidatorTraitBridge());
 
+        Kreuzberg.unregisterValidator("test-validator");
+
     }
 
 
@@ -129,6 +141,7 @@ class PluginApiTest {
     void testUnregisterDocumentExtractorAfterRegister() throws Exception {
         // unregister_document_extractor
         Kreuzberg.unregisterDocumentExtractor("test-extractor");
+
 
     }
 
@@ -138,6 +151,7 @@ class PluginApiTest {
         // unregister_embedding_backend
         Kreuzberg.unregisterEmbeddingBackend("test-embedding-backend");
 
+
     }
 
 
@@ -145,6 +159,7 @@ class PluginApiTest {
     void testUnregisterPostProcessorAfterRegister() throws Exception {
         // unregister_post_processor
         Kreuzberg.unregisterPostProcessor("test-processor");
+
 
     }
 
@@ -154,6 +169,7 @@ class PluginApiTest {
         // unregister_renderer
         Kreuzberg.unregisterRenderer("test-renderer");
 
+
     }
 
 
@@ -161,6 +177,7 @@ class PluginApiTest {
     void testUnregisterValidatorAfterRegister() throws Exception {
         // unregister_validator
         Kreuzberg.unregisterValidator("test-validator");
+
 
     }
 

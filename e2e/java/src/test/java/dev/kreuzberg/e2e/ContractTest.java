@@ -20,6 +20,7 @@ class ContractTest {
         // Tests async batch bytes extraction API (batch_extract_bytes)
         var result = Kreuzberg.extractFile(java.nio.file.Path.of("pdf/fake_memo.pdf"), null, ExtractionConfig.builder().build());
 assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.content().length() >= 10, "expected length >= 10");assertTrue(result.content().contains("May 5, 2023") || result.content().contains("Mallori"), "expected to contain at least one of the specified values");
+
     }
 
 
@@ -30,6 +31,7 @@ assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.cont
 
         var result = Kreuzberg.extractFile(java.nio.file.Path.of("pdf/fake_memo.pdf"), null, config);
 assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.content().length() >= 10, "expected length >= 10");        // skipped: field 'metadata.output_format' not available on result type
+
     }
 
 
@@ -38,6 +40,7 @@ assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.cont
         // Tests async batch file extraction API (batch_extract_file)
         var result = Kreuzberg.extractFile(java.nio.file.Path.of("pdf/fake_memo.pdf"), null, ExtractionConfig.builder().build());
 assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.content().length() >= 10, "expected length >= 10");assertTrue(result.content().contains("May 5, 2023") || result.content().contains("Mallori"), "expected to contain at least one of the specified values");
+
     }
 
 
@@ -48,6 +51,7 @@ assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.cont
 
         var result = Kreuzberg.extractFile(java.nio.file.Path.of("pdf/fake_memo.pdf"), null, config);
 assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.content().length() >= 10, "expected length >= 10");        // skipped: field 'metadata.output_format' not available on result type
+
     }
 
 
@@ -56,6 +60,7 @@ assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.cont
         // Tests async bytes extraction API (extract_bytes)
         var result = Kreuzberg.extractFile(java.nio.file.Path.of("pdf/fake_memo.pdf"), null, ExtractionConfig.builder().build());
 assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.content().length() >= 10, "expected length >= 10");assertTrue(result.content().contains("May 5, 2023") || result.content().contains("Mallori"), "expected to contain at least one of the specified values");
+
     }
 
 
@@ -64,6 +69,7 @@ assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.cont
         // Tests async file extraction API (extract_file)
         var result = Kreuzberg.extractFile(java.nio.file.Path.of("pdf/fake_memo.pdf"), null, ExtractionConfig.builder().build());
 assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.content().length() >= 10, "expected length >= 10");assertTrue(result.content().contains("May 5, 2023") || result.content().contains("Mallori"), "expected to contain at least one of the specified values");
+
     }
 
 
@@ -74,6 +80,7 @@ assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.cont
 
         var result = Kreuzberg.extractFileSync(java.nio.file.Path.of("markdown/extraction_test.md"), null, config);
 assertTrue(result.content().length() >= 10, "expected length >= 10");        // skipped: field 'chunks' not available on result type        assertTrue(java.util.Optional.ofNullable(result.chunks()).orElse(java.util.List.of()).stream().allMatch(c -> c.content() != null && !c.content().isBlank()), "expected true");        assertTrue(java.util.Optional.ofNullable(result.chunks()).orElse(java.util.List.of()).stream().allMatch(c -> c.metadata().headingContext() != null), "expected true");        assertTrue(java.util.Optional.ofNullable(result.chunks()).orElse(java.util.List.of()).stream().findFirst().map(c -> c.metadata().headingContext() != null).orElse(false), "expected true");
+
     }
 
 
@@ -84,6 +91,7 @@ assertTrue(result.content().length() >= 10, "expected length >= 10");        // 
 
         var result = Kreuzberg.extractFileSync(java.nio.file.Path.of("docx/fake.docx"), null, config);
 assertEquals("application/vnd.openxmlformats-officedocument.wordprocessingml.document", result.mimeType().trim());        // skipped: field 'document' not available on result type        // skipped: field 'document.nodes' not available on result type
+
     }
 
 
@@ -94,6 +102,7 @@ assertEquals("application/vnd.openxmlformats-officedocument.wordprocessingml.doc
 
         var result = Kreuzberg.extractFileSync(java.nio.file.Path.of("docx/unit_test_headers.docx"), null, config);
 assertTrue(result.mimeType().contains("application/vnd.openxmlformats-officedocument.wordprocessingml.document"), "expected to contain at least one of the specified values");        // skipped: field 'elements' not available on result type
+
     }
 
 
@@ -104,6 +113,7 @@ assertTrue(result.mimeType().contains("application/vnd.openxmlformats-officedocu
 
         var result = Kreuzberg.extractFileSync(java.nio.file.Path.of("pdf/fake_memo.pdf"), null, config);
 assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.content().length() >= 10, "expected length >= 10");
+
     }
 
 
@@ -114,6 +124,7 @@ assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.cont
 
         var result = Kreuzberg.extractFileSync(java.nio.file.Path.of("pdf/fake_memo.pdf"), null, config);
 assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.content().length() >= 10, "expected length >= 10");        // skipped: field 'keywords' not available on Java ExtractionResult        // skipped: field 'keywords' not available on Java ExtractionResult
+
     }
 
 
@@ -124,6 +135,7 @@ assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.cont
 
         var result = Kreuzberg.extractFileSync(java.nio.file.Path.of("pdf/fake_memo.pdf"), null, config);
 assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.content().length() >= 10, "expected length >= 10");assertTrue(result.content().contains("PAGE"), "expected to contain at least one of the specified values");
+
     }
 
 
@@ -134,6 +146,7 @@ assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.cont
 
         var result = Kreuzberg.extractFileSync(java.nio.file.Path.of("pdf/fake_memo.pdf"), null, config);
 assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.content().length() >= 10, "expected length >= 10");        // skipped: field 'quality_score' not available on result type        // skipped: field 'quality_score' not available on result type        // skipped: field 'quality_score' not available on result type
+
     }
 
 
@@ -144,6 +157,7 @@ assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.cont
 
         var result = Kreuzberg.extractFileSync(java.nio.file.Path.of("archives/documents.zip"), null, config);
 assertTrue(result.mimeType().contains("application/zip") || result.mimeType().contains("application/x-zip-compressed"), "expected to contain at least one of the specified values");assertTrue(result.content().length() >= 10, "expected length >= 10");
+
     }
 
 
@@ -154,6 +168,7 @@ assertTrue(result.mimeType().contains("application/zip") || result.mimeType().co
 
         var result = Kreuzberg.extractFileSync(java.nio.file.Path.of("code/hello.py"), null, config);
 assertEquals("text/x-source-code", result.mimeType().trim());assertTrue(result.content().length() >= 5, "expected length >= 5");
+
     }
 
 
@@ -164,6 +179,7 @@ assertEquals("text/x-source-code", result.mimeType().trim());assertTrue(result.c
 
         var result = Kreuzberg.extractBytesSync(java.nio.file.Files.readAllBytes(java.nio.file.Path.of("pdf/fake_memo.pdf")), "application/pdf", config);
 assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.content().length() >= 10, "expected length >= 10");        // skipped: field 'metadata.output_format' not available on result type
+
     }
 
 
@@ -174,6 +190,7 @@ assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.cont
 
         var result = Kreuzberg.extractFileSync(java.nio.file.Path.of("pdf/fake_memo.pdf"), null, config);
 assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.content().length() >= 10, "expected length >= 10");        // skipped: field 'metadata.output_format' not available on result type
+
     }
 
 }

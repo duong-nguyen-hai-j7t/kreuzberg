@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace Kreuzberg\E2e;
 
 use PHPUnit\Framework\TestCase;
-use Kreuzberg\Kreuzberg;use Kreuzberg\ExtractionConfig;
+use Kreuzberg\Kreuzberg;
+use Kreuzberg\ExtractionConfig;
+
 /** E2e tests for category: contract. */
 final class ContractTest extends TestCase
 {
@@ -27,6 +29,7 @@ final class ContractTest extends TestCase
     if (str_contains($result->content, "Mallori")) { $found = true; }
     $this->assertTrue($found, 'expected to contain at least one of the specified values');
 
+
     }
 
 
@@ -39,6 +42,7 @@ final class ContractTest extends TestCase
             $this->assertEquals("application/pdf", trim($result->mimeType));
             $this->assertGreaterThanOrEqual(10, strlen($result->content));
         // skipped: field 'metadata.output_format' not available on result type
+
     }
 
 
@@ -54,6 +58,7 @@ final class ContractTest extends TestCase
     if (str_contains($result->content, "Mallori")) { $found = true; }
     $this->assertTrue($found, 'expected to contain at least one of the specified values');
 
+
     }
 
 
@@ -66,6 +71,7 @@ final class ContractTest extends TestCase
             $this->assertEquals("application/pdf", trim($result->mimeType));
             $this->assertGreaterThanOrEqual(10, strlen($result->content));
         // skipped: field 'metadata.output_format' not available on result type
+
     }
 
 
@@ -80,6 +86,7 @@ final class ContractTest extends TestCase
     if (str_contains($result->content, "May 5, 2023")) { $found = true; }
     if (str_contains($result->content, "Mallori")) { $found = true; }
     $this->assertTrue($found, 'expected to contain at least one of the specified values');
+
 
     }
 
@@ -96,6 +103,7 @@ final class ContractTest extends TestCase
     if (str_contains($result->content, "Mallori")) { $found = true; }
     $this->assertTrue($found, 'expected to contain at least one of the specified values');
 
+
     }
 
 
@@ -107,6 +115,7 @@ final class ContractTest extends TestCase
 
             $this->assertGreaterThanOrEqual(10, strlen($result->content));
         // skipped: field 'chunks' not available on result type        $this->assertTrue(array_reduce($result->chunks ?? [], fn($carry, $c) => $carry && !empty($c->content), true));        // skipped: field 'chunks_have_heading_context' not available on result type        // skipped: field 'first_chunk_starts_with_heading' not available on result type
+
     }
 
 
@@ -118,6 +127,7 @@ final class ContractTest extends TestCase
 
             $this->assertEquals("application/vnd.openxmlformats-officedocument.wordprocessingml.document", trim($result->mimeType));
         // skipped: field 'document' not available on result type        // skipped: field 'document.nodes' not available on result type
+
     }
 
 
@@ -131,6 +141,7 @@ final class ContractTest extends TestCase
     if (str_contains($result->mimeType, "application/vnd.openxmlformats-officedocument.wordprocessingml.document")) { $found = true; }
     $this->assertTrue($found, 'expected to contain at least one of the specified values');
         // skipped: field 'elements' not available on result type
+
     }
 
 
@@ -142,6 +153,7 @@ final class ContractTest extends TestCase
 
             $this->assertEquals("application/pdf", trim($result->mimeType));
             $this->assertGreaterThanOrEqual(10, strlen($result->content));
+
 
     }
 
@@ -155,6 +167,7 @@ final class ContractTest extends TestCase
             $this->assertEquals("application/pdf", trim($result->mimeType));
             $this->assertGreaterThanOrEqual(10, strlen($result->content));
         // skipped: field 'keywords' not available on PHP ExtractionResult        // skipped: field 'keywords' not available on PHP ExtractionResult
+
     }
 
 
@@ -170,6 +183,7 @@ final class ContractTest extends TestCase
     if (str_contains($result->content, "PAGE")) { $found = true; }
     $this->assertTrue($found, 'expected to contain at least one of the specified values');
 
+
     }
 
 
@@ -182,6 +196,7 @@ final class ContractTest extends TestCase
             $this->assertEquals("application/pdf", trim($result->mimeType));
             $this->assertGreaterThanOrEqual(10, strlen($result->content));
         // skipped: field 'quality_score' not available on result type        // skipped: field 'quality_score' not available on result type        // skipped: field 'quality_score' not available on result type
+
     }
 
 
@@ -197,6 +212,7 @@ final class ContractTest extends TestCase
     $this->assertTrue($found, 'expected to contain at least one of the specified values');
             $this->assertGreaterThanOrEqual(10, strlen($result->content));
 
+
     }
 
 
@@ -208,6 +224,7 @@ final class ContractTest extends TestCase
 
             $this->assertEquals("text/x-source-code", trim($result->mimeType));
             $this->assertGreaterThanOrEqual(5, strlen($result->content));
+
 
     }
 
@@ -223,6 +240,7 @@ final class ContractTest extends TestCase
             $this->assertEquals("application/pdf", trim($result->mimeType));
             $this->assertGreaterThanOrEqual(10, strlen($result->content));
         // skipped: field 'metadata.output_format' not available on result type
+
     }
 
 
@@ -235,6 +253,7 @@ final class ContractTest extends TestCase
             $this->assertEquals("application/pdf", trim($result->mimeType));
             $this->assertGreaterThanOrEqual(10, strlen($result->content));
         // skipped: field 'metadata.output_format' not available on result type
+
     }
 
 }

@@ -21,6 +21,7 @@ class EmbedAsyncPendingTest {
         // embed_texts_async: empty text list
         var result = Kreuzberg.embedTextsAsync(java.util.List.of(), EmbeddingConfig.builder().build());
         // skipped: field 'embeddings' not available on result type
+
     }
 
 
@@ -29,6 +30,7 @@ class EmbedAsyncPendingTest {
         // embed_texts_async: basic async embedding
         var result = Kreuzberg.embedTextsAsync(java.util.Arrays.asList(JsonUtil.fromJson("\"First\"", String.class), JsonUtil.fromJson("\"Second\"", String.class)), EmbeddingConfig.builder().build());
         // skipped: field 'embeddings' not available on result type
+
     }
 
 
@@ -38,6 +40,7 @@ class EmbedAsyncPendingTest {
         var config = JsonUtil.fromJson("{\"model\":{\"name\":\"balanced\",\"type\":\"preset\"}}", EmbeddingConfig.class);
 
         var result = Kreuzberg.embedTextsAsync(java.util.Arrays.asList(JsonUtil.fromJson("\"Text\"", String.class)), config);
+
 
     }
 

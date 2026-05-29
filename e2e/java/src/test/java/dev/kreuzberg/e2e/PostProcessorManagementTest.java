@@ -20,6 +20,7 @@ class PostProcessorManagementTest {
         // Clear all post-processors and verify list is empty
         Kreuzberg.clearPostProcessors();
 
+
     }
 
 
@@ -27,6 +28,7 @@ class PostProcessorManagementTest {
     void testPostProcessorsList() throws Exception {
         // List all registered post-processors
         var result = Kreuzberg.listPostProcessors();
+
 
     }
 

@@ -23,6 +23,7 @@ class EmbedExtraTest {
 
         var result = Kreuzberg.embedTexts(java.util.Arrays.asList(JsonUtil.fromJson("\"Hello\"", String.class), JsonUtil.fromJson("\"World\"", String.class)), config);
 
+
     }
 
 }

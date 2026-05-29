@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace Kreuzberg\E2e;
 
 use PHPUnit\Framework\TestCase;
-use Kreuzberg\Kreuzberg;use Kreuzberg\ExtractionConfig;
+use Kreuzberg\Kreuzberg;
+use Kreuzberg\ExtractionConfig;
+
 /** E2e tests for category: plugin_api. */
 final class PluginApiTest extends TestCase
 {
@@ -27,6 +29,8 @@ final class PluginApiTest extends TestCase
         $result = Kreuzberg::registerDocumentExtractor($stub);
 
 
+        Kreuzberg::unregisterDocumentExtractor("test-extractor");
+
     }
 
 
@@ -41,6 +45,8 @@ final class PluginApiTest extends TestCase
         $this->expectNotToPerformAssertions();
         $result = Kreuzberg::registerEmbeddingBackend($stub);
 
+
+        Kreuzberg::unregisterEmbeddingBackend("test-embedding-backend");
 
     }
 
@@ -58,6 +64,8 @@ final class PluginApiTest extends TestCase
         $result = Kreuzberg::registerOcrBackend($stub);
 
 
+        Kreuzberg::unregisterOcrBackend("test-backend");
+
     }
 
 
@@ -73,6 +81,8 @@ final class PluginApiTest extends TestCase
         $result = Kreuzberg::registerPostProcessor($stub);
 
 
+        Kreuzberg::unregisterPostProcessor("test-processor");
+
     }
 
 
@@ -87,6 +97,8 @@ final class PluginApiTest extends TestCase
         $result = Kreuzberg::registerRenderer($stub);
 
 
+        Kreuzberg::unregisterRenderer("test-renderer");
+
     }
 
 
@@ -100,6 +112,8 @@ final class PluginApiTest extends TestCase
         $this->expectNotToPerformAssertions();
         $result = Kreuzberg::registerValidator($stub);
 
+
+        Kreuzberg::unregisterValidator("test-validator");
 
     }
 

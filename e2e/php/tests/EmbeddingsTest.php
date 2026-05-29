@@ -10,7 +10,10 @@ declare(strict_types=1);
 namespace Kreuzberg\E2e;
 
 use PHPUnit\Framework\TestCase;
-use Kreuzberg\Kreuzberg;use Kreuzberg\EmbeddingConfig;use Kreuzberg\ExtractionConfig;
+use Kreuzberg\Kreuzberg;
+use Kreuzberg\EmbeddingConfig;
+use Kreuzberg\ExtractionConfig;
+
 /** E2e tests for category: embeddings. */
 final class EmbeddingsTest extends TestCase
 {
@@ -22,6 +25,7 @@ final class EmbeddingsTest extends TestCase
         $result = Kreuzberg::embedTexts(["Hello world", "Test"], $config);
 
         $this->assertGreaterThanOrEqual(2, count($result));
+
     }
 
 
@@ -52,6 +56,7 @@ final class EmbeddingsTest extends TestCase
 
             $this->assertEmpty($result);
 
+
     }
 
 
@@ -61,6 +66,7 @@ final class EmbeddingsTest extends TestCase
         $result = Kreuzberg::listEmbeddingPresets();
 
             $this->assertNotEmpty($result);
+
 
     }
 

@@ -20,6 +20,7 @@ class RendererManagementTest {
         // Clear all renderers and verify list is empty
         Kreuzberg.clearRenderers();
 
+
     }
 
 
@@ -27,6 +28,7 @@ class RendererManagementTest {
     void testRenderersList() throws Exception {
         // List all registered renderers
         var result = Kreuzberg.listRenderers();
+
 
     }
 

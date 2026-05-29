@@ -20,6 +20,7 @@ class DocumentExtractorManagementTest {
         // Clear all document extractors and verify list is empty
         Kreuzberg.clearDocumentExtractors();
 
+
     }
 
 
@@ -27,6 +28,7 @@ class DocumentExtractorManagementTest {
     void testExtractorsList() throws Exception {
         // List all registered document extractors
         var result = Kreuzberg.listDocumentExtractors();
+
 
     }
 

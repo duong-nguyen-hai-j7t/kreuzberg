@@ -12241,10 +12241,7 @@ impl kreuzberg::OcrBackend for PhpOcrBackendBridge {
             )
         };
         match result {
-            Ok(val) => {
-                let json_str = val.string().unwrap_or_default();
-                serde_json::from_str(&json_str).unwrap_or_default()
-            }
+            Ok(val) => val.long().unwrap_or_default() != 0,
             Err(_) => Default::default(),
         }
     }
@@ -12707,10 +12704,7 @@ impl kreuzberg::EmbeddingBackend for PhpEmbeddingBackendBridge {
         // SAFETY: PHP objects are single-threaded; method calls are safe within a request.
         let result = unsafe { (*self.inner).try_call_method("dimensions", vec![]) };
         match result {
-            Ok(val) => {
-                let json_str = val.string().unwrap_or_default();
-                serde_json::from_str(&json_str).unwrap_or_default()
-            }
+            Ok(val) => val.long().unwrap_or_default() as usize,
             Err(_) => Default::default(),
         }
     }

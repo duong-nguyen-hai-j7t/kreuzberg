@@ -20,6 +20,7 @@ class RegistryTest {
         // List document extractors
         var result = Kreuzberg.listDocumentExtractors();
 
+
     }
 
 
@@ -27,6 +28,7 @@ class RegistryTest {
     void testListEmbeddingBackends() throws Exception {
         // List embedding backends
         var result = Kreuzberg.listEmbeddingBackends();
+
 
     }
 
@@ -36,6 +38,7 @@ class RegistryTest {
         // List OCR backends
         var result = Kreuzberg.listOcrBackends();
 
+
     }
 
 
@@ -43,6 +46,7 @@ class RegistryTest {
     void testListPostProcessors() throws Exception {
         // List post-processors
         var result = Kreuzberg.listPostProcessors();
+
 
     }
 
@@ -52,6 +56,7 @@ class RegistryTest {
         // List renderers
         var result = Kreuzberg.listRenderers();
 
+
     }
 
 
@@ -59,6 +64,7 @@ class RegistryTest {
     void testListValidators() throws Exception {
         // List validators
         var result = Kreuzberg.listValidators();
+
 
     }
 

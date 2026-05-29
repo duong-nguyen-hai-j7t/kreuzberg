@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace Kreuzberg\E2e;
 
 use PHPUnit\Framework\TestCase;
-use Kreuzberg\Kreuzberg;use Kreuzberg\ExtractionConfig;
+use Kreuzberg\Kreuzberg;
+use Kreuzberg\ExtractionConfig;
+
 /** E2e tests for category: async. */
 final class AsyncTest extends TestCase
 {
@@ -25,6 +27,7 @@ final class AsyncTest extends TestCase
             $this->assertEquals("application/pdf", trim($result->mimeType));
             $this->assertGreaterThanOrEqual(50, strlen($result->content));
 
+
     }
 
 
@@ -34,7 +37,8 @@ final class AsyncTest extends TestCase
         $this->expectException(\Exception::class);        $contentBytes = file_get_contents("text/plain.txt");
         if ($contentBytes === false) { $this->fail("failed to read fixture: text/plain.txt"); }
         $config = \Kreuzberg\ExtractionConfig::from_json('{}');
-        Kreuzberg::extractBytes($contentBytes, "", $config);    }
+        Kreuzberg::extractBytes($contentBytes, "", $config);
+    }
 
 
     /** extract_bytes unsupported MIME async */
@@ -43,6 +47,7 @@ final class AsyncTest extends TestCase
         $this->expectException(\Exception::class);        $contentBytes = file_get_contents("text/plain.txt");
         if ($contentBytes === false) { $this->fail("failed to read fixture: text/plain.txt"); }
         $config = \Kreuzberg\ExtractionConfig::from_json('{}');
-        Kreuzberg::extractBytes($contentBytes, "application/x-nonexistent", $config);    }
+        Kreuzberg::extractBytes($contentBytes, "application/x-nonexistent", $config);
+    }
 
 }

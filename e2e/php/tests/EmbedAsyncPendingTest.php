@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace Kreuzberg\E2e;
 
 use PHPUnit\Framework\TestCase;
-use Kreuzberg\Kreuzberg;use Kreuzberg\ExtractionConfig;
+use Kreuzberg\Kreuzberg;
+use Kreuzberg\ExtractionConfig;
+
 /** E2e tests for category: embed_async_pending. */
 final class EmbedAsyncPendingTest extends TestCase
 {
@@ -21,6 +23,7 @@ final class EmbedAsyncPendingTest extends TestCase
         $result = Kreuzberg::embedTextsAsync([], \Kreuzberg\EmbeddingConfig::from_json('{}'));
 
         $this->assertCount(0, $result);
+
     }
 
 
@@ -30,6 +33,7 @@ final class EmbedAsyncPendingTest extends TestCase
         $result = Kreuzberg::embedTextsAsync(["First", "Second"], \Kreuzberg\EmbeddingConfig::from_json('{}'));
 
         $this->assertGreaterThanOrEqual(2, count($result));
+
     }
 
 

@@ -22,6 +22,7 @@ class SmokeTest {
 
         var result = Kreuzberg.extractBytes(java.nio.file.Files.readAllBytes(java.nio.file.Path.of("images/test_hello_world.png")), "image/png", config);
 assertEquals("image/png", result.mimeType().trim());assertTrue(result.content().length() >= 1, "expected length >= 1");assertTrue(result.content().contains("Hello") || result.content().contains("World") || result.content().contains("hello") || result.content().contains("world"), "expected to contain at least one of the specified values");
+
     }
 
 
@@ -32,6 +33,7 @@ assertEquals("image/png", result.mimeType().trim());assertTrue(result.content().
 
         var result = Kreuzberg.extractFile(java.nio.file.Path.of("docx/fake.docx"), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", config);
 assertEquals("application/vnd.openxmlformats-officedocument.wordprocessingml.document", result.mimeType().trim());assertTrue(result.content().length() >= 20, "expected length >= 20");assertTrue(result.content().contains("Lorem") || result.content().contains("ipsum") || result.content().contains("document") || result.content().contains("text"), "expected to contain at least one of the specified values");
+
     }
 
 
@@ -42,6 +44,7 @@ assertEquals("application/vnd.openxmlformats-officedocument.wordprocessingml.doc
 
         var result = Kreuzberg.extractFile(java.nio.file.Path.of("html/simple_table.html"), "text/html", config);
 assertEquals("text/html", result.mimeType().trim());assertTrue(result.content().length() >= 10, "expected length >= 10");assertTrue(result.content().contains("Sample Data Table") || result.content().contains("Laptop") || result.content().contains("Electronics") || result.content().contains("Product"), "expected to contain at least one of the specified values");
+
     }
 
 
@@ -52,6 +55,7 @@ assertEquals("text/html", result.mimeType().trim());assertTrue(result.content().
 
         var result = Kreuzberg.extractFile(java.nio.file.Path.of("images/sample.png"), null, config);
 assertEquals("image/png", result.mimeType().trim());
+
     }
 
 
@@ -62,6 +66,7 @@ assertEquals("image/png", result.mimeType().trim());
 
         var result = Kreuzberg.extractFile(java.nio.file.Path.of("json/simple.json"), "application/json", config);
 assertEquals("application/json", result.mimeType().trim());assertTrue(result.content().length() >= 5, "expected length >= 5");
+
     }
 
 
@@ -72,6 +77,7 @@ assertEquals("application/json", result.mimeType().trim());assertTrue(result.con
 
         var result = Kreuzberg.extractFile(java.nio.file.Path.of("pdf/fake_memo.pdf"), "application/pdf", config);
 assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.content().length() >= 50, "expected length >= 50");assertTrue(result.content().contains("May 5, 2023") || result.content().contains("To Whom it May Concern"), "expected to contain at least one of the specified values");
+
     }
 
 
@@ -82,6 +88,7 @@ assertEquals("application/pdf", result.mimeType().trim());assertTrue(result.cont
 
         var result = Kreuzberg.extractFile(java.nio.file.Path.of("text/report.txt"), "text/plain", config);
 assertEquals("text/plain", result.mimeType().trim());assertTrue(result.content().length() >= 5, "expected length >= 5");
+
     }
 
 
@@ -92,6 +99,7 @@ assertEquals("text/plain", result.mimeType().trim());assertTrue(result.content()
 
         var result = Kreuzberg.extractFile(java.nio.file.Path.of("xlsx/stanley_cups.xlsx"), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", config);
 assertEquals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.mimeType().trim());assertTrue(result.content().length() >= 100, "expected length >= 100");assertTrue(result.content().contains("Team"), "expected to contain: " + "Team");assertTrue(result.content().contains("Location"), "expected to contain: " + "Location");assertTrue(result.content().contains("Stanley Cups"), "expected to contain: " + "Stanley Cups");assertTrue(result.content().contains("Blues"), "expected to contain: " + "Blues");assertTrue(result.content().contains("Flyers"), "expected to contain: " + "Flyers");assertTrue(result.content().contains("Maple Leafs"), "expected to contain: " + "Maple Leafs");assertTrue(result.content().contains("STL"), "expected to contain: " + "STL");assertTrue(result.content().contains("PHI"), "expected to contain: " + "PHI");assertTrue(result.content().contains("TOR"), "expected to contain: " + "TOR");        // skipped: field 'tables' not available on result type        // skipped: field 'metadata.format.excel.sheet_count' not available on result type        // skipped: field 'metadata.format.excel.sheet_names' not available on result type
+
     }
 
 }

@@ -8,10 +8,10 @@ package kreuzberg
 
 /*
 #cgo CFLAGS: -I${SRCDIR}/include
-#cgo darwin,arm64 LDFLAGS: -L${SRCDIR}/.lib/macos-arm64 -lkreuzberg_ffi
-#cgo darwin,amd64 LDFLAGS: -L${SRCDIR}/.lib/macos-amd64 -lkreuzberg_ffi
-#cgo linux,amd64 LDFLAGS: -L${SRCDIR}/.lib/linux-amd64 -lkreuzberg_ffi
-#cgo linux,arm64 LDFLAGS: -L${SRCDIR}/.lib/linux-arm64 -lkreuzberg_ffi
+#cgo darwin,arm64 LDFLAGS: -L${SRCDIR}/.lib/macos-arm64 -Wl,-rpath,${SRCDIR}/.lib/macos-arm64 -lkreuzberg_ffi
+#cgo darwin,amd64 LDFLAGS: -L${SRCDIR}/.lib/macos-amd64 -Wl,-rpath,${SRCDIR}/.lib/macos-amd64 -lkreuzberg_ffi
+#cgo linux,amd64 LDFLAGS: -L${SRCDIR}/.lib/linux-amd64 -Wl,-rpath,${SRCDIR}/.lib/linux-amd64 -lkreuzberg_ffi
+#cgo linux,arm64 LDFLAGS: -L${SRCDIR}/.lib/linux-arm64 -Wl,-rpath,${SRCDIR}/.lib/linux-arm64 -lkreuzberg_ffi
 #cgo windows,amd64 LDFLAGS: -L${SRCDIR}/.lib/windows-amd64 -lkreuzberg_ffi
 #include "kreuzberg.h"
 */

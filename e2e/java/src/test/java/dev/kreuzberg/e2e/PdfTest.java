@@ -22,6 +22,7 @@ class PdfTest {
         assertNotNull(result, "expected non-null byte[] response");
         // skipped: assertion type 'min_length' not supported on byte[] result
 
+
     }
 
 
@@ -37,6 +38,7 @@ class PdfTest {
         assertThrows(Exception.class, () -> {
             Kreuzberg.renderPdfPageToPng(java.nio.file.Files.readAllBytes(java.nio.file.Path.of("pdf/fake_memo.pdf")), 999, null, null);
         });
+
     }
 
 }

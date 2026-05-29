@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace Kreuzberg\E2e;
 
 use PHPUnit\Framework\TestCase;
-use Kreuzberg\Kreuzberg;use Kreuzberg\ExtractionConfig;
+use Kreuzberg\Kreuzberg;
+use Kreuzberg\ExtractionConfig;
+
 /** E2e tests for category: detection. */
 final class DetectionTest extends TestCase
 {
@@ -54,6 +56,7 @@ final class DetectionTest extends TestCase
     /** get_extensions unknown MIME */
     public function test_get_extensions_unknown_mime(): void
     {
-        $this->expectException(\Exception::class);        Kreuzberg::getExtensionsForMime("application/x-totally-unknown");    }
+        $this->expectException(\Exception::class);        Kreuzberg::getExtensionsForMime("application/x-totally-unknown");
+    }
 
 }

@@ -20,6 +20,7 @@ class DetectionTest {
         // Detect HTML MIME from bytes
         var result = Kreuzberg.detectMimeTypeFromBytes(java.nio.file.Files.readAllBytes(java.nio.file.Path.of("html/html.html")));
 
+
     }
 
 
@@ -28,6 +29,7 @@ class DetectionTest {
         // Detect PDF MIME type from bytes
         var result = Kreuzberg.detectMimeTypeFromBytes(java.nio.file.Files.readAllBytes(java.nio.file.Path.of("pdf/fake_memo.pdf")));
 
+
     }
 
 
@@ -35,6 +37,7 @@ class DetectionTest {
     void testDetectMimeBytesPng() throws Exception {
         // Detect PNG MIME type from bytes
         var result = Kreuzberg.detectMimeTypeFromBytes(java.nio.file.Files.readAllBytes(java.nio.file.Path.of("images/test_hello_world.png")));
+
 
     }
 
@@ -51,6 +54,7 @@ class DetectionTest {
         assertThrows(Exception.class, () -> {
             Kreuzberg.getExtensionsForMime("application/x-totally-unknown");
         });
+
     }
 
 }

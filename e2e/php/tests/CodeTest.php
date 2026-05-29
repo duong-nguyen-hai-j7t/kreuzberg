@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace Kreuzberg\E2e;
 
 use PHPUnit\Framework\TestCase;
-use Kreuzberg\Kreuzberg;use Kreuzberg\ExtractionConfig;
+use Kreuzberg\Kreuzberg;
+use Kreuzberg\ExtractionConfig;
+
 /** E2e tests for category: code. */
 final class CodeTest extends TestCase
 {
@@ -24,6 +26,7 @@ final class CodeTest extends TestCase
             $this->assertGreaterThanOrEqual(10, strlen($result->content));
             $this->assertStringContainsString("build", $result->content);
     $this->assertStringContainsString("clean", $result->content);
+
 
     }
 
