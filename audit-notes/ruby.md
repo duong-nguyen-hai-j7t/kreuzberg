@@ -52,6 +52,47 @@ A Rails server with worker threads, or any multi-threaded Ruby app calling `extr
 
 Wrap async work with `magnus::Ruby::release_gvl()` or use Magnus's async bridge. The Alef generator needs to emit GVL-aware code for Ruby bindings.
 
+**Detailed Fix Specification:**
+
+For all async functions (extract_bytes_async, extract_file_async, batch_extract_files, batch_extract_files_async, batch_extract_bytes, batch_extract_bytes_async), change:
+
+```rust
+// BEFORE (GVL is held)
+let rt = tokio::runtime::Runtime::new().map_err(|e| { ... })?;
+let result = rt
+    .block_on(async { kreuzberg::extract_bytes(&content, &mime_type, &config_core).await })
+    .map_err(|e| { ... })?;
+```
+
+To:
+
+```rust
+// AFTER (GVL is released during I/O-bound work)
+let ruby = unsafe { Ruby::get_unchecked() };
+let (rt, result) = ruby.release_gvl(|| {
+    let rt = tokio::runtime::Runtime::new().map_err(|e| { ... })?;
+    let result = rt
+        .block_on(async { kreuzberg::extract_bytes(&content, &mime_type, &config_core).await })
+        .map_err(|e| { ... })?;
+    Ok((rt, result))
+})?;
+Ok(result.into())
+```
+
+Or, if Magnus provides an async trait wrapper:
+
+```rust
+// Alternative: use async trait methods
+#[async_napi]
+fn extract_bytes_async(...) -> Result<ExtractionResult, Error> { ... }
+```
+
+The fix requires:
+1. Patch Alef's Ruby codegen backend to wrap async function bodies with `release_gvl()`
+2. Regenerate ruby binding source with `task alef:generate`
+3. Recompile and re-test with e2e suite
+4. Add multi-threaded stress test to CI to prevent regression
+
 ---
 
 ## Minor Findings
