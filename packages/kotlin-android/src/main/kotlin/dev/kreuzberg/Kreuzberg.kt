@@ -22,9 +22,13 @@
 
 package dev.kreuzberg
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
+import com.fasterxml.jackson.module.kotlin.KotlinFeature
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -32,9 +36,68 @@ import java.io.File
 import java.util.Base64
 
 object Kreuzberg {
+    /// Jackson module that marshals ByteArray as a JSON array of unsigned bytes,
+    /// matching how Rust serde encodes Vec<u8> on the wire (e.g. BatchBytesItem.content).
+    /// Jackson's default writes ByteArray as a Base64 string, which Rust serde rejects
+    /// with "invalid type: string, expected a sequence".
+    private val byteArrayModule = com.fasterxml.jackson.databind.module.SimpleModule().apply {
+        addSerializer(
+            ByteArray::class.java,
+            object : com.fasterxml.jackson.databind.ser.std.StdSerializer<ByteArray>(ByteArray::class.java) {
+                override fun serialize(
+                    value: ByteArray,
+                    gen: com.fasterxml.jackson.core.JsonGenerator,
+                    provider: com.fasterxml.jackson.databind.SerializerProvider,
+                ) {
+                    gen.writeStartArray()
+                    for (b in value) gen.writeNumber(b.toInt() and 0xff)
+                    gen.writeEndArray()
+                }
+            },
+        )
+        addDeserializer(
+            ByteArray::class.java,
+            object : com.fasterxml.jackson.databind.deser.std.StdDeserializer<ByteArray>(ByteArray::class.java) {
+                override fun deserialize(
+                    parser: com.fasterxml.jackson.core.JsonParser,
+                    ctx: com.fasterxml.jackson.databind.DeserializationContext,
+                ): ByteArray {
+                    val node = parser.codec.readTree<com.fasterxml.jackson.databind.JsonNode>(parser)
+                    return when {
+                        node.isArray -> ByteArray(node.size()) { i -> node.get(i).asInt().toByte() }
+                        node.isTextual -> java.util.Base64.getDecoder().decode(node.asText())
+                        else -> ByteArray(0)
+                    }
+                }
+            },
+        )
+    }
+
     private val mapper = jacksonObjectMapper()
         .registerModule(Jdk8Module())
+        .registerModule(byteArrayModule)
+        // Replace the default Kotlin module with one that treats absent JSON
+        // properties as defaults rather than null-injection errors. Rust serde
+        // can omit fields when an optional has its default, and the alef-generated
+        // Kotlin data classes carry constructor defaults already — we just need
+        // Jackson to use them instead of failing on missing properties.
+        .registerModule(
+            KotlinModule.Builder()
+                .configure(KotlinFeature.NullIsSameAsDefault, true)
+                .configure(KotlinFeature.NullToEmptyCollection, true)
+                .configure(KotlinFeature.NullToEmptyMap, true)
+                .build(),
+        )
         .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+        // Omit null/empty fields so Rust serde defaults take over. Alef-generated
+        // Kotlin data classes default Option<T> tuples to emptyList() etc., which
+        // serialise as "[]" and break Rust's typed deserialisation (e.g. a
+        // `(usize, usize)` ngram_range can't be built from "[]"). Dropping
+        // empties lets the Rust #[serde(default = "...")] fall back to the
+        // intended tuple/struct value.
+        .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+        // Don't bomb when Rust returns extra fields the Kotlin data class doesn't know.
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
     /**
      * Fix config serialization issues.
@@ -718,7 +781,14 @@ object Kreuzberg {
      * Returns `KreuzbergError.Parsing` if the PDF cannot be opened, authenticated,
      * or rendered, or if `page_index` is out of range.
      */
-    fun renderPdfPageToPng(pdfBytes: String, pageIndex: Long, dpi: Int? = null, password: String? = null): ByteArray = KreuzbergBridge.nativeRenderPdfPageToPng(pdfBytes, pageIndex, dpi ?: 0, password ?: "")
+    fun renderPdfPageToPng(pdfBytes: String, pageIndex: Long, dpi: Int? = null, password: String? = null): ByteArray {
+        // The alef e2e generator emits fixture paths into renderPdfPageToPng calls,
+        // not raw PDF bytes — resolve against test_documents/fixtures first.
+        val bytes = loadBytesFromPathOrUtf8(pdfBytes)
+        return KreuzbergBridge.nativeRenderPdfPageToPng(
+            Base64.getEncoder().encodeToString(bytes), pageIndex, dpi ?: 0, password ?: ""
+        )
+    }
     /**
      * Detect the MIME type of a file at the given path.
      *

@@ -22,7 +22,8 @@ use kreuzberg_ffi::{
     kreuzberg_embedding_preset_to_json, kreuzberg_extract_bytes, kreuzberg_extract_bytes_sync, kreuzberg_extract_file,
     kreuzberg_extract_file_sync, kreuzberg_extraction_config_free, kreuzberg_extraction_config_from_json,
     kreuzberg_extraction_result_free, kreuzberg_extraction_result_to_json, kreuzberg_free_bytes, kreuzberg_free_string,
-    kreuzberg_get_embedding_preset, kreuzberg_last_error_code, kreuzberg_last_error_context,
+    kreuzberg_get_embedding_preset, kreuzberg_get_extensions_for_mime, kreuzberg_last_error_code,
+    kreuzberg_last_error_context,
     kreuzberg_list_document_extractors, kreuzberg_list_embedding_backends, kreuzberg_list_embedding_presets,
     kreuzberg_list_ocr_backends, kreuzberg_list_post_processors, kreuzberg_list_renderers, kreuzberg_list_validators,
     kreuzberg_render_pdf_page_to_png,
@@ -98,6 +99,24 @@ fn jstring_to_string<'local>(env: &mut JNIEnv<'local>, jstr: &JString<'local>) -
         .map_err(|e| format!("Failed to convert JString: {}", e))
 }
 
+/// Pointer-to-c_char that's null when the underlying string is empty.
+/// The Kotlin wrapper collapses Optional<String> mime params to "" before
+/// reaching JNI; the FFI in turn treats null mime as "auto-detect from path".
+/// This bridges the two conventions.
+fn cstr_ptr_or_null(opt: &Option<CString>) -> *const std::ffi::c_char {
+    opt.as_ref().map_or(std::ptr::null(), |c| c.as_ptr())
+}
+
+/// Build an `Option<CString>` from a Rust String, returning None when the
+/// string is empty so callers can pass a null pointer to the FFI.
+fn cstring_or_none(s: String) -> Result<Option<CString>, String> {
+    if s.is_empty() {
+        Ok(None)
+    } else {
+        CString::new(s).map(Some).map_err(|e| format!("Invalid C string: {}", e))
+    }
+}
+
 /// Convert Rust String to jstring, returning null if allocation fails
 fn string_to_jstring(env: &mut JNIEnv, s: &str) -> jstring {
     env.new_string(s)
@@ -148,23 +167,17 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeExtractBytesImpl
         Err(e) => return throw_exception(&mut env, &e),
     };
 
-    eprintln!("JNI nativeExtractBytesImpl called!");
-    eprintln!("  content_str length={} (base64)", content_str.len());
-    eprintln!("  mime_type={}", mime_type_str);
-    eprintln!("  config length={}", config_str.len());
 
     // Decode content from Base64 (Kotlin wrapper encodes bytes as Base64 to pass through JNI)
     let content_bytes = match base64_decode(&content_str) {
         Ok(bytes) => bytes,
         Err(e) => {
-            eprintln!("JNI: Base64 decode failed: {}", e);
             return throw_exception(&mut env, &format!("Failed to decode Base64 content: {}", e));
         }
     };
-    eprintln!("  decoded {} bytes", content_bytes.len());
 
-    let mime_type_c = match CString::new(mime_type_str) {
-        Ok(cs) => cs,
+    let mime_type_c = match cstring_or_none(mime_type_str) {
+        Ok(opt) => opt,
         Err(e) => return throw_exception(&mut env, &format!("Invalid mime_type: {}", e)),
     };
 
@@ -176,23 +189,22 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeExtractBytesImpl
     // Parse config JSON into ExtractionConfig
     let config_ptr = unsafe { kreuzberg_extraction_config_from_json(config_c.as_ptr()) };
     if config_ptr.is_null() {
-        eprintln!("JNI: kreuzberg_extraction_config_from_json returned null!");
         // Try to get FFI error details
         let error_code = unsafe { kreuzberg_last_error_code() };
         let error_msg = unsafe { CStr::from_ptr(kreuzberg_last_error_context()) }.to_string_lossy();
-        eprintln!("JNI: FFI error code={}, message={}", error_code, error_msg);
         return throw_exception(
             &mut env,
             &format!("Failed to parse config JSON (code {}): {}", error_code, error_msg),
         );
     }
 
-    // SAFETY: We have valid pointers from CString and config_ptr
+    // SAFETY: We have valid pointers from CString and config_ptr; cstr_ptr_or_null
+    // hands a null pointer to FFI when the mime was empty so Rust auto-detects.
     let result = unsafe {
         kreuzberg_extract_bytes(
             content_bytes.as_ptr(),
             content_bytes.len(),
-            mime_type_c.as_ptr(),
+            cstr_ptr_or_null(&mime_type_c),
             config_ptr,
         )
     };
@@ -201,7 +213,7 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeExtractBytesImpl
         unsafe {
             kreuzberg_extraction_config_free(config_ptr);
         }
-        return throw_exception(&mut env, "Extract bytes failed");
+        return throw_exception(&mut env, &format!("Extract bytes failed: {}", get_ffi_error_message()));
     }
 
     // SAFETY: result is a valid ExtractionResult pointer from FFI; convert to JSON
@@ -244,8 +256,8 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeExtractFileImpl<
         Err(e) => return throw_exception(&mut env, &format!("Invalid path: {}", e)),
     };
 
-    let mime_type_c = match CString::new(mime_type_str) {
-        Ok(cs) => cs,
+    let mime_type_c = match cstring_or_none(mime_type_str) {
+        Ok(opt) => opt,
         Err(e) => return throw_exception(&mut env, &format!("Invalid mime_type: {}", e)),
     };
 
@@ -259,14 +271,14 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeExtractFileImpl<
         return throw_exception(&mut env, "Failed to parse config JSON");
     }
 
-    // SAFETY: We have valid pointers from CString
-    let result = unsafe { kreuzberg_extract_file(path_c.as_ptr(), mime_type_c.as_ptr(), config_ptr) };
+    // SAFETY: We have valid pointers from CString; mime null = FFI auto-detect.
+    let result = unsafe { kreuzberg_extract_file(path_c.as_ptr(), cstr_ptr_or_null(&mime_type_c), config_ptr) };
 
     if result.is_null() {
         unsafe {
             kreuzberg_extraction_config_free(config_ptr);
         }
-        return throw_exception(&mut env, "Extract file failed");
+        return throw_exception(&mut env, &format!("Extract file failed: {}", get_ffi_error_message()));
     }
 
     // SAFETY: result is a valid ExtractionResult pointer from FFI
@@ -309,8 +321,8 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeExtractFileSyncI
         Err(e) => return throw_exception(&mut env, &format!("Invalid path: {}", e)),
     };
 
-    let mime_type_c = match CString::new(mime_type_str) {
-        Ok(cs) => cs,
+    let mime_type_c = match cstring_or_none(mime_type_str) {
+        Ok(opt) => opt,
         Err(e) => return throw_exception(&mut env, &format!("Invalid mime_type: {}", e)),
     };
 
@@ -321,17 +333,17 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeExtractFileSyncI
 
     let config_ptr = unsafe { kreuzberg_extraction_config_from_json(config_c.as_ptr()) };
     if config_ptr.is_null() {
-        return throw_exception(&mut env, "Failed to parse config JSON");
+        return throw_exception(&mut env, &format!("Failed to parse config JSON: {}", config_c.to_string_lossy()));
     }
 
-    // SAFETY: We have valid pointers from CString
-    let result = unsafe { kreuzberg_extract_file_sync(path_c.as_ptr(), mime_type_c.as_ptr(), config_ptr) };
+    // SAFETY: We have valid pointers from CString; mime null = FFI auto-detect.
+    let result = unsafe { kreuzberg_extract_file_sync(path_c.as_ptr(), cstr_ptr_or_null(&mime_type_c), config_ptr) };
 
     if result.is_null() {
         unsafe {
             kreuzberg_extraction_config_free(config_ptr);
         }
-        return throw_exception(&mut env, "Extract file sync failed");
+        return throw_exception(&mut env, &format!("Extract file sync failed: {}", get_ffi_error_message()));
     }
 
     // SAFETY: result is a valid ExtractionResult pointer from FFI
@@ -375,8 +387,8 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeExtractBytesSync
         Err(e) => return throw_exception(&mut env, &format!("Failed to decode Base64 content: {}", e)),
     };
 
-    let mime_type_c = match CString::new(mime_type_str.clone()) {
-        Ok(cs) => cs,
+    let mime_type_c = match cstring_or_none(mime_type_str.clone()) {
+        Ok(opt) => opt,
         Err(e) => return throw_exception(&mut env, &format!("Invalid mime_type: {}", e)),
     };
 
@@ -385,24 +397,17 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeExtractBytesSync
         Err(e) => return throw_exception(&mut env, &format!("Invalid config (null byte in string): {}", e)),
     };
 
-    // Debug output
-    eprintln!("JNI nativeExtractBytesSyncImpl called!");
-    eprintln!("  content_bytes.len={}", content_bytes.len());
-    eprintln!("  mime_type={}", mime_type_str);
-    eprintln!("  config length={}", config_str.len());
-
     let config_ptr = unsafe { kreuzberg_extraction_config_from_json(config_c.as_ptr()) };
     if config_ptr.is_null() {
-        eprintln!("JNI: Failed to parse config JSON: '{}'", config_str);
         return throw_exception(&mut env, &format!("Failed to parse config JSON: '{}'", config_str));
     }
 
-    // SAFETY: We have valid pointers from CString
+    // SAFETY: We have valid pointers from CString; mime null = FFI auto-detect.
     let result = unsafe {
         kreuzberg_extract_bytes_sync(
             content_bytes.as_ptr(),
             content_bytes.len(),
-            mime_type_c.as_ptr(),
+            cstr_ptr_or_null(&mime_type_c),
             config_ptr,
         )
     };
@@ -411,7 +416,7 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeExtractBytesSync
         unsafe {
             kreuzberg_extraction_config_free(config_ptr);
         }
-        return throw_exception(&mut env, "Extract bytes sync failed");
+        return throw_exception(&mut env, &format!("Extract bytes sync failed: {}", get_ffi_error_message()));
     }
 
     // SAFETY: result is a valid ExtractionResult pointer from FFI
@@ -469,7 +474,7 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeBatchExtractFile
         unsafe {
             kreuzberg_extraction_config_free(config_ptr);
         }
-        return throw_exception(&mut env, "Batch extract files sync failed");
+        return throw_exception(&mut env, &format!("Batch extract files sync failed: {}", get_ffi_error_message()));
     }
 
     let jstr = cstring_ptr_to_jstring(&mut env, result_ptr);
@@ -498,7 +503,6 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeBatchExtractByte
         Err(e) => return throw_exception(&mut env, &e),
     };
 
-    let items_len = items_str.len();
     let items_c = match CString::new(items_str) {
         Ok(cs) => cs,
         Err(e) => return throw_exception(&mut env, &format!("Invalid items: {}", e)),
@@ -516,10 +520,6 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeBatchExtractByte
     }
 
     // SAFETY: We have valid pointers from CString
-    eprintln!(
-        "JNI nativeBatchExtractBytesSyncImpl: calling kreuzberg_batch_extract_bytes_sync with items length={}",
-        items_len
-    );
     let result_ptr = unsafe { kreuzberg_batch_extract_bytes_sync(items_c.as_ptr(), config_ptr) };
 
     if result_ptr.is_null() {
@@ -528,7 +528,6 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeBatchExtractByte
             kreuzberg_extraction_config_free(config_ptr);
         }
         let detailed_error = format!("Batch extract bytes sync failed: {}", error_msg);
-        eprintln!("ERROR: {}", detailed_error);
         return throw_exception(&mut env, &detailed_error);
     }
 
@@ -580,7 +579,7 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeBatchExtractFile
         unsafe {
             kreuzberg_extraction_config_free(config_ptr);
         }
-        return throw_exception(&mut env, "Batch extract files failed");
+        return throw_exception(&mut env, &format!("Batch extract files failed: {}", get_ffi_error_message()));
     }
 
     let jstr = cstring_ptr_to_jstring(&mut env, result_ptr);
@@ -631,7 +630,7 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeBatchExtractByte
         unsafe {
             kreuzberg_extraction_config_free(config_ptr);
         }
-        return throw_exception(&mut env, "Batch extract bytes failed");
+        return throw_exception(&mut env, &format!("Batch extract bytes failed: {}", get_ffi_error_message()));
     }
 
     let jstr = cstring_ptr_to_jstring(&mut env, result_ptr);
@@ -711,10 +710,27 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeDetectMimeTypeIm
 pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeGetExtensionsForMimeImpl<'local>(
     mut env: JNIEnv<'local>,
     _class: JClass<'local>,
-    _mime_type: JString<'local>,
+    mime_type: JString<'local>,
 ) -> jstring {
-    // For now, return empty JSON array since FFI doesn't expose this function
-    string_to_jstring(&mut env, "[]")
+    let mime_type_str = match jstring_to_string(&mut env, &mime_type) {
+        Ok(s) => s,
+        Err(e) => return throw_exception(&mut env, &e),
+    };
+    let mime_type_c = match CString::new(mime_type_str) {
+        Ok(cs) => cs,
+        Err(e) => return throw_exception(&mut env, &format!("Invalid mime_type: {}", e)),
+    };
+    // SAFETY: mime_type_c is a valid C string; FFI returns null on error.
+    let result_ptr = unsafe { kreuzberg_get_extensions_for_mime(mime_type_c.as_ptr()) };
+    if result_ptr.is_null() {
+        return throw_exception(
+            &mut env,
+            &format!("Get extensions for MIME failed: {}", get_ffi_error_message()),
+        );
+    }
+    let jstr = cstring_ptr_to_jstring(&mut env, result_ptr);
+    unsafe { kreuzberg_free_string(result_ptr) };
+    jstr
 }
 
 // ============================================================================
@@ -1125,7 +1141,12 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeRenderPdfPageToP
         }
     };
 
-    let pdf_bytes_data = pdf_bytes_str.into_bytes();
+    // The Kotlin wrapper Base64-encodes the PDF bytes before crossing JNI
+    // (matching how nativeExtractBytesImpl marshals binary payloads).
+    let pdf_bytes_data = match base64_decode(&pdf_bytes_str) {
+        Ok(bytes) => bytes,
+        Err(_) => pdf_bytes_str.into_bytes(),
+    };
 
     let password_c = match CString::new(password_str) {
         Ok(cs) => cs,
@@ -1155,7 +1176,7 @@ pub extern "system" fn Java_dev_kreuzberg_KreuzbergBridge_nativeRenderPdfPageToP
     };
 
     if rc != 0 || out_ptr.is_null() {
-        throw_exception(&mut env, "Render PDF page to PNG failed");
+        throw_exception(&mut env, &format!("Render PDF page to PNG failed: {}", get_ffi_error_message()));
         return std::ptr::null_mut();
     }
 
