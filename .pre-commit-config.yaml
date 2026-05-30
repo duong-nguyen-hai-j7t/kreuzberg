@@ -50,7 +50,6 @@ repos:
     - --exclude=kreuzberg-wasm
     - --exclude=kreuzberg-dart
     - --exclude=kreuzberg-swift
-    - --exclude=kreuzberg_nif
     - --all-features
     - --all-targets
   - id: cargo-clippy
@@ -66,7 +65,6 @@ repos:
     - --exclude=kreuzberg-wasm
     - --exclude=kreuzberg-dart
     - --exclude=kreuzberg-swift
-    - --exclude=kreuzberg_nif
     - --all-features
     - --all-targets
     - --
