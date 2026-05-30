@@ -148,7 +148,7 @@ static FORMATS: &[FormatEntry] = &[
     FormatEntry {
         extensions: &["docx"],
         mime_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        aliases: &[],
+        aliases: &["application/docx"],
     },
     FormatEntry {
         extensions: &["docm"],

@@ -1489,6 +1489,7 @@ impl DocumentExtractor for DocxExtractor {
     fn supported_mime_types(&self) -> &[&str] {
         &[
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/docx",
             "application/vnd.ms-word.document.macroEnabled.12",
             "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
             "application/vnd.ms-word.template.macroEnabled.12",
@@ -1512,7 +1513,7 @@ mod tests {
         assert_eq!(extractor.name(), "docx-extractor");
         assert_eq!(extractor.version(), env!("CARGO_PKG_VERSION"));
         assert_eq!(extractor.priority(), 50);
-        assert_eq!(extractor.supported_mime_types().len(), 4);
+        assert_eq!(extractor.supported_mime_types().len(), 5);
     }
 
     #[tokio::test]

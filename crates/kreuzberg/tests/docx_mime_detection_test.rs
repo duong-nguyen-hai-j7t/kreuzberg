@@ -95,3 +95,46 @@ fn test_plain_zip_still_detected_as_zip() {
 
     assert_eq!(mime, "application/zip", "Plain ZIP should remain as application/zip");
 }
+
+#[test]
+fn test_legacy_docx_mime_validates_ok() {
+    // kreuzberg-cloud receives real traffic with this non-standard value; it must not be rejected.
+    let result = kreuzberg::core::mime::validate_mime_type("application/docx");
+    assert!(
+        result.is_ok(),
+        "validate_mime_type should accept legacy application/docx alias, got: {:?}",
+        result
+    );
+}
+
+#[test]
+fn test_ext_to_mime_docx_still_canonical() {
+    // Extension dispatch must continue to produce the RFC MIME — the alias is for validation only.
+    let path = std::path::Path::new("document.docx");
+    let mime = kreuzberg::core::mime::detect_mime_type(path, false).unwrap();
+    assert_eq!(
+        mime, "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ".docx extension must resolve to the RFC canonical MIME, not the legacy alias"
+    );
+}
+
+#[cfg(feature = "office")]
+#[test]
+fn test_both_docx_mimes_resolve_to_same_extractor() {
+    // Both the RFC MIME and the legacy alias must be declared by DocxExtractor,
+    // ensuring the registry maps both to the same plugin.
+    use kreuzberg::extractors::DocxExtractor;
+    use kreuzberg::plugins::DocumentExtractor;
+
+    let extractor = DocxExtractor;
+    let supported = extractor.supported_mime_types();
+
+    assert!(
+        supported.contains(&"application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+        "DocxExtractor must declare the RFC canonical MIME"
+    );
+    assert!(
+        supported.contains(&"application/docx"),
+        "DocxExtractor must declare the legacy alias so the registry routes both to the same plugin"
+    );
+}
