@@ -7,6 +7,61 @@ use jni::sys::{jboolean, jbyteArray, jint, jlong, jstring};
 use jni::JNIEnv;
 use std::ffi::{CStr, CString};
 
+// Pull in kreuzberg-ffi as a Rust dep so its #[no_mangle] symbols are
+// preserved through static linking; without this, rlib dead-code
+// elimination drops them and the extern "C" forward declarations below
+// resolve to null at runtime, crashing the JVM on first JNI call.
+extern crate kreuzberg_ffi;
+
+// Build a #[used] static array of function pointers into kreuzberg_ffi so
+// the linker treats every FFI export as live and emits it as a defined
+// symbol in libkreuzberg_jni. Without a forced reference, plain
+// `extern crate` is insufficient — the linker still GC's the symbols.
+struct PtrSlot(*const ());
+unsafe impl Sync for PtrSlot {}
+
+#[used]
+static _KEEP_FFI_LIVE: &[PtrSlot] = &[
+    PtrSlot(kreuzberg_ffi::kreuzberg_extract_bytes as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_extract_bytes_sync as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_extract_file as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_extract_file_sync as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_batch_extract_bytes as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_batch_extract_bytes_sync as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_batch_extract_files as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_batch_extract_files_sync as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_extraction_config_from_json as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_extraction_config_free as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_extraction_result_to_json as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_extraction_result_free as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_detect_mime_type as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_detect_mime_type_from_bytes as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_get_extensions_for_mime as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_embed_texts as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_list_embedding_presets as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_get_embedding_preset as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_render_pdf_page_to_png as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_free_string as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_list_embedding_backends as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_clear_embedding_backend as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_list_document_extractors as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_clear_document_extractor as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_list_ocr_backends as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_clear_ocr_backend as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_list_post_processors as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_clear_post_processor as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_list_renderers as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_clear_renderer as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_list_validators as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_clear_validator as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_unregister_document_extractor as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_unregister_embedding_backend as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_unregister_ocr_backend as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_unregister_post_processor as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_unregister_renderer as *const ()),
+    PtrSlot(kreuzberg_ffi::kreuzberg_unregister_validator as *const ()),
+];
+
 // ============================================================================
 // FFI Function Declarations
 // These are C symbols exported from kreuzberg-ffi
