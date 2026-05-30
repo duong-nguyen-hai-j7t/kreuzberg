@@ -3,6 +3,7 @@ members = [
     "crates/kreuzberg",
     "crates/kreuzberg-cli",
     "crates/kreuzberg-ffi",
+    "crates/kreuzberg-jni",
     "crates/kreuzberg-node",
     "crates/kreuzberg-paddle-ocr",
     "crates/kreuzberg-php",
@@ -97,7 +98,7 @@ tokio = { version = "1.52.3", features = [
 ] }
 toml = "1.1.2"
 tracing = "0.1"
-tree-sitter-language-pack = { version = "1.8.1", default-features = false, features = ["serde"] }
+tree-sitter-language-pack = { version = "1.9.0-rc.17", default-features = false, features = ["serde"] }
 wasm-bindgen = { version = "0.2", features = ["enable-interning"] }
 wasm-bindgen-futures = "0.4"
 web-sys = { version = "0.3", features = [

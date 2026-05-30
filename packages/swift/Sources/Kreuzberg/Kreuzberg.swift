@@ -4493,16 +4493,16 @@ public struct ExtractedUri: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for ExtractedUri
 internal extension ExtractedUri {
-    init(_ rb: UriRef) throws {
+    init(_ rb: RustBridge.ExtractedUriRef) throws {
         self.url = rb.url().toString()
         self.label = rb.label()?.toString()
         self.page = rb.page()
         self.kind = UriKind(rawValue: rb.kind().toString()) ?? { fatalError("Unknown UriKind: \(rb.kind().toString())") }()
     }
-    func intoRust() throws -> Uri {
+    func intoRust() throws -> RustBridge.ExtractedUri {
         let data = try JSONEncoder().encode(self)
         let json = String(data: data, encoding: .utf8) ?? "{}"
-        return try uriFromJson(json)
+        return try RustBridge.extractedUriFromJson(json)
     }
 }
 

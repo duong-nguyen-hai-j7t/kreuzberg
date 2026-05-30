@@ -30,23 +30,25 @@ object KreuzbergBridge {
     }
 
     private fun loadNativeLibrary() {
-        try {
-            System.loadLibrary("kreuzberg_jni")
-            return
-        } catch (e: UnsatisfiedLinkError) {
-            // Fallback: try kreuzberg_ffi
-        }
-        try {
-            System.loadLibrary("kreuzberg_ffi")
-            return
-        } catch (e: UnsatisfiedLinkError) {
-            // Fallback: try absolute path load from java.library.path
-        }
+        // First try absolute path from java.library.path for both JNI and FFI
         val libPath = System.getProperty("java.library.path")
         if (libPath != null) {
             val separator = System.getProperty("path.separator")
             for (path in libPath.split(separator)) {
-                for (libName in listOf("libkreuzberg_jni.dylib", "libkreuzberg_jni.so", "libkreuzberg_ffi.dylib", "libkreuzberg_ffi.so")) {
+                // Try JNI first
+                for (libName in listOf("libkreuzberg_jni.dylib", "libkreuzberg_jni.so")) {
+                    val libFile = java.io.File(path, libName)
+                    if (libFile.exists()) {
+                        try {
+                            System.load(libFile.absolutePath)
+                            return
+                        } catch (e: UnsatisfiedLinkError) {
+                            // Continue trying other paths
+                        }
+                    }
+                }
+                // Fall back to FFI
+                for (libName in listOf("libkreuzberg_ffi.dylib", "libkreuzberg_ffi.so")) {
                     val libFile = java.io.File(path, libName)
                     if (libFile.exists()) {
                         try {
@@ -59,7 +61,20 @@ object KreuzbergBridge {
                 }
             }
         }
-        throw UnsatisfiedLinkError("Cannot load libkreuzberg_jni or libkreuzberg_ffi")
+        // Fallback to System.loadLibrary as last resort
+        try {
+            System.loadLibrary("kreuzberg_jni")
+            return
+        } catch (e: UnsatisfiedLinkError) {
+            // Fallback: try kreuzberg_ffi
+        }
+        try {
+            System.loadLibrary("kreuzberg_ffi")
+            return
+        } catch (e: UnsatisfiedLinkError) {
+            // Give up
+        }
+        throw UnsatisfiedLinkError("Cannot load libkreuzberg_jni or libkreuzberg_ffi from java.library.path=${System.getProperty("java.library.path")}")
     }
 
     @Throws(KreuzbergBridgeException::class)

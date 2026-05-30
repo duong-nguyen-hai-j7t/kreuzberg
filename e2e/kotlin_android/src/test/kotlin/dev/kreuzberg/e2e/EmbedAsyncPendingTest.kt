@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import dev.kreuzberg.EmbeddingConfig
+import dev.kreuzberg.EmbeddingModelType
 
 /** E2e tests for category: embed_async_pending. */
 class EmbedAsyncPendingTest {
@@ -26,14 +27,16 @@ class EmbedAsyncPendingTest {
     @Test
     fun testEmbedTextsAsyncEmptyInput() = runBlocking {
         // embed_texts_async: empty text list
-        val result = Kreuzberg.embedTextsAsync(listOf(), EmbeddingConfig())
+        val model = EmbeddingModelType.Preset(name = "balanced")
+        val result = Kreuzberg.embedTextsAsync(listOf(), EmbeddingConfig(model = model))
         // skipped: field 'embeddings' not available on result type
     }
 
     @Test
     fun testEmbedTextsAsyncHappy() = runBlocking {
         // embed_texts_async: basic async embedding
-        val result = Kreuzberg.embedTextsAsync(listOf("First", "Second"), EmbeddingConfig())
+        val model = EmbeddingModelType.Preset(name = "balanced")
+        val result = Kreuzberg.embedTextsAsync(listOf("First", "Second"), EmbeddingConfig(model = model))
         // skipped: field 'embeddings' not available on result type
     }
 

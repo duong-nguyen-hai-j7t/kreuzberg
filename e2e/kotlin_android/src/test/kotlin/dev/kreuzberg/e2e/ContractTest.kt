@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import dev.kreuzberg.ExtractionConfig
+import dev.kreuzberg.OutputFormat
 
 /** E2e tests for category: contract. */
 class ContractTest {
@@ -35,7 +36,8 @@ class ContractTest {
     @Test
     fun testApiBatchBytesWithConfigsAsync() = runBlocking {
         // Tests async batch bytes extraction with per-file configs (batch_extract_bytes with file_configs parameter)
-        val result = Kreuzberg.extractFile("pdf/fake_memo.pdf", null, "{\"output_format\":\"markdown\"}")
+        val config = ExtractionConfig(outputFormat = OutputFormat.Markdown)
+        val result = Kreuzberg.extractFile("pdf/fake_memo.pdf", null, config)
         assertEquals("application/pdf", result.mimeType.trim())
         assertTrue(result.content.length >= 10, "expected length >= 10")
         // skipped: field 'metadata.output_format' not available on result type
@@ -53,7 +55,8 @@ class ContractTest {
     @Test
     fun testApiBatchFileWithConfigsAsync() = runBlocking {
         // Tests async batch file extraction with per-file configs (batch_extract_files with file_configs parameter)
-        val result = Kreuzberg.extractFile("pdf/fake_memo.pdf", null, "{\"output_format\":\"markdown\"}")
+        val config = ExtractionConfig(outputFormat = OutputFormat.Markdown)
+        val result = Kreuzberg.extractFile("pdf/fake_memo.pdf", null, config)
         assertEquals("application/pdf", result.mimeType.trim())
         assertTrue(result.content.length >= 10, "expected length >= 10")
         // skipped: field 'metadata.output_format' not available on result type
