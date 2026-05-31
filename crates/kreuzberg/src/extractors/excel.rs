@@ -9,12 +9,87 @@ use crate::types::internal::InternalDocument;
 use crate::types::internal_builder::InternalDocumentBuilder;
 use crate::types::page::PageContent;
 use crate::types::tables::Table;
-use crate::types::{ExcelMetadata, Metadata};
+use crate::types::{ExcelMetadata, Metadata, ProcessingWarning};
 use ahash::AHashMap;
 use async_trait::async_trait;
 use std::borrow::Cow;
 use std::path::Path;
 use std::sync::Arc;
+
+/// DDE and external-call formula patterns that should surface as warnings.
+///
+/// Calamine resolves most formulas to their cached result value, so the raw
+/// `=DDE(...)` string rarely appears in `Data::String` cells. However, some
+/// tools store the formula string directly (e.g. when no cached value
+/// exists), and calamine emits it verbatim. The patterns below catch the
+/// known injection-vector forms. Matching is case-insensitive and anchored
+/// to the start of the cell value to avoid false positives on plain text.
+///
+/// Patterns:
+/// - `=DDE(` — Dynamic Data Exchange
+/// - `=WEBSERVICE(` — HTTP fetch from external URL
+/// - `=HYPERLINK(` — clickable URL (not execution, but disclosure risk)
+/// - `=cmd|` — classic CSV/OOXML RCE gadget via DDE with cmd shell
+static DDE_PATTERN: std::sync::OnceLock<regex::Regex> = std::sync::OnceLock::new();
+
+fn dde_pattern() -> &'static regex::Regex {
+    DDE_PATTERN.get_or_init(|| {
+        regex::Regex::new(r"(?i)^=(DDE\(|WEBSERVICE\(|HYPERLINK\(|cmd\|)").unwrap()
+    })
+}
+
+/// Classify the formula kind from a matching cell value for the warning message.
+fn classify_formula(cell: &str) -> &'static str {
+    let upper = cell.to_ascii_uppercase();
+    if upper.starts_with("=DDE(") {
+        "DDE"
+    } else if upper.starts_with("=WEBSERVICE(") {
+        "WEBSERVICE"
+    } else if upper.starts_with("=HYPERLINK(") {
+        "HYPERLINK"
+    } else {
+        "ExternalCall"
+    }
+}
+
+/// Scan all cells in a workbook for DDE / external-call formula strings.
+///
+/// Returns one `ProcessingWarning` per matching cell (capped at 100 to avoid
+/// flooding the warnings list on adversarial documents). The warning carries
+/// the sheet name, zero-based row/col coordinates, and the classified formula
+/// kind so downstream consumers can triage.
+fn scan_for_dde_warnings(workbook: &crate::types::ExcelWorkbook) -> Vec<ProcessingWarning> {
+    const MAX_DDE_WARNINGS: usize = 100;
+    let pattern = dde_pattern();
+    let mut warnings = Vec::new();
+
+    'outer: for sheet in &workbook.sheets {
+        if let Some(ref cells) = sheet.table_cells {
+            for (row_idx, row) in cells.iter().enumerate() {
+                for (col_idx, cell) in row.iter().enumerate() {
+                    if !cell.is_empty() && pattern.is_match(cell) {
+                        let kind = classify_formula(cell);
+                        warnings.push(ProcessingWarning {
+                            source: Cow::Borrowed("excel_dde_scan"),
+                            message: Cow::Owned(format!(
+                                "Cell [{sheet}!R{row}C{col}] contains \
+                                 a {kind} formula that may reference external resources",
+                                sheet = sheet.name,
+                                row = row_idx + 1,
+                                col = col_idx + 1,
+                            )),
+                        });
+                        if warnings.len() >= MAX_DDE_WARNINGS {
+                            break 'outer;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    warnings
+}
 
 /// Validate an Excel workbook against security limits.
 ///

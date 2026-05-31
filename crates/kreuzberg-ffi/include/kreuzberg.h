@@ -2768,6 +2768,13 @@ KREUZBERGResultFormat *kreuzberg_extraction_config_result_format(const KREUZBERG
 KREUZBERGSecurityLimits *kreuzberg_extraction_config_security_limits(const KREUZBERGExtractionConfig *ptr);
 
 /**
+ * Get the `max_embedded_file_bytes` field from a `ExtractionConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uint64_t kreuzberg_extraction_config_max_embedded_file_bytes(const KREUZBERGExtractionConfig *ptr);
+
+/**
  * Get the `output_format` field from a `ExtractionConfig`.
  * # Safety
  * Pointer must be a valid handle returned by this library.

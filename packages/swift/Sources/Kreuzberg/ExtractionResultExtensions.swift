@@ -10,12 +10,11 @@ import RustBridge
 // Although these are primarily for test convenience, they are part of the public API
 // and can be used in production code for more ergonomic access to extraction results.
 
-extension RustBridge.ExtractionResult {
-    public var mimeType: String {
-        self.mimeType().toString()
-    }
-
-    public var content: String {
-        self.content().toString()
+extension RustBridge.ServerConfigRef {
+    /// Computed-property alias for `listen_addr()` method.
+    public var listen_addr: String {
+        self.listen_addr().toString()
     }
 }
+
+// ServerConfigRefMut and ServerConfig inherit the extensions automatically

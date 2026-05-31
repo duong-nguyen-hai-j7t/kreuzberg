@@ -222,7 +222,11 @@ pub struct ExtractionConfig {
     ///
     /// When set, each file in a batch will be canceled after this duration
     /// unless overridden by [`FileExtractionConfig::timeout_secs`].
-    /// `None` means no timeout (unbounded extraction time).
+    ///
+    /// Defaults to `Some(60)` to prevent pathological files (e.g. deeply
+    /// nested archives, documents with millions of cells) from running
+    /// indefinitely and exhausting caller resources. Set to `None` to
+    /// disable the timeout for trusted input or long-running workloads.
     pub extraction_timeout_secs: Option<i64>,
     /// Maximum concurrent extractions in batch operations (None = (num_cpus × 1.5).ceil()).
     ///
@@ -244,6 +248,18 @@ pub struct ExtractionConfig {
     /// ingests user-controlled bytes.
     /// When `None`, default limits are used.
     pub security_limits: Option<SecurityLimits>,
+    /// Maximum uncompressed size in bytes for a single embedded file before
+    /// recursive extraction is attempted (default: 50 MiB).
+    ///
+    /// Applies to embedded objects inside OOXML containers (DOCX, PPTX) and
+    /// to email attachments processed via recursive extraction. Files that
+    /// exceed this limit are skipped with a `ProcessingWarning` rather than
+    /// passed to the extraction pipeline, preventing a single oversized
+    /// embedded object from consuming unbounded memory or time.
+    ///
+    /// Set to `None` to disable the per-embedded-file cap (falls back to
+    /// `security_limits.max_archive_size` as the only guard).
+    pub max_embedded_file_bytes: Option<i64>,
     /// Content text format (default: Plain).
     ///
     /// Controls the format of the extracted content:
@@ -4414,6 +4430,7 @@ impl From<kreuzberg::ExtractionConfig> for ExtractionConfig {
             max_concurrent_extractions: v.max_concurrent_extractions.map(|x| x as _),
             result_format: ResultFormat::from(v.result_format),
             security_limits: v.security_limits.map(SecurityLimits::from),
+            max_embedded_file_bytes: v.max_embedded_file_bytes.map(|x| x as _),
             output_format: OutputFormat::from(v.output_format),
             layout: v.layout.map(LayoutDetectionConfig::from),
             use_layout_for_markdown: v.use_layout_for_markdown as _,
@@ -6956,6 +6973,7 @@ impl From<ExtractionConfig> for kreuzberg::ExtractionConfig {
             max_concurrent_extractions: v.max_concurrent_extractions.map(|x| x as _),
             result_format: v.result_format.into(),
             security_limits: v.security_limits.map(Into::into),
+            max_embedded_file_bytes: v.max_embedded_file_bytes.map(|x| x as _),
             output_format: v.output_format.into(),
             layout: v.layout.map(Into::into),
             use_layout_for_markdown: v.use_layout_for_markdown as _,

@@ -10113,8 +10113,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ExtractionConfig dco_decode_extraction_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 34)
-      throw Exception('unexpected arr length: expect 34 but see ${arr.length}');
+    if (arr.length != 35)
+      throw Exception('unexpected arr length: expect 35 but see ${arr.length}');
     return ExtractionConfig(
       useCache: dco_decode_bool(arr[0]),
       enableQualityProcessing: dco_decode_bool(arr[1]),
@@ -10141,20 +10141,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       maxConcurrentExtractions: dco_decode_opt_box_autoadd_i_64(arr[18]),
       resultFormat: dco_decode_result_format(arr[19]),
       securityLimits: dco_decode_opt_box_autoadd_security_limits(arr[20]),
-      outputFormat: dco_decode_output_format(arr[21]),
-      layout: dco_decode_opt_box_autoadd_layout_detection_config(arr[22]),
-      useLayoutForMarkdown: dco_decode_bool(arr[23]),
-      includeDocumentStructure: dco_decode_bool(arr[24]),
-      acceleration: dco_decode_opt_box_autoadd_acceleration_config(arr[25]),
-      cacheNamespace: dco_decode_opt_String(arr[26]),
-      cacheTtlSecs: dco_decode_opt_box_autoadd_i_64(arr[27]),
-      email: dco_decode_opt_box_autoadd_email_config(arr[28]),
-      concurrency: dco_decode_opt_String(arr[29]),
-      maxArchiveDepth: dco_decode_i_64(arr[30]),
-      treeSitter: dco_decode_opt_box_autoadd_tree_sitter_config(arr[31]),
+      maxEmbeddedFileBytes: dco_decode_opt_box_autoadd_i_64(arr[21]),
+      outputFormat: dco_decode_output_format(arr[22]),
+      layout: dco_decode_opt_box_autoadd_layout_detection_config(arr[23]),
+      useLayoutForMarkdown: dco_decode_bool(arr[24]),
+      includeDocumentStructure: dco_decode_bool(arr[25]),
+      acceleration: dco_decode_opt_box_autoadd_acceleration_config(arr[26]),
+      cacheNamespace: dco_decode_opt_String(arr[27]),
+      cacheTtlSecs: dco_decode_opt_box_autoadd_i_64(arr[28]),
+      email: dco_decode_opt_box_autoadd_email_config(arr[29]),
+      concurrency: dco_decode_opt_String(arr[30]),
+      maxArchiveDepth: dco_decode_i_64(arr[31]),
+      treeSitter: dco_decode_opt_box_autoadd_tree_sitter_config(arr[32]),
       structuredExtraction:
-          dco_decode_opt_box_autoadd_structured_extraction_config(arr[32]),
-      cancelToken: dco_decode_opt_String(arr[33]),
+          dco_decode_opt_box_autoadd_structured_extraction_config(arr[33]),
+      cancelToken: dco_decode_opt_String(arr[34]),
     );
   }
 
@@ -15065,6 +15066,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_securityLimits = sse_decode_opt_box_autoadd_security_limits(
       deserializer,
     );
+    var var_maxEmbeddedFileBytes = sse_decode_opt_box_autoadd_i_64(
+      deserializer,
+    );
     var var_outputFormat = sse_decode_output_format(deserializer);
     var var_layout = sse_decode_opt_box_autoadd_layout_detection_config(
       deserializer,
@@ -15107,6 +15111,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       maxConcurrentExtractions: var_maxConcurrentExtractions,
       resultFormat: var_resultFormat,
       securityLimits: var_securityLimits,
+      maxEmbeddedFileBytes: var_maxEmbeddedFileBytes,
       outputFormat: var_outputFormat,
       layout: var_layout,
       useLayoutForMarkdown: var_useLayoutForMarkdown,
@@ -21315,6 +21320,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_i_64(self.maxConcurrentExtractions, serializer);
     sse_encode_result_format(self.resultFormat, serializer);
     sse_encode_opt_box_autoadd_security_limits(self.securityLimits, serializer);
+    sse_encode_opt_box_autoadd_i_64(self.maxEmbeddedFileBytes, serializer);
     sse_encode_output_format(self.outputFormat, serializer);
     sse_encode_opt_box_autoadd_layout_detection_config(self.layout, serializer);
     sse_encode_bool(self.useLayoutForMarkdown, serializer);

@@ -529,6 +529,7 @@ EmailConfig$from_json <- function(json) {
 #' @field max_concurrent_extractions Maximum concurrent extractions in batch operations (None = (num_cpus ×
 #' @field result_format Result structure format
 #' @field security_limits Security limits for archive extraction.
+#' @field max_embedded_file_bytes Maximum uncompressed size in bytes for a single embedded file before recursive
 #' @field output_format Content text format (default: Plain).
 #' @field layout Layout detection configuration (None = layout detection disabled).
 #' @field use_layout_for_markdown Run layout detection on the non-OCR PDF markdown path.

@@ -6327,6 +6327,7 @@ const _: fn() = || {
         let _: Option<i64> = ExtractionConfig.max_concurrent_extractions;
         let _: crate::ResultFormat = ExtractionConfig.result_format;
         let _: Option<crate::SecurityLimits> = ExtractionConfig.security_limits;
+        let _: Option<i64> = ExtractionConfig.max_embedded_file_bytes;
         let _: crate::OutputFormat = ExtractionConfig.output_format;
         let _: Option<crate::LayoutDetectionConfig> = ExtractionConfig.layout;
         let _: bool = ExtractionConfig.use_layout_for_markdown;
@@ -9345,6 +9346,7 @@ impl SseDecode for crate::ExtractionConfig {
         let mut var_maxConcurrentExtractions = <Option<i64>>::sse_decode(deserializer);
         let mut var_resultFormat = <crate::ResultFormat>::sse_decode(deserializer);
         let mut var_securityLimits = <Option<crate::SecurityLimits>>::sse_decode(deserializer);
+        let mut var_maxEmbeddedFileBytes = <Option<i64>>::sse_decode(deserializer);
         let mut var_outputFormat = <crate::OutputFormat>::sse_decode(deserializer);
         let mut var_layout = <Option<crate::LayoutDetectionConfig>>::sse_decode(deserializer);
         let mut var_useLayoutForMarkdown = <bool>::sse_decode(deserializer);
@@ -9380,6 +9382,7 @@ impl SseDecode for crate::ExtractionConfig {
             max_concurrent_extractions: var_maxConcurrentExtractions,
             result_format: var_resultFormat,
             security_limits: var_securityLimits,
+            max_embedded_file_bytes: var_maxEmbeddedFileBytes,
             output_format: var_outputFormat,
             layout: var_layout,
             use_layout_for_markdown: var_useLayoutForMarkdown,
@@ -15117,6 +15120,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::ExtractionConfig> {
             self.0.max_concurrent_extractions.into_into_dart().into_dart(),
             self.0.result_format.into_into_dart().into_dart(),
             self.0.security_limits.into_into_dart().into_dart(),
+            self.0.max_embedded_file_bytes.into_into_dart().into_dart(),
             self.0.output_format.into_into_dart().into_dart(),
             self.0.layout.into_into_dart().into_dart(),
             self.0.use_layout_for_markdown.into_into_dart().into_dart(),
@@ -18704,6 +18708,7 @@ impl SseEncode for crate::ExtractionConfig {
         <Option<i64>>::sse_encode(self.max_concurrent_extractions, serializer);
         <crate::ResultFormat>::sse_encode(self.result_format, serializer);
         <Option<crate::SecurityLimits>>::sse_encode(self.security_limits, serializer);
+        <Option<i64>>::sse_encode(self.max_embedded_file_bytes, serializer);
         <crate::OutputFormat>::sse_encode(self.output_format, serializer);
         <Option<crate::LayoutDetectionConfig>>::sse_encode(self.layout, serializer);
         <bool>::sse_encode(self.use_layout_for_markdown, serializer);

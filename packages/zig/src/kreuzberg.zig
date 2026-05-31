@@ -238,7 +238,11 @@ pub const ExtractionConfig = struct {
     ///
     /// When set, each file in a batch will be canceled after this duration
     /// unless overridden by `FileExtractionConfig.timeout_secs`.
-    /// `null` means no timeout (unbounded extraction time).
+    ///
+    /// Defaults to `Some(60)` to prevent pathological files (e.g. deeply
+    /// nested archives, documents with millions of cells) from running
+    /// indefinitely and exhausting caller resources. Set to `null` to
+    /// disable the timeout for trusted input or long-running workloads.
     extraction_timeout_secs: ?u64,
     /// Maximum concurrent extractions in batch operations (None = (num_cpus × 1.5).ceil()).
     ///
@@ -260,6 +264,18 @@ pub const ExtractionConfig = struct {
     /// ingests user-controlled bytes.
     /// When `null`, default limits are used.
     security_limits: ?SecurityLimits,
+    /// Maximum uncompressed size in bytes for a single embedded file before
+    /// recursive extraction is attempted (default: 50 MiB).
+    ///
+    /// Applies to embedded objects inside OOXML containers (DOCX, PPTX) and
+    /// to email attachments processed via recursive extraction. Files that
+    /// exceed this limit are skipped with a `ProcessingWarning` rather than
+    /// passed to the extraction pipeline, preventing a single oversized
+    /// embedded object from consuming unbounded memory or time.
+    ///
+    /// Set to `null` to disable the per-embedded-file cap (falls back to
+    /// `security_limits.max_archive_size` as the only guard).
+    max_embedded_file_bytes: ?u64,
     /// Content text format (default: Plain).
     ///
     /// Controls the format of the extracted content:

@@ -116,6 +116,7 @@ mod ffi {
             max_concurrent_extractions: Option<usize>,
             result_format: ResultFormat,
             security_limits: Option<SecurityLimits>,
+            max_embedded_file_bytes: Option<u64>,
             output_format: OutputFormat,
             layout: Option<LayoutDetectionConfig>,
             use_layout_for_markdown: bool,
@@ -166,6 +167,8 @@ mod ffi {
         fn result_format(&self) -> String;
         #[swift_bridge(swift_name = "securityLimits")]
         fn security_limits(&self) -> Option<SecurityLimits>;
+        #[swift_bridge(swift_name = "maxEmbeddedFileBytes")]
+        fn max_embedded_file_bytes(&self) -> Option<u64>;
         #[swift_bridge(swift_name = "outputFormat")]
         fn output_format(&self) -> String;
         fn layout(&self) -> Option<LayoutDetectionConfig>;
@@ -3494,6 +3497,7 @@ impl ExtractionConfig {
         max_concurrent_extractions: Option<usize>,
         result_format: ResultFormat,
         security_limits: Option<SecurityLimits>,
+        max_embedded_file_bytes: Option<u64>,
         output_format: OutputFormat,
         layout: Option<LayoutDetectionConfig>,
         use_layout_for_markdown: bool,
@@ -3567,6 +3571,7 @@ impl ExtractionConfig {
         if let Some(w) = security_limits {
             __target.security_limits = Some(w.0);
         }
+        __target.max_embedded_file_bytes = max_embedded_file_bytes;
         // alef: output_format (OutputFormat) is an enum; reverse From not generated — left at default
         if let Some(w) = layout {
             __target.layout = Some(w.0);
@@ -3705,6 +3710,13 @@ impl ExtractionConfig {
     }
     pub fn security_limits(&self) -> Option<SecurityLimits> {
         self.0.security_limits.clone().map(SecurityLimits)
+    }
+    pub fn max_embedded_file_bytes(&self) -> Option<u64> {
+        self.0.max_embedded_file_bytes.as_ref().and_then(|v| {
+            ::serde_json::to_value(v)
+                .ok()
+                .and_then(|j| ::serde_json::from_value(j).ok())
+        })
     }
     pub fn output_format(&self) -> String {
         OutputFormat::from(self.0.output_format.clone()).to_string()

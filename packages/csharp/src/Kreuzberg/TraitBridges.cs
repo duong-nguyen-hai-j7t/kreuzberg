@@ -118,7 +118,7 @@ public sealed class OcrBackendBridge : IDisposable {
 
     public OcrBackendBridge(IOcrBackend impl) {
         _impl = impl ?? throw new ArgumentNullException(nameof(impl));
-        _implHandle = GCHandle.Alloc(impl, GCHandleType.Normal);
+        _implHandle = GCHandle.Alloc(impl, GCHandleType.Pinned);
         _delegates = new object[14];
         // Pin the delegates array to prevent GC during callback round-trips.
         // Must use Pinned, not Normal, to keep array address stable across managed→unmanaged→managed calls.
@@ -335,7 +335,7 @@ public sealed class OcrBackendBridge : IDisposable {
             var managed_imageBytes = new byte[(int)imageBytesLen];
             Marshal.Copy(imageBytes, managed_imageBytes, 0, (int)imageBytesLen);
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
-            var managed_config = JsonSerializer.Deserialize<OcrConfig>(json_config, FfiJsonExtensions.FfiJsonOptions)!;
+            var managed_config = JsonSerializer.Deserialize<OcrConfig>(json_config, FfiJsonOptions)!;
             var methodResult = bridge._impl.ProcessImage(managed_imageBytes, managed_config);
             try {
                 string __result_str = (methodResult.ToFfiJson()) ?? string.Empty;
@@ -388,9 +388,9 @@ public sealed class OcrBackendBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_path = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(path) ?? "{}";
-            var managed_path = JsonSerializer.Deserialize<string>(json_path, FfiJsonExtensions.FfiJsonOptions)!;
+            var managed_path = JsonSerializer.Deserialize<string>(json_path, FfiJsonOptions)!;
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
-            var managed_config = JsonSerializer.Deserialize<OcrConfig>(json_config, FfiJsonExtensions.FfiJsonOptions)!;
+            var managed_config = JsonSerializer.Deserialize<OcrConfig>(json_config, FfiJsonOptions)!;
             var methodResult = bridge._impl.ProcessImageFile(managed_path, managed_config);
             try {
                 string __result_str = (methodResult.ToFfiJson()) ?? string.Empty;
@@ -621,9 +621,9 @@ public sealed class OcrBackendBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_path = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(path) ?? "{}";
-            var managed_path = JsonSerializer.Deserialize<string>(json_path, FfiJsonExtensions.FfiJsonOptions)!;
+            var managed_path = JsonSerializer.Deserialize<string>(json_path, FfiJsonOptions)!;
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
-            var managed_config = JsonSerializer.Deserialize<OcrConfig>(json_config, FfiJsonExtensions.FfiJsonOptions)!;
+            var managed_config = JsonSerializer.Deserialize<OcrConfig>(json_config, FfiJsonOptions)!;
             var methodResult = bridge._impl.ProcessDocument(managed_path, managed_config);
             try {
                 string __result_str = (methodResult.ToFfiJson()) ?? string.Empty;
@@ -917,7 +917,7 @@ public sealed class PostProcessorBridge : IDisposable {
 
     public PostProcessorBridge(IPostProcessor impl) {
         _impl = impl ?? throw new ArgumentNullException(nameof(impl));
-        _implHandle = GCHandle.Alloc(impl, GCHandleType.Normal);
+        _implHandle = GCHandle.Alloc(impl, GCHandleType.Pinned);
         _delegates = new object[11];
         // Pin the delegates array to prevent GC during callback round-trips.
         // Must use Pinned, not Normal, to keep array address stable across managed→unmanaged→managed calls.
@@ -1115,9 +1115,9 @@ public sealed class PostProcessorBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(result) ?? "{}";
-            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonExtensions.FfiJsonOptions)!;
+            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonOptions)!;
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
-            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonExtensions.FfiJsonOptions)!;
+            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonOptions)!;
             bridge._impl.Process(managed_result, managed_config);
             return 0;
         } catch (Exception) {
@@ -1195,9 +1195,9 @@ public sealed class PostProcessorBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(result) ?? "{}";
-            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonExtensions.FfiJsonOptions)!;
+            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonOptions)!;
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
-            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonExtensions.FfiJsonOptions)!;
+            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonOptions)!;
             var methodResult = bridge._impl.ShouldProcess(managed_result, managed_config);
             return methodResult ? 1 : 0;
         } catch (Exception) {
@@ -1224,7 +1224,7 @@ public sealed class PostProcessorBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(result) ?? "{}";
-            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonExtensions.FfiJsonOptions)!;
+            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonOptions)!;
             var methodResult = bridge._impl.EstimatedDurationMs(managed_result);
             return methodResult;
         } catch (Exception) {
@@ -1507,7 +1507,7 @@ public sealed class ValidatorBridge : IDisposable {
 
     public ValidatorBridge(IValidator impl) {
         _impl = impl ?? throw new ArgumentNullException(nameof(impl));
-        _implHandle = GCHandle.Alloc(impl, GCHandleType.Normal);
+        _implHandle = GCHandle.Alloc(impl, GCHandleType.Pinned);
         _delegates = new object[9];
         // Pin the delegates array to prevent GC during callback round-trips.
         // Must use Pinned, not Normal, to keep array address stable across managed→unmanaged→managed calls.
@@ -1695,9 +1695,9 @@ public sealed class ValidatorBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(result) ?? "{}";
-            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonExtensions.FfiJsonOptions)!;
+            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonOptions)!;
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
-            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonExtensions.FfiJsonOptions)!;
+            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonOptions)!;
             bridge._impl.Validate(managed_result, managed_config);
             return 0;
         } catch (Exception) {
@@ -1724,9 +1724,9 @@ public sealed class ValidatorBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_result = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(result) ?? "{}";
-            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonExtensions.FfiJsonOptions)!;
+            var managed_result = JsonSerializer.Deserialize<ExtractionResult>(json_result, FfiJsonOptions)!;
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
-            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonExtensions.FfiJsonOptions)!;
+            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonOptions)!;
             var methodResult = bridge._impl.ShouldValidate(managed_result, managed_config);
             return methodResult ? 1 : 0;
         } catch (Exception) {
@@ -2003,7 +2003,7 @@ public sealed class EmbeddingBackendBridge : IDisposable {
 
     public EmbeddingBackendBridge(IEmbeddingBackend impl) {
         _impl = impl ?? throw new ArgumentNullException(nameof(impl));
-        _implHandle = GCHandle.Alloc(impl, GCHandleType.Normal);
+        _implHandle = GCHandle.Alloc(impl, GCHandleType.Pinned);
         _delegates = new object[8];
         // Pin the delegates array to prevent GC during callback round-trips.
         // Must use Pinned, not Normal, to keep array address stable across managed→unmanaged→managed calls.
@@ -2213,7 +2213,7 @@ public sealed class EmbeddingBackendBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_texts = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(texts) ?? "{}";
-            var managed_texts = JsonSerializer.Deserialize<List<string>>(json_texts, FfiJsonExtensions.FfiJsonOptions)!;
+            var managed_texts = JsonSerializer.Deserialize<List<string>>(json_texts, FfiJsonOptions)!;
             var methodResult = bridge._impl.Embed(managed_texts);
             try {
                 string __result_str = (ToJsonString(methodResult)) ?? string.Empty;
@@ -2507,7 +2507,7 @@ public sealed class DocumentExtractorBridge : IDisposable {
 
     public DocumentExtractorBridge(IDocumentExtractor impl) {
         _impl = impl ?? throw new ArgumentNullException(nameof(impl));
-        _implHandle = GCHandle.Alloc(impl, GCHandleType.Normal);
+        _implHandle = GCHandle.Alloc(impl, GCHandleType.Pinned);
         _delegates = new object[11];
         // Pin the delegates array to prevent GC during callback round-trips.
         // Must use Pinned, not Normal, to keep array address stable across managed→unmanaged→managed calls.
@@ -2710,7 +2710,7 @@ public sealed class DocumentExtractorBridge : IDisposable {
             Marshal.Copy(content, managed_content, 0, (int)contentLen);
             var managed_mimeType = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(mimeType) ?? string.Empty;
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
-            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonExtensions.FfiJsonOptions)!;
+            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonOptions)!;
             var methodResult = bridge._impl.ExtractBytes(managed_content, managed_mimeType, managed_config);
             try {
                 string __result_str = (ToJsonString(methodResult)) ?? string.Empty;
@@ -2763,10 +2763,10 @@ public sealed class DocumentExtractorBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_path = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(path) ?? "{}";
-            var managed_path = JsonSerializer.Deserialize<string>(json_path, FfiJsonExtensions.FfiJsonOptions)!;
+            var managed_path = JsonSerializer.Deserialize<string>(json_path, FfiJsonOptions)!;
             var managed_mimeType = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(mimeType) ?? string.Empty;
             var json_config = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(config) ?? "{}";
-            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonExtensions.FfiJsonOptions)!;
+            var managed_config = JsonSerializer.Deserialize<ExtractionConfig>(json_config, FfiJsonOptions)!;
             var methodResult = bridge._impl.ExtractFile(managed_path, managed_mimeType, managed_config);
             try {
                 string __result_str = (ToJsonString(methodResult)) ?? string.Empty;
@@ -2893,7 +2893,7 @@ public sealed class DocumentExtractorBridge : IDisposable {
         try {
             var bridge = _bridgeFromRegistry!;
             var json_path = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(path) ?? "{}";
-            var managed_path = JsonSerializer.Deserialize<string>(json_path, FfiJsonExtensions.FfiJsonOptions)!;
+            var managed_path = JsonSerializer.Deserialize<string>(json_path, FfiJsonOptions)!;
             var managed_mimeType = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(mimeType) ?? string.Empty;
             var methodResult = bridge._impl.CanHandle(managed_path, managed_mimeType);
             return methodResult ? 1 : 0;
@@ -3140,7 +3140,7 @@ public sealed class RendererBridge : IDisposable {
 
     public RendererBridge(IRenderer impl) {
         _impl = impl ?? throw new ArgumentNullException(nameof(impl));
-        _implHandle = GCHandle.Alloc(impl, GCHandleType.Normal);
+        _implHandle = GCHandle.Alloc(impl, GCHandleType.Pinned);
         _delegates = new object[7];
         // Pin the delegates array to prevent GC during callback round-trips.
         // Must use Pinned, not Normal, to keep array address stable across managed→unmanaged→managed calls.
@@ -3538,7 +3538,7 @@ internal static class FfiJsonExtensions {
 
     /// <summary>Serialize any object to JSON for FFI marshalling</summary>
     internal static string ToFfiJson<T>(this T value) {
-        return JsonSerializer.Serialize(value, FfiJsonExtensions.FfiJsonOptions);
+        return JsonSerializer.Serialize(value, FfiJsonOptions);
     }
 
 }
