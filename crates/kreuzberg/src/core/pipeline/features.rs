@@ -368,6 +368,7 @@ mod tests {
             layout_regions: None,
             section_name: None,
             speaker_notes: None,
+            sheet_name: None,
         }
     }
 

@@ -121,6 +121,7 @@ impl ImageExtractor {
                         layout_regions: None,
                         speaker_notes: None,
                         section_name: None,
+                        sheet_name: None,
                     }]);
                 }
             }
@@ -148,6 +149,7 @@ impl ImageExtractor {
                     layout_regions: None,
                     speaker_notes: None,
                     section_name: None,
+                    sheet_name: None,
                 }]);
             }
             Ok(doc)

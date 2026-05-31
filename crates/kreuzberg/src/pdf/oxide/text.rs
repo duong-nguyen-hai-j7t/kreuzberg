@@ -183,6 +183,7 @@ fn extract_text_with_tracking(doc: &mut OxideDocument, config: &PageConfig) -> R
                 layout_regions: None,
                 speaker_notes: None,
                 section_name: None,
+                sheet_name: None,
             });
         }
 

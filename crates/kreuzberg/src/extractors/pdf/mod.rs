@@ -415,6 +415,7 @@ impl PdfExtractor {
                                 layout_regions: None,
                                 speaker_notes: None,
                                 section_name: None,
+                                sheet_name: None,
                             })
                             .collect(),
                     );
@@ -1388,6 +1389,7 @@ mod tests {
                 layout_regions: None,
                 speaker_notes: None,
                 section_name: None,
+                sheet_name: None,
             })
             .collect();
         let pages_len = pages.len();

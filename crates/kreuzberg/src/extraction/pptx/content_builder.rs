@@ -85,6 +85,7 @@ impl ContentBuilder {
                 layout_regions: None,
                 speaker_notes,
                 section_name,
+                sheet_name: None,
             });
         }
     }
