@@ -292,3 +292,4 @@ packages/go/v5/.lib/
 .github/copilot-instructions.md
 .github/skills/
 # END ai-rulez
+packages/r/src/*.o
