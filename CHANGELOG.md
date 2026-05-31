@@ -21,6 +21,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   is attempted. Applies to OOXML embedded objects (DOCX/PPTX) and email attachments. Files
   exceeding the cap are skipped with a `ProcessingWarning`. Set to `None` to disable.
 
+- **pdf**: Decompression ratio guard for PDF embedded file streams. lopdf's
+  `decompressed_content()` was called unconditionally on embedded-file streams in
+  `pdf/embedded_files.rs`, allowing a crafted PDF with a highly-compressed stream to
+  expand to gigabytes of data in memory. The fix records `compressed_size` before
+  decompression and checks the ratio against `SecurityLimits.max_compression_ratio`
+  (default 100×) in `extract_and_process_embedded_files`. Streams exceeding the limit
+  are skipped with a `ProcessingWarning`. The `max_embedded_file_bytes` cap (default
+  50 MiB) is also enforced for PDF embedded files on the same code path.
+
 - **excel**: DDE / external-call formula scanner. `ExcelExtractor` now scans every cell
   for formula strings matching `=DDE(`, `=WEBSERVICE(`, `=HYPERLINK(`, and `=cmd|`
   (case-insensitive, anchored). Each match produces a `ProcessingWarning` on the returned
