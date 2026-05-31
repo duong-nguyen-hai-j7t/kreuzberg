@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **tools/generate_test_fixtures**: Python-based, deterministic fixture-generation
+  toolkit at `tools/generate_test_fixtures/` that produces real on-disk DOCX,
+  ODT, XLSX, PPTX, and PDF documents exercising track-changes, revisions,
+  comments, incremental-update, diff, and security paths. Each binary fixture
+  ships with a `<stem>.gt.json` ground-truth sidecar consumed by the new
+  integration-test scaffold under `crates/kreuzberg/tests/`. Driven via
+  `task fixtures:generate` / `task fixtures:test`.
+
 - **odt/revisions**: ODT extraction now surfaces internal track-changes in
   `ExtractionResult.revisions` — insertions, deletions, and format changes from
   `<text:tracked-changes>`. Author + timestamp captured from `<office:change-info>`.
