@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **pptx/revisions**: PPTX extraction now surfaces slide comments in
+  `ExtractionResult.revisions` — one `DocumentRevision { kind: Comment }` per `<p:cm>` element
+  with author (resolved via `commentAuthors.xml`), timestamp, and slide-index anchor.
+  The pre-existing document-level revision counter stays in `metadata.additional["revision"]`;
+  this adds the per-comment structured surface. `revisions` is `None` when no
+  `ppt/comments/comment{N}.xml` parts exist.
+
 - **pdf/revisions**: PDF extraction now exposes incremental-update history in
   `ExtractionResult.revisions`. Each historical `xref` section in the file's xref chain becomes one
   `DocumentRevision` carrying the byte offset as `revision_id` (`xref-offset-<N>`), and (when

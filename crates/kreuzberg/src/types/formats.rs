@@ -118,6 +118,14 @@ pub struct PptxExtractionResult {
     /// "modified_by", "created_at", "modified_at", etc.
     #[serde(skip_serializing_if = "HashMap::is_empty", default)]
     pub office_metadata: HashMap<String, String>,
+    /// Slide comments as revisions.
+    ///
+    /// Each `<p:cm>` element in `ppt/comments/comment{N}.xml` becomes a
+    /// `DocumentRevision { kind: Comment }` with author (resolved from
+    /// `ppt/commentAuthors.xml`), ISO-8601 timestamp, and
+    /// `RevisionAnchor::Slide { index }`. `None` when no comment XML parts exist.
+    #[serde(skip_serializing_if = "Option::is_none", default)]
+    pub revisions: Option<Vec<super::revisions::DocumentRevision>>,
 }
 
 /// Email extraction result.

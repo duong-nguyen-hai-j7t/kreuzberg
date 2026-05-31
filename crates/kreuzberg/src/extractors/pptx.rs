@@ -296,6 +296,9 @@ impl PptxExtractor {
         // Transfer per-page content (speaker notes, section names, etc.)
         doc.prebuilt_pages = pptx_result.page_contents;
 
+        // Transfer slide comments as revisions.
+        doc.revisions = pptx_result.revisions;
+
         // Transfer images
         if extract_images {
             doc.images = pptx_result.images;

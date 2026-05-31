@@ -38,6 +38,7 @@
 //! # }
 //! ```
 
+mod comments;
 mod container;
 mod content_builder;
 mod elements;
@@ -154,6 +155,10 @@ fn extract_pptx_from_container<R: std::io::Read + std::io::Seek>(
 
     let notes = extract_all_notes(&mut container)?;
     let section_names = extract_section_names(&mut container)?;
+
+    // Extract slide comments before the container is consumed by the iterator.
+    let slide_paths_for_comments = container.slide_paths().to_vec();
+    let revisions = comments::extract_comments(&mut container, &slide_paths_for_comments);
 
     let mut iterator = SlideIterator::new(container);
     let slide_count = iterator.slide_count();
@@ -315,6 +320,7 @@ fn extract_pptx_from_container<R: std::io::Read + std::io::Seek>(
         document,
         hyperlinks: collected_hyperlinks,
         office_metadata,
+        revisions,
     })
 }
 
@@ -1435,5 +1441,232 @@ pub(crate) mod tests {
             result_true.content.len() >= result_false.content.len(),
             "inject_placeholders=true should produce >= content length vs false"
         );
+    }
+
+    // ── slide comment / revisions tests ──────────────────────────────────────
+
+    /// Build a minimal PPTX with optional comment XML parts.
+    ///
+    /// `slides` is a list of slide text strings.
+    /// `comments_per_slide` is indexed by slide (0-based); each entry is a list
+    /// of `(idx, author_id, datetime, comment_text)` tuples.
+    /// `authors` is a list of `(id, name)` tuples written to `commentAuthors.xml`.
+    fn create_pptx_with_comments(
+        slides: &[&str],
+        comments_per_slide: &[Vec<(u32, u32, &str, &str)>],
+        authors: &[(u32, &str)],
+    ) -> Vec<u8> {
+        use std::io::Write;
+        use zip::write::{SimpleFileOptions, ZipWriter};
+
+        let mut buffer = Vec::new();
+        let mut zip = ZipWriter::new(std::io::Cursor::new(&mut buffer));
+        let opts = SimpleFileOptions::default();
+
+        zip.start_file("[Content_Types].xml", opts).unwrap();
+        zip.write_all(
+            br#"<?xml version="1.0" encoding="UTF-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+    <Default Extension="xml" ContentType="application/xml"/>
+    <Default Extension="rels"
+      ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+</Types>"#,
+        )
+        .unwrap();
+
+        zip.start_file("_rels/.rels", opts).unwrap();
+        zip.write_all(
+            br#"<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+    <Relationship Id="rId1"
+      Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"
+      Target="ppt/presentation.xml"/>
+</Relationships>"#,
+        )
+        .unwrap();
+
+        // Build ppt/_rels/presentation.xml.rels listing each slide
+        let mut rels = String::from(
+            r#"<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">"#,
+        );
+        for (i, _) in slides.iter().enumerate() {
+            use std::fmt::Write as FmtWrite;
+            let _ = write!(
+                rels,
+                r#"<Relationship Id="rId{id}"
+  Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide"
+  Target="slides/slide{id}.xml"/>"#,
+                id = i + 1
+            );
+        }
+        rels.push_str("</Relationships>");
+        zip.start_file("ppt/_rels/presentation.xml.rels", opts).unwrap();
+        zip.write_all(rels.as_bytes()).unwrap();
+
+        // Minimal presentation.xml
+        zip.start_file("ppt/presentation.xml", opts).unwrap();
+        zip.write_all(br#"<?xml version="1.0"?><p:presentation xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:sldIdLst/></p:presentation>"#).unwrap();
+
+        // Write slide XML
+        for (i, text) in slides.iter().enumerate() {
+            let slide_xml = format!(
+                r#"<?xml version="1.0" encoding="UTF-8"?>
+<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+       xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+    <p:cSld><p:spTree><p:sp><p:txBody>
+        <a:p><a:r><a:t>{text}</a:t></a:r></a:p>
+    </p:txBody></p:sp></p:spTree></p:cSld>
+</p:sld>"#
+            );
+            zip.start_file(format!("ppt/slides/slide{}.xml", i + 1), opts).unwrap();
+            zip.write_all(slide_xml.as_bytes()).unwrap();
+        }
+
+        // Write commentAuthors.xml if any authors provided
+        if !authors.is_empty() {
+            let mut authors_xml = String::from(
+                r#"<?xml version="1.0" encoding="UTF-8"?>
+<p:cmAuthorLst xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">"#,
+            );
+            for (id, name) in authors {
+                use std::fmt::Write as FmtWrite;
+                let _ = write!(
+                    authors_xml,
+                    r#"<p:cmAuthor id="{id}" name="{name}" initials="A" lastIdx="0" clrIdx="0"/>"#
+                );
+            }
+            authors_xml.push_str("</p:cmAuthorLst>");
+            zip.start_file("ppt/commentAuthors.xml", opts).unwrap();
+            zip.write_all(authors_xml.as_bytes()).unwrap();
+        }
+
+        // Write per-slide comment files
+        for (slide_idx, slide_comments) in comments_per_slide.iter().enumerate() {
+            if slide_comments.is_empty() {
+                continue;
+            }
+            let mut cm_xml = String::from(
+                r#"<?xml version="1.0" encoding="UTF-8"?>
+<p:cmLst xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">"#,
+            );
+            for (idx, author_id, dt, text) in slide_comments {
+                use std::fmt::Write as FmtWrite;
+                let _ = write!(
+                    cm_xml,
+                    r#"<p:cm authorId="{author_id}" dt="{dt}" idx="{idx}"><p:text>{text}</p:text></p:cm>"#
+                );
+            }
+            cm_xml.push_str("</p:cmLst>");
+            zip.start_file(format!("ppt/comments/comment{}.xml", slide_idx + 1), opts)
+                .unwrap();
+            zip.write_all(cm_xml.as_bytes()).unwrap();
+        }
+
+        // Minimal docProps
+        zip.start_file("docProps/core.xml", opts).unwrap();
+        zip.write_all(
+            br#"<?xml version="1.0"?>
+<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties"
+                   xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:title>Test</dc:title></cp:coreProperties>"#,
+        )
+        .unwrap();
+        zip.start_file("docProps/app.xml", opts).unwrap();
+        let app = format!(
+            r#"<?xml version="1.0"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Slides>{}</Slides></Properties>"#,
+            slides.len()
+        );
+        zip.write_all(app.as_bytes()).unwrap();
+
+        let _ = zip.finish().unwrap();
+        buffer
+    }
+
+    #[test]
+    fn should_return_none_revisions_when_no_comment_files_exist() {
+        let pptx = create_test_pptx_bytes(vec!["Slide with no comments"]);
+        let result = extract_pptx_from_bytes(
+            &pptx,
+            &PptxExtractionOptions {
+                extract_images: false,
+                ..Default::default()
+            },
+        )
+        .unwrap();
+        assert!(
+            result.revisions.is_none(),
+            "revisions should be None when no ppt/comments/ files exist"
+        );
+    }
+
+    #[test]
+    fn should_surface_single_comment_as_revision_with_correct_fields() {
+        let pptx = create_pptx_with_comments(
+            &["Slide One"],
+            &[vec![(1, 0, "2024-03-15T10:30:00Z", "Please revise this slide")]],
+            &[(0, "Alice")],
+        );
+        let result = extract_pptx_from_bytes(
+            &pptx,
+            &PptxExtractionOptions {
+                extract_images: false,
+                ..Default::default()
+            },
+        )
+        .unwrap();
+
+        let revisions = result
+            .revisions
+            .as_ref()
+            .expect("revisions should be Some when comment files exist");
+        assert_eq!(revisions.len(), 1, "expected 1 revision for 1 comment");
+
+        let rev = &revisions[0];
+        assert_eq!(rev.revision_id, "1");
+        assert_eq!(rev.author.as_deref(), Some("Alice"));
+        assert_eq!(rev.timestamp.as_deref(), Some("2024-03-15T10:30:00Z"));
+        use crate::types::revisions::{DiffLine, RevisionAnchor, RevisionKind};
+        assert!(matches!(rev.kind, RevisionKind::Comment));
+        assert!(
+            matches!(&rev.anchor, Some(RevisionAnchor::Slide { index: 0 })),
+            "slide anchor should be 0 (0-indexed) for the first slide"
+        );
+        assert_eq!(rev.delta.content.len(), 1);
+        assert!(matches!(&rev.delta.content[0], DiffLine::Context(t) if t == "Please revise this slide"));
+    }
+
+    #[test]
+    fn should_surface_comments_from_multiple_slides_with_correct_anchors() {
+        let pptx = create_pptx_with_comments(
+            &["Slide 1", "Slide 2", "Slide 3"],
+            &[
+                vec![(1, 0, "2024-03-15T09:00:00Z", "Comment on slide 1")],
+                vec![],
+                vec![
+                    (1, 0, "2024-03-15T11:00:00Z", "Comment A on slide 3"),
+                    (2, 1, "2024-03-15T11:05:00Z", "Comment B on slide 3"),
+                ],
+            ],
+            &[(0, "Alice"), (1, "Bob")],
+        );
+        let result = extract_pptx_from_bytes(
+            &pptx,
+            &PptxExtractionOptions {
+                extract_images: false,
+                ..Default::default()
+            },
+        )
+        .unwrap();
+
+        let revisions = result.revisions.as_ref().expect("revisions should be Some");
+        // 1 comment on slide 1 + 0 on slide 2 + 2 on slide 3 = 3 total
+        assert_eq!(revisions.len(), 3);
+
+        use crate::types::revisions::RevisionAnchor;
+        assert!(matches!(&revisions[0].anchor, Some(RevisionAnchor::Slide { index: 0 })));
+        assert!(matches!(&revisions[1].anchor, Some(RevisionAnchor::Slide { index: 2 })));
+        assert!(matches!(&revisions[2].anchor, Some(RevisionAnchor::Slide { index: 2 })));
+        assert_eq!(revisions[1].author.as_deref(), Some("Alice"));
+        assert_eq!(revisions[2].author.as_deref(), Some("Bob"));
     }
 }
