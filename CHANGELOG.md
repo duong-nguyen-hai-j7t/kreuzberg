@@ -21,6 +21,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   is attempted. Applies to OOXML embedded objects (DOCX/PPTX) and email attachments. Files
   exceeding the cap are skipped with a `ProcessingWarning`. Set to `None` to disable.
 
+- **excel**: DDE / external-call formula scanner. `ExcelExtractor` now scans every cell
+  for formula strings matching `=DDE(`, `=WEBSERVICE(`, `=HYPERLINK(`, and `=cmd|`
+  (case-insensitive, anchored). Each match produces a `ProcessingWarning` on the returned
+  `InternalDocument` carrying the sheet name, cell coordinate (R*C* notation), and the
+  classified formula kind. Warnings are capped at 100 per document to bound output on
+  adversarial sheets. Calamine resolves most formulas to their cached result, so the
+  scanner only fires when the raw formula string is stored verbatim — but that is exactly
+  the case for the highest-risk DDE injection payloads.
+
 ### Added
 
 - **tools/generate_test_fixtures**: Python-based, deterministic fixture-generation

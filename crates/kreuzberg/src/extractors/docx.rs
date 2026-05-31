@@ -2940,7 +2940,7 @@ mod tests {
 
     #[tokio::test]
     async fn should_capture_deletion_delta_text_in_revision() {
-        use crate::types::revisions::{DiffLine, RevisionKind};
+        use crate::types::revisions::DiffLine;
 
         let data = build_test_docx(TRACK_CHANGES_XML);
         let extractor = DocxExtractor::new();

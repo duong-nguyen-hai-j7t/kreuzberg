@@ -179,9 +179,10 @@ mod tests {
         let data = b"Hello world! This is a test document.";
         let zip_bytes = make_zip_with_file("word/embeddings/doc.txt", data);
 
-        let mut config = ExtractionConfig::default();
-        // Set cap to 10 bytes — the file is 37 bytes, so it should be skipped.
-        config.max_embedded_file_bytes = Some(10);
+        let config = ExtractionConfig {
+            max_embedded_file_bytes: Some(10),
+            ..Default::default()
+        };
 
         let (children, warnings) =
             extract_ooxml_embedded_objects(&zip_bytes, "word/embeddings/", "test", &config).await;
@@ -209,9 +210,11 @@ mod tests {
         let data = b"Hello";
         let zip_bytes = make_zip_with_file("word/embeddings/note.txt", data);
 
-        let mut config = ExtractionConfig::default();
-        // Cap is 1 MiB — the 5-byte file is well under it.
-        config.max_embedded_file_bytes = Some(1024 * 1024);
+        let config = ExtractionConfig {
+            // Cap is 1 MiB — the 5-byte file is well under it.
+            max_embedded_file_bytes: Some(1024 * 1024),
+            ..Default::default()
+        };
 
         let (_children, warnings) =
             extract_ooxml_embedded_objects(&zip_bytes, "word/embeddings/", "test", &config).await;
@@ -227,8 +230,10 @@ mod tests {
         let data = b"some content";
         let zip_bytes = make_zip_with_file("word/embeddings/file.txt", data);
 
-        let mut config = ExtractionConfig::default();
-        config.max_embedded_file_bytes = None; // cap disabled
+        let config = ExtractionConfig {
+            max_embedded_file_bytes: None, // cap disabled
+            ..Default::default()
+        };
 
         let (_children, warnings) =
             extract_ooxml_embedded_objects(&zip_bytes, "word/embeddings/", "test", &config).await;
