@@ -9928,12 +9928,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   EmbeddedFile dco_decode_embedded_file(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 3)
-      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
     return EmbeddedFile(
       name: dco_decode_String(arr[0]),
       data: dco_decode_list_prim_u_8_strict(arr[1]),
-      mimeType: dco_decode_opt_String(arr[2]),
+      compressedSize: dco_decode_i_64(arr[2]),
+      mimeType: dco_decode_opt_String(arr[3]),
     );
   }
 
@@ -14809,8 +14810,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_name = sse_decode_String(deserializer);
     var var_data = sse_decode_list_prim_u_8_strict(deserializer);
+    var var_compressedSize = sse_decode_i_64(deserializer);
     var var_mimeType = sse_decode_opt_String(deserializer);
-    return EmbeddedFile(name: var_name, data: var_data, mimeType: var_mimeType);
+    return EmbeddedFile(
+      name: var_name,
+      data: var_data,
+      compressedSize: var_compressedSize,
+      mimeType: var_mimeType,
+    );
   }
 
   @protected
@@ -21132,6 +21139,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.name, serializer);
     sse_encode_list_prim_u_8_strict(self.data, serializer);
+    sse_encode_i_64(self.compressedSize, serializer);
     sse_encode_opt_String(self.mimeType, serializer);
   }
 

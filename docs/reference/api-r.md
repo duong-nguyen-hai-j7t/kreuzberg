@@ -1628,7 +1628,8 @@ Embedded file descriptor extracted from the PDF name tree.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `name` | `character` | — | The filename as stored in the PDF name tree. |
-| `data` | `raw` | — | Raw file bytes from the embedded stream. |
+| `data` | `raw` | — | Raw file bytes from the embedded stream (already decompressed by lopdf). |
+| `compressed_size` | `integer` | — | Compressed byte count of the original stream (before decompression). Used by callers to compute the decompression ratio and detect zip-bomb-style attacks that embed a tiny compressed stream expanding to gigabytes of data. |
 | `mime_type` | `character or NULL` | `NULL` | MIME type if specified in the filespec, otherwise `NULL`. |
 
 ---

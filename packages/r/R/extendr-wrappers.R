@@ -2995,7 +2995,8 @@ LayoutDetection <- new.env(parent = emptyenv())
 `[[.LayoutDetection` <- `$.LayoutDetection`
 #' Embedded file descriptor extracted from the PDF name tree
 #' @field name The filename as stored in the PDF name tree.
-#' @field data Raw file bytes from the embedded stream.
+#' @field data Raw file bytes from the embedded stream (already decompressed by lopdf).
+#' @field compressed_size Compressed byte count of the original stream (before decompression).
 #' @field mime_type MIME type if specified in the filespec, otherwise `None`.
 #' @export
 EmbeddedFile <- new.env(parent = emptyenv())

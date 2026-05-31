@@ -6206,6 +6206,7 @@ const _: fn() = || {
         let EmbeddedFile = None::<crate::EmbeddedFile>.unwrap();
         let _: String = EmbeddedFile.name;
         let _: Vec<u8> = EmbeddedFile.data;
+        let _: i64 = EmbeddedFile.compressed_size;
         let _: Option<String> = EmbeddedFile.mime_type;
     }
     {
@@ -9086,10 +9087,12 @@ impl SseDecode for crate::EmbeddedFile {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_name = <String>::sse_decode(deserializer);
         let mut var_data = <Vec<u8>>::sse_decode(deserializer);
+        let mut var_compressedSize = <i64>::sse_decode(deserializer);
         let mut var_mimeType = <Option<String>>::sse_decode(deserializer);
         return crate::EmbeddedFile {
             name: var_name,
             data: var_data,
+            compressed_size: var_compressedSize,
             mime_type: var_mimeType,
         };
     }
@@ -14856,6 +14859,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::EmbeddedFile> {
         [
             self.0.name.into_into_dart().into_dart(),
             self.0.data.into_into_dart().into_dart(),
+            self.0.compressed_size.into_into_dart().into_dart(),
             self.0.mime_type.into_into_dart().into_dart(),
         ]
         .into_dart()
@@ -18525,6 +18529,7 @@ impl SseEncode for crate::EmbeddedFile {
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.name, serializer);
         <Vec<u8>>::sse_encode(self.data, serializer);
+        <i64>::sse_encode(self.compressed_size, serializer);
         <Option<String>>::sse_encode(self.mime_type, serializer);
     }
 }

@@ -2409,7 +2409,7 @@ bool __swift_bridge__$ContentFilterConfig$strip_repeating_text(void* self);
 bool __swift_bridge__$ContentFilterConfig$include_watermarks(void* self);
 void* __swift_bridge__$EmailConfig$new(struct __private__OptionU32 msg_fallback_codepage);
 struct __private__OptionU32 __swift_bridge__$EmailConfig$msg_fallback_codepage(void* self);
-void* __swift_bridge__$ExtractionConfig$new(bool use_cache, bool enable_quality_processing, void* ocr, bool force_ocr, void* force_ocr_pages, bool disable_ocr, void* chunking, void* content_filter, void* images, void* pdf_options, void* token_reduction, void* language_detection, void* pages, void* keywords, void* postprocessor, void* html_options, void* html_output, struct __private__OptionU64 extraction_timeout_secs, struct __private__OptionUsize max_concurrent_extractions, void* result_format, void* security_limits, void* output_format, void* layout, bool use_layout_for_markdown, bool include_document_structure, void* acceleration, void* cache_namespace, struct __private__OptionU64 cache_ttl_secs, void* email, void* concurrency, uintptr_t max_archive_depth, void* tree_sitter, void* structured_extraction, void* cancel_token);
+void* __swift_bridge__$ExtractionConfig$new(bool use_cache, bool enable_quality_processing, void* ocr, bool force_ocr, void* force_ocr_pages, bool disable_ocr, void* chunking, void* content_filter, void* images, void* pdf_options, void* token_reduction, void* language_detection, void* pages, void* keywords, void* postprocessor, void* html_options, void* html_output, struct __private__OptionU64 extraction_timeout_secs, struct __private__OptionUsize max_concurrent_extractions, void* result_format, void* security_limits, struct __private__OptionU64 max_embedded_file_bytes, void* output_format, void* layout, bool use_layout_for_markdown, bool include_document_structure, void* acceleration, void* cache_namespace, struct __private__OptionU64 cache_ttl_secs, void* email, void* concurrency, uintptr_t max_archive_depth, void* tree_sitter, void* structured_extraction, void* cancel_token);
 bool __swift_bridge__$ExtractionConfig$use_cache(void* self);
 bool __swift_bridge__$ExtractionConfig$enable_quality_processing(void* self);
 void* __swift_bridge__$ExtractionConfig$ocr(void* self);
@@ -2431,6 +2431,7 @@ struct __private__OptionU64 __swift_bridge__$ExtractionConfig$extraction_timeout
 struct __private__OptionUsize __swift_bridge__$ExtractionConfig$max_concurrent_extractions(void* self);
 void* __swift_bridge__$ExtractionConfig$result_format(void* self);
 void* __swift_bridge__$ExtractionConfig$security_limits(void* self);
+struct __private__OptionU64 __swift_bridge__$ExtractionConfig$max_embedded_file_bytes(void* self);
 void* __swift_bridge__$ExtractionConfig$output_format(void* self);
 void* __swift_bridge__$ExtractionConfig$layout(void* self);
 bool __swift_bridge__$ExtractionConfig$use_layout_for_markdown(void* self);

@@ -3427,8 +3427,13 @@ pub struct DetectionResult {
 pub struct EmbeddedFile {
     /// The filename as stored in the PDF name tree.
     pub name: String,
-    /// Raw file bytes from the embedded stream.
+    /// Raw file bytes from the embedded stream (already decompressed by lopdf).
     pub data: Vec<u8>,
+    /// Compressed byte count of the original stream (before decompression).
+    ///
+    /// Used by callers to compute the decompression ratio and detect zip-bomb-style
+    /// attacks that embed a tiny compressed stream expanding to gigabytes of data.
+    pub compressed_size: i64,
     /// MIME type if specified in the filespec, otherwise `None`.
     pub mime_type: Option<String>,
 }
@@ -6224,6 +6229,7 @@ impl From<kreuzberg::pdf::embedded_files::EmbeddedFile> for EmbeddedFile {
         EmbeddedFile {
             name: v.name.into(),
             data: v.data.into(),
+            compressed_size: v.compressed_size as _,
             mime_type: v.mime_type.map(|s| s.into()),
         }
     }

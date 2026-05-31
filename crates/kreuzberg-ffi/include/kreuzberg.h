@@ -11671,6 +11671,13 @@ uint8_t *kreuzberg_embedded_file_data(const KREUZBERGEmbeddedFile *ptr,
                                       uintptr_t *out_len);
 
 /**
+ * Get the `compressed_size` field from a `EmbeddedFile`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kreuzberg_embedded_file_compressed_size(const KREUZBERGEmbeddedFile *ptr);
+
+/**
  * Get the `mime_type` field from a `EmbeddedFile`.
  * # Safety
  * Pointer must be a valid handle returned by this library.

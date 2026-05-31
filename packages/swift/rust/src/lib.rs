@@ -2503,6 +2503,8 @@ mod ffi {
         type EmbeddedFile;
         fn name(&self) -> String;
         fn data(&self) -> Vec<u8>;
+        #[swift_bridge(swift_name = "compressedSize")]
+        fn compressed_size(&self) -> usize;
         #[swift_bridge(swift_name = "mimeType")]
         fn mime_type(&self) -> Option<String>;
     }
@@ -10419,6 +10421,12 @@ impl EmbeddedFile {
     }
     pub fn data(&self) -> Vec<u8> {
         self.0.data.to_vec()
+    }
+    pub fn compressed_size(&self) -> usize {
+        ::serde_json::to_value(&self.0.compressed_size)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
     }
     pub fn mime_type(&self) -> Option<String> {
         self.0.mime_type.clone()

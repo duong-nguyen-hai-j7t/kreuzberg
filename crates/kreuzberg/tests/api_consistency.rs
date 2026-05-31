@@ -265,6 +265,7 @@ fn test_extraction_config_no_unknown_fields_in_default() {
         "email",
         "layout",
         "max_archive_depth",
+        "max_embedded_file_bytes",
         "extraction_timeout_secs",
         "tree_sitter",
         "use_layout_for_markdown",

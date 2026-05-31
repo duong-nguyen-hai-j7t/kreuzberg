@@ -3337,16 +3337,31 @@ class EmbeddedFile {
   /// The filename as stored in the PDF name tree.
   final String name;
 
-  /// Raw file bytes from the embedded stream.
+  /// Raw file bytes from the embedded stream (already decompressed by lopdf).
   final Uint8List data;
+
+  /// Compressed byte count of the original stream (before decompression).
+  ///
+  /// Used by callers to compute the decompression ratio and detect zip-bomb-style
+  /// attacks that embed a tiny compressed stream expanding to gigabytes of data.
+  final PlatformInt64 compressedSize;
 
   /// MIME type if specified in the filespec, otherwise `None`.
   final String? mimeType;
 
-  const EmbeddedFile({required this.name, required this.data, this.mimeType});
+  const EmbeddedFile({
+    required this.name,
+    required this.data,
+    required this.compressedSize,
+    this.mimeType,
+  });
 
   @override
-  int get hashCode => name.hashCode ^ data.hashCode ^ mimeType.hashCode;
+  int get hashCode =>
+      name.hashCode ^
+      data.hashCode ^
+      compressedSize.hashCode ^
+      mimeType.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -3355,6 +3370,7 @@ class EmbeddedFile {
           runtimeType == other.runtimeType &&
           name == other.name &&
           data == other.data &&
+          compressedSize == other.compressedSize &&
           mimeType == other.mimeType;
 }
 
