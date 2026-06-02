@@ -15639,7 +15639,6 @@ impl From<kreuzberg::OcrConfig> for WasmOcrConfig {
             pipeline: val.pipeline.map(Into::into),
             auto_rotate: val.auto_rotate,
             vlm_config: val.vlm_config.map(Into::into),
-            vlm_fallback: Default::default(),
             vlm_prompt: val.vlm_prompt,
             acceleration: val.acceleration.map(Into::into),
             tessdata_bytes: val
