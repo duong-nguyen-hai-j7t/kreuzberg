@@ -63,6 +63,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **python (#937)**: `ExtractionConfig(cancel_token=…)` now accepts the kwarg at
+  construction. The PyO3 `__new__` signature was missing the field while the type
+  stub already declared it, causing a runtime `TypeError` on every kwarg-style
+  instantiation. The v5 binding regenerates the constructor from the Rust core
+  surface, so the kwarg is present and matches the stub.
+
+- **php (#940)**: `composer require kreuzberg-dev/kreuzberg` no longer dead-ends in
+  PIE-without-source. The Packagist manifest carries the PIE `binary.url-template`
+  pointing at the GitHub release asset for the host PHP version / arch / libc /
+  TS-mode combination, and the `php-ext.download-url-method` array prefers the
+  pre-packaged binary over composer-default. PIE downloads the prebuilt `.so`
+  instead of trying to `phpize` a missing `config.m4`.
+
+- **node (#1013)**: PDF chunks now carry `firstPage`/`lastPage` metadata. The
+  chunking pipeline plumbs `page_boundaries` from `result.metadata.pages.boundaries`
+  through `chunk_text_with_heading_source`, and the chunker maps each chunk's
+  character offset back to the source page range. Covered by
+  `test_chunking_populates_page_numbers_for_pdf`.
+
+- **java (#1055)**: `UnsatisfiedLinkError` for `kreuzberg_list_embedding_presets`,
+  `kreuzberg_get_embedding_preset`, and `kreuzberg_embed` at JVM startup is
+  resolved. All three symbols are re-exported from `kreuzberg-ffi` and resolved
+  in `dev.kreuzberg.NativeLib`; the v5 native bundles ship them in every build
+  matrix variant.
+
+- **api (#1071)**: Explicit `ocr.backend: paddle-ocr` (or any non-default backend)
+  in the Docker API config no longer silently falls through to Tesseract.
+  `OcrConfig::effective_pipeline_classical` now short-circuits and returns
+  `None` whenever `self.backend != "tesseract"`, so single-backend mode runs
+  the user-chosen backend directly. The default-tesseract case keeps the
+  `[tesseract @ 100, paddleocr @ 50]` auto-pipeline, but explicit selections
+  are honored as-is rather than masked.
+
 - **ocr/image**: `UnsupportedFormat("image/png")` when calling `extract_file` on a PNG/JPEG
   image with `OcrConfig { backend: "vlm", .. }` and `--features "liter-llm,pdf"` (no `ocr`
   feature). `ImageExtractor` was gated on `#[cfg(any(feature = "ocr", feature = "ocr-wasm"))]`
