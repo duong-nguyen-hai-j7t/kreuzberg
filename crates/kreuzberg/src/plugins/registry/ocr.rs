@@ -126,6 +126,21 @@ impl OcrBackendRegistry {
                 tracing::warn!("Failed to register VLM OCR backend: {e}");
             });
         }
+
+        // Candle-based VLM OCR backends. Per-model sub-features on
+        // `kreuzberg-candle-ocr` (trocr / paddleocr-vl / got-ocr / glm-ocr)
+        // gate the actual registrations.
+        #[cfg(feature = "candle-trocr")]
+        {
+            use crate::candle_ocr::TrocrBackend;
+            use kreuzberg_candle_ocr::models::TrocrVariant;
+            tracing::info!("Initializing TrOCR backend");
+            let backend = TrocrBackend::new(TrocrVariant::default());
+            self.register(Arc::new(backend)).unwrap_or_else(|e| {
+                tracing::warn!("Failed to register TrOCR backend: {e}");
+            });
+            tracing::info!("TrOCR backend registered successfully");
+        }
     }
 
     /// Create a new empty OCR backend registry without default backends.

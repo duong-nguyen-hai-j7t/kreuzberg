@@ -134,6 +134,23 @@ heic = ["dep:kreuzberg-libheif", "dep:image", "dep:nom-exif", "image-encode"]
 # PaddleOCR type definitions only — pure-Rust config structs, no ORT dependency.
 # Exposes PaddleOcrConfig, PaddleLanguage, ModelPaths. Safe on Android/WASM.
 paddle-ocr-types = []
+# Candle-based VLM OCR backends. Pure-Rust transformer inference via candle —
+# no ORT, no native binaries. Compatible with `ort-bundled` / `paddle-ocr`;
+# multiple OCR backends can be registered side-by-side.
+#
+# Per-model sub-features live in kreuzberg-candle-ocr; enable them via
+# `--features candle-ocr,kreuzberg-candle-ocr/trocr` or by depending on
+# kreuzberg-candle-ocr directly with the sub-feature.
+candle-ocr = [
+    "dep:kreuzberg-candle-ocr",
+    "dep:image",
+    "dep:hf-hub",
+    "dep:sha2",
+    "ocr-pipeline",
+    "tokio-runtime",
+]
+# TrOCR backend: aggregate feature enabling candle-ocr with trocr sub-feature
+candle-trocr = ["candle-ocr", "kreuzberg-candle-ocr/trocr"]
 # PaddleOCR via ONNX Runtime
 # Requires 'ocr' feature for shared conversion utilities and table reconstruction
 paddle-ocr = [
@@ -628,6 +645,8 @@ zip = { version = ">=7.0.0", optional = true, default-features = false, features
 
 [target.'cfg(all(not(target_os = "windows"), not(target_arch = "wasm32")))'.dependencies]
 hf-hub = { version = "0.5", default-features = false, features = ["ureq"], optional = true }
+# Candle-based VLM OCR backends - pure-Rust transformer inference, not on WASM yet.
+kreuzberg-candle-ocr = { path = "../kreuzberg-candle-ocr", version = "5.0.0-rc.3", optional = true }
 # PaddleOCR via ONNX Runtime - not available on WASM (vendored from paddle-ocr-rs)
 kreuzberg-paddle-ocr = { path = "../kreuzberg-paddle-ocr", version = "5.0.0-rc.19", optional = true }
 liter-llm = { workspace = true, optional = true, features = ["native-http"] }
@@ -641,6 +660,8 @@ ureq = { version = "3.3", default-features = false, features = ["rustls", "json"
 # Use native-tls on Windows to avoid aws-lc-sys CMake build issues with MinGW
 [target.'cfg(all(target_os = "windows", not(target_arch = "wasm32")))'.dependencies]
 hf-hub = { version = "0.5", default-features = false, features = ["ureq"], optional = true }
+# Candle-based VLM OCR backends - pure-Rust transformer inference, not on WASM yet.
+kreuzberg-candle-ocr = { path = "../kreuzberg-candle-ocr", version = "5.0.0-rc.3", optional = true }
 # PaddleOCR via ONNX Runtime - not available on WASM (vendored from paddle-ocr-rs)
 kreuzberg-paddle-ocr = { path = "../kreuzberg-paddle-ocr", version = "5.0.0-rc.19", optional = true }
 # liter-llm: aws-lc-sys MSVC fix shipped in kreuzberg-dev/liter-llm; track via git patch.
