@@ -36,7 +36,7 @@ pub use html_output::{HtmlOutputConfig, HtmlTheme};
 #[cfg(feature = "layout-types")]
 pub use layout::{LayoutDetectionConfig, TableModel};
 pub use llm::{LlmConfig, StructuredExtractionConfig};
-pub use ocr::{OcrConfig, OcrPipelineConfig, OcrPipelineStage, OcrQualityThresholds};
+pub use ocr::{OcrConfig, OcrPipelineConfig, OcrPipelineStage, OcrQualityThresholds, VlmFallbackPolicy};
 pub use page::PageConfig;
 #[cfg(feature = "pdf")]
 pub use pdf::{HierarchyConfig, PdfConfig};

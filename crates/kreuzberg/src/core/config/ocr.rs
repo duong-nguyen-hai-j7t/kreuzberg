@@ -218,6 +218,71 @@ pub struct OcrPipelineConfig {
     pub quality_thresholds: OcrQualityThresholds,
 }
 
+/// Policy controlling when VLM (Vision Language Model) OCR is used as a fallback.
+///
+/// This knob is syntactic sugar over the explicit [`OcrPipelineConfig`] stage
+/// ordering. When `vlm_fallback` is set and `pipeline` is `None`, an equivalent
+/// pipeline is synthesised at extraction time:
+///
+/// - [`VlmFallbackPolicy::Disabled`] — no synthesis; single-backend mode (default).
+/// - [`VlmFallbackPolicy::OnLowQuality`] — tries the classical backend first; if the
+///   result scores below `quality_threshold`, tries VLM.
+/// - [`VlmFallbackPolicy::Always`] — skips the classical backend and sends every page
+///   to the VLM.
+///
+/// When [`OcrConfig::pipeline`] is explicitly set, `vlm_fallback` is ignored — the
+/// explicit pipeline takes precedence.
+///
+/// # Errors
+///
+/// Both `OnLowQuality` and `Always` require [`OcrConfig::vlm_config`] to be `Some`.
+/// Constructing an [`OcrConfig`] with one of these policies but no `vlm_config` is
+/// detected by [`OcrConfig::validate`] and will surface as a
+/// [`crate::KreuzbergError::Validation`] error at extraction time, not a panic.
+///
+/// # Example
+///
+/// ```rust
+/// use kreuzberg::{OcrConfig, VlmFallbackPolicy, LlmConfig};
+///
+/// # fn example() -> kreuzberg::Result<()> {
+/// let config = OcrConfig {
+///     vlm_fallback: VlmFallbackPolicy::OnLowQuality { quality_threshold: 0.6 },
+///     vlm_config: Some(LlmConfig {
+///         model: "openai/gpt-4o-mini".to_string(),
+///         ..Default::default()
+///     }),
+///     ..Default::default()
+/// };
+///
+/// // Threshold calibration is deferred to the Stage 0 benchmark harness.
+/// assert!(matches!(config.vlm_fallback, VlmFallbackPolicy::OnLowQuality { .. }));
+/// # Ok(())
+/// # }
+/// ```
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "mode", rename_all = "snake_case")]
+pub enum VlmFallbackPolicy {
+    /// No VLM fallback (default). Behaves identically to the pre-policy single-backend mode.
+    #[default]
+    Disabled,
+
+    /// Try the classical OCR backend first. If the quality score is below
+    /// `quality_threshold`, send the page to the VLM.
+    ///
+    /// `quality_threshold` is in the `[0.0, 1.0]` range produced by
+    /// [`crate::text::quality::calculate_quality_score`]. A value of `0.5` is a
+    /// reasonable starting point; calibrate with the Stage 0 benchmark harness.
+    OnLowQuality {
+        /// Minimum acceptable quality score from the classical backend.
+        /// Pages scoring below this are retried with VLM.
+        quality_threshold: f64,
+    },
+
+    /// Skip the classical OCR backend entirely. Every page is sent to the VLM.
+    Always,
+}
+
 /// OCR configuration.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OcrConfig {
@@ -298,10 +363,26 @@ pub struct OcrConfig {
     #[serde(default)]
     pub auto_rotate: bool,
 
+    /// Ergonomic VLM fallback policy.
+    ///
+    /// When set to anything other than [`VlmFallbackPolicy::Disabled`] and
+    /// [`OcrConfig::pipeline`] is `None`, a multi-stage pipeline is synthesised
+    /// automatically:
+    ///
+    /// - [`VlmFallbackPolicy::OnLowQuality`] → `[classical_stage, vlm_stage]` with the
+    ///   `quality_threshold` mapped onto [`OcrQualityThresholds::pipeline_min_quality`].
+    /// - [`VlmFallbackPolicy::Always`] → `[vlm_stage]` only.
+    ///
+    /// Requires [`OcrConfig::vlm_config`] to be `Some` when not `Disabled`.
+    /// When [`OcrConfig::pipeline`] is explicitly set, this field is ignored.
+    #[serde(default)]
+    pub vlm_fallback: VlmFallbackPolicy,
+
     /// VLM (Vision Language Model) OCR configuration.
     ///
-    /// Required when `backend` is `"vlm"`. Uses liter-llm to send page
-    /// images to a vision model for text extraction.
+    /// Required when `backend` is `"vlm"` or when `vlm_fallback` is not
+    /// [`VlmFallbackPolicy::Disabled`]. Uses liter-llm to send page images to a
+    /// vision model for text extraction.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vlm_config: Option<super::llm::LlmConfig>,
 
@@ -347,6 +428,7 @@ impl Default for OcrConfig {
             quality_thresholds: None,
             pipeline: None,
             auto_rotate: false,
+            vlm_fallback: VlmFallbackPolicy::Disabled,
             vlm_config: None,
             vlm_prompt: None,
             acceleration: None,
@@ -365,6 +447,10 @@ impl OcrConfig {
     ///
     /// Typos in backend names are caught at configuration validation time, not at runtime.
     /// Also validates pipeline stage backends when a pipeline is configured.
+    ///
+    /// When `vlm_fallback` is not `Disabled` and no explicit `pipeline` is set,
+    /// `vlm_config` must be `Some`. A missing `vlm_config` in that case is a
+    /// configuration error detected here, not at runtime.
     #[cfg(test)]
     pub(crate) fn validate(&self) -> Result<(), KreuzbergError> {
         validate_ocr_backend(&self.backend)?;
@@ -375,6 +461,12 @@ impl OcrConfig {
                 validate_ocr_backend(&stage.backend)?;
                 crate::core::config_validation::validate_vlm_backend_config(&stage.backend, stage.vlm_config.as_ref())?;
             }
+        } else if self.vlm_fallback != VlmFallbackPolicy::Disabled && self.vlm_config.is_none() {
+            return Err(KreuzbergError::validation(
+                "vlm_fallback is set but vlm_config is missing; \
+                 provide an LlmConfig with the model and API key"
+                    .to_string(),
+            ));
         }
         Ok(())
     }
@@ -387,19 +479,100 @@ impl OcrConfig {
 
     /// Returns the effective pipeline config.
     ///
-    /// - If `pipeline` is explicitly set, returns it.
-    /// - If `paddle-ocr` is compiled in and the backend is the default
-    ///   (tesseract), auto-constructs `[tesseract @ 100, paddleocr @ 50]`.
-    /// - Otherwise returns `None` (single-backend mode).
+    /// Priority order:
+    /// 1. If `pipeline` is explicitly set, return it unchanged.
+    /// 2. If `vlm_fallback` is `OnLowQuality` or `Always` (and `pipeline` is
+    ///    `None`), synthesise a pipeline from the policy:
+    ///    - `OnLowQuality { quality_threshold }` → `[classical_stage @ 100, vlm_stage @ 50]`
+    ///      with `quality_thresholds.pipeline_min_quality = quality_threshold`.
+    ///    - `Always` → `[vlm_stage @ 100]` only (no classical stage).
+    ///    Returns `None` if `vlm_config` is not set (misconfiguration; surfaces at
+    ///    call-time as a logged warning rather than a panic — [`validate`] catches it
+    ///    at config-load time).
+    /// 3. If `paddle-ocr` is compiled in and the backend is the default (tesseract),
+    ///    auto-constructs `[tesseract @ 100, paddleocr @ 50]`.
+    /// 4. Otherwise returns `None` (single-backend mode).
     ///
     /// Explicit non-default backend selections are honored as-is — a silent
     /// paddleocr fallback would mask errors from the chosen backend.
     #[cfg(feature = "ocr")]
     pub(crate) fn effective_pipeline(&self) -> Option<OcrPipelineConfig> {
+        // Rule 1: explicit pipeline always wins.
         if self.pipeline.is_some() {
             return self.pipeline.clone();
         }
 
+        // Rule 2: synthesise from vlm_fallback policy.
+        match &self.vlm_fallback {
+            VlmFallbackPolicy::OnLowQuality { quality_threshold } => {
+                let Some(vlm_cfg) = self.vlm_config.clone() else {
+                    tracing::warn!(
+                        "vlm_fallback=OnLowQuality is set but vlm_config is missing; \
+                         falling through to single-backend mode"
+                    );
+                    // Fall through to rules 3/4 below.
+                    return self.effective_pipeline_classical();
+                };
+                let mut thresholds = self.effective_thresholds();
+                thresholds.pipeline_min_quality = *quality_threshold;
+                let classical_stage = OcrPipelineStage {
+                    backend: self.backend.clone(),
+                    priority: 100,
+                    language: None,
+                    tesseract_config: self.tesseract_config.clone(),
+                    paddle_ocr_config: None,
+                    vlm_config: None,
+                    backend_options: self.backend_options.clone(),
+                };
+                let vlm_stage = OcrPipelineStage {
+                    backend: "vlm".to_string(),
+                    priority: 50,
+                    language: None,
+                    tesseract_config: None,
+                    paddle_ocr_config: None,
+                    vlm_config: Some(vlm_cfg),
+                    backend_options: None,
+                };
+                return Some(OcrPipelineConfig {
+                    stages: vec![classical_stage, vlm_stage],
+                    quality_thresholds: thresholds,
+                });
+            }
+            VlmFallbackPolicy::Always => {
+                let Some(vlm_cfg) = self.vlm_config.clone() else {
+                    tracing::warn!(
+                        "vlm_fallback=Always is set but vlm_config is missing; \
+                         falling through to single-backend mode"
+                    );
+                    return self.effective_pipeline_classical();
+                };
+                let vlm_stage = OcrPipelineStage {
+                    backend: "vlm".to_string(),
+                    priority: 100,
+                    language: None,
+                    tesseract_config: None,
+                    paddle_ocr_config: None,
+                    vlm_config: Some(vlm_cfg),
+                    backend_options: None,
+                };
+                return Some(OcrPipelineConfig {
+                    stages: vec![vlm_stage],
+                    quality_thresholds: self.effective_thresholds(),
+                });
+            }
+            VlmFallbackPolicy::Disabled => {}
+        }
+
+        // Rules 3/4: paddle-ocr auto-pipeline or single-backend.
+        self.effective_pipeline_classical()
+    }
+
+    /// Classical pipeline synthesis: paddle-ocr auto-fallback or `None`.
+    ///
+    /// Extracted so the vlm_fallback paths can fall through cleanly without
+    /// duplicating the paddle-ocr conditional compilation block.
+    #[cfg(feature = "ocr")]
+    fn effective_pipeline_classical(&self) -> Option<OcrPipelineConfig> {
         #[cfg(feature = "paddle-ocr")]
         {
             if self.backend != default_tesseract_backend() {
@@ -622,6 +795,246 @@ mod tests {
         let eff_default = config_default.effective_thresholds();
         assert_eq!(eff_default.min_total_non_whitespace, 64);
         assert_eq!(eff_default.min_meaningful_words, 3);
+    }
+
+    // ── VlmFallbackPolicy tests ──
+
+    #[test]
+    fn test_vlm_fallback_policy_default_is_disabled() {
+        let config = OcrConfig::default();
+        assert_eq!(config.vlm_fallback, VlmFallbackPolicy::Disabled);
+    }
+
+    #[test]
+    fn test_vlm_fallback_disabled_validate_ok_without_vlm_config() {
+        let config = OcrConfig {
+            vlm_fallback: VlmFallbackPolicy::Disabled,
+            vlm_config: None,
+            ..Default::default()
+        };
+        assert!(config.validate().is_ok());
+    }
+
+    #[test]
+    fn test_vlm_fallback_on_low_quality_missing_vlm_config_validate_err() {
+        let config = OcrConfig {
+            vlm_fallback: VlmFallbackPolicy::OnLowQuality { quality_threshold: 0.6 },
+            vlm_config: None,
+            ..Default::default()
+        };
+        let result = config.validate();
+        assert!(result.is_err());
+        let err_msg = result.unwrap_err().to_string();
+        assert!(
+            err_msg.contains("vlm_config"),
+            "error must mention vlm_config; got: {err_msg}"
+        );
+    }
+
+    #[test]
+    fn test_vlm_fallback_always_missing_vlm_config_validate_err() {
+        let config = OcrConfig {
+            vlm_fallback: VlmFallbackPolicy::Always,
+            vlm_config: None,
+            ..Default::default()
+        };
+        let result = config.validate();
+        assert!(result.is_err());
+        let err_msg = result.unwrap_err().to_string();
+        assert!(
+            err_msg.contains("vlm_config"),
+            "error must mention vlm_config; got: {err_msg}"
+        );
+    }
+
+    /// `OnLowQuality` synthesises a two-stage pipeline equivalent to what a caller
+    /// would write by hand with an explicit `OcrPipelineConfig`.
+    #[cfg(feature = "ocr")]
+    #[test]
+    fn test_vlm_fallback_on_low_quality_synthesises_two_stage_pipeline() {
+        use super::super::llm::LlmConfig;
+
+        let vlm_cfg = LlmConfig {
+            model: "openai/gpt-4o-mini".to_string(),
+            base_url: Some("http://localhost:9999".to_string()),
+            ..Default::default()
+        };
+
+        // Config under test: OnLowQuality with threshold 0.6.
+        let config = OcrConfig {
+            backend: "tesseract".to_string(),
+            vlm_fallback: VlmFallbackPolicy::OnLowQuality { quality_threshold: 0.6 },
+            vlm_config: Some(vlm_cfg.clone()),
+            ..Default::default()
+        };
+
+        // Equivalent explicit pipeline: what a caller would write by hand.
+        let explicit = OcrConfig {
+            pipeline: Some(OcrPipelineConfig {
+                stages: vec![
+                    OcrPipelineStage {
+                        backend: "tesseract".to_string(),
+                        priority: 100,
+                        language: None,
+                        tesseract_config: None,
+                        paddle_ocr_config: None,
+                        vlm_config: None,
+                        backend_options: None,
+                    },
+                    OcrPipelineStage {
+                        backend: "vlm".to_string(),
+                        priority: 50,
+                        language: None,
+                        tesseract_config: None,
+                        paddle_ocr_config: None,
+                        vlm_config: Some(vlm_cfg),
+                        backend_options: None,
+                    },
+                ],
+                quality_thresholds: OcrQualityThresholds {
+                    pipeline_min_quality: 0.6,
+                    ..Default::default()
+                },
+            }),
+            ..Default::default()
+        };
+
+        let synthesised = config.effective_pipeline().expect("must synthesise a pipeline");
+        let hand_written = explicit.effective_pipeline().expect("explicit pipeline must be returned");
+
+        // Stage count matches.
+        assert_eq!(synthesised.stages.len(), hand_written.stages.len(), "stage count mismatch");
+
+        // Stage 0: classical backend.
+        assert_eq!(synthesised.stages[0].backend, hand_written.stages[0].backend);
+        assert_eq!(synthesised.stages[0].priority, hand_written.stages[0].priority);
+
+        // Stage 1: VLM backend with matching model.
+        assert_eq!(synthesised.stages[1].backend, hand_written.stages[1].backend);
+        assert_eq!(synthesised.stages[1].priority, hand_written.stages[1].priority);
+        let s_vlm = synthesised.stages[1].vlm_config.as_ref().expect("synthesised stage 1 must have vlm_config");
+        let h_vlm = hand_written.stages[1].vlm_config.as_ref().expect("hand-written stage 1 must have vlm_config");
+        assert_eq!(s_vlm.model, h_vlm.model);
+
+        // Quality threshold propagated correctly.
+        assert!(
+            (synthesised.quality_thresholds.pipeline_min_quality - 0.6).abs() < f64::EPSILON,
+            "threshold must be 0.6, got {}",
+            synthesised.quality_thresholds.pipeline_min_quality
+        );
+        assert!(
+            (hand_written.quality_thresholds.pipeline_min_quality - 0.6).abs() < f64::EPSILON,
+        );
+    }
+
+    /// `Always` synthesises a single-stage VLM-only pipeline.
+    #[cfg(feature = "ocr")]
+    #[test]
+    fn test_vlm_fallback_always_synthesises_single_stage_vlm_pipeline() {
+        use super::super::llm::LlmConfig;
+
+        let vlm_cfg = LlmConfig {
+            model: "anthropic/claude-sonnet-4-20250514".to_string(),
+            ..Default::default()
+        };
+        let config = OcrConfig {
+            vlm_fallback: VlmFallbackPolicy::Always,
+            vlm_config: Some(vlm_cfg),
+            ..Default::default()
+        };
+
+        let pipeline = config.effective_pipeline().expect("Always must produce a pipeline");
+        assert_eq!(pipeline.stages.len(), 1, "Always must produce exactly one stage");
+        assert_eq!(pipeline.stages[0].backend, "vlm");
+        assert_eq!(pipeline.stages[0].priority, 100);
+        assert!(pipeline.stages[0].vlm_config.is_some());
+    }
+
+    /// `Disabled` with no explicit pipeline produces no synthesised pipeline
+    /// (consistent with pre-policy single-backend mode).
+    #[cfg(feature = "ocr")]
+    #[test]
+    fn test_vlm_fallback_disabled_no_synthesis() {
+        let config = OcrConfig {
+            // Non-default backend so paddleocr auto-fallback is skipped too.
+            backend: "easyocr".to_string(),
+            vlm_fallback: VlmFallbackPolicy::Disabled,
+            vlm_config: None,
+            ..Default::default()
+        };
+        // No explicit pipeline + Disabled policy → None.
+        assert!(config.effective_pipeline().is_none());
+    }
+
+    /// Explicit pipeline always wins over vlm_fallback (regression guard).
+    #[cfg(feature = "ocr")]
+    #[test]
+    fn test_explicit_pipeline_wins_over_vlm_fallback() {
+        use super::super::llm::LlmConfig;
+
+        let explicit = OcrPipelineConfig {
+            stages: vec![OcrPipelineStage {
+                backend: "easyocr".to_string(),
+                priority: 99,
+                language: None,
+                tesseract_config: None,
+                paddle_ocr_config: None,
+                vlm_config: None,
+                backend_options: None,
+            }],
+            quality_thresholds: OcrQualityThresholds::default(),
+        };
+        let config = OcrConfig {
+            pipeline: Some(explicit),
+            vlm_fallback: VlmFallbackPolicy::Always, // would override if not for explicit pipeline
+            vlm_config: Some(LlmConfig {
+                model: "openai/gpt-4o".to_string(),
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let pipeline = config.effective_pipeline().expect("explicit pipeline must be returned");
+        assert_eq!(pipeline.stages.len(), 1, "explicit pipeline must win");
+        assert_eq!(pipeline.stages[0].backend, "easyocr", "explicit pipeline must win");
+    }
+
+    #[test]
+    fn test_vlm_fallback_policy_serde_roundtrip_disabled() {
+        let policy = VlmFallbackPolicy::Disabled;
+        let json = serde_json::to_string(&policy).unwrap();
+        let deserialized: VlmFallbackPolicy = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized, VlmFallbackPolicy::Disabled);
+    }
+
+    #[test]
+    fn test_vlm_fallback_policy_serde_roundtrip_on_low_quality() {
+        let policy = VlmFallbackPolicy::OnLowQuality { quality_threshold: 0.42 };
+        let json = serde_json::to_string(&policy).unwrap();
+        let deserialized: VlmFallbackPolicy = serde_json::from_str(&json).unwrap();
+        match deserialized {
+            VlmFallbackPolicy::OnLowQuality { quality_threshold } => {
+                assert!((quality_threshold - 0.42).abs() < f64::EPSILON);
+            }
+            other => panic!("expected OnLowQuality, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn test_vlm_fallback_policy_serde_roundtrip_always() {
+        let policy = VlmFallbackPolicy::Always;
+        let json = serde_json::to_string(&policy).unwrap();
+        let deserialized: VlmFallbackPolicy = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized, VlmFallbackPolicy::Always);
+    }
+
+    #[test]
+    fn test_ocr_config_vlm_fallback_omitted_when_disabled_default() {
+        // When vlm_fallback is Disabled (the default), we confirm it round-trips.
+        let config = OcrConfig::default();
+        let json = serde_json::to_string(&config).unwrap();
+        let deserialized: OcrConfig = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized.vlm_fallback, VlmFallbackPolicy::Disabled);
     }
 
     // ── Serde tests ──

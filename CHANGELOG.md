@@ -91,6 +91,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **config**: new `VlmFallbackPolicy` enum (`Disabled` | `OnLowQuality { quality_threshold }` | `Always`)
+  and matching `vlm_fallback` field on `OcrConfig`. When set to anything other than `Disabled` and
+  `OcrConfig::pipeline` is `None`, a multi-stage pipeline is synthesised automatically:
+  `OnLowQuality` → `[classical_stage @ priority 100, vlm_stage @ priority 50]` with the threshold
+  mapped onto `OcrQualityThresholds::pipeline_min_quality`; `Always` → `[vlm_stage @ priority 100]`
+  only. Requires `vlm_config` to be `Some` — missing config surfaces as `KreuzbergError::Validation`
+  from `OcrConfig::validate`, not a panic. Explicit `pipeline` always wins over `vlm_fallback`.
+  Threshold calibration is deferred to the Stage 0 benchmark harness.
+
+- **pdf/vlm**: per-region VLM extraction for figure regions (`liter-llm` + `layout-detection`
+  features, non-Windows). New `llm::region_extractor` module with `RegionKind` enum (`Figure`,
+  `DenseTable`, `ComplexLayout`) and `extract_region_with_vlm` async function that crops a pre-detected
+  layout region and sends it to the VLM with a per-kind prompt. New
+  `extractors::pdf::region_vlm::extract_vlm_regions` wires this into the PDF pipeline: when
+  `vlm_fallback != Disabled` and layout detection found `Picture` regions, each region is cropped from
+  the page raster, PNG-encoded, and sent to the VLM. Results are injected into the assembled
+  `InternalDocument`. VLM failures per region are suppressed with `tracing::warn` — one bad crop
+  cannot abort the whole extraction. Regions below 60% confidence or 1 000 px² area are skipped.
+
 - **tools/generate_test_fixtures**: Python-based, deterministic fixture-generation
   toolkit at `tools/generate_test_fixtures/` that produces real on-disk DOCX,
   ODT, XLSX, PPTX, and PDF documents exercising track-changes, revisions,
