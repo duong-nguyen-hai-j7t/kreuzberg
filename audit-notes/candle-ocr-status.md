@@ -8,7 +8,7 @@ Audit date: 2026-06-03
 | Backend | Sub-feature | Engine | Pool | CLI flag | Verified |
 |---|---|---|---|---|---|
 | `candle-trocr` | `trocr` | `TrocrEngine` (BEiT + RoBERTa via candle `trocr` + `vit` modules) | per-call construction (TrOCR is line-level; no pool needed yet) | `--ocr-backend candle-trocr` | ✅ end-to-end |
-| `candle-paddleocr-vl` | `paddleocr-vl` | `PaddleOcrVlEngine` (NaViT + ERNIE-4.5 via candle `paddleocr_vl`) | `LazyLock<RwLock<AHashMap<(PaddleOcrVlTask, DevicePreference), Arc<Engine>>>>` | `--ocr-backend candle-paddleocr-vl` | ⏳ smoke in progress |
+| `candle-paddleocr-vl` | `paddleocr-vl` | `PaddleOcrVlEngine` (NaViT + ERNIE-4.5 via candle `paddleocr_vl`) | `LazyLock<RwLock<AHashMap<(PaddleOcrVlTask, DevicePreference), Arc<Engine>>>>` | `--ocr-backend candle-paddleocr-vl` | ✅ end-to-end (Metal) |
 
 Two earlier scaffolds (`candle-got-ocr`, `candle-glm-ocr`) were reverted in
 commits `3deec9206a` and `153aecbc9b` because the subagents that landed them
@@ -76,8 +76,26 @@ fixture confirms the engine itself works correctly.
 
 ### PaddleOCR-VL (`candle-paddleocr-vl`)
 
-CLI smoke in progress at audit time (cache at 1.8 GB; ~14 min elapsed). The
-backend is a full-page VLM that emits markdown directly. Updates pending.
+CLI smoke (`test_documents/images/english_and_korean.png`):
+
+- First attempt (CPU): timed out at the 10 minute extraction limit. The
+  default candle build is CPU-only because the `candle-{cuda,metal,...}`
+  pass-throughs are not pulled in by `candle-paddleocr-vl` itself.
+- Second attempt (`--features candle-paddleocr-vl,candle-metal` on macOS,
+  Apple M-series): `DevicePreference::Auto` selected Metal; decode
+  completed in **72.7 s**.
+
+Output (excerpt): `"RULES AND INSTRUCTIONS\n1. Template for day 1 (korean),
+for day 2 (English) for day 3 both English and korean.\n2. Use all your
+accounts. ... 안녕하세요, 저희는 YGE소속 그룹 TREASURE멤버 HARUTO씨의
+팬입니다. ..."` — full multi-paragraph transcription with both Latin and
+Hangul scripts correctly recognised. Quality score: 1.0.
+
+This is the practical full-page candle OCR backend. CPU decode on this size
+of VLM (~0.9 B params, ~1.8 GB safetensors) is impractically slow; users
+should always enable one of the `candle-{cuda,metal,accelerate,mkl}`
+aggregate features on platforms with hardware support. See the candle-ocr
+README for details.
 
 ## Coverage
 
