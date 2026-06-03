@@ -46,35 +46,6 @@ use thiserror::Error;
 /// This is the standard return type for all fallible operations in Kreuzberg.
 pub type Result<T> = std::result::Result<T, KreuzbergError>;
 
-/// Wrapper for IO errors (internal, not exposed in bindings).
-///
-/// Hides the std::io::Error type from FFI/binding surface while preserving
-/// error context for logging and debugging.
-#[derive(Debug)]
-#[doc(hidden)]
-#[cfg_attr(alef, alef(skip))]
-pub struct IoErrorInner(pub std::io::Error);
-
-impl std::fmt::Display for IoErrorInner {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        self.0.fmt(f)
-    }
-}
-
-impl std::error::Error for IoErrorInner {}
-
-impl From<std::io::Error> for IoErrorInner {
-    fn from(err: std::io::Error) -> Self {
-        IoErrorInner(err)
-    }
-}
-
-impl From<std::io::Error> for KreuzbergError {
-    fn from(err: std::io::Error) -> Self {
-        KreuzbergError::Io(IoErrorInner::from(err))
-    }
-}
-
 /// Main error type for all Kreuzberg operations.
 ///
 /// All errors in Kreuzberg use this enum, which preserves error chains
@@ -100,8 +71,8 @@ pub enum KreuzbergError {
     Io(
         #[from]
         #[cfg_attr(alef, alef(skip))]
-        IoErrorInner,
-    ),
+        std::io::Error,
+    ), // Excluded from bindings; IO errors bubble up via Result
 
     #[error("Parsing error: {message}")]
     Parsing {

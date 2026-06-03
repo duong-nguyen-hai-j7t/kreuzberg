@@ -868,40 +868,6 @@ int tokenCount(String text)
 
 ---
 
-#### summarizeWithLlm()
-
-Run abstractive summarisation against the configured LLM.
-
-`text` is the document content to summarise (already extracted by the
-pipeline). `max_tokens` softly bounds the requested summary length in
-natural-language tokens; `null` uses `DEFAULT_MAX_TOKENS`.
-
-Returns the summary string and the (optional) usage record.
-
-**Errors:**
-
-Propagates any LLM client / request error returned by
-`complete_text`.
-
-**Signature:**
-
-```dart
-String summarizeWithLlm(String text, LlmConfig llmConfig, [int? maxTokens])
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `text` | `String` | Yes | The text |
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `maxTokens` | `int?` | No | The max tokens |
-
-**Returns:** `String`
-**Errors:** Throws `Error`.
-
----
-
 #### translateResult()
 
 Translate the extraction result in place.
@@ -987,115 +953,6 @@ String extractRegionWithVlm(Uint8List imageBytes, String imageMime, RegionKind r
 | `regionKind` | `RegionKind` | Yes | The region kind |
 | `llmConfig` | `LlmConfig` | Yes | The llm config |
 | `customPrompt` | `String?` | No | The custom prompt |
-
-**Returns:** `String`
-**Errors:** Throws `Error`.
-
----
-
-#### extractRegionWithVlmUsage()
-
-Same as `extract_region_with_vlm`, but also returns the `LlmUsage` data captured
-from the underlying VLM call.
-
-Callers that need to track token / cost data per call (for example the captioning
-post-processor, which appends every call's usage to
-`ExtractionResult.llm_usage`) should
-prefer this variant. The plain `extract_region_with_vlm` is kept for callers that
-only care about the markdown output (PDF region splicing).
-
-**Errors:**
-
-Same as `extract_region_with_vlm`.
-
-**Signature:**
-
-```dart
-String extractRegionWithVlmUsage(Uint8List imageBytes, String imageMime, RegionKind regionKind, LlmConfig llmConfig, [String? customPrompt])
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `imageBytes` | `Uint8List` | Yes | The image bytes |
-| `imageMime` | `String` | Yes | The image mime |
-| `regionKind` | `RegionKind` | Yes | The region kind |
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `customPrompt` | `String?` | No | The custom prompt |
-
-**Returns:** `String`
-**Errors:** Throws `Error`.
-
----
-
-#### completeWithJsonSchema()
-
-Send a free-form prompt to the configured LLM with a JSON-schema response
-constraint and return the parsed JSON value plus captured usage.
-
-This is the shared helper used by LLM-backed post-processors (page
-classification, LLM-driven NER, etc.) that need structured output but do not
-want to depend on `StructuredExtractionConfig`'s schema/prompt machinery.
-
-  distinguish multiple structured outputs).
-
-- `schema` — the JSON schema the LLM is required to obey.
-- `source` — label used for the returned `LlmUsage` entry.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-the response contains no content, or the response is not parseable JSON.
-
-**Signature:**
-
-```dart
-String completeWithJsonSchema(LlmConfig llmConfig, String prompt, String schemaName, String schema, String source)
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `prompt` | `String` | Yes | The prompt |
-| `schemaName` | `String` | Yes | The schema name |
-| `schema` | `String` | Yes | The schema |
-| `source` | `String` | Yes | The source |
-
-**Returns:** `String`
-**Errors:** Throws `Error`.
-
----
-
-#### completeText()
-
-Send a single user prompt to the configured LLM and return the response text
-along with the captured usage metadata.
-
-The `source` argument labels the `LlmUsage` entry that is returned so
-callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
-etc.). The helper performs a single non-streaming chat completion request.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-or the response does not contain assistant content.
-
-**Signature:**
-
-```dart
-String completeText(LlmConfig llmConfig, String prompt, String source)
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `prompt` | `String` | Yes | The prompt |
-| `source` | `String` | Yes | The source |
 
 **Returns:** `String`
 **Errors:** Throws `Error`.
@@ -5990,7 +5847,6 @@ type-safe, clean metadata without nested optionals.
 | `Jats` | Jats — Fields: `0`: `JatsMetadata` |
 | `Epub` | Epub format — Fields: `0`: `EpubMetadata` |
 | `Pst` | Pst — Fields: `0`: `PstMetadata` |
-| `Code` | Code — Fields: `0`: `String` |
 
 ---
 

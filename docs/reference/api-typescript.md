@@ -868,40 +868,6 @@ function tokenCount(text: string): number
 
 ---
 
-#### summarizeWithLlm()
-
-Run abstractive summarisation against the configured LLM.
-
-`text` is the document content to summarise (already extracted by the
-pipeline). `max_tokens` softly bounds the requested summary length in
-natural-language tokens; `null` uses `DEFAULT_MAX_TOKENS`.
-
-Returns the summary string and the (optional) usage record.
-
-**Errors:**
-
-Propagates any LLM client / request error returned by
-`complete_text`.
-
-**Signature:**
-
-```typescript
-function summarizeWithLlm(text: string, llmConfig: LlmConfig, maxTokens?: number): Promise<string>
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `text` | `string` | Yes | The text |
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `maxTokens` | `number \| null` | No | The max tokens |
-
-**Returns:** `string`
-**Errors:** Throws `Error` with a descriptive message.
-
----
-
 #### translateResult()
 
 Translate the extraction result in place.
@@ -987,115 +953,6 @@ function extractRegionWithVlm(imageBytes: Buffer, imageMime: string, regionKind:
 | `regionKind` | `RegionKind` | Yes | The region kind |
 | `llmConfig` | `LlmConfig` | Yes | The llm config |
 | `customPrompt` | `string \| null` | No | The custom prompt |
-
-**Returns:** `string`
-**Errors:** Throws `Error` with a descriptive message.
-
----
-
-#### extractRegionWithVlmUsage()
-
-Same as `extract_region_with_vlm`, but also returns the `LlmUsage` data captured
-from the underlying VLM call.
-
-Callers that need to track token / cost data per call (for example the captioning
-post-processor, which appends every call's usage to
-`ExtractionResult.llm_usage`) should
-prefer this variant. The plain `extract_region_with_vlm` is kept for callers that
-only care about the markdown output (PDF region splicing).
-
-**Errors:**
-
-Same as `extract_region_with_vlm`.
-
-**Signature:**
-
-```typescript
-function extractRegionWithVlmUsage(imageBytes: Buffer, imageMime: string, regionKind: RegionKind, llmConfig: LlmConfig, customPrompt?: string): Promise<string>
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `imageBytes` | `Buffer` | Yes | The image bytes |
-| `imageMime` | `string` | Yes | The image mime |
-| `regionKind` | `RegionKind` | Yes | The region kind |
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `customPrompt` | `string \| null` | No | The custom prompt |
-
-**Returns:** `string`
-**Errors:** Throws `Error` with a descriptive message.
-
----
-
-#### completeWithJsonSchema()
-
-Send a free-form prompt to the configured LLM with a JSON-schema response
-constraint and return the parsed JSON value plus captured usage.
-
-This is the shared helper used by LLM-backed post-processors (page
-classification, LLM-driven NER, etc.) that need structured output but do not
-want to depend on `StructuredExtractionConfig`'s schema/prompt machinery.
-
-  distinguish multiple structured outputs).
-
-- `schema` — the JSON schema the LLM is required to obey.
-- `source` — label used for the returned `LlmUsage` entry.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-the response contains no content, or the response is not parseable JSON.
-
-**Signature:**
-
-```typescript
-function completeWithJsonSchema(llmConfig: LlmConfig, prompt: string, schemaName: string, schema: unknown, source: string): Promise<string>
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `prompt` | `string` | Yes | The prompt |
-| `schemaName` | `string` | Yes | The schema name |
-| `schema` | `unknown` | Yes | The schema |
-| `source` | `string` | Yes | The source |
-
-**Returns:** `string`
-**Errors:** Throws `Error` with a descriptive message.
-
----
-
-#### completeText()
-
-Send a single user prompt to the configured LLM and return the response text
-along with the captured usage metadata.
-
-The `source` argument labels the `LlmUsage` entry that is returned so
-callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
-etc.). The helper performs a single non-streaming chat completion request.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-or the response does not contain assistant content.
-
-**Signature:**
-
-```typescript
-function completeText(llmConfig: LlmConfig, prompt: string, source: string): Promise<string>
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llmConfig` | `LlmConfig` | Yes | The llm config |
-| `prompt` | `string` | Yes | The prompt |
-| `source` | `string` | Yes | The source |
 
 **Returns:** `string`
 **Errors:** Throws `Error` with a descriptive message.
@@ -5990,7 +5847,6 @@ type-safe, clean metadata without nested optionals.
 | `Jats` | Jats — Fields: `0`: `JatsMetadata` |
 | `Epub` | Epub format — Fields: `0`: `EpubMetadata` |
 | `Pst` | Pst — Fields: `0`: `PstMetadata` |
-| `Code` | Code — Fields: `0`: `string` |
 
 ---
 

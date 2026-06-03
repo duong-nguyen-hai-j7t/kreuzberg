@@ -88,20 +88,11 @@ public func summarize<GenericIntoRustString: IntoRustString>(_ text: GenericInto
 public func tokenCount<GenericIntoRustString: IntoRustString>(_ text: GenericIntoRustString) -> UInt32 {
     __swift_bridge__$token_count({ let rustString = text.intoRustString(); rustString.isOwned = false; return rustString.ptr }())
 }
-public func summarizeWithLlm<GenericIntoRustString: IntoRustString>(_ text: GenericIntoRustString, _ llm_config: LlmConfig, _ max_tokens: Optional<UInt32>) throws -> RustString {
-    try { let val = __swift_bridge__$summarize_with_llm({ let rustString = text.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), {llm_config.isOwned = false; return llm_config.ptr;}(), max_tokens.intoFfiRepr()); if val.is_ok { return RustString(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
 public func translateResult(_ result: ExtractionResult, _ config: TranslationConfig) throws -> () {
     try { let val = __swift_bridge__$translate_result({result.isOwned = false; return result.ptr;}(), {config.isOwned = false; return config.ptr;}()); if val != nil { throw RustString(ptr: val!) } else { return } }()
 }
 public func compare(_ a: ExtractionResult, _ b: ExtractionResult, _ opts: DiffOptions) -> ExtractionDiff {
     ExtractionDiff(ptr: __swift_bridge__$compare({a.isOwned = false; return a.ptr;}(), {b.isOwned = false; return b.ptr;}(), {opts.isOwned = false; return opts.ptr;}()))
-}
-public func completeWithJsonSchema<GenericIntoRustString: IntoRustString>(_ llm_config: LlmConfig, _ prompt: GenericIntoRustString, _ schema_name: GenericIntoRustString, _ schema: GenericIntoRustString, _ source: GenericIntoRustString) throws -> RustString {
-    try { let val = __swift_bridge__$complete_with_json_schema({llm_config.isOwned = false; return llm_config.ptr;}(), { let rustString = prompt.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { let rustString = schema_name.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { let rustString = schema.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { let rustString = source.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return RustString(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
-public func completeText<GenericIntoRustString: IntoRustString>(_ llm_config: LlmConfig, _ prompt: GenericIntoRustString, _ source: GenericIntoRustString) throws -> RustString {
-    try { let val = __swift_bridge__$complete_text({llm_config.isOwned = false; return llm_config.ptr;}(), { let rustString = prompt.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { let rustString = source.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return RustString(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
 public func embedTextsAsync<GenericIntoRustString: IntoRustString>(_ texts: RustVec<GenericIntoRustString>, _ config: EmbeddingConfig) throws -> RustString {
     try { let val = __swift_bridge__$embed_texts_async({ let val = texts; val.isOwned = false; return val.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return RustString(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
@@ -1636,8 +1627,8 @@ public class ExtractionConfig: ExtractionConfigRefMut {
     }
 }
 extension ExtractionConfig {
-    public convenience init<GenericIntoRustString: IntoRustString>(_ use_cache: Bool, _ enable_quality_processing: Bool, _ ocr: Optional<OcrConfig>, _ force_ocr: Bool, _ force_ocr_pages: Optional<RustVec<UInt32>>, _ disable_ocr: Bool, _ chunking: Optional<ChunkingConfig>, _ content_filter: Optional<ContentFilterConfig>, _ images: Optional<ImageExtractionConfig>, _ pdf_options: Optional<PdfConfig>, _ token_reduction: Optional<TokenReductionOptions>, _ language_detection: Optional<LanguageDetectionConfig>, _ pages: Optional<PageConfig>, _ keywords: Optional<KeywordConfig>, _ postprocessor: Optional<PostProcessorConfig>, _ html_options: Optional<GenericIntoRustString>, _ html_output: Optional<HtmlOutputConfig>, _ extraction_timeout_secs: Optional<UInt64>, _ max_concurrent_extractions: Optional<UInt>, _ result_format: ResultFormat, _ security_limits: Optional<SecurityLimits>, _ max_embedded_file_bytes: Optional<UInt64>, _ output_format: OutputFormat, _ layout: Optional<LayoutDetectionConfig>, _ use_layout_for_markdown: Bool, _ include_document_structure: Bool, _ acceleration: Optional<AccelerationConfig>, _ cache_namespace: Optional<GenericIntoRustString>, _ cache_ttl_secs: Optional<UInt64>, _ email: Optional<EmailConfig>, _ concurrency: Optional<GenericIntoRustString>, _ max_archive_depth: UInt, _ tree_sitter: Optional<TreeSitterConfig>, _ structured_extraction: Optional<StructuredExtractionConfig>, _ ner: Optional<NerConfig>, _ redaction: Optional<RedactionConfig>, _ summarization: Optional<SummarizationConfig>, _ translation: Optional<TranslationConfig>, _ page_classification: Optional<PageClassificationConfig>, _ captioning: Optional<CaptioningConfig>, _ qr_codes: Optional<Bool>, _ cancel_token: Optional<GenericIntoRustString>) {
-        self.init(ptr: __swift_bridge__$ExtractionConfig$new(use_cache, enable_quality_processing, { if let val = ocr { val.isOwned = false; return val.ptr } else { return nil } }(), force_ocr, { if let val = force_ocr_pages { val.isOwned = false; return val.ptr } else { return nil } }(), disable_ocr, { if let val = chunking { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = content_filter { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = images { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = pdf_options { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = token_reduction { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = language_detection { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = pages { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = keywords { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = postprocessor { val.isOwned = false; return val.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(html_options) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let val = html_output { val.isOwned = false; return val.ptr } else { return nil } }(), extraction_timeout_secs.intoFfiRepr(), max_concurrent_extractions.intoFfiRepr(), {result_format.isOwned = false; return result_format.ptr;}(), { if let val = security_limits { val.isOwned = false; return val.ptr } else { return nil } }(), max_embedded_file_bytes.intoFfiRepr(), {output_format.isOwned = false; return output_format.ptr;}(), { if let val = layout { val.isOwned = false; return val.ptr } else { return nil } }(), use_layout_for_markdown, include_document_structure, { if let val = acceleration { val.isOwned = false; return val.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(cache_namespace) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), cache_ttl_secs.intoFfiRepr(), { if let val = email { val.isOwned = false; return val.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(concurrency) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), max_archive_depth, { if let val = tree_sitter { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = structured_extraction { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = ner { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = redaction { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = summarization { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = translation { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = page_classification { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = captioning { val.isOwned = false; return val.ptr } else { return nil } }(), qr_codes.intoFfiRepr(), { if let rustString = optionalStringIntoRustString(cancel_token) { rustString.isOwned = false; return rustString.ptr } else { return nil } }()))
+    public convenience init<GenericIntoRustString: IntoRustString>(_ use_cache: Bool, _ enable_quality_processing: Bool, _ ocr: Optional<OcrConfig>, _ force_ocr: Bool, _ force_ocr_pages: Optional<RustVec<UInt32>>, _ disable_ocr: Bool, _ chunking: Optional<ChunkingConfig>, _ content_filter: Optional<ContentFilterConfig>, _ images: Optional<ImageExtractionConfig>, _ pdf_options: Optional<PdfConfig>, _ token_reduction: Optional<TokenReductionOptions>, _ language_detection: Optional<LanguageDetectionConfig>, _ pages: Optional<PageConfig>, _ keywords: Optional<KeywordConfig>, _ postprocessor: Optional<PostProcessorConfig>, _ html_output: Optional<HtmlOutputConfig>, _ extraction_timeout_secs: Optional<UInt64>, _ max_concurrent_extractions: Optional<UInt>, _ result_format: ResultFormat, _ security_limits: Optional<SecurityLimits>, _ max_embedded_file_bytes: Optional<UInt64>, _ output_format: OutputFormat, _ layout: Optional<LayoutDetectionConfig>, _ use_layout_for_markdown: Bool, _ include_document_structure: Bool, _ acceleration: Optional<AccelerationConfig>, _ cache_namespace: Optional<GenericIntoRustString>, _ cache_ttl_secs: Optional<UInt64>, _ email: Optional<EmailConfig>, _ max_archive_depth: UInt, _ tree_sitter: Optional<TreeSitterConfig>, _ structured_extraction: Optional<StructuredExtractionConfig>, _ ner: Optional<NerConfig>, _ redaction: Optional<RedactionConfig>, _ summarization: Optional<SummarizationConfig>, _ translation: Optional<TranslationConfig>, _ page_classification: Optional<PageClassificationConfig>, _ captioning: Optional<CaptioningConfig>, _ qr_codes: Optional<Bool>) {
+        self.init(ptr: __swift_bridge__$ExtractionConfig$new(use_cache, enable_quality_processing, { if let val = ocr { val.isOwned = false; return val.ptr } else { return nil } }(), force_ocr, { if let val = force_ocr_pages { val.isOwned = false; return val.ptr } else { return nil } }(), disable_ocr, { if let val = chunking { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = content_filter { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = images { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = pdf_options { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = token_reduction { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = language_detection { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = pages { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = keywords { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = postprocessor { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = html_output { val.isOwned = false; return val.ptr } else { return nil } }(), extraction_timeout_secs.intoFfiRepr(), max_concurrent_extractions.intoFfiRepr(), {result_format.isOwned = false; return result_format.ptr;}(), { if let val = security_limits { val.isOwned = false; return val.ptr } else { return nil } }(), max_embedded_file_bytes.intoFfiRepr(), {output_format.isOwned = false; return output_format.ptr;}(), { if let val = layout { val.isOwned = false; return val.ptr } else { return nil } }(), use_layout_for_markdown, include_document_structure, { if let val = acceleration { val.isOwned = false; return val.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(cache_namespace) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), cache_ttl_secs.intoFfiRepr(), { if let val = email { val.isOwned = false; return val.ptr } else { return nil } }(), max_archive_depth, { if let val = tree_sitter { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = structured_extraction { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = ner { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = redaction { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = summarization { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = translation { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = page_classification { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = captioning { val.isOwned = false; return val.ptr } else { return nil } }(), qr_codes.intoFfiRepr()))
     }
 }
 public class ExtractionConfigRefMut: ExtractionConfigRef {
@@ -1713,10 +1704,6 @@ extension ExtractionConfigRef {
         { let val = __swift_bridge__$ExtractionConfig$postprocessor(ptr); if val != nil { return PostProcessorConfig(ptr: val!) } else { return nil } }()
     }
 
-    public func htmlOptions() -> Optional<RustString> {
-        { let val = __swift_bridge__$ExtractionConfig$html_options(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
-    }
-
     public func htmlOutput() -> Optional<HtmlOutputConfig> {
         { let val = __swift_bridge__$ExtractionConfig$html_output(ptr); if val != nil { return HtmlOutputConfig(ptr: val!) } else { return nil } }()
     }
@@ -1773,10 +1760,6 @@ extension ExtractionConfigRef {
         { let val = __swift_bridge__$ExtractionConfig$email(ptr); if val != nil { return EmailConfig(ptr: val!) } else { return nil } }()
     }
 
-    public func concurrency() -> Optional<RustString> {
-        { let val = __swift_bridge__$ExtractionConfig$concurrency(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
-    }
-
     public func maxArchiveDepth() -> UInt {
         __swift_bridge__$ExtractionConfig$max_archive_depth(ptr)
     }
@@ -1815,10 +1798,6 @@ extension ExtractionConfigRef {
 
     public func qrCodes() -> Optional<Bool> {
         __swift_bridge__$ExtractionConfig$qr_codes(ptr).intoSwiftRepr()
-    }
-
-    public func cancelToken() -> Optional<RustString> {
-        { let val = __swift_bridge__$ExtractionConfig$cancel_token(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 }
 extension ExtractionConfig: Vectorizable {
@@ -1885,8 +1864,8 @@ public class FileExtractionConfig: FileExtractionConfigRefMut {
     }
 }
 extension FileExtractionConfig {
-    public convenience init<GenericIntoRustString: IntoRustString>(_ enable_quality_processing: Optional<Bool>, _ ocr: Optional<OcrConfig>, _ force_ocr: Optional<Bool>, _ force_ocr_pages: Optional<RustVec<UInt32>>, _ disable_ocr: Optional<Bool>, _ chunking: Optional<ChunkingConfig>, _ content_filter: Optional<ContentFilterConfig>, _ images: Optional<ImageExtractionConfig>, _ pdf_options: Optional<PdfConfig>, _ token_reduction: Optional<TokenReductionOptions>, _ language_detection: Optional<LanguageDetectionConfig>, _ pages: Optional<PageConfig>, _ keywords: Optional<KeywordConfig>, _ postprocessor: Optional<PostProcessorConfig>, _ html_options: Optional<GenericIntoRustString>, _ result_format: Optional<ResultFormat>, _ output_format: Optional<OutputFormat>, _ include_document_structure: Optional<Bool>, _ layout: Optional<LayoutDetectionConfig>, _ timeout_secs: Optional<UInt64>, _ tree_sitter: Optional<TreeSitterConfig>, _ structured_extraction: Optional<StructuredExtractionConfig>) {
-        self.init(ptr: __swift_bridge__$FileExtractionConfig$new(enable_quality_processing.intoFfiRepr(), { if let val = ocr { val.isOwned = false; return val.ptr } else { return nil } }(), force_ocr.intoFfiRepr(), { if let val = force_ocr_pages { val.isOwned = false; return val.ptr } else { return nil } }(), disable_ocr.intoFfiRepr(), { if let val = chunking { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = content_filter { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = images { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = pdf_options { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = token_reduction { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = language_detection { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = pages { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = keywords { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = postprocessor { val.isOwned = false; return val.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(html_options) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let val = result_format { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = output_format { val.isOwned = false; return val.ptr } else { return nil } }(), include_document_structure.intoFfiRepr(), { if let val = layout { val.isOwned = false; return val.ptr } else { return nil } }(), timeout_secs.intoFfiRepr(), { if let val = tree_sitter { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = structured_extraction { val.isOwned = false; return val.ptr } else { return nil } }()))
+    public convenience init(_ enable_quality_processing: Optional<Bool>, _ ocr: Optional<OcrConfig>, _ force_ocr: Optional<Bool>, _ force_ocr_pages: Optional<RustVec<UInt32>>, _ disable_ocr: Optional<Bool>, _ chunking: Optional<ChunkingConfig>, _ content_filter: Optional<ContentFilterConfig>, _ images: Optional<ImageExtractionConfig>, _ pdf_options: Optional<PdfConfig>, _ token_reduction: Optional<TokenReductionOptions>, _ language_detection: Optional<LanguageDetectionConfig>, _ pages: Optional<PageConfig>, _ keywords: Optional<KeywordConfig>, _ postprocessor: Optional<PostProcessorConfig>, _ result_format: Optional<ResultFormat>, _ output_format: Optional<OutputFormat>, _ include_document_structure: Optional<Bool>, _ layout: Optional<LayoutDetectionConfig>, _ timeout_secs: Optional<UInt64>, _ tree_sitter: Optional<TreeSitterConfig>, _ structured_extraction: Optional<StructuredExtractionConfig>) {
+        self.init(ptr: __swift_bridge__$FileExtractionConfig$new(enable_quality_processing.intoFfiRepr(), { if let val = ocr { val.isOwned = false; return val.ptr } else { return nil } }(), force_ocr.intoFfiRepr(), { if let val = force_ocr_pages { val.isOwned = false; return val.ptr } else { return nil } }(), disable_ocr.intoFfiRepr(), { if let val = chunking { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = content_filter { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = images { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = pdf_options { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = token_reduction { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = language_detection { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = pages { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = keywords { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = postprocessor { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = result_format { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = output_format { val.isOwned = false; return val.ptr } else { return nil } }(), include_document_structure.intoFfiRepr(), { if let val = layout { val.isOwned = false; return val.ptr } else { return nil } }(), timeout_secs.intoFfiRepr(), { if let val = tree_sitter { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = structured_extraction { val.isOwned = false; return val.ptr } else { return nil } }()))
     }
 }
 public class FileExtractionConfigRefMut: FileExtractionConfigRef {
@@ -1956,10 +1935,6 @@ extension FileExtractionConfigRef {
 
     public func postprocessor() -> Optional<PostProcessorConfig> {
         { let val = __swift_bridge__$FileExtractionConfig$postprocessor(ptr); if val != nil { return PostProcessorConfig(ptr: val!) } else { return nil } }()
-    }
-
-    public func htmlOptions() -> Optional<RustString> {
-        { let val = __swift_bridge__$FileExtractionConfig$html_options(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
     public func resultFormat() -> Optional<RustString> {
@@ -6630,10 +6605,6 @@ extension FormattedBlockRef {
         RustVec(ptr: __swift_bridge__$FormattedBlock$inline_content(ptr))
     }
 
-    public func attributes() -> Optional<RustString> {
-        { let val = __swift_bridge__$FormattedBlock$attributes(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
-    }
-
     public func language() -> Optional<RustString> {
         { let val = __swift_bridge__$FormattedBlock$language(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
@@ -6730,10 +6701,6 @@ extension InlineElementRef {
         RustString(ptr: __swift_bridge__$InlineElement$content(ptr))
     }
 
-    public func attributes() -> Optional<RustString> {
-        { let val = __swift_bridge__$InlineElement$attributes(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
-    }
-
     public func metadata() -> RustString {
         RustString(ptr: __swift_bridge__$InlineElement$metadata(ptr))
     }
@@ -6825,10 +6792,6 @@ extension DjotImageRef {
     public func title() -> Optional<RustString> {
         { let val = __swift_bridge__$DjotImage$title(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
-
-    public func attributes() -> Optional<RustString> {
-        { let val = __swift_bridge__$DjotImage$attributes(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
-    }
 }
 extension DjotImage: Vectorizable {
     public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
@@ -6916,10 +6879,6 @@ extension DjotLinkRef {
 
     public func title() -> Optional<RustString> {
         { let val = __swift_bridge__$DjotLink$title(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
-    }
-
-    public func attributes() -> Optional<RustString> {
-        { let val = __swift_bridge__$DjotLink$attributes(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 }
 extension DjotLink: Vectorizable {
@@ -7267,10 +7226,6 @@ public class DocumentNodeRef {
     }
 }
 extension DocumentNodeRef {
-    public func id() -> RustString {
-        RustString(ptr: __swift_bridge__$DocumentNode$id(ptr))
-    }
-
     public func content() -> RustString {
         RustString(ptr: __swift_bridge__$DocumentNode$content(ptr))
     }
@@ -8956,10 +8911,6 @@ public class ElementRef {
     }
 }
 extension ElementRef {
-    public func elementId() -> RustString {
-        RustString(ptr: __swift_bridge__$Element$element_id(ptr))
-    }
-
     public func elementType() -> RustString {
         RustString(ptr: __swift_bridge__$Element$element_type(ptr))
     }
@@ -10323,14 +10274,6 @@ public class ImagePreprocessingMetadataRef {
     }
 }
 extension ImagePreprocessingMetadataRef {
-    public func originalDimensions() -> RustVec<UInt> {
-        RustVec(ptr: __swift_bridge__$ImagePreprocessingMetadata$original_dimensions(ptr))
-    }
-
-    public func originalDpi() -> RustVec<Double> {
-        RustVec(ptr: __swift_bridge__$ImagePreprocessingMetadata$original_dpi(ptr))
-    }
-
     public func targetDpi() -> Int32 {
         __swift_bridge__$ImagePreprocessingMetadata$target_dpi(ptr)
     }
@@ -10345,10 +10288,6 @@ extension ImagePreprocessingMetadataRef {
 
     public func finalDpi() -> Int32 {
         __swift_bridge__$ImagePreprocessingMetadata$final_dpi(ptr)
-    }
-
-    public func newDimensions() -> Optional<RustVec<UInt>> {
-        { let val = __swift_bridge__$ImagePreprocessingMetadata$new_dimensions(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
     }
 
     public func resampleMethod() -> RustString {
@@ -11089,8 +11028,8 @@ public class TextMetadata: TextMetadataRefMut {
     }
 }
 extension TextMetadata {
-    public convenience init<GenericIntoRustString: IntoRustString>(_ line_count: UInt32, _ word_count: UInt32, _ character_count: UInt32, _ headers: Optional<RustVec<GenericIntoRustString>>, _ links: GenericIntoRustString, _ code_blocks: GenericIntoRustString) {
-        self.init(ptr: __swift_bridge__$TextMetadata$new(line_count, word_count, character_count, { if let val = headers { val.isOwned = false; return val.ptr } else { return nil } }(), { let rustString = links.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { let rustString = code_blocks.intoRustString(); rustString.isOwned = false; return rustString.ptr }()))
+    public convenience init<GenericIntoRustString: IntoRustString>(_ line_count: UInt32, _ word_count: UInt32, _ character_count: UInt32, _ headers: Optional<RustVec<GenericIntoRustString>>) {
+        self.init(ptr: __swift_bridge__$TextMetadata$new(line_count, word_count, character_count, { if let val = headers { val.isOwned = false; return val.ptr } else { return nil } }()))
     }
 }
 public class TextMetadataRefMut: TextMetadataRef {
@@ -11400,10 +11339,6 @@ extension ImageMetadataTypeRef {
 
     public func title() -> Optional<RustString> {
         { let val = __swift_bridge__$ImageMetadataType$title(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
-    }
-
-    public func dimensions() -> Optional<RustVec<UInt32>> {
-        { let val = __swift_bridge__$ImageMetadataType$dimensions(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
     }
 
     public func imageType() -> RustString {
@@ -13711,10 +13646,6 @@ extension PageInfoRef {
         { let val = __swift_bridge__$PageInfo$title(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func dimensions() -> Optional<RustVec<Double>> {
-        { let val = __swift_bridge__$PageInfo$dimensions(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
-    }
-
     public func imageCount() -> Optional<UInt32> {
         __swift_bridge__$PageInfo$image_count(ptr).intoSwiftRepr()
     }
@@ -14118,10 +14049,6 @@ extension HierarchicalBlockRef {
 
     public func level() -> RustString {
         RustString(ptr: __swift_bridge__$HierarchicalBlock$level(ptr))
-    }
-
-    public func bbox() -> Optional<RustVec<Float>> {
-        { let val = __swift_bridge__$HierarchicalBlock$bbox(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
     }
 }
 extension HierarchicalBlock: Vectorizable {
@@ -16299,8 +16226,8 @@ public class KeywordConfig: KeywordConfigRefMut {
     }
 }
 extension KeywordConfig {
-    public convenience init<GenericIntoRustString: IntoRustString>(_ algorithm: KeywordAlgorithm, _ max_keywords: UInt, _ min_score: Float, _ ngram_range: RustVec<UInt>, _ language: Optional<GenericIntoRustString>, _ yake_params: Optional<YakeParams>, _ rake_params: Optional<RakeParams>) {
-        self.init(ptr: __swift_bridge__$KeywordConfig$new({algorithm.isOwned = false; return algorithm.ptr;}(), max_keywords, min_score, { let val = ngram_range; val.isOwned = false; return val.ptr }(), { if let rustString = optionalStringIntoRustString(language) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let val = yake_params { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = rake_params { val.isOwned = false; return val.ptr } else { return nil } }()))
+    public convenience init<GenericIntoRustString: IntoRustString>(_ algorithm: KeywordAlgorithm, _ max_keywords: UInt, _ min_score: Float, _ language: Optional<GenericIntoRustString>, _ yake_params: Optional<YakeParams>, _ rake_params: Optional<RakeParams>) {
+        self.init(ptr: __swift_bridge__$KeywordConfig$new({algorithm.isOwned = false; return algorithm.ptr;}(), max_keywords, min_score, { if let rustString = optionalStringIntoRustString(language) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let val = yake_params { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = rake_params { val.isOwned = false; return val.ptr } else { return nil } }()))
     }
 }
 public class KeywordConfigRefMut: KeywordConfigRef {
@@ -16326,10 +16253,6 @@ extension KeywordConfigRef {
 
     public func minScore() -> Float {
         __swift_bridge__$KeywordConfig$min_score(ptr)
-    }
-
-    public func ngramRange() -> RustVec<UInt> {
-        RustVec(ptr: __swift_bridge__$KeywordConfig$ngram_range(ptr))
     }
 
     public func language() -> Optional<RustString> {

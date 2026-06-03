@@ -56,5 +56,5 @@ interface IRenderer {
      *
      * Returns an error if rendering fails.
      */
-    fun render(doc: ExtractionResult): String
+    fun render(doc: InternalDocument): String
 }

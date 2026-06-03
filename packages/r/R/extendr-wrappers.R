@@ -305,23 +305,6 @@ summarize <- function(text, language = NULL, max_tokens = NULL) .Call("wrap__sum
 #' @return Integer.
 #' @export
 token_count <- function(text) .Call("wrap__token_count", text, PACKAGE = "kreuzberg")
-#' Run abstractive summarisation against the configured LLM
-#'
-#' `text` is the document content to summarise (already extracted by the
-#' pipeline). `max_tokens` softly bounds the requested summary length in
-#' natural-language tokens; `None` uses [`DEFAULT_MAX_TOKENS`].
-#'
-#' Returns the summary string and the (optional) usage record.
-#' @param text Character string.
-#' @param llm_config LlmConfig object (list with class attribute).
-#' @param max_tokens Integer.
-#' @return Character string.
-#'
-#' @section Errors:
-#' Propagates any LLM client / request error returned by
-#' `complete_text`.
-#' @export
-summarize_with_llm <- function(text, llm_config = LlmConfig$default(), max_tokens = NULL) .Call("wrap__summarize_with_llm", text, llm_config, max_tokens, PACKAGE = "kreuzberg")
 #' Translate the extraction result in place
 #'
 #' Populates `result.translation` with the translated `content`, optionally the
@@ -361,62 +344,6 @@ compare <- function(a = ExtractionResult$default(), b = ExtractionResult$default
 #'   be initialised.
 #' @export
 extract_region_with_vlm <- function(image_bytes, image_mime, region_kind, llm_config = LlmConfig$default(), custom_prompt = NULL) .Call("wrap__extract_region_with_vlm", image_bytes, image_mime, region_kind, llm_config, custom_prompt, PACKAGE = "kreuzberg")
-#' Same as [`extract_region_with_vlm`], but also returns the [`LlmUsage`] data captured
-#'
-#' from the underlying VLM call.
-#'
-#' Callers that need to track token / cost data per call (for example the captioning
-#' post-processor, which appends every call's usage to
-#' [`ExtractionResult::llm_usage`](crate::types::ExtractionResult::llm_usage)) should
-#' prefer this variant. The plain [`extract_region_with_vlm`] is kept for callers that
-#' only care about the markdown output (PDF region splicing).
-#' @param image_bytes Raw vector of bytes.
-#' @param image_mime Character string.
-#' @param region_kind RegionKind object (list with class attribute).
-#' @param llm_config LlmConfig object (list with class attribute).
-#' @param custom_prompt Character string.
-#' @return Character string.
-#'
-#' @section Errors:
-#' Same as [`extract_region_with_vlm`].
-#' @export
-extract_region_with_vlm_usage <- function(image_bytes, image_mime, region_kind, llm_config = LlmConfig$default(), custom_prompt = NULL) .Call("wrap__extract_region_with_vlm_usage", image_bytes, image_mime, region_kind, llm_config, custom_prompt, PACKAGE = "kreuzberg")
-#' Send a free-form prompt to the configured LLM with a JSON-schema response
-#'
-#' constraint and return the parsed JSON value plus captured usage.
-#'
-#' This is the shared helper used by LLM-backed post-processors (page
-#' classification, LLM-driven NER, etc.) that need structured output but do not
-#' want to depend on [`StructuredExtractionConfig`]'s schema/prompt machinery.
-#' @param llm_config — provider/model configuration.
-#' @param prompt — fully-rendered user prompt (no Jinja substitution performed).
-#' @param schema_name — name for the JSON schema (passed to providers that distinguish multiple structured outputs).
-#' @param schema — the JSON schema the LLM is required to obey.
-#' @param source — label used for the returned [`LlmUsage`] entry.
-#' @return Character string.
-#'
-#' @section Errors:
-#' Returns an error if the LLM client cannot be constructed, the request fails,
-#' the response contains no content, or the response is not parseable JSON.
-#' @export
-complete_with_json_schema <- function(llm_config = LlmConfig$default(), prompt, schema_name, schema, source) .Call("wrap__complete_with_json_schema", llm_config, prompt, schema_name, schema, source, PACKAGE = "kreuzberg")
-#' Send a single user prompt to the configured LLM and return the response text
-#'
-#' along with the captured usage metadata.
-#'
-#' The `source` argument labels the [`LlmUsage`] entry that is returned so
-#' callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
-#' etc.). The helper performs a single non-streaming chat completion request.
-#' @param llm_config LlmConfig object (list with class attribute).
-#' @param prompt Character string.
-#' @param source Character string.
-#' @return Character string.
-#'
-#' @section Errors:
-#' Returns an error if the LLM client cannot be constructed, the request fails,
-#' or the response does not contain assistant content.
-#' @export
-complete_text <- function(llm_config = LlmConfig$default(), prompt, source) .Call("wrap__complete_text", llm_config, prompt, source, PACKAGE = "kreuzberg")
 #' Generate embeddings asynchronously for a list of text strings
 #'
 #' This is the async counterpart to [`embed_texts`]. It offloads the blocking
@@ -779,7 +706,6 @@ EmailConfig$from_json <- function(json) {
 #' @field pages Page extraction configuration (None = no page tracking)
 #' @field keywords Keyword extraction configuration (None = no keyword extraction)
 #' @field postprocessor Post-processor configuration (None = use defaults)
-#' @field html_options HTML to Markdown conversion options (None = use defaults)
 #' @field html_output Styled HTML output configuration.
 #' @field extraction_timeout_secs Default per-file timeout in seconds for batch extraction.
 #' @field max_concurrent_extractions Maximum concurrent extractions in batch operations (None = (num_cpus ×
@@ -794,7 +720,6 @@ EmailConfig$from_json <- function(json) {
 #' @field cache_namespace Cache namespace for tenant isolation.
 #' @field cache_ttl_secs Per-request cache TTL in seconds.
 #' @field email Email extraction configuration (None = use defaults).
-#' @field concurrency Concurrency limits for constrained environments (None = use defaults).
 #' @field max_archive_depth Maximum recursion depth for archive extraction (default: 3). Set to 0 to disable recursive
 #' @field tree_sitter Tree-sitter language pack configuration (None = tree-sitter disabled).
 #' @field structured_extraction Structured extraction via LLM (None = disabled).
@@ -805,7 +730,6 @@ EmailConfig$from_json <- function(json) {
 #' @field page_classification Per-page classification configuration. When set, the classification post-processor runs
 #' @field captioning VLM captioning configuration for extracted images. When set, the captioning post-processor runs at
 #' @field qr_codes Enable QR-code detection in extracted images. When `true`, the QR post-processor runs at the Middle
-#' @field cancel_token Cancellation token for this extraction (None = no external cancellation).
 #' @export
 ExtractionConfig <- new.env(parent = emptyenv())
 ExtractionConfig$default <- function() .Call("wrap__ExtractionConfig__default", PACKAGE = "kreuzberg")
@@ -855,7 +779,6 @@ needs_image_processing.ExtractionConfig <- function(x, ...) x$needs_image_proces
 #' @field pages Override page extraction for this file.
 #' @field keywords Override keyword extraction for this file.
 #' @field postprocessor Override post-processor for this file.
-#' @field html_options Override HTML conversion options for this file.
 #' @field result_format Override result format for this file.
 #' @field output_format Override output content format for this file.
 #' @field include_document_structure Override document structure output for this file.
@@ -1844,21 +1767,6 @@ PatternMatch <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.PatternMatch` <- `$.PatternMatch`
-#' Per-category running counter for [`RedactionStrategy::TokenReplace`]
-#' @export
-TokenCounter <- new.env(parent = emptyenv())
-TokenCounter$new <- function() .Call("wrap__TokenCounter__new", PACKAGE = "kreuzberg")
-#' @export
-`$.TokenCounter` <- function(self, name) {
-  func <- TokenCounter[[name]]
-  if (identical(names(formals(func))[1], "self")) {
-    function(...) func(self, ...)
-  } else {
-    func
-  }
-}
-#' @export
-`[[.TokenCounter` <- `$.TokenCounter`
 #' A PDF annotation extracted from a document page
 #' @field annotation_type The type of annotation.
 #' @field content Text content of the annotation (e.g., comment text, link URL).
@@ -1898,7 +1806,6 @@ ClassificationLabel <- new.env(parent = emptyenv())
 #' Represents text with formatting, links, images, etc.
 #' @field element_type Type of inline element
 #' @field content Text content
-#' @field attributes Element attributes
 #' @field metadata Additional metadata (e.g., href for links, src/alt for images)
 #' @export
 InlineElement <- new.env(parent = emptyenv())
@@ -1917,7 +1824,6 @@ InlineElement <- new.env(parent = emptyenv())
 #' @field src Image source URL or path
 #' @field alt Alternative text
 #' @field title Optional title
-#' @field attributes Element attributes
 #' @export
 DjotImage <- new.env(parent = emptyenv())
 #' @export
@@ -1935,7 +1841,6 @@ DjotImage <- new.env(parent = emptyenv())
 #' @field url Link URL
 #' @field text Link text content
 #' @field title Optional title
-#' @field attributes Element attributes
 #' @export
 DjotLink <- new.env(parent = emptyenv())
 #' @export
@@ -2198,7 +2103,6 @@ ElementMetadata <- new.env(parent = emptyenv())
 #'
 #' Represents a logical unit of content with semantic classification,
 #' unique identifier, and metadata for tracking origin and position.
-#' @field element_id Unique element identifier
 #' @field element_type Semantic type of this element
 #' @field text Text content of the element
 #' @field metadata Metadata about the element
@@ -2351,13 +2255,10 @@ TesseractConfig$from_json <- function(json) {
 #'
 #' Tracks the transformations applied to an image during OCR preprocessing,
 #' including DPI normalization, resizing, and resampling.
-#' @field original_dimensions Original image dimensions (width, height) in pixels
-#' @field original_dpi Original image DPI (horizontal, vertical)
 #' @field target_dpi Target DPI from configuration
 #' @field scale_factor Scaling factor applied to the image
 #' @field auto_adjusted Whether DPI was auto-adjusted based on content
 #' @field final_dpi Final DPI after processing
-#' @field new_dimensions New dimensions after resizing (if resized)
 #' @field resample_method Resampling algorithm used ("LANCZOS3", "CATMULLROM", etc.)
 #' @field dimension_clamped Whether dimensions were clamped to max_image_dimension
 #' @field calculated_dpi Calculated optimal DPI (if auto_adjust_dpi enabled)
@@ -2953,7 +2854,6 @@ PageBoundary <- new.env(parent = emptyenv())
 #' and visibility state (for presentations).
 #' @field number Page number (1-indexed)
 #' @field title Page title (usually for presentations)
-#' @field dimensions Dimensions in points (PDF) or pixels (images): (width, height)
 #' @field image_count Number of images on this page
 #' @field table_count Number of tables on this page
 #' @field hidden Whether this page is hidden (e.g., in presentations)
@@ -3004,7 +2904,6 @@ LayoutRegion$from_json <- function(json) {
 #' @field text The text content of this block
 #' @field font_size The font size of the text in this block
 #' @field level The hierarchy level of this block (H1-H6 or Body)
-#' @field bbox Bounding box information for the block
 #' @export
 HierarchicalBlock <- new.env(parent = emptyenv())
 #' @export
@@ -3360,7 +3259,6 @@ RakeParams$from_json <- function(json) {
 #' @field algorithm Algorithm to use for extraction.
 #' @field max_keywords Maximum number of keywords to extract (default: 10).
 #' @field min_score Minimum score threshold (0.0-1.0, default: 0.0).
-#' @field ngram_range N-gram range for keyword extraction (min, max).
 #' @field language Language code for stopword filtering (e.g., "en", "de", "fr").
 #' @field yake_params YAKE-specific tuning parameters.
 #' @field rake_params RAKE-specific tuning parameters.
@@ -3687,7 +3585,6 @@ EntityCategory <- new.env(parent = emptyenv())
 #' @field Jats Jats
 #' @field Epub Epub
 #' @field Pst Pst
-#' @field Code Code
 #' @export
 FormatMetadata <- new.env(parent = emptyenv())
 #' @export

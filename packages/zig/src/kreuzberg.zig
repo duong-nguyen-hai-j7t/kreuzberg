@@ -245,11 +245,6 @@ pub const ExtractionConfig = struct {
     keywords: ?KeywordConfig,
     /// Post-processor configuration (None = use defaults)
     postprocessor: ?PostProcessorConfig,
-    /// HTML to Markdown conversion options (None = use defaults)
-    ///
-    /// Configure how HTML documents are converted to Markdown, including heading styles,
-    /// list formatting, code block styles, and preprocessing options.
-    html_options: ?[]const u8,
     /// Styled HTML output configuration.
     ///
     /// When set alongside `output_format = OutputFormat.Html`, the extraction
@@ -365,12 +360,6 @@ pub const ExtractionConfig = struct {
     /// Currently supports configuring the fallback codepage for MSG files
     /// that do not specify one. See `EmailConfig` for details.
     email: ?EmailConfig,
-    /// Concurrency limits for constrained environments (None = use defaults).
-    ///
-    /// Controls Rayon thread pool size, ONNX Runtime intra-op threads, and
-    /// (when `max_concurrent_extractions` is unset) the batch concurrency
-    /// semaphore. See `ConcurrencyConfig` for details.
-    concurrency: ?[]const u8,
     /// Maximum recursion depth for archive extraction (default: 3).
     /// Set to 0 to disable recursive extraction (legacy behavior).
     max_archive_depth: u64,
@@ -408,16 +397,6 @@ pub const ExtractionConfig = struct {
     /// Enable QR-code detection in extracted images. When `true`, the QR post-processor
     /// runs at the Middle stage and populates `ExtractedImage.qr_codes`.
     qr_codes: ?bool,
-    /// Cancellation token for this extraction (None = no external cancellation).
-    ///
-    /// Pass a `CancellationToken` clone here and call `CancellationToken.cancel`
-    /// from another thread / task to abort the extraction in progress. The extractor
-    /// checks the token at safe checkpoints (before lock acquisition, between pages,
-    /// between batch items) and returns `KreuzbergError.Cancelled` when set.
-    ///
-    /// The field is excluded from serialization because `CancellationToken` is a
-    /// runtime handle, not a configuration value.
-    cancel_token: ?[]const u8,
 };
 
 /// Per-file extraction configuration overrides for batch processing.
@@ -465,8 +444,6 @@ pub const FileExtractionConfig = struct {
     keywords: ?KeywordConfig,
     /// Override post-processor for this file.
     postprocessor: ?PostProcessorConfig,
-    /// Override HTML conversion options for this file.
-    html_options: ?[]const u8,
     /// Override result format for this file.
     result_format: ?ResultFormat,
     /// Override output content format for this file.
@@ -1511,8 +1488,6 @@ pub const DjotContent = struct {
     links: []const DjotLink,
     /// Footnote definitions
     footnotes: []const Footnote,
-    /// Attributes mapped by element identifier (if present)
-    attributes: []const []const u8,
 };
 
 /// Block-level element in a Djot document.
@@ -1525,8 +1500,6 @@ pub const FormattedBlock = struct {
     level: ?u64,
     /// Inline content within the block
     inline_content: []const InlineElement,
-    /// Element attributes (classes, IDs, key-value pairs)
-    attributes: ?[]const u8,
     /// Language identifier for code blocks
     language: ?[]const u8,
     /// Raw code content for code blocks
@@ -1543,8 +1516,6 @@ pub const InlineElement = struct {
     element_type: InlineType,
     /// Text content
     content: []const u8,
-    /// Element attributes
-    attributes: ?[]const u8,
     /// Additional metadata (e.g., href for links, src/alt for images)
     metadata: ?std.StringHashMap([]const u8),
 };
@@ -1557,8 +1528,6 @@ pub const DjotImage = struct {
     alt: []const u8,
     /// Optional title
     title: ?[]const u8,
-    /// Element attributes
-    attributes: ?[]const u8,
 };
 
 /// Link element in Djot.
@@ -1569,8 +1538,6 @@ pub const DjotLink = struct {
     text: []const u8,
     /// Optional title
     title: ?[]const u8,
-    /// Element attributes
-    attributes: ?[]const u8,
 };
 
 /// Footnote in Djot.
@@ -1630,8 +1597,6 @@ pub const DocumentRelationship = struct {
 /// Each node has deterministic `id`, typed `content`, optional `parent`/`children`
 /// for tree structure, and metadata like page number, bounding box, and content layer.
 pub const DocumentNode = struct {
-    /// Deterministic identifier (hash of content + position).
-    id: []const u8,
     /// Node content — tagged enum, type-specific data only.
     content: NodeContent,
     /// Parent node index (`null` = root-level node).
@@ -1897,12 +1862,6 @@ pub const ExtractionResult = struct {
     /// element data. `apply_output_format` swaps this into `content` at the end
     /// of the pipeline, after post-processors have operated on plain text.
     formatted_content: ?[]const u8,
-    /// Structured hOCR document for the OCR+layout pipeline.
-    ///
-    /// When tesseract produces hOCR output, the parsed `InternalDocument` carries
-    /// paragraph structure with bounding boxes and confidence scores. The layout
-    /// classification step enriches these elements before final rendering.
-    ocr_internal_document: ?[]const u8,
 };
 
 /// A single file extracted from an archive.
@@ -2120,8 +2079,6 @@ pub const ElementMetadata = struct {
 /// Represents a logical unit of content with semantic classification,
 /// unique identifier, and metadata for tracking origin and position.
 pub const Element = struct {
-    /// Unique element identifier
-    element_id: []const u8,
     /// Semantic type of this element
     element_type: ElementType,
     /// Text content of the element
@@ -2199,10 +2156,6 @@ pub const TextExtractionResult = struct {
     character_count: u64,
     /// Markdown headers (text only, Markdown files only)
     headers: ?[]const []const u8,
-    /// Markdown links as (text, URL) tuples (Markdown files only)
-    links: ?[]const []const []const u8,
-    /// Code blocks as (language, code) tuples (Markdown files only)
-    code_blocks: ?[]const []const []const u8,
 };
 
 /// PowerPoint (PPTX) extraction result.
@@ -2227,8 +2180,6 @@ pub const PptxExtractionResult = struct {
     page_contents: ?[]const PageContent,
     /// Structured document representation
     document: ?DocumentStructure,
-    /// Hyperlinks discovered in slides as (url, optional_label) pairs.
-    hyperlinks: []const []const u8,
     /// Office metadata extracted from docProps/core.xml and docProps/app.xml.
     ///
     /// Contains keys like "title", "author", "created_by", "subject", "keywords",
@@ -2309,10 +2260,6 @@ pub const OcrExtractionResult = struct {
     /// Structured OCR elements with bounding boxes and confidence scores.
     /// Available when TSV output is requested or table detection is enabled.
     ocr_elements: ?[]const OcrElement,
-    /// Structured document produced from hOCR parsing.
-    /// Carries paragraph structure, bounding boxes, and confidence scores
-    /// that the flattened `content` string discards.
-    internal_document: ?[]const u8,
 };
 
 /// Table detected via OCR.
@@ -2434,10 +2381,6 @@ pub const TesseractConfig = struct {
 /// Tracks the transformations applied to an image during OCR preprocessing,
 /// including DPI normalization, resizing, and resampling.
 pub const ImagePreprocessingMetadata = struct {
-    /// Original image dimensions (width, height) in pixels
-    original_dimensions: []const u64,
-    /// Original image DPI (horizontal, vertical)
-    original_dpi: []const f64,
     /// Target DPI from configuration
     target_dpi: i32,
     /// Scaling factor applied to the image
@@ -2446,8 +2389,6 @@ pub const ImagePreprocessingMetadata = struct {
     auto_adjusted: bool,
     /// Final DPI after processing
     final_dpi: i32,
-    /// New dimensions after resizing (if resized)
-    new_dimensions: ?[]const u64,
     /// Resampling algorithm used ("LANCZOS3", "CATMULLROM", etc.)
     resample_method: []const u8,
     /// Whether dimensions were clamped to max_image_dimension
@@ -2611,10 +2552,6 @@ pub const TextMetadata = struct {
     character_count: u32,
     /// Markdown headers (headings text only, for Markdown files)
     headers: ?[]const []const u8,
-    /// Markdown links as (text, url) tuples (for Markdown files)
-    links: ?[]const []const []const u8,
-    /// Code blocks as (language, code) tuples (for Markdown files)
-    code_blocks: ?[]const []const []const u8,
 };
 
 /// Header/heading element metadata.
@@ -2643,8 +2580,6 @@ pub const LinkMetadata = struct {
     link_type: LinkType,
     /// Rel attribute values
     rel: []const []const u8,
-    /// Additional attributes as key-value pairs
-    attributes: []const []const []const u8,
 };
 
 /// Image element metadata.
@@ -2655,12 +2590,8 @@ pub const ImageMetadataType = struct {
     alt: ?[]const u8,
     /// Title attribute
     title: ?[]const u8,
-    /// Image dimensions as (width, height) if available
-    dimensions: ?[]const u32,
     /// Image type classification
     image_type: ImageType,
-    /// Additional attributes as key-value pairs
-    attributes: []const []const []const u8,
 };
 
 /// Structured data (Schema.org, microdata, RDFa) block.
@@ -2969,8 +2900,6 @@ pub const PageInfo = struct {
     number: u32,
     /// Page title (usually for presentations)
     title: ?[]const u8,
-    /// Dimensions in points (PDF) or pixels (images): (width, height)
-    dimensions: ?[]const f64,
     /// Number of images on this page
     image_count: ?u32,
     /// Number of tables on this page
@@ -3108,10 +3037,6 @@ pub const HierarchicalBlock = struct {
     /// - "h6": Senary heading
     /// - "body": Body text (no heading level)
     level: []const u8,
-    /// Bounding box information for the block
-    ///
-    /// Contains coordinates as (left, top, right, bottom) in PDF units.
-    bbox: ?[]const f32,
 };
 
 /// One QR code decoded from an extracted image.
@@ -3440,12 +3365,6 @@ pub const KeywordConfig = struct {
     /// Keywords with scores below this threshold are filtered out.
     /// Note: Score ranges differ between algorithms.
     min_score: f32,
-    /// N-gram range for keyword extraction (min, max).
-    ///
-    /// (1, 1) = unigrams only
-    /// (1, 2) = unigrams and bigrams
-    /// (1, 3) = unigrams, bigrams, and trigrams (default)
-    ngram_range: []const u64,
     /// Language code for stopword filtering (e.g., "en", "de", "fr").
     ///
     /// If None, no stopword filtering is applied.
@@ -4236,7 +4155,6 @@ pub const FormatMetadata = union(enum) {
     jats: JatsMetadata,
     epub: EpubMetadata,
     pst: PstMetadata,
-    code: []const u8,
 };
 
 /// Text direction enumeration for HTML documents.
@@ -5300,42 +5218,6 @@ pub fn token_count(text: []const u8) error{OutOfMemory}!u32 {
     return _result;
 }
 
-/// Run abstractive summarisation against the configured LLM.
-///
-/// `text` is the document content to summarise (already extracted by the
-/// pipeline). `max_tokens` softly bounds the requested summary length in
-/// natural-language tokens; `null` uses `DEFAULT_MAX_TOKENS`.
-///
-/// Returns the summary string and the (optional) usage record.
-///
-/// **Errors:**
-///
-/// Propagates any LLM client / request error returned by
-/// `complete_text`.
-pub fn summarize_with_llm(text: []const u8, llm_config: []const u8, max_tokens: ?u32) KreuzbergError![]u8 {
-    const text_z = try std.fmt.allocPrintSentinel(
-        std.heap.c_allocator, "{s}", .{text}, 0);
-    defer std.heap.c_allocator.free(text_z);
-    const llm_config_z = try std.fmt.allocPrintSentinel(
-        std.heap.c_allocator, "{s}", .{llm_config}, 0);
-    defer std.heap.c_allocator.free(llm_config_z);
-    const llm_config_handle = c.kreuzberg_llm_config_from_json(llm_config_z);
-    if (llm_config_handle == null) return _first_error(KreuzbergError);
-    defer c.kreuzberg_llm_config_free(llm_config_handle);
-    const _result = c.kreuzberg_summarize_with_llm(text_z, llm_config_handle, if (max_tokens) |v| v else std.math.maxInt(u32));
-    if (c.kreuzberg_last_error_code() != 0) {
-        return _first_error(KreuzbergError);
-    }
-    const _result_len = c.kreuzberg_summarize_with_llm_len(text_z, llm_config_handle, if (max_tokens) |v| v else std.math.maxInt(u32));
-    return blk: {
-        if (_result == null) return _first_error(KreuzbergError);
-        const slice = _result[0.._result_len];
-        const owned = try std.heap.c_allocator.dupe(u8, slice);
-        _free_string(_result);
-        break :blk owned;
-    };
-}
-
 /// Translate the extraction result in place.
 ///
 /// Populates `result.translation` with the translated `content`, optionally the
@@ -5430,129 +5312,6 @@ pub fn extract_region_with_vlm(image_bytes: []const u8, image_mime: []const u8, 
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_extract_region_with_vlm_len(image_bytes.ptr, image_bytes.len, image_mime_z, region_kind, llm_config_handle, if (custom_prompt_z) |z| z.ptr else null);
-    return blk: {
-        if (_result == null) return _first_error(KreuzbergError);
-        const slice = _result[0.._result_len];
-        const owned = try std.heap.c_allocator.dupe(u8, slice);
-        _free_string(_result);
-        break :blk owned;
-    };
-}
-
-/// Same as `extract_region_with_vlm`, but also returns the `LlmUsage` data captured
-/// from the underlying VLM call.
-///
-/// Callers that need to track token / cost data per call (for example the captioning
-/// post-processor, which appends every call's usage to
-/// `ExtractionResult.llm_usage`) should
-/// prefer this variant. The plain `extract_region_with_vlm` is kept for callers that
-/// only care about the markdown output (PDF region splicing).
-///
-/// **Errors:**
-///
-/// Same as `extract_region_with_vlm`.
-pub fn extract_region_with_vlm_usage(image_bytes: []const u8, image_mime: []const u8, region_kind: RegionKind, llm_config: []const u8, custom_prompt: ?[]const u8) KreuzbergError![]u8 {
-    const image_mime_z = try std.fmt.allocPrintSentinel(
-        std.heap.c_allocator, "{s}", .{image_mime}, 0);
-    defer std.heap.c_allocator.free(image_mime_z);
-    const llm_config_z = try std.fmt.allocPrintSentinel(
-        std.heap.c_allocator, "{s}", .{llm_config}, 0);
-    defer std.heap.c_allocator.free(llm_config_z);
-    const llm_config_handle = c.kreuzberg_llm_config_from_json(llm_config_z);
-    if (llm_config_handle == null) return _first_error(KreuzbergError);
-    defer c.kreuzberg_llm_config_free(llm_config_handle);
-    const custom_prompt_z: ?[:0]u8 = if (custom_prompt) |v| try std.fmt.allocPrintSentinel(
-        std.heap.c_allocator, "{s}", .{v}, 0) else null;
-    defer if (custom_prompt_z) |z| std.heap.c_allocator.free(z);
-    const _result = c.kreuzberg_extract_region_with_vlm_usage(image_bytes.ptr, image_bytes.len, image_mime_z, region_kind, llm_config_handle, if (custom_prompt_z) |z| z.ptr else null);
-    if (c.kreuzberg_last_error_code() != 0) {
-        return _first_error(KreuzbergError);
-    }
-    const _result_len = c.kreuzberg_extract_region_with_vlm_usage_len(image_bytes.ptr, image_bytes.len, image_mime_z, region_kind, llm_config_handle, if (custom_prompt_z) |z| z.ptr else null);
-    return blk: {
-        if (_result == null) return _first_error(KreuzbergError);
-        const slice = _result[0.._result_len];
-        const owned = try std.heap.c_allocator.dupe(u8, slice);
-        _free_string(_result);
-        break :blk owned;
-    };
-}
-
-/// Send a free-form prompt to the configured LLM with a JSON-schema response
-/// constraint and return the parsed JSON value plus captured usage.
-///
-/// This is the shared helper used by LLM-backed post-processors (page
-/// classification, LLM-driven NER, etc.) that need structured output but do not
-/// want to depend on `StructuredExtractionConfig`'s schema/prompt machinery.
-///
-///   distinguish multiple structured outputs).
-///
-/// - `schema` — the JSON schema the LLM is required to obey.
-/// - `source` — label used for the returned `LlmUsage` entry.
-///
-/// **Errors:**
-///
-/// Returns an error if the LLM client cannot be constructed, the request fails,
-/// the response contains no content, or the response is not parseable JSON.
-pub fn complete_with_json_schema(llm_config: []const u8, prompt: []const u8, schema_name: []const u8, schema: []const u8, source: []const u8) KreuzbergError![]u8 {
-    const llm_config_z = try std.fmt.allocPrintSentinel(
-        std.heap.c_allocator, "{s}", .{llm_config}, 0);
-    defer std.heap.c_allocator.free(llm_config_z);
-    const llm_config_handle = c.kreuzberg_llm_config_from_json(llm_config_z);
-    if (llm_config_handle == null) return _first_error(KreuzbergError);
-    defer c.kreuzberg_llm_config_free(llm_config_handle);
-    const prompt_z = try std.fmt.allocPrintSentinel(
-        std.heap.c_allocator, "{s}", .{prompt}, 0);
-    defer std.heap.c_allocator.free(prompt_z);
-    const schema_name_z = try std.fmt.allocPrintSentinel(
-        std.heap.c_allocator, "{s}", .{schema_name}, 0);
-    defer std.heap.c_allocator.free(schema_name_z);
-    const source_z = try std.fmt.allocPrintSentinel(
-        std.heap.c_allocator, "{s}", .{source}, 0);
-    defer std.heap.c_allocator.free(source_z);
-    const _result = c.kreuzberg_complete_with_json_schema(llm_config_handle, prompt_z, schema_name_z, schema, source_z);
-    if (c.kreuzberg_last_error_code() != 0) {
-        return _first_error(KreuzbergError);
-    }
-    const _result_len = c.kreuzberg_complete_with_json_schema_len(llm_config_handle, prompt_z, schema_name_z, schema, source_z);
-    return blk: {
-        if (_result == null) return _first_error(KreuzbergError);
-        const slice = _result[0.._result_len];
-        const owned = try std.heap.c_allocator.dupe(u8, slice);
-        _free_string(_result);
-        break :blk owned;
-    };
-}
-
-/// Send a single user prompt to the configured LLM and return the response text
-/// along with the captured usage metadata.
-///
-/// The `source` argument labels the `LlmUsage` entry that is returned so
-/// callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
-/// etc.). The helper performs a single non-streaming chat completion request.
-///
-/// **Errors:**
-///
-/// Returns an error if the LLM client cannot be constructed, the request fails,
-/// or the response does not contain assistant content.
-pub fn complete_text(llm_config: []const u8, prompt: []const u8, source: []const u8) KreuzbergError![]u8 {
-    const llm_config_z = try std.fmt.allocPrintSentinel(
-        std.heap.c_allocator, "{s}", .{llm_config}, 0);
-    defer std.heap.c_allocator.free(llm_config_z);
-    const llm_config_handle = c.kreuzberg_llm_config_from_json(llm_config_z);
-    if (llm_config_handle == null) return _first_error(KreuzbergError);
-    defer c.kreuzberg_llm_config_free(llm_config_handle);
-    const prompt_z = try std.fmt.allocPrintSentinel(
-        std.heap.c_allocator, "{s}", .{prompt}, 0);
-    defer std.heap.c_allocator.free(prompt_z);
-    const source_z = try std.fmt.allocPrintSentinel(
-        std.heap.c_allocator, "{s}", .{source}, 0);
-    defer std.heap.c_allocator.free(source_z);
-    const _result = c.kreuzberg_complete_text(llm_config_handle, prompt_z, source_z);
-    if (c.kreuzberg_last_error_code() != 0) {
-        return _first_error(KreuzbergError);
-    }
-    const _result_len = c.kreuzberg_complete_text_len(llm_config_handle, prompt_z, source_z);
     return blk: {
         if (_result == null) return _first_error(KreuzbergError);
         const slice = _result[0.._result_len];

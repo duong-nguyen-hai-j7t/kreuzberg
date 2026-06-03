@@ -23,6 +23,10 @@ ignored = [
     # cargo-machete cannot resolve `dep:icu_provider` references in feature flag chains.
     "icu_provider",
     "serde_toon_format",
+    # kreuzberg-gliner-rs exposes the `gliner` lib name; kreuzberg-orp exposes `orp`.
+    # cargo-machete checks for the package name but the source imports the lib name.
+    "kreuzberg-gliner-rs",
+    "kreuzberg-orp",
 ]
 
 [lib]

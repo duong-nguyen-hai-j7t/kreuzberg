@@ -868,40 +868,6 @@ def token_count(text: str) -> int
 
 ---
 
-#### summarize_with_llm()
-
-Run abstractive summarisation against the configured LLM.
-
-`text` is the document content to summarise (already extracted by the
-pipeline). `max_tokens` softly bounds the requested summary length in
-natural-language tokens; `None` uses `DEFAULT_MAX_TOKENS`.
-
-Returns the summary string and the (optional) usage record.
-
-**Errors:**
-
-Propagates any LLM client / request error returned by
-`complete_text`.
-
-**Signature:**
-
-```python
-def summarize_with_llm(text: str, llm_config: LlmConfig, max_tokens: int = None) -> str
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `text` | `str` | Yes | The text |
-| `llm_config` | `LlmConfig` | Yes | The llm config |
-| `max_tokens` | `int \| None` | No | The max tokens |
-
-**Returns:** `str`
-**Errors:** Raises `Error`.
-
----
-
 #### translate_result()
 
 Translate the extraction result in place.
@@ -987,115 +953,6 @@ def extract_region_with_vlm(image_bytes: bytes, image_mime: str, region_kind: Re
 | `region_kind` | `RegionKind` | Yes | The region kind |
 | `llm_config` | `LlmConfig` | Yes | The llm config |
 | `custom_prompt` | `str \| None` | No | The custom prompt |
-
-**Returns:** `str`
-**Errors:** Raises `Error`.
-
----
-
-#### extract_region_with_vlm_usage()
-
-Same as `extract_region_with_vlm`, but also returns the `LlmUsage` data captured
-from the underlying VLM call.
-
-Callers that need to track token / cost data per call (for example the captioning
-post-processor, which appends every call's usage to
-`ExtractionResult.llm_usage`) should
-prefer this variant. The plain `extract_region_with_vlm` is kept for callers that
-only care about the markdown output (PDF region splicing).
-
-**Errors:**
-
-Same as `extract_region_with_vlm`.
-
-**Signature:**
-
-```python
-def extract_region_with_vlm_usage(image_bytes: bytes, image_mime: str, region_kind: RegionKind, llm_config: LlmConfig, custom_prompt: str = None) -> str
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `image_bytes` | `bytes` | Yes | The image bytes |
-| `image_mime` | `str` | Yes | The image mime |
-| `region_kind` | `RegionKind` | Yes | The region kind |
-| `llm_config` | `LlmConfig` | Yes | The llm config |
-| `custom_prompt` | `str \| None` | No | The custom prompt |
-
-**Returns:** `str`
-**Errors:** Raises `Error`.
-
----
-
-#### complete_with_json_schema()
-
-Send a free-form prompt to the configured LLM with a JSON-schema response
-constraint and return the parsed JSON value plus captured usage.
-
-This is the shared helper used by LLM-backed post-processors (page
-classification, LLM-driven NER, etc.) that need structured output but do not
-want to depend on `StructuredExtractionConfig`'s schema/prompt machinery.
-
-  distinguish multiple structured outputs).
-
-- `schema` — the JSON schema the LLM is required to obey.
-- `source` — label used for the returned `LlmUsage` entry.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-the response contains no content, or the response is not parseable JSON.
-
-**Signature:**
-
-```python
-def complete_with_json_schema(llm_config: LlmConfig, prompt: str, schema_name: str, schema: dict[str, Any], source: str) -> str
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llm_config` | `LlmConfig` | Yes | The llm config |
-| `prompt` | `str` | Yes | The prompt |
-| `schema_name` | `str` | Yes | The schema name |
-| `schema` | `dict[str, Any]` | Yes | The schema |
-| `source` | `str` | Yes | The source |
-
-**Returns:** `str`
-**Errors:** Raises `Error`.
-
----
-
-#### complete_text()
-
-Send a single user prompt to the configured LLM and return the response text
-along with the captured usage metadata.
-
-The `source` argument labels the `LlmUsage` entry that is returned so
-callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
-etc.). The helper performs a single non-streaming chat completion request.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-or the response does not contain assistant content.
-
-**Signature:**
-
-```python
-def complete_text(llm_config: LlmConfig, prompt: str, source: str) -> str
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llm_config` | `LlmConfig` | Yes | The llm config |
-| `prompt` | `str` | Yes | The prompt |
-| `source` | `str` | Yes | The source |
 
 **Returns:** `str`
 **Errors:** Raises `Error`.
@@ -6026,7 +5883,6 @@ type-safe, clean metadata without nested optionals.
 | `JATS` | Jats — Fields: `0`: `JatsMetadata` |
 | `EPUB` | Epub format — Fields: `0`: `EpubMetadata` |
 | `PST` | Pst — Fields: `0`: `PstMetadata` |
-| `CODE` | Code — Fields: `0`: `str` |
 
 ---
 

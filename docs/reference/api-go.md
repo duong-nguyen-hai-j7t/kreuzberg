@@ -868,40 +868,6 @@ func TokenCount(text string) uint32
 
 ---
 
-#### SummarizeWithLlm()
-
-Run abstractive summarisation against the configured LLM.
-
-`text` is the document content to summarise (already extracted by the
-pipeline). `max_tokens` softly bounds the requested summary length in
-natural-language tokens; `nil` uses `DEFAULT_MAX_TOKENS`.
-
-Returns the summary string and the (optional) usage record.
-
-**Errors:**
-
-Propagates any LLM client / request error returned by
-`complete_text`.
-
-**Signature:**
-
-```go
-func SummarizeWithLlm(text string, llmConfig LlmConfig, maxTokens uint32) (string, error)
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `Text` | `string` | Yes | The text |
-| `LlmConfig` | `LlmConfig` | Yes | The llm config |
-| `MaxTokens` | `*uint32` | No | The max tokens |
-
-**Returns:** `string`
-**Errors:** Returns `error`.
-
----
-
 #### TranslateResult()
 
 Translate the extraction result in place.
@@ -987,115 +953,6 @@ func ExtractRegionWithVlm(imageBytes []byte, imageMime string, regionKind Region
 | `RegionKind` | `RegionKind` | Yes | The region kind |
 | `LlmConfig` | `LlmConfig` | Yes | The llm config |
 | `CustomPrompt` | `*string` | No | The custom prompt |
-
-**Returns:** `string`
-**Errors:** Returns `error`.
-
----
-
-#### ExtractRegionWithVlmUsage()
-
-Same as `extract_region_with_vlm`, but also returns the `LlmUsage` data captured
-from the underlying VLM call.
-
-Callers that need to track token / cost data per call (for example the captioning
-post-processor, which appends every call's usage to
-`ExtractionResult.llm_usage`) should
-prefer this variant. The plain `extract_region_with_vlm` is kept for callers that
-only care about the markdown output (PDF region splicing).
-
-**Errors:**
-
-Same as `extract_region_with_vlm`.
-
-**Signature:**
-
-```go
-func ExtractRegionWithVlmUsage(imageBytes []byte, imageMime string, regionKind RegionKind, llmConfig LlmConfig, customPrompt string) (string, error)
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `ImageBytes` | `[]byte` | Yes | The image bytes |
-| `ImageMime` | `string` | Yes | The image mime |
-| `RegionKind` | `RegionKind` | Yes | The region kind |
-| `LlmConfig` | `LlmConfig` | Yes | The llm config |
-| `CustomPrompt` | `*string` | No | The custom prompt |
-
-**Returns:** `string`
-**Errors:** Returns `error`.
-
----
-
-#### CompleteWithJsonSchema()
-
-Send a free-form prompt to the configured LLM with a JSON-schema response
-constraint and return the parsed JSON value plus captured usage.
-
-This is the shared helper used by LLM-backed post-processors (page
-classification, LLM-driven NER, etc.) that need structured output but do not
-want to depend on `StructuredExtractionConfig`'s schema/prompt machinery.
-
-  distinguish multiple structured outputs).
-
-- `schema` — the JSON schema the LLM is required to obey.
-- `source` — label used for the returned `LlmUsage` entry.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-the response contains no content, or the response is not parseable JSON.
-
-**Signature:**
-
-```go
-func CompleteWithJsonSchema(llmConfig LlmConfig, prompt string, schemaName string, schema interface{}, source string) (string, error)
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `LlmConfig` | `LlmConfig` | Yes | The llm config |
-| `Prompt` | `string` | Yes | The prompt |
-| `SchemaName` | `string` | Yes | The schema name |
-| `Schema` | `interface{}` | Yes | The schema |
-| `Source` | `string` | Yes | The source |
-
-**Returns:** `string`
-**Errors:** Returns `error`.
-
----
-
-#### CompleteText()
-
-Send a single user prompt to the configured LLM and return the response text
-along with the captured usage metadata.
-
-The `source` argument labels the `LlmUsage` entry that is returned so
-callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
-etc.). The helper performs a single non-streaming chat completion request.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-or the response does not contain assistant content.
-
-**Signature:**
-
-```go
-func CompleteText(llmConfig LlmConfig, prompt string, source string) (string, error)
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `LlmConfig` | `LlmConfig` | Yes | The llm config |
-| `Prompt` | `string` | Yes | The prompt |
-| `Source` | `string` | Yes | The source |
 
 **Returns:** `string`
 **Errors:** Returns `error`.
@@ -5990,7 +5847,6 @@ type-safe, clean metadata without nested optionals.
 | `Jats` | Jats — Fields: `0`: `JatsMetadata` |
 | `Epub` | Epub format — Fields: `0`: `EpubMetadata` |
 | `Pst` | Pst — Fields: `0`: `PstMetadata` |
-| `Code` | Code — Fields: `0`: `string` |
 
 ---
 

@@ -2257,13 +2257,10 @@ public struct DjotImage: Codable, Sendable, Hashable {
     public let alt: String
     /// Optional title
     public let title: String?
-    /// Element attributes
-    public let attributes: String?
-    public init(src: String, alt: String, title: String? = nil, attributes: String? = nil) {
+    public init(src: String, alt: String, title: String? = nil) {
         self.src = src
         self.alt = alt
         self.title = title
-        self.attributes = attributes
     }
 }
 
@@ -2273,7 +2270,6 @@ internal extension DjotImage {
         self.src = rb.src().toString()
         self.alt = rb.alt().toString()
         self.title = rb.title()?.toString()
-        self.attributes = rb.attributes()?.toString()
     }
     func intoRust() throws -> RustBridge.DjotImage {
         let data = try JSONEncoder().encode(self)
@@ -2290,13 +2286,10 @@ public struct DjotLink: Codable, Sendable, Hashable {
     public let text: String
     /// Optional title
     public let title: String?
-    /// Element attributes
-    public let attributes: String?
-    public init(url: String, text: String, title: String? = nil, attributes: String? = nil) {
+    public init(url: String, text: String, title: String? = nil) {
         self.url = url
         self.text = text
         self.title = title
-        self.attributes = attributes
     }
 }
 
@@ -2306,7 +2299,6 @@ internal extension DjotLink {
         self.url = rb.url().toString()
         self.text = rb.text().toString()
         self.title = rb.title()?.toString()
-        self.attributes = rb.attributes()?.toString()
     }
     func intoRust() throws -> RustBridge.DjotLink {
         let data = try JSONEncoder().encode(self)
@@ -2985,18 +2977,12 @@ public struct TextExtractionResult: Codable, Sendable, Hashable {
     public let characterCount: UInt
     /// Markdown headers (text only, Markdown files only)
     public let headers: [String]?
-    /// Markdown links as (text, URL) tuples (Markdown files only)
-    public let links: [[String]]?
-    /// Code blocks as (language, code) tuples (Markdown files only)
-    public let codeBlocks: [[String]]?
-    public init(content: String, lineCount: UInt, wordCount: UInt, characterCount: UInt, headers: [String]? = nil, links: [[String]]? = nil, codeBlocks: [[String]]? = nil) {
+    public init(content: String, lineCount: UInt, wordCount: UInt, characterCount: UInt, headers: [String]? = nil) {
         self.content = content
         self.lineCount = lineCount
         self.wordCount = wordCount
         self.characterCount = characterCount
         self.headers = headers
-        self.links = links
-        self.codeBlocks = codeBlocks
     }
     private enum CodingKeys: String, CodingKey {
         case content = "content"
@@ -3004,8 +2990,6 @@ public struct TextExtractionResult: Codable, Sendable, Hashable {
         case wordCount = "word_count"
         case characterCount = "character_count"
         case headers = "headers"
-        case links = "links"
-        case codeBlocks = "code_blocks"
     }
 }
 
@@ -3017,8 +3001,6 @@ internal extension TextExtractionResult {
         self.wordCount = rb.wordCount()
         self.characterCount = rb.characterCount()
         self.headers = rb.headers()?.map { $0.as_str().toString() }
-        self.links = nil
-        self.codeBlocks = nil
     }
     func intoRust() throws -> RustBridge.TextExtractionResult {
         let data = try JSONEncoder().encode(self)
@@ -3359,10 +3341,6 @@ internal extension TesseractConfig {
 /// Tracks the transformations applied to an image during OCR preprocessing,
 /// including DPI normalization, resizing, and resampling.
 public struct ImagePreprocessingMetadata: Codable, Sendable, Hashable {
-    /// Original image dimensions (width, height) in pixels
-    public let originalDimensions: [UInt]
-    /// Original image DPI (horizontal, vertical)
-    public let originalDpi: [Double]
     /// Target DPI from configuration
     public let targetDpi: Int32
     /// Scaling factor applied to the image
@@ -3371,8 +3349,6 @@ public struct ImagePreprocessingMetadata: Codable, Sendable, Hashable {
     public let autoAdjusted: Bool
     /// Final DPI after processing
     public let finalDpi: Int32
-    /// New dimensions after resizing (if resized)
-    public let newDimensions: [UInt]?
     /// Resampling algorithm used ("LANCZOS3", "CATMULLROM", etc.)
     public let resampleMethod: String
     /// Whether dimensions were clamped to max_image_dimension
@@ -3383,14 +3359,11 @@ public struct ImagePreprocessingMetadata: Codable, Sendable, Hashable {
     public let skippedResize: Bool
     /// Error message if resize failed
     public let resizeError: String?
-    public init(originalDimensions: [UInt], originalDpi: [Double], targetDpi: Int32, scaleFactor: Double, autoAdjusted: Bool, finalDpi: Int32, newDimensions: [UInt]? = nil, resampleMethod: String, dimensionClamped: Bool, calculatedDpi: Int32? = nil, skippedResize: Bool, resizeError: String? = nil) {
-        self.originalDimensions = originalDimensions
-        self.originalDpi = originalDpi
+    public init(targetDpi: Int32, scaleFactor: Double, autoAdjusted: Bool, finalDpi: Int32, resampleMethod: String, dimensionClamped: Bool, calculatedDpi: Int32? = nil, skippedResize: Bool, resizeError: String? = nil) {
         self.targetDpi = targetDpi
         self.scaleFactor = scaleFactor
         self.autoAdjusted = autoAdjusted
         self.finalDpi = finalDpi
-        self.newDimensions = newDimensions
         self.resampleMethod = resampleMethod
         self.dimensionClamped = dimensionClamped
         self.calculatedDpi = calculatedDpi
@@ -3398,13 +3371,10 @@ public struct ImagePreprocessingMetadata: Codable, Sendable, Hashable {
         self.resizeError = resizeError
     }
     private enum CodingKeys: String, CodingKey {
-        case originalDimensions = "original_dimensions"
-        case originalDpi = "original_dpi"
         case targetDpi = "target_dpi"
         case scaleFactor = "scale_factor"
         case autoAdjusted = "auto_adjusted"
         case finalDpi = "final_dpi"
-        case newDimensions = "new_dimensions"
         case resampleMethod = "resample_method"
         case dimensionClamped = "dimension_clamped"
         case calculatedDpi = "calculated_dpi"
@@ -3416,13 +3386,10 @@ public struct ImagePreprocessingMetadata: Codable, Sendable, Hashable {
 // MARK: - Internal FFI conversions for ImagePreprocessingMetadata
 internal extension ImagePreprocessingMetadata {
     init(_ rb: RustBridge.ImagePreprocessingMetadataRef) throws {
-        self.originalDimensions = Array(rb.originalDimensions())
-        self.originalDpi = Array(rb.originalDpi())
         self.targetDpi = rb.targetDpi()
         self.scaleFactor = rb.scaleFactor()
         self.autoAdjusted = rb.autoAdjusted()
         self.finalDpi = rb.finalDpi()
-        self.newDimensions = rb.newDimensions().map { Array($0) }
         self.resampleMethod = rb.resampleMethod().toString()
         self.dimensionClamped = rb.dimensionClamped()
         self.calculatedDpi = rb.calculatedDpi()
@@ -3659,25 +3626,17 @@ public struct TextMetadata: Codable, Sendable, Hashable {
     public let characterCount: UInt32
     /// Markdown headers (headings text only, for Markdown files)
     public let headers: [String]?
-    /// Markdown links as (text, url) tuples (for Markdown files)
-    public let links: [[String]]?
-    /// Code blocks as (language, code) tuples (for Markdown files)
-    public let codeBlocks: [[String]]?
-    public init(lineCount: UInt32, wordCount: UInt32, characterCount: UInt32, headers: [String]? = nil, links: [[String]]? = nil, codeBlocks: [[String]]? = nil) {
+    public init(lineCount: UInt32, wordCount: UInt32, characterCount: UInt32, headers: [String]? = nil) {
         self.lineCount = lineCount
         self.wordCount = wordCount
         self.characterCount = characterCount
         self.headers = headers
-        self.links = links
-        self.codeBlocks = codeBlocks
     }
     private enum CodingKeys: String, CodingKey {
         case lineCount = "line_count"
         case wordCount = "word_count"
         case characterCount = "character_count"
         case headers = "headers"
-        case links = "links"
-        case codeBlocks = "code_blocks"
     }
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -3685,8 +3644,6 @@ public struct TextMetadata: Codable, Sendable, Hashable {
         self.wordCount = try container.decodeIfPresent(UInt32.self, forKey: .wordCount) ?? 0
         self.characterCount = try container.decodeIfPresent(UInt32.self, forKey: .characterCount) ?? 0
         self.headers = try container.decodeIfPresent([String].self, forKey: .headers) ?? nil
-        self.links = try container.decodeIfPresent([[String]].self, forKey: .links) ?? nil
-        self.codeBlocks = try container.decodeIfPresent([[String]].self, forKey: .codeBlocks) ?? nil
     }
 }
 
@@ -3697,8 +3654,6 @@ internal extension TextMetadata {
         self.wordCount = rb.wordCount()
         self.characterCount = rb.characterCount()
         self.headers = rb.headers()?.map { $0.as_str().toString() }
-        self.links = nil
-        self.codeBlocks = nil
     }
     func intoRust() throws -> RustBridge.TextMetadata {
         let data = try JSONEncoder().encode(self)
@@ -3763,15 +3718,12 @@ public struct LinkMetadata: Codable, Sendable, Hashable {
     public let linkType: LinkType
     /// Rel attribute values
     public let rel: [String]
-    /// Additional attributes as key-value pairs
-    public let attributes: [[String]]
-    public init(href: String, text: String, title: String? = nil, linkType: LinkType, rel: [String], attributes: [[String]]) {
+    public init(href: String, text: String, title: String? = nil, linkType: LinkType, rel: [String]) {
         self.href = href
         self.text = text
         self.title = title
         self.linkType = linkType
         self.rel = rel
-        self.attributes = attributes
     }
     private enum CodingKeys: String, CodingKey {
         case href = "href"
@@ -3779,7 +3731,6 @@ public struct LinkMetadata: Codable, Sendable, Hashable {
         case title = "title"
         case linkType = "link_type"
         case rel = "rel"
-        case attributes = "attributes"
     }
 }
 
@@ -3791,7 +3742,6 @@ internal extension LinkMetadata {
         self.title = rb.title()?.toString()
         self.linkType = LinkType(rawValue: rb.linkType().toString()) ?? { fatalError("Unknown LinkType: \(rb.linkType().toString())") }()
         self.rel = rb.rel().map { $0.as_str().toString() }
-        self.attributes = try JSONDecoder().decode([[String]].self, from: Data("null".utf8))
     }
     func intoRust() throws -> RustBridge.LinkMetadata {
         let data = try JSONEncoder().encode(self)
@@ -3808,27 +3758,19 @@ public struct ImageMetadataType: Codable, Sendable, Hashable {
     public let alt: String?
     /// Title attribute
     public let title: String?
-    /// Image dimensions as (width, height) if available
-    public let dimensions: [UInt32]?
     /// Image type classification
     public let imageType: ImageType
-    /// Additional attributes as key-value pairs
-    public let attributes: [[String]]
-    public init(src: String, alt: String? = nil, title: String? = nil, dimensions: [UInt32]? = nil, imageType: ImageType, attributes: [[String]]) {
+    public init(src: String, alt: String? = nil, title: String? = nil, imageType: ImageType) {
         self.src = src
         self.alt = alt
         self.title = title
-        self.dimensions = dimensions
         self.imageType = imageType
-        self.attributes = attributes
     }
     private enum CodingKeys: String, CodingKey {
         case src = "src"
         case alt = "alt"
         case title = "title"
-        case dimensions = "dimensions"
         case imageType = "image_type"
-        case attributes = "attributes"
     }
 }
 
@@ -3838,9 +3780,7 @@ internal extension ImageMetadataType {
         self.src = rb.src().toString()
         self.alt = rb.alt()?.toString()
         self.title = rb.title()?.toString()
-        self.dimensions = rb.dimensions().map { Array($0) }
         self.imageType = ImageType(rawValue: rb.imageType().toString()) ?? { fatalError("Unknown ImageType: \(rb.imageType().toString())") }()
-        self.attributes = try JSONDecoder().decode([[String]].self, from: Data("null".utf8))
     }
     func intoRust() throws -> RustBridge.ImageMetadataType {
         let data = try JSONEncoder().encode(self)
@@ -4576,8 +4516,6 @@ public struct PageInfo: Codable, Sendable, Hashable {
     public let number: UInt32
     /// Page title (usually for presentations)
     public let title: String?
-    /// Dimensions in points (PDF) or pixels (images): (width, height)
-    public let dimensions: [Double]?
     /// Number of images on this page
     public let imageCount: UInt32?
     /// Number of tables on this page
@@ -4601,10 +4539,9 @@ public struct PageInfo: Codable, Sendable, Hashable {
     ///
     /// Only populated for PDFs; `None` for other document types.
     public let hasVectorGraphics: Bool
-    public init(number: UInt32, title: String? = nil, dimensions: [Double]? = nil, imageCount: UInt32? = nil, tableCount: UInt32? = nil, hidden: Bool? = nil, isBlank: Bool? = nil, hasVectorGraphics: Bool) {
+    public init(number: UInt32, title: String? = nil, imageCount: UInt32? = nil, tableCount: UInt32? = nil, hidden: Bool? = nil, isBlank: Bool? = nil, hasVectorGraphics: Bool) {
         self.number = number
         self.title = title
-        self.dimensions = dimensions
         self.imageCount = imageCount
         self.tableCount = tableCount
         self.hidden = hidden
@@ -4614,7 +4551,6 @@ public struct PageInfo: Codable, Sendable, Hashable {
     private enum CodingKeys: String, CodingKey {
         case number = "number"
         case title = "title"
-        case dimensions = "dimensions"
         case imageCount = "image_count"
         case tableCount = "table_count"
         case hidden = "hidden"
@@ -4628,7 +4564,6 @@ internal extension PageInfo {
     init(_ rb: RustBridge.PageInfoRef) throws {
         self.number = rb.number()
         self.title = rb.title()?.toString()
-        self.dimensions = rb.dimensions().map { Array($0) }
         self.imageCount = rb.imageCount()
         self.tableCount = rb.tableCount()
         self.hidden = rb.hidden()
@@ -4850,21 +4785,15 @@ public struct HierarchicalBlock: Codable, Sendable, Hashable {
     /// - "h6": Senary heading
     /// - "body": Body text (no heading level)
     public let level: String
-    /// Bounding box information for the block
-    ///
-    /// Contains coordinates as (left, top, right, bottom) in PDF units.
-    public let bbox: [Float]?
-    public init(text: String, fontSize: Float, level: String, bbox: [Float]? = nil) {
+    public init(text: String, fontSize: Float, level: String) {
         self.text = text
         self.fontSize = fontSize
         self.level = level
-        self.bbox = bbox
     }
     private enum CodingKeys: String, CodingKey {
         case text = "text"
         case fontSize = "font_size"
         case level = "level"
-        case bbox = "bbox"
     }
 }
 
@@ -4874,7 +4803,6 @@ internal extension HierarchicalBlock {
         self.text = rb.text().toString()
         self.fontSize = rb.fontSize()
         self.level = rb.level().toString()
-        self.bbox = rb.bbox().map { Array($0) }
     }
     func intoRust() throws -> RustBridge.HierarchicalBlock {
         let data = try JSONEncoder().encode(self)
@@ -5610,12 +5538,6 @@ public struct KeywordConfig: Codable, Sendable, Hashable {
     /// Keywords with scores below this threshold are filtered out.
     /// Note: Score ranges differ between algorithms.
     public let minScore: Float
-    /// N-gram range for keyword extraction (min, max).
-    ///
-    /// (1, 1) = unigrams only
-    /// (1, 2) = unigrams and bigrams
-    /// (1, 3) = unigrams, bigrams, and trigrams (default)
-    public let ngramRange: [UInt]
     /// Language code for stopword filtering (e.g., "en", "de", "fr").
     ///
     /// If None, no stopword filtering is applied.
@@ -5624,11 +5546,10 @@ public struct KeywordConfig: Codable, Sendable, Hashable {
     public let yakeParams: YakeParams?
     /// RAKE-specific tuning parameters.
     public let rakeParams: RakeParams?
-    public init(algorithm: KeywordAlgorithm, maxKeywords: UInt, minScore: Float, ngramRange: [UInt], language: String? = nil, yakeParams: YakeParams? = nil, rakeParams: RakeParams? = nil) {
+    public init(algorithm: KeywordAlgorithm, maxKeywords: UInt, minScore: Float, language: String? = nil, yakeParams: YakeParams? = nil, rakeParams: RakeParams? = nil) {
         self.algorithm = algorithm
         self.maxKeywords = maxKeywords
         self.minScore = minScore
-        self.ngramRange = ngramRange
         self.language = language
         self.yakeParams = yakeParams
         self.rakeParams = rakeParams
@@ -5637,7 +5558,6 @@ public struct KeywordConfig: Codable, Sendable, Hashable {
         case algorithm = "algorithm"
         case maxKeywords = "max_keywords"
         case minScore = "min_score"
-        case ngramRange = "ngram_range"
         case language = "language"
         case yakeParams = "yake_params"
         case rakeParams = "rake_params"
@@ -5647,7 +5567,6 @@ public struct KeywordConfig: Codable, Sendable, Hashable {
         self.algorithm = try container.decode(KeywordAlgorithm.self, forKey: .algorithm)
         self.maxKeywords = try container.decodeIfPresent(UInt.self, forKey: .maxKeywords) ?? 10
         self.minScore = try container.decodeIfPresent(Float.self, forKey: .minScore) ?? 0.0
-        self.ngramRange = try container.decodeIfPresent([UInt].self, forKey: .ngramRange) ?? []
         self.language = try container.decodeIfPresent(String.self, forKey: .language) ?? nil
         self.yakeParams = try container.decodeIfPresent(YakeParams.self, forKey: .yakeParams) ?? nil
         self.rakeParams = try container.decodeIfPresent(RakeParams.self, forKey: .rakeParams) ?? nil
@@ -5660,7 +5579,6 @@ internal extension KeywordConfig {
         self.algorithm = KeywordAlgorithm(rawValue: rb.algorithm().toString()) ?? { fatalError("Unknown KeywordAlgorithm: \(rb.algorithm().toString())") }()
         self.maxKeywords = rb.maxKeywords()
         self.minScore = rb.minScore()
-        self.ngramRange = Array(rb.ngramRange())
         self.language = rb.language()?.toString()
         self.yakeParams = try rb.yakeParams().map { try YakeParams($0) }
         self.rakeParams = try rb.rakeParams().map { try RakeParams($0) }
@@ -7634,20 +7552,20 @@ extension LayoutClass {
 /// - `Other` - Catch-all for uncommon errors
 public enum KreuzbergError: Swift.Error {
     case io(message: String, field0: String)
-    case parsing(message: String)
-    case ocr(message: String)
-    case validation(message: String)
-    case cache(message: String)
-    case imageProcessing(message: String)
-    case serialization(message: String)
+    case parsing(message: String, source: String?)
+    case ocr(message: String, source: String?)
+    case validation(message: String, source: String?)
+    case cache(message: String, source: String?)
+    case imageProcessing(message: String, source: String?)
+    case serialization(message: String, source: String?)
     case missingDependency(message: String, field0: String)
     case plugin(message: String, pluginName: String)
     case lockPoisoned(message: String, field0: String)
     case unsupportedFormat(message: String, field0: String)
-    case embedding(message: String)
+    case embedding(message: String, source: String?)
     case timeout(message: String, elapsedMs: UInt64, limitMs: UInt64)
     case cancelled
-    case security(message: String)
+    case security(message: String, source: String?)
     case other(message: String, field0: String)
 }
 
@@ -7794,11 +7712,6 @@ public func redact(_ result: ExtractionResult, _ configJson: String) async throw
     return try await redact(result: result, config: config)
 }
 
-public func summarizeWithLlm(_ text: String, _ configJson: String, _ maxTokens: UInt32?) async throws -> String {
-    let config = try llmConfigFromJson(configJson)
-    return try await summarizeWithLlm(text: text, llmConfig: config, maxTokens: maxTokens)
-}
-
 public func translateResult(_ configJson: String, _ config: TranslationConfig) async throws -> Void {
     let config = try extractionResultFromJson(configJson)
     return try await translateResult(result: config, config: config)
@@ -7827,21 +7740,6 @@ public func compare(_ a: ExtractionResult, _ b: ExtractionResult, _ configJson: 
 public func extractRegionWithVlm(_ imageBytes: [UInt8], _ imageMime: String, _ regionKind: RegionKind, _ configJson: String, _ customPrompt: String?) async throws -> String {
     let config = try llmConfigFromJson(configJson)
     return try await extractRegionWithVlm(imageBytes: imageBytes, imageMime: imageMime, regionKind: regionKind, llmConfig: config, customPrompt: customPrompt)
-}
-
-public func extractRegionWithVlmUsage(_ imageBytes: [UInt8], _ imageMime: String, _ regionKind: RegionKind, _ configJson: String, _ customPrompt: String?) async throws -> String {
-    let config = try llmConfigFromJson(configJson)
-    return try await extractRegionWithVlmUsage(imageBytes: imageBytes, imageMime: imageMime, regionKind: regionKind, llmConfig: config, customPrompt: customPrompt)
-}
-
-public func completeWithJsonSchema(_ configJson: String, _ prompt: String, _ schemaName: String, _ schema: String, _ source: String) async throws -> String {
-    let config = try llmConfigFromJson(configJson)
-    return try await completeWithJsonSchema(llmConfig: config, prompt: prompt, schemaName: schemaName, schema: schema, source: source)
-}
-
-public func completeText(_ configJson: String, _ prompt: String, _ source: String) async throws -> String {
-    let config = try llmConfigFromJson(configJson)
-    return try await completeText(llmConfig: config, prompt: prompt, source: source)
 }
 
 public func embedTextsAsync(_ texts: [String], _ configJson: String) async throws -> [[Float]] {
@@ -9317,26 +9215,6 @@ public func tokenCount(text: String) -> UInt32 {
     return RustBridge.tokenCount(text)
 }
 
-/// Run abstractive summarisation against the configured LLM.
-///
-/// `text` is the document content to summarise (already extracted by the
-/// pipeline). `max_tokens` softly bounds the requested summary length in
-/// natural-language tokens; `None` uses [`DEFAULT_MAX_TOKENS`].
-///
-/// Returns the summary string and the (optional) usage record.
-///
-/// # Errors
-///
-/// Propagates any LLM client / request error returned by
-/// `complete_text`.
-public func summarizeWithLlm(text: String, llmConfig: LlmConfig, maxTokens: UInt32?) async throws -> String {
-    return try await Task.detached(priority: .userInitiated) {
-        let _rb_llmConfig = try llmConfig.intoRust()
-        let result = try RustBridge.summarizeWithLlm(RustString(text), _rb_llmConfig, maxTokens)
-        return result
-    }.value
-}
-
 /// Translate the extraction result in place.
 ///
 /// Populates `result.translation` with the translated `content`, optionally the
@@ -9431,74 +9309,6 @@ public func extractRegionWithVlm(imageBytes: [UInt8], imageMime: String, regionK
         let _rb_imageBytes: RustVec<UInt8> = { let v = RustVec<UInt8>(); for b in imageBytes { v.push(value: b) }; return v }()
         let _rb_llmConfig = try llmConfig.intoRust()
         let result = try RustBridge.extractRegionWithVlm(_rb_imageBytes, RustString(imageMime), regionKind, _rb_llmConfig, customPrompt)
-        return result
-    }.value
-}
-
-/// Same as [`extract_region_with_vlm`], but also returns the [`LlmUsage`] data captured
-/// from the underlying VLM call.
-///
-/// Callers that need to track token / cost data per call (for example the captioning
-/// post-processor, which appends every call's usage to
-/// [`ExtractionResult::llm_usage`](crate::types::ExtractionResult::llm_usage)) should
-/// prefer this variant. The plain [`extract_region_with_vlm`] is kept for callers that
-/// only care about the markdown output (PDF region splicing).
-///
-/// # Errors
-///
-/// Same as [`extract_region_with_vlm`].
-public func extractRegionWithVlmUsage(imageBytes: [UInt8], imageMime: String, regionKind: RegionKind, llmConfig: LlmConfig, customPrompt: String?) async throws -> String {
-    return try await Task.detached(priority: .userInitiated) {
-        let _rb_imageBytes: RustVec<UInt8> = { let v = RustVec<UInt8>(); for b in imageBytes { v.push(value: b) }; return v }()
-        let _rb_llmConfig = try llmConfig.intoRust()
-        let result = try RustBridge.extractRegionWithVlmUsage(_rb_imageBytes, RustString(imageMime), regionKind, _rb_llmConfig, customPrompt)
-        return result
-    }.value
-}
-
-/// Send a free-form prompt to the configured LLM with a JSON-schema response
-/// constraint and return the parsed JSON value plus captured usage.
-///
-/// This is the shared helper used by LLM-backed post-processors (page
-/// classification, LLM-driven NER, etc.) that need structured output but do not
-/// want to depend on [`StructuredExtractionConfig`]'s schema/prompt machinery.
-///
-/// # Arguments
-///
-/// * `llm_config` — provider/model configuration.
-/// * `prompt` — fully-rendered user prompt (no Jinja substitution performed).
-/// * `schema_name` — name for the JSON schema (passed to providers that
-///   distinguish multiple structured outputs).
-/// * `schema` — the JSON schema the LLM is required to obey.
-/// * `source` — label used for the returned [`LlmUsage`] entry.
-///
-/// # Errors
-///
-/// Returns an error if the LLM client cannot be constructed, the request fails,
-/// the response contains no content, or the response is not parseable JSON.
-public func completeWithJsonSchema(llmConfig: LlmConfig, prompt: String, schemaName: String, schema: String, source: String) async throws -> String {
-    return try await Task.detached(priority: .userInitiated) {
-        let _rb_llmConfig = try llmConfig.intoRust()
-        let result = try RustBridge.completeWithJsonSchema(_rb_llmConfig, RustString(prompt), RustString(schemaName), schema, RustString(source))
-        return result
-    }.value
-}
-
-/// Send a single user prompt to the configured LLM and return the response text
-/// along with the captured usage metadata.
-///
-/// The `source` argument labels the [`LlmUsage`] entry that is returned so
-/// callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
-/// etc.). The helper performs a single non-streaming chat completion request.
-///
-/// # Errors
-///
-/// Returns an error if the LLM client cannot be constructed, the request fails,
-/// or the response does not contain assistant content.
-public func completeText(llmConfig: LlmConfig, prompt: String, source: String) async throws -> String {
-    return try await Task.detached(priority: .userInitiated) {
-        let _rb_llmConfig = try llmConfig.intoRust()
-        let result = try RustBridge.completeText(_rb_llmConfig, RustString(prompt), RustString(source))
         return result
     }.value
 }

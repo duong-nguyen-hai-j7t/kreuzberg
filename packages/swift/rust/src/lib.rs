@@ -128,7 +128,6 @@ mod ffi {
             pages: Option<PageConfig>,
             keywords: Option<KeywordConfig>,
             postprocessor: Option<PostProcessorConfig>,
-            html_options: Option<String>,
             html_output: Option<HtmlOutputConfig>,
             extraction_timeout_secs: Option<u64>,
             max_concurrent_extractions: Option<usize>,
@@ -143,7 +142,6 @@ mod ffi {
             cache_namespace: Option<String>,
             cache_ttl_secs: Option<u64>,
             email: Option<EmailConfig>,
-            concurrency: Option<String>,
             max_archive_depth: usize,
             tree_sitter: Option<TreeSitterConfig>,
             structured_extraction: Option<StructuredExtractionConfig>,
@@ -154,7 +152,6 @@ mod ffi {
             page_classification: Option<PageClassificationConfig>,
             captioning: Option<CaptioningConfig>,
             qr_codes: Option<bool>,
-            cancel_token: Option<String>,
         ) -> ExtractionConfig;
         #[swift_bridge(swift_name = "useCache")]
         fn use_cache(&self) -> bool;
@@ -180,8 +177,6 @@ mod ffi {
         fn pages(&self) -> Option<PageConfig>;
         fn keywords(&self) -> Option<KeywordConfig>;
         fn postprocessor(&self) -> Option<PostProcessorConfig>;
-        #[swift_bridge(swift_name = "htmlOptions")]
-        fn html_options(&self) -> Option<String>;
         #[swift_bridge(swift_name = "htmlOutput")]
         fn html_output(&self) -> Option<HtmlOutputConfig>;
         #[swift_bridge(swift_name = "extractionTimeoutSecs")]
@@ -207,7 +202,6 @@ mod ffi {
         #[swift_bridge(swift_name = "cacheTtlSecs")]
         fn cache_ttl_secs(&self) -> Option<u64>;
         fn email(&self) -> Option<EmailConfig>;
-        fn concurrency(&self) -> Option<String>;
         #[swift_bridge(swift_name = "maxArchiveDepth")]
         fn max_archive_depth(&self) -> usize;
         #[swift_bridge(swift_name = "treeSitter")]
@@ -223,8 +217,6 @@ mod ffi {
         fn captioning(&self) -> Option<CaptioningConfig>;
         #[swift_bridge(swift_name = "qrCodes")]
         fn qr_codes(&self) -> Option<bool>;
-        #[swift_bridge(swift_name = "cancelToken")]
-        fn cancel_token(&self) -> Option<String>;
     }
 
     extern "Rust" {
@@ -245,7 +237,6 @@ mod ffi {
             pages: Option<PageConfig>,
             keywords: Option<KeywordConfig>,
             postprocessor: Option<PostProcessorConfig>,
-            html_options: Option<String>,
             result_format: Option<ResultFormat>,
             output_format: Option<OutputFormat>,
             include_document_structure: Option<bool>,
@@ -276,8 +267,6 @@ mod ffi {
         fn pages(&self) -> Option<PageConfig>;
         fn keywords(&self) -> Option<KeywordConfig>;
         fn postprocessor(&self) -> Option<PostProcessorConfig>;
-        #[swift_bridge(swift_name = "htmlOptions")]
-        fn html_options(&self) -> Option<String>;
         #[swift_bridge(swift_name = "resultFormat")]
         fn result_format(&self) -> Option<String>;
         #[swift_bridge(swift_name = "outputFormat")]
@@ -1203,7 +1192,6 @@ mod ffi {
         fn level(&self) -> Option<usize>;
         #[swift_bridge(swift_name = "inlineContent")]
         fn inline_content(&self) -> Vec<InlineElement>;
-        fn attributes(&self) -> Option<String>;
         fn language(&self) -> Option<String>;
         fn code(&self) -> Option<String>;
         fn children(&self) -> Vec<FormattedBlock>;
@@ -1214,7 +1202,6 @@ mod ffi {
         #[swift_bridge(swift_name = "elementType")]
         fn element_type(&self) -> String;
         fn content(&self) -> String;
-        fn attributes(&self) -> Option<String>;
         fn metadata(&self) -> String;
     }
 
@@ -1223,7 +1210,6 @@ mod ffi {
         fn src(&self) -> String;
         fn alt(&self) -> String;
         fn title(&self) -> Option<String>;
-        fn attributes(&self) -> Option<String>;
     }
 
     extern "Rust" {
@@ -1231,7 +1217,6 @@ mod ffi {
         fn url(&self) -> String;
         fn text(&self) -> String;
         fn title(&self) -> Option<String>;
-        fn attributes(&self) -> Option<String>;
     }
 
     extern "Rust" {
@@ -1266,7 +1251,6 @@ mod ffi {
 
     extern "Rust" {
         type DocumentNode;
-        fn id(&self) -> String;
         fn content(&self) -> String;
         fn parent(&self) -> Option<u32>;
         fn children(&self) -> Vec<u32>;
@@ -1557,8 +1541,6 @@ mod ffi {
 
     extern "Rust" {
         type Element;
-        #[swift_bridge(swift_name = "elementId")]
-        fn element_id(&self) -> String;
         #[swift_bridge(swift_name = "elementType")]
         fn element_type(&self) -> String;
         fn text(&self) -> String;
@@ -1788,10 +1770,6 @@ mod ffi {
 
     extern "Rust" {
         type ImagePreprocessingMetadata;
-        #[swift_bridge(swift_name = "originalDimensions")]
-        fn original_dimensions(&self) -> Vec<usize>;
-        #[swift_bridge(swift_name = "originalDpi")]
-        fn original_dpi(&self) -> Vec<f64>;
         #[swift_bridge(swift_name = "targetDpi")]
         fn target_dpi(&self) -> i32;
         #[swift_bridge(swift_name = "scaleFactor")]
@@ -1800,8 +1778,6 @@ mod ffi {
         fn auto_adjusted(&self) -> bool;
         #[swift_bridge(swift_name = "finalDpi")]
         fn final_dpi(&self) -> i32;
-        #[swift_bridge(swift_name = "newDimensions")]
-        fn new_dimensions(&self) -> Option<Vec<usize>>;
         #[swift_bridge(swift_name = "resampleMethod")]
         fn resample_method(&self) -> String;
         #[swift_bridge(swift_name = "dimensionClamped")]
@@ -1957,14 +1933,7 @@ mod ffi {
     extern "Rust" {
         type TextMetadata;
         #[swift_bridge(init)]
-        fn new(
-            line_count: u32,
-            word_count: u32,
-            character_count: u32,
-            headers: Option<Vec<String>>,
-            links: String,
-            code_blocks: String,
-        ) -> TextMetadata;
+        fn new(line_count: u32, word_count: u32, character_count: u32, headers: Option<Vec<String>>) -> TextMetadata;
         #[swift_bridge(swift_name = "lineCount")]
         fn line_count(&self) -> u32;
         #[swift_bridge(swift_name = "wordCount")]
@@ -1999,7 +1968,6 @@ mod ffi {
         fn src(&self) -> String;
         fn alt(&self) -> Option<String>;
         fn title(&self) -> Option<String>;
-        fn dimensions(&self) -> Option<Vec<u32>>;
         #[swift_bridge(swift_name = "imageType")]
         fn image_type(&self) -> String;
     }
@@ -2361,7 +2329,6 @@ mod ffi {
         type PageInfo;
         fn number(&self) -> u32;
         fn title(&self) -> Option<String>;
-        fn dimensions(&self) -> Option<Vec<f64>>;
         #[swift_bridge(swift_name = "imageCount")]
         fn image_count(&self) -> Option<u32>;
         #[swift_bridge(swift_name = "tableCount")]
@@ -2420,7 +2387,6 @@ mod ffi {
         #[swift_bridge(swift_name = "fontSize")]
         fn font_size(&self) -> f32;
         fn level(&self) -> String;
-        fn bbox(&self) -> Option<Vec<f32>>;
     }
 
     extern "Rust" {
@@ -2655,7 +2621,6 @@ mod ffi {
             algorithm: KeywordAlgorithm,
             max_keywords: usize,
             min_score: f32,
-            ngram_range: Vec<usize>,
             language: Option<String>,
             yake_params: Option<YakeParams>,
             rake_params: Option<RakeParams>,
@@ -2665,8 +2630,6 @@ mod ffi {
         fn max_keywords(&self) -> usize;
         #[swift_bridge(swift_name = "minScore")]
         fn min_score(&self) -> f32;
-        #[swift_bridge(swift_name = "ngramRange")]
-        fn ngram_range(&self) -> Vec<usize>;
         fn language(&self) -> Option<String>;
         #[swift_bridge(swift_name = "yakeParams")]
         fn yake_params(&self) -> Option<YakeParams>;
@@ -3124,21 +3087,9 @@ mod ffi {
         fn summarize(text: String, language: Option<String>, max_tokens: Option<u32>) -> String;
         #[swift_bridge(swift_name = "tokenCount")]
         fn token_count(text: String) -> u32;
-        #[swift_bridge(swift_name = "summarizeWithLlm")]
-        fn summarize_with_llm(text: String, llm_config: LlmConfig, max_tokens: Option<u32>) -> Result<String, String>;
         #[swift_bridge(swift_name = "translateResult")]
         fn translate_result(result: ExtractionResult, config: TranslationConfig) -> Result<(), String>;
         fn compare(a: ExtractionResult, b: ExtractionResult, opts: DiffOptions) -> ExtractionDiff;
-        #[swift_bridge(swift_name = "completeWithJsonSchema")]
-        fn complete_with_json_schema(
-            llm_config: LlmConfig,
-            prompt: String,
-            schema_name: String,
-            schema: String,
-            source: String,
-        ) -> Result<String, String>;
-        #[swift_bridge(swift_name = "completeText")]
-        fn complete_text(llm_config: LlmConfig, prompt: String, source: String) -> Result<String, String>;
         #[swift_bridge(swift_name = "embedTextsAsync")]
         fn embed_texts_async(texts: Vec<String>, config: EmbeddingConfig) -> Result<String, String>;
         #[swift_bridge(swift_name = "renderPdfPageToPng")]
@@ -3812,7 +3763,7 @@ impl AccelerationConfig {
     }
 }
 
-pub struct CaptioningConfig(pub kreuzberg::core::config::CaptioningConfig);
+pub struct CaptioningConfig(pub kreuzberg::CaptioningConfig);
 impl CaptioningConfig {
     pub fn llm(&self) -> LlmConfig {
         LlmConfig(self.0.llm.clone())
@@ -3828,7 +3779,7 @@ impl CaptioningConfig {
     }
 }
 
-pub struct PageClassificationConfig(pub kreuzberg::core::config::PageClassificationConfig);
+pub struct PageClassificationConfig(pub kreuzberg::PageClassificationConfig);
 impl PageClassificationConfig {
     pub fn prompt_template(&self) -> Option<String> {
         self.0.prompt_template.clone()
@@ -3923,7 +3874,6 @@ impl ExtractionConfig {
         pages: Option<PageConfig>,
         keywords: Option<KeywordConfig>,
         postprocessor: Option<PostProcessorConfig>,
-        html_options: Option<String>,
         html_output: Option<HtmlOutputConfig>,
         extraction_timeout_secs: Option<u64>,
         max_concurrent_extractions: Option<usize>,
@@ -3938,7 +3888,6 @@ impl ExtractionConfig {
         cache_namespace: Option<String>,
         cache_ttl_secs: Option<u64>,
         email: Option<EmailConfig>,
-        concurrency: Option<String>,
         max_archive_depth: usize,
         tree_sitter: Option<TreeSitterConfig>,
         structured_extraction: Option<StructuredExtractionConfig>,
@@ -3949,7 +3898,6 @@ impl ExtractionConfig {
         page_classification: Option<PageClassificationConfig>,
         captioning: Option<CaptioningConfig>,
         qr_codes: Option<bool>,
-        cancel_token: Option<String>,
     ) -> ExtractionConfig {
         let mut __target: kreuzberg::ExtractionConfig = ::std::default::Default::default();
         __target.use_cache = use_cache;
@@ -3991,16 +3939,6 @@ impl ExtractionConfig {
         if let Some(w) = postprocessor {
             __target.postprocessor = Some(w.0);
         }
-        if let Some(s) = html_options {
-            // Try JSON parse first (handles enum/object values); on parse failure
-            // treat the raw input as a JSON string scalar so plain `String` /
-            // string-like enum fields don't end up empty for inputs that aren't
-            // valid JSON tokens (e.g. `tts-1`).
-            let __v = ::serde_json::from_str::<::serde_json::Value>(&s).unwrap_or(::serde_json::Value::String(s));
-            if let Ok(t) = ::serde_json::from_value(__v) {
-                __target.html_options = Some(t);
-            }
-        }
         if let Some(w) = html_output {
             __target.html_output = Some(w.0);
         }
@@ -4034,16 +3972,6 @@ impl ExtractionConfig {
         if let Some(w) = email {
             __target.email = Some(w.0);
         }
-        if let Some(s) = concurrency {
-            // Try JSON parse first (handles enum/object values); on parse failure
-            // treat the raw input as a JSON string scalar so plain `String` /
-            // string-like enum fields don't end up empty for inputs that aren't
-            // valid JSON tokens (e.g. `tts-1`).
-            let __v = ::serde_json::from_str::<::serde_json::Value>(&s).unwrap_or(::serde_json::Value::String(s));
-            if let Ok(t) = ::serde_json::from_value(__v) {
-                __target.concurrency = Some(t);
-            }
-        }
         __target.max_archive_depth = max_archive_depth;
         if let Some(w) = tree_sitter {
             __target.tree_sitter = Some(w.0);
@@ -4070,16 +3998,6 @@ impl ExtractionConfig {
             __target.captioning = Some(w.0);
         }
         __target.qr_codes = qr_codes;
-        if let Some(s) = cancel_token {
-            // Try JSON parse first (handles enum/object values); on parse failure
-            // treat the raw input as a JSON string scalar so plain `String` /
-            // string-like enum fields don't end up empty for inputs that aren't
-            // valid JSON tokens (e.g. `tts-1`).
-            let __v = ::serde_json::from_str::<::serde_json::Value>(&s).unwrap_or(::serde_json::Value::String(s));
-            if let Ok(t) = ::serde_json::from_value(__v) {
-                __target.cancel_token = Some(t);
-            }
-        }
         ExtractionConfig(__target)
     }
     pub fn use_cache(&self) -> bool {
@@ -4142,9 +4060,6 @@ impl ExtractionConfig {
     }
     pub fn postprocessor(&self) -> Option<PostProcessorConfig> {
         self.0.postprocessor.clone().map(PostProcessorConfig)
-    }
-    pub fn html_options(&self) -> Option<String> {
-        self.0.html_options.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn html_output(&self) -> Option<HtmlOutputConfig> {
         self.0.html_output.clone().map(HtmlOutputConfig)
@@ -4210,9 +4125,6 @@ impl ExtractionConfig {
     pub fn email(&self) -> Option<EmailConfig> {
         self.0.email.clone().map(EmailConfig)
     }
-    pub fn concurrency(&self) -> Option<String> {
-        self.0.concurrency.as_ref().and_then(|v| serde_json::to_string(v).ok())
-    }
     pub fn max_archive_depth(&self) -> usize {
         ::serde_json::to_value(&self.0.max_archive_depth)
             .ok()
@@ -4250,9 +4162,6 @@ impl ExtractionConfig {
                 .and_then(|j| ::serde_json::from_value(j).ok())
         })
     }
-    pub fn cancel_token(&self) -> Option<String> {
-        self.0.cancel_token.as_ref().and_then(|v| serde_json::to_string(v).ok())
-    }
 }
 
 pub struct FileExtractionConfig(pub kreuzberg::FileExtractionConfig);
@@ -4272,7 +4181,6 @@ impl FileExtractionConfig {
         pages: Option<PageConfig>,
         keywords: Option<KeywordConfig>,
         postprocessor: Option<PostProcessorConfig>,
-        html_options: Option<String>,
         result_format: Option<ResultFormat>,
         output_format: Option<OutputFormat>,
         include_document_structure: Option<bool>,
@@ -4319,16 +4227,6 @@ impl FileExtractionConfig {
         }
         if let Some(w) = postprocessor {
             __target.postprocessor = Some(w.0);
-        }
-        if let Some(s) = html_options {
-            // Try JSON parse first (handles enum/object values); on parse failure
-            // treat the raw input as a JSON string scalar so plain `String` /
-            // string-like enum fields don't end up empty for inputs that aren't
-            // valid JSON tokens (e.g. `tts-1`).
-            let __v = ::serde_json::from_str::<::serde_json::Value>(&s).unwrap_or(::serde_json::Value::String(s));
-            if let Ok(t) = ::serde_json::from_value(__v) {
-                __target.html_options = Some(t);
-            }
         }
         // alef: result_format (ResultFormat) is an enum; reverse From not generated — left at default
         // alef: output_format (OutputFormat) is an enum; reverse From not generated — left at default
@@ -4402,9 +4300,6 @@ impl FileExtractionConfig {
     }
     pub fn postprocessor(&self) -> Option<PostProcessorConfig> {
         self.0.postprocessor.clone().map(PostProcessorConfig)
-    }
-    pub fn html_options(&self) -> Option<String> {
-        self.0.html_options.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn result_format(&self) -> Option<String> {
         self.0.result_format.clone().map(|w| ResultFormat::from(w).to_string())
@@ -4848,7 +4743,7 @@ impl StructuredExtractionConfig {
     }
 }
 
-pub struct NerConfig(pub kreuzberg::core::config::NerConfig);
+pub struct NerConfig(pub kreuzberg::NerConfig);
 impl NerConfig {
     pub fn new(
         backend: NerBackendKind,
@@ -4857,7 +4752,7 @@ impl NerConfig {
         llm: Option<LlmConfig>,
         custom_labels: Vec<String>,
     ) -> NerConfig {
-        let mut __target: kreuzberg::core::config::NerConfig = ::std::default::Default::default();
+        let mut __target: kreuzberg::NerConfig = ::std::default::Default::default();
         // alef: backend (NerBackendKind) is an enum; reverse From not generated — left at default
         // alef: categories (Vec<>) contains enum elements — left at default
         if let Some(s) = model {
@@ -5644,7 +5539,7 @@ impl EmbeddingConfig {
     }
 }
 
-pub struct RedactionConfig(pub kreuzberg::core::config::RedactionConfig);
+pub struct RedactionConfig(pub kreuzberg::RedactionConfig);
 impl RedactionConfig {
     pub fn new(
         categories: Vec<PiiCategory>,
@@ -5654,7 +5549,7 @@ impl RedactionConfig {
         custom_terms: Vec<RedactionTerm>,
         custom_patterns: Vec<RedactionPattern>,
     ) -> RedactionConfig {
-        let mut __target: kreuzberg::core::config::RedactionConfig = ::std::default::Default::default();
+        let mut __target: kreuzberg::RedactionConfig = ::std::default::Default::default();
         // alef: categories (Vec<>) contains enum elements — left at default
         // alef: strategy (RedactionStrategy) is an enum; reverse From not generated — left at default
         if let Some(w) = ner {
@@ -5700,7 +5595,7 @@ impl RedactionConfig {
     }
 }
 
-pub struct RedactionTerm(pub kreuzberg::core::config::redaction::RedactionTerm);
+pub struct RedactionTerm(pub kreuzberg::RedactionTerm);
 impl RedactionTerm {
     pub fn label(&self) -> String {
         self.0.label.clone()
@@ -5716,7 +5611,7 @@ impl RedactionTerm {
     }
 }
 
-pub struct RedactionPattern(pub kreuzberg::core::config::redaction::RedactionPattern);
+pub struct RedactionPattern(pub kreuzberg::RedactionPattern);
 impl RedactionPattern {
     pub fn label(&self) -> String {
         self.0.label.clone()
@@ -5732,10 +5627,10 @@ impl RedactionPattern {
     }
 }
 
-pub struct SummarizationConfig(pub kreuzberg::core::config::SummarizationConfig);
+pub struct SummarizationConfig(pub kreuzberg::SummarizationConfig);
 impl SummarizationConfig {
     pub fn new(strategy: SummaryStrategy, max_tokens: Option<u32>, llm: Option<LlmConfig>) -> SummarizationConfig {
-        let mut __target: kreuzberg::core::config::SummarizationConfig = ::std::default::Default::default();
+        let mut __target: kreuzberg::SummarizationConfig = ::std::default::Default::default();
         // alef: strategy (SummaryStrategy) is an enum; reverse From not generated — left at default
         __target.max_tokens = max_tokens;
         if let Some(w) = llm {
@@ -5758,7 +5653,7 @@ impl SummarizationConfig {
     }
 }
 
-pub struct TranslationConfig(pub kreuzberg::core::config::TranslationConfig);
+pub struct TranslationConfig(pub kreuzberg::TranslationConfig);
 impl TranslationConfig {
     pub fn target_lang(&self) -> String {
         self.0.target_lang.clone()
@@ -6863,7 +6758,7 @@ impl TokenReductionConfig {
     }
 }
 
-pub struct GlineBackend(pub kreuzberg::text::ner::gline::GlineBackend);
+pub struct GlineBackend(pub kreuzberg::GlineBackend);
 impl GlineBackend {
     pub fn repo_id(&self) -> String {
         format!("{:?}", &self.0.repo_id)
@@ -6876,7 +6771,7 @@ impl GlineBackend {
     }
 }
 
-pub struct LlmBackend(pub kreuzberg::text::ner::llm::LlmBackend);
+pub struct LlmBackend(pub kreuzberg::LlmBackend);
 
 #[allow(unused_imports)]
 use kreuzberg::text::ner::NerBackend;
@@ -6924,7 +6819,7 @@ impl PatternMatch {
     }
 }
 
-pub struct TokenCounter(pub kreuzberg::text::redaction::strategy::TokenCounter);
+pub struct TokenCounter(pub kreuzberg::TokenCounter);
 
 pub fn token_counter_next_token(client: &mut TokenCounter, category: PiiCategory, original: String) -> String {
     client.0.next_token(&category.0, &original).to_string()
@@ -7003,7 +6898,6 @@ impl DjotContent {
     pub fn footnotes(&self) -> Vec<Footnote> {
         self.0.footnotes.iter().map(|elem| Footnote(elem.clone())).collect()
     }
-    // alef: skipped getter `attributes` — type cannot be bridged through swift-bridge
 }
 
 pub struct FormattedBlock(pub kreuzberg::FormattedBlock);
@@ -7024,9 +6918,6 @@ impl FormattedBlock {
             .iter()
             .map(|elem| InlineElement(elem.clone()))
             .collect()
-    }
-    pub fn attributes(&self) -> Option<String> {
-        self.0.attributes.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn language(&self) -> Option<String> {
         self.0.language.clone()
@@ -7051,9 +6942,6 @@ impl InlineElement {
     pub fn content(&self) -> String {
         self.0.content.clone()
     }
-    pub fn attributes(&self) -> Option<String> {
-        self.0.attributes.as_ref().and_then(|v| serde_json::to_string(v).ok())
-    }
     pub fn metadata(&self) -> String {
         serde_json::to_string(&self.0.metadata).expect("serializable metadata")
     }
@@ -7070,9 +6958,6 @@ impl DjotImage {
     pub fn title(&self) -> Option<String> {
         self.0.title.clone()
     }
-    pub fn attributes(&self) -> Option<String> {
-        self.0.attributes.as_ref().and_then(|v| serde_json::to_string(v).ok())
-    }
 }
 
 pub struct DjotLink(pub kreuzberg::DjotLink);
@@ -7085,9 +6970,6 @@ impl DjotLink {
     }
     pub fn title(&self) -> Option<String> {
         self.0.title.clone()
-    }
-    pub fn attributes(&self) -> Option<String> {
-        self.0.attributes.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
 }
 
@@ -7171,9 +7053,6 @@ impl DocumentRelationship {
 
 pub struct DocumentNode(pub kreuzberg::DocumentNode);
 impl DocumentNode {
-    pub fn id(&self) -> String {
-        serde_json::to_string(&self.0.id).unwrap_or_default()
-    }
     pub fn content(&self) -> String {
         NodeContent::from(self.0.content.clone()).to_string()
     }
@@ -7486,7 +7365,6 @@ impl ExtractionResult {
                 __target.formatted_content = Some(t);
             }
         }
-        // alef: excluded field `ocr_internal_document` — actual type is not serializable, left at default
         ExtractionResult(__target)
     }
     pub fn content(&self) -> String {
@@ -7636,7 +7514,6 @@ impl ExtractionResult {
     pub fn formatted_content(&self) -> Option<String> {
         self.0.formatted_content.clone()
     }
-    // alef: skipped getter `ocr_internal_document` — type cannot be bridged through swift-bridge
 }
 
 pub struct ArchiveEntry(pub kreuzberg::ArchiveEntry);
@@ -8093,9 +7970,6 @@ impl ElementMetadata {
 
 pub struct Element(pub kreuzberg::Element);
 impl Element {
-    pub fn element_id(&self) -> String {
-        serde_json::to_string(&self.0.element_id).unwrap_or_default()
-    }
     pub fn element_type(&self) -> String {
         ElementType::from(self.0.element_type.clone()).to_string()
     }
@@ -8203,8 +8077,6 @@ impl TextExtractionResult {
                 .and_then(|j| ::serde_json::from_value(j).ok())
         })
     }
-    // alef: skipped getter `links` — type cannot be bridged through swift-bridge
-    // alef: skipped getter `code_blocks` — type cannot be bridged through swift-bridge
 }
 
 pub struct PptxExtractionResult(pub kreuzberg::PptxExtractionResult);
@@ -8248,7 +8120,6 @@ impl PptxExtractionResult {
     pub fn document(&self) -> Option<DocumentStructure> {
         self.0.document.clone().map(DocumentStructure)
     }
-    // alef: skipped getter `hyperlinks` — type cannot be bridged through swift-bridge
     pub fn office_metadata(&self) -> String {
         serde_json::to_string(&self.0.office_metadata).expect("serializable office_metadata")
     }
@@ -8362,7 +8233,6 @@ impl OcrExtractionResult {
             .as_ref()
             .map(|v| v.iter().map(|elem| OcrElement(elem.clone())).collect())
     }
-    // alef: skipped getter `internal_document` — type cannot be bridged through swift-bridge
 }
 
 pub struct OcrTable(pub kreuzberg::OcrTable);
@@ -8698,18 +8568,6 @@ impl TesseractConfig {
 
 pub struct ImagePreprocessingMetadata(pub kreuzberg::ImagePreprocessingMetadata);
 impl ImagePreprocessingMetadata {
-    pub fn original_dimensions(&self) -> Vec<usize> {
-        ::serde_json::to_value(&self.0.original_dimensions)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
-    }
-    pub fn original_dpi(&self) -> Vec<f64> {
-        ::serde_json::to_value(&self.0.original_dpi)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
-    }
     pub fn target_dpi(&self) -> i32 {
         ::serde_json::to_value(&self.0.target_dpi)
             .ok()
@@ -8733,13 +8591,6 @@ impl ImagePreprocessingMetadata {
             .ok()
             .and_then(|j| ::serde_json::from_value(j).ok())
             .unwrap_or_default()
-    }
-    pub fn new_dimensions(&self) -> Option<Vec<usize>> {
-        self.0.new_dimensions.as_ref().and_then(|v| {
-            ::serde_json::to_value(v)
-                .ok()
-                .and_then(|j| ::serde_json::from_value(j).ok())
-        })
     }
     pub fn resample_method(&self) -> String {
         self.0.resample_method.clone()
@@ -9296,14 +9147,7 @@ impl XmlMetadata {
 
 pub struct TextMetadata(pub kreuzberg::TextMetadata);
 impl TextMetadata {
-    pub fn new(
-        line_count: u32,
-        word_count: u32,
-        character_count: u32,
-        headers: Option<Vec<String>>,
-        links: String,
-        code_blocks: String,
-    ) -> TextMetadata {
+    pub fn new(line_count: u32, word_count: u32, character_count: u32, headers: Option<Vec<String>>) -> TextMetadata {
         let mut __target: kreuzberg::TextMetadata = ::std::default::Default::default();
         __target.line_count = line_count;
         __target.word_count = word_count;
@@ -9311,16 +9155,6 @@ impl TextMetadata {
         if let Ok(__v) = ::serde_json::to_value(headers) {
             if let Ok(t) = ::serde_json::from_value(__v) {
                 __target.headers = t;
-            }
-        }
-        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&links) {
-            if let Ok(t) = ::serde_json::from_value(v) {
-                __target.links = t;
-            }
-        }
-        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&code_blocks) {
-            if let Ok(t) = ::serde_json::from_value(v) {
-                __target.code_blocks = t;
             }
         }
         TextMetadata(__target)
@@ -9350,8 +9184,6 @@ impl TextMetadata {
                 .and_then(|j| ::serde_json::from_value(j).ok())
         })
     }
-    // alef: skipped getter `links` — type cannot be bridged through swift-bridge
-    // alef: skipped getter `code_blocks` — type cannot be bridged through swift-bridge
 }
 
 pub struct HeaderMetadata(pub kreuzberg::HeaderMetadata);
@@ -9402,7 +9234,6 @@ impl LinkMetadata {
             .and_then(|j| ::serde_json::from_value(j).ok())
             .unwrap_or_default()
     }
-    // alef: skipped getter `attributes` — type cannot be bridged through swift-bridge
 }
 
 pub struct ImageMetadataType(pub kreuzberg::ImageMetadataType);
@@ -9416,17 +9247,9 @@ impl ImageMetadataType {
     pub fn title(&self) -> Option<String> {
         self.0.title.clone()
     }
-    pub fn dimensions(&self) -> Option<Vec<u32>> {
-        self.0.dimensions.as_ref().and_then(|v| {
-            ::serde_json::to_value(v)
-                .ok()
-                .and_then(|j| ::serde_json::from_value(j).ok())
-        })
-    }
     pub fn image_type(&self) -> String {
         ImageType::from(self.0.image_type.clone()).to_string()
     }
-    // alef: skipped getter `attributes` — type cannot be bridged through swift-bridge
 }
 
 pub struct StructuredData(pub kreuzberg::StructuredData);
@@ -10460,13 +10283,6 @@ impl PageInfo {
     pub fn title(&self) -> Option<String> {
         self.0.title.clone()
     }
-    pub fn dimensions(&self) -> Option<Vec<f64>> {
-        self.0.dimensions.as_ref().and_then(|v| {
-            ::serde_json::to_value(v)
-                .ok()
-                .and_then(|j| ::serde_json::from_value(j).ok())
-        })
-    }
     pub fn image_count(&self) -> Option<u32> {
         self.0.image_count.as_ref().and_then(|v| {
             ::serde_json::to_value(v)
@@ -10620,13 +10436,6 @@ impl HierarchicalBlock {
     }
     pub fn level(&self) -> String {
         self.0.level.clone()
-    }
-    pub fn bbox(&self) -> Option<Vec<f32>> {
-        self.0.bbox.as_ref().and_then(|v| {
-            ::serde_json::to_value(v)
-                .ok()
-                .and_then(|j| ::serde_json::from_value(j).ok())
-        })
     }
 }
 
@@ -11162,7 +10971,6 @@ impl KeywordConfig {
         algorithm: KeywordAlgorithm,
         max_keywords: usize,
         min_score: f32,
-        ngram_range: Vec<usize>,
         language: Option<String>,
         yake_params: Option<YakeParams>,
         rake_params: Option<RakeParams>,
@@ -11171,11 +10979,6 @@ impl KeywordConfig {
         // alef: algorithm (KeywordAlgorithm) is an enum; reverse From not generated — left at default
         __target.max_keywords = max_keywords;
         __target.min_score = min_score;
-        if let Ok(__v) = ::serde_json::to_value(ngram_range) {
-            if let Ok(t) = ::serde_json::from_value(__v) {
-                __target.ngram_range = t;
-            }
-        }
         if let Some(s) = language {
             // Try JSON parse first (handles enum/object values); on parse failure
             // treat the raw input as a JSON string scalar so plain `String` /
@@ -11205,12 +11008,6 @@ impl KeywordConfig {
     }
     pub fn min_score(&self) -> f32 {
         ::serde_json::to_value(&self.0.min_score)
-            .ok()
-            .and_then(|j| ::serde_json::from_value(j).ok())
-            .unwrap_or_default()
-    }
-    pub fn ngram_range(&self) -> Vec<usize> {
-        ::serde_json::to_value(&self.0.ngram_range)
             .ok()
             .and_then(|j| ::serde_json::from_value(j).ok())
             .unwrap_or_default()
@@ -11726,11 +11523,11 @@ pub enum NerBackendKind {
     Llm,
 }
 
-impl From<kreuzberg::core::config::NerBackendKind> for NerBackendKind {
-    fn from(val: kreuzberg::core::config::NerBackendKind) -> Self {
+impl From<kreuzberg::NerBackendKind> for NerBackendKind {
+    fn from(val: kreuzberg::NerBackendKind) -> Self {
         match val {
-            kreuzberg::core::config::NerBackendKind::Onnx => Self::Onnx,
-            kreuzberg::core::config::NerBackendKind::Llm => Self::Llm,
+            kreuzberg::NerBackendKind::Onnx => Self::Onnx,
+            kreuzberg::NerBackendKind::Llm => Self::Llm,
         }
     }
 }
@@ -12636,7 +12433,6 @@ pub enum FormatMetadata {
     Jats,
     Epub,
     Pst,
-    Code,
 }
 
 impl From<kreuzberg::FormatMetadata> for FormatMetadata {
@@ -12661,7 +12457,6 @@ impl From<kreuzberg::FormatMetadata> for FormatMetadata {
             kreuzberg::FormatMetadata::Jats(..) => Self::Jats,
             kreuzberg::FormatMetadata::Epub(..) => Self::Epub,
             kreuzberg::FormatMetadata::Pst(..) => Self::Pst,
-            kreuzberg::FormatMetadata::Code(..) => Self::Code,
         }
     }
 }
@@ -12688,7 +12483,6 @@ impl FormatMetadata {
             Self::Jats => "jats".to_string(),
             Self::Epub => "epub".to_string(),
             Self::Pst => "pst".to_string(),
-            Self::Code => "code".to_string(),
         }
     }
 }
@@ -13124,13 +12918,13 @@ pub enum RegionKind {
     Caption,
 }
 
-impl From<kreuzberg::llm::region_extractor::RegionKind> for RegionKind {
-    fn from(val: kreuzberg::llm::region_extractor::RegionKind) -> Self {
+impl From<kreuzberg::RegionKind> for RegionKind {
+    fn from(val: kreuzberg::RegionKind) -> Self {
         match val {
-            kreuzberg::llm::region_extractor::RegionKind::Figure => Self::Figure,
-            kreuzberg::llm::region_extractor::RegionKind::DenseTable => Self::DenseTable,
-            kreuzberg::llm::region_extractor::RegionKind::ComplexLayout => Self::ComplexLayout,
-            kreuzberg::llm::region_extractor::RegionKind::Caption => Self::Caption,
+            kreuzberg::RegionKind::Figure => Self::Figure,
+            kreuzberg::RegionKind::DenseTable => Self::DenseTable,
+            kreuzberg::RegionKind::ComplexLayout => Self::ComplexLayout,
+            kreuzberg::RegionKind::Caption => Self::Caption,
         }
     }
 }
@@ -13550,15 +13344,6 @@ pub fn token_count(text: String) -> u32 {
     kreuzberg::text::summarization::textrank::token_count(&text)
 }
 
-pub fn summarize_with_llm(text: String, llm_config: LlmConfig, max_tokens: Option<u32>) -> Result<String, String> {
-    crate::__alef_tokio_runtime().block_on(async {
-        kreuzberg::text::summarization::llm::summarize_with_llm(&text, &llm_config.0, max_tokens)
-            .await
-            .map_err(|e| e.to_string())
-            .map(|s| s.to_string())
-    })
-}
-
 pub fn translate_result(result: ExtractionResult, config: TranslationConfig) -> Result<(), String> {
     crate::__alef_tokio_runtime().block_on(async {
         kreuzberg::text::translation::translate_result(&result.0, &config.0)
@@ -13569,30 +13354,6 @@ pub fn translate_result(result: ExtractionResult, config: TranslationConfig) -> 
 
 pub fn compare(a: ExtractionResult, b: ExtractionResult, opts: DiffOptions) -> ExtractionDiff {
     ExtractionDiff(kreuzberg::compare(&a.0, &b.0, &opts.0))
-}
-
-pub fn complete_with_json_schema(
-    llm_config: LlmConfig,
-    prompt: String,
-    schema_name: String,
-    schema: String,
-    source: String,
-) -> Result<String, String> {
-    crate::__alef_tokio_runtime().block_on(async {
-        kreuzberg::llm::structured::complete_with_json_schema(&llm_config.0, &prompt, &schema_name, &schema, &source)
-            .await
-            .map_err(|e| e.to_string())
-            .map(|s| s.to_string())
-    })
-}
-
-pub fn complete_text(llm_config: LlmConfig, prompt: String, source: String) -> Result<String, String> {
-    crate::__alef_tokio_runtime().block_on(async {
-        kreuzberg::llm::text_completion::complete_text(&llm_config.0, &prompt, &source)
-            .await
-            .map_err(|e| e.to_string())
-            .map(|s| s.to_string())
-    })
 }
 
 pub fn embed_texts_async(texts: Vec<String>, config: EmbeddingConfig) -> Result<String, String> {
@@ -14305,7 +14066,7 @@ pub fn clear_renderers() -> Result<(), String> {
 }
 
 pub fn page_classification_config_from_json(json: String) -> Result<PageClassificationConfig, String> {
-    serde_json::from_str::<kreuzberg::core::config::PageClassificationConfig>(&json)
+    serde_json::from_str::<kreuzberg::PageClassificationConfig>(&json)
         .map(PageClassificationConfig)
         .map_err(|e| e.to_string())
 }
@@ -14340,12 +14101,12 @@ pub fn embedding_config_from_json(json: String) -> Result<EmbeddingConfig, Strin
         .map_err(|e| e.to_string())
 }
 pub fn redaction_config_from_json(json: String) -> Result<RedactionConfig, String> {
-    serde_json::from_str::<kreuzberg::core::config::RedactionConfig>(&json)
+    serde_json::from_str::<kreuzberg::RedactionConfig>(&json)
         .map(RedactionConfig)
         .map_err(|e| e.to_string())
 }
 pub fn translation_config_from_json(json: String) -> Result<TranslationConfig, String> {
-    serde_json::from_str::<kreuzberg::core::config::TranslationConfig>(&json)
+    serde_json::from_str::<kreuzberg::TranslationConfig>(&json)
         .map(TranslationConfig)
         .map_err(|e| e.to_string())
 }
@@ -14375,7 +14136,7 @@ pub fn acceleration_config_from_json(json: String) -> Result<AccelerationConfig,
         .map_err(|e| e.to_string())
 }
 pub fn captioning_config_from_json(json: String) -> Result<CaptioningConfig, String> {
-    serde_json::from_str::<kreuzberg::core::config::CaptioningConfig>(&json)
+    serde_json::from_str::<kreuzberg::CaptioningConfig>(&json)
         .map(CaptioningConfig)
         .map_err(|e| e.to_string())
 }
@@ -14425,7 +14186,7 @@ pub fn structured_extraction_config_from_json(json: String) -> Result<Structured
         .map_err(|e| e.to_string())
 }
 pub fn ner_config_from_json(json: String) -> Result<NerConfig, String> {
-    serde_json::from_str::<kreuzberg::core::config::NerConfig>(&json)
+    serde_json::from_str::<kreuzberg::NerConfig>(&json)
         .map(NerConfig)
         .map_err(|e| e.to_string())
 }
@@ -14470,17 +14231,17 @@ pub fn chunking_config_from_json(json: String) -> Result<ChunkingConfig, String>
         .map_err(|e| e.to_string())
 }
 pub fn redaction_term_from_json(json: String) -> Result<RedactionTerm, String> {
-    serde_json::from_str::<kreuzberg::core::config::redaction::RedactionTerm>(&json)
+    serde_json::from_str::<kreuzberg::RedactionTerm>(&json)
         .map(RedactionTerm)
         .map_err(|e| e.to_string())
 }
 pub fn redaction_pattern_from_json(json: String) -> Result<RedactionPattern, String> {
-    serde_json::from_str::<kreuzberg::core::config::redaction::RedactionPattern>(&json)
+    serde_json::from_str::<kreuzberg::RedactionPattern>(&json)
         .map(RedactionPattern)
         .map_err(|e| e.to_string())
 }
 pub fn summarization_config_from_json(json: String) -> Result<SummarizationConfig, String> {
-    serde_json::from_str::<kreuzberg::core::config::SummarizationConfig>(&json)
+    serde_json::from_str::<kreuzberg::SummarizationConfig>(&json)
         .map(SummarizationConfig)
         .map_err(|e| e.to_string())
 }
@@ -15105,7 +14866,7 @@ pub fn table_model_from_json(json: String) -> Result<TableModel, String> {
         .map_err(|e| e.to_string())
 }
 pub fn ner_backend_kind_from_json(json: String) -> Result<NerBackendKind, String> {
-    serde_json::from_str::<kreuzberg::core::config::NerBackendKind>(&json)
+    serde_json::from_str::<kreuzberg::NerBackendKind>(&json)
         .map(NerBackendKind::from)
         .map_err(|e| e.to_string())
 }

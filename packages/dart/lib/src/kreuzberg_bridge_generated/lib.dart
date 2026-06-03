@@ -388,28 +388,6 @@ Future<String?> summarize({
 Future<PlatformInt64> tokenCount({required String text}) =>
     RustLib.instance.api.crateTokenCount(text: text);
 
-/// Run abstractive summarisation against the configured LLM.
-///
-/// `text` is the document content to summarise (already extracted by the
-/// pipeline). `max_tokens` softly bounds the requested summary length in
-/// natural-language tokens; `null` uses `DEFAULT_MAX_TOKENS`.
-///
-/// Returns the summary string and the (optional) usage record.
-///
-/// **Errors:**
-///
-/// Propagates any LLM client / request error returned by
-/// `complete_text`.
-Future<String> summarizeWithLlm({
-  required String text,
-  required LlmConfig llmConfig,
-  PlatformInt64? maxTokens,
-}) => RustLib.instance.api.crateSummarizeWithLlm(
-  text: text,
-  llmConfig: llmConfig,
-  maxTokens: maxTokens,
-);
-
 /// Translate the extraction result in place.
 ///
 /// Populates `result.translation` with the translated `content`, optionally the
@@ -458,83 +436,6 @@ Future<String> extractRegionWithVlm({
   regionKind: regionKind,
   llmConfig: llmConfig,
   customPrompt: customPrompt,
-);
-
-/// Same as `extract_region_with_vlm`, but also returns the `LlmUsage` data captured
-/// from the underlying VLM call.
-///
-/// Callers that need to track token / cost data per call (for example the captioning
-/// post-processor, which appends every call's usage to
-/// `ExtractionResult.llm_usage`) should
-/// prefer this variant. The plain `extract_region_with_vlm` is kept for callers that
-/// only care about the markdown output (PDF region splicing).
-///
-/// **Errors:**
-///
-/// Same as `extract_region_with_vlm`.
-Future<String> extractRegionWithVlmUsage({
-  required List<int> imageBytes,
-  required String imageMime,
-  required RegionKind regionKind,
-  required LlmConfig llmConfig,
-  String? customPrompt,
-}) => RustLib.instance.api.crateExtractRegionWithVlmUsage(
-  imageBytes: imageBytes,
-  imageMime: imageMime,
-  regionKind: regionKind,
-  llmConfig: llmConfig,
-  customPrompt: customPrompt,
-);
-
-/// Send a free-form prompt to the configured LLM with a JSON-schema response
-/// constraint and return the parsed JSON value plus captured usage.
-///
-/// This is the shared helper used by LLM-backed post-processors (page
-/// classification, LLM-driven NER, etc.) that need structured output but do not
-/// want to depend on `StructuredExtractionConfig`'s schema/prompt machinery.
-///
-///   distinguish multiple structured outputs).
-///
-/// - `schema` — the JSON schema the LLM is required to obey.
-/// - `source` — label used for the returned `LlmUsage` entry.
-///
-/// **Errors:**
-///
-/// Returns an error if the LLM client cannot be constructed, the request fails,
-/// the response contains no content, or the response is not parseable JSON.
-Future<String> completeWithJsonSchema({
-  required LlmConfig llmConfig,
-  required String prompt,
-  required String schemaName,
-  required String schema,
-  required String source,
-}) => RustLib.instance.api.crateCompleteWithJsonSchema(
-  llmConfig: llmConfig,
-  prompt: prompt,
-  schemaName: schemaName,
-  schema: schema,
-  source: source,
-);
-
-/// Send a single user prompt to the configured LLM and return the response text
-/// along with the captured usage metadata.
-///
-/// The `source` argument labels the `LlmUsage` entry that is returned so
-/// callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
-/// etc.). The helper performs a single non-streaming chat completion request.
-///
-/// **Errors:**
-///
-/// Returns an error if the LLM client cannot be constructed, the request fails,
-/// or the response does not contain assistant content.
-Future<String> completeText({
-  required LlmConfig llmConfig,
-  required String prompt,
-  required String source,
-}) => RustLib.instance.api.crateCompleteText(
-  llmConfig: llmConfig,
-  prompt: prompt,
-  source: source,
 );
 
 /// Generate embeddings asynchronously for a list of text strings.
@@ -2808,9 +2709,6 @@ class DjotContent {
   /// Footnote definitions
   final List<Footnote> footnotes;
 
-  /// Attributes mapped by element identifier (if present)
-  final List<String> attributes;
-
   const DjotContent({
     required this.plainText,
     required this.blocks,
@@ -2819,7 +2717,6 @@ class DjotContent {
     required this.images,
     required this.links,
     required this.footnotes,
-    required this.attributes,
   });
 
   @override
@@ -2830,8 +2727,7 @@ class DjotContent {
       tables.hashCode ^
       images.hashCode ^
       links.hashCode ^
-      footnotes.hashCode ^
-      attributes.hashCode;
+      footnotes.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -2844,8 +2740,7 @@ class DjotContent {
           tables == other.tables &&
           images == other.images &&
           links == other.links &&
-          footnotes == other.footnotes &&
-          attributes == other.attributes;
+          footnotes == other.footnotes;
 }
 
 /// Image element in Djot.
@@ -2859,19 +2754,10 @@ class DjotImage {
   /// Optional title
   final String? title;
 
-  /// Element attributes
-  final String? attributes;
-
-  const DjotImage({
-    required this.src,
-    required this.alt,
-    this.title,
-    this.attributes,
-  });
+  const DjotImage({required this.src, required this.alt, this.title});
 
   @override
-  int get hashCode =>
-      src.hashCode ^ alt.hashCode ^ title.hashCode ^ attributes.hashCode;
+  int get hashCode => src.hashCode ^ alt.hashCode ^ title.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -2880,8 +2766,7 @@ class DjotImage {
           runtimeType == other.runtimeType &&
           src == other.src &&
           alt == other.alt &&
-          title == other.title &&
-          attributes == other.attributes;
+          title == other.title;
 }
 
 /// Link element in Djot.
@@ -2895,19 +2780,10 @@ class DjotLink {
   /// Optional title
   final String? title;
 
-  /// Element attributes
-  final String? attributes;
-
-  const DjotLink({
-    required this.url,
-    required this.text,
-    this.title,
-    this.attributes,
-  });
+  const DjotLink({required this.url, required this.text, this.title});
 
   @override
-  int get hashCode =>
-      url.hashCode ^ text.hashCode ^ title.hashCode ^ attributes.hashCode;
+  int get hashCode => url.hashCode ^ text.hashCode ^ title.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -2916,8 +2792,7 @@ class DjotLink {
           runtimeType == other.runtimeType &&
           url == other.url &&
           text == other.text &&
-          title == other.title &&
-          attributes == other.attributes;
+          title == other.title;
 }
 
 /// A single node in the document tree.
@@ -2925,9 +2800,6 @@ class DjotLink {
 /// Each node has deterministic `id`, typed `content`, optional `parent`/`children`
 /// for tree structure, and metadata like page number, bounding box, and content layer.
 class DocumentNode {
-  /// Deterministic identifier (hash of content + position).
-  final String id;
-
   /// Node content — tagged enum, type-specific data only.
   final NodeContent content;
 
@@ -2961,7 +2833,6 @@ class DocumentNode {
   final Map<String, String>? attributes;
 
   const DocumentNode({
-    required this.id,
     required this.content,
     this.parent,
     required this.children,
@@ -2975,7 +2846,6 @@ class DocumentNode {
 
   @override
   int get hashCode =>
-      id.hashCode ^
       content.hashCode ^
       parent.hashCode ^
       children.hashCode ^
@@ -2991,7 +2861,6 @@ class DocumentNode {
       identical(this, other) ||
       other is DocumentNode &&
           runtimeType == other.runtimeType &&
-          id == other.id &&
           content == other.content &&
           parent == other.parent &&
           children == other.children &&
@@ -3356,9 +3225,6 @@ class DocxMetadata {
 /// Represents a logical unit of content with semantic classification,
 /// unique identifier, and metadata for tracking origin and position.
 class Element {
-  /// Unique element identifier
-  final String elementId;
-
   /// Semantic type of this element
   final ElementType elementType;
 
@@ -3369,25 +3235,19 @@ class Element {
   final ElementMetadata metadata;
 
   const Element({
-    required this.elementId,
     required this.elementType,
     required this.text,
     required this.metadata,
   });
 
   @override
-  int get hashCode =>
-      elementId.hashCode ^
-      elementType.hashCode ^
-      text.hashCode ^
-      metadata.hashCode;
+  int get hashCode => elementType.hashCode ^ text.hashCode ^ metadata.hashCode;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is Element &&
           runtimeType == other.runtimeType &&
-          elementId == other.elementId &&
           elementType == other.elementType &&
           text == other.text &&
           metadata == other.metadata;
@@ -4520,12 +4380,6 @@ class ExtractionConfig {
   /// Post-processor configuration (None = use defaults)
   final PostProcessorConfig? postprocessor;
 
-  /// HTML to Markdown conversion options (None = use defaults)
-  ///
-  /// Configure how HTML documents are converted to Markdown, including heading styles,
-  /// list formatting, code block styles, and preprocessing options.
-  final String? htmlOptions;
-
   /// Styled HTML output configuration.
   ///
   /// When set alongside `output_format = OutputFormat::Html`, the extraction
@@ -4654,13 +4508,6 @@ class ExtractionConfig {
   /// that do not specify one. See `EmailConfig` for details.
   final EmailConfig? email;
 
-  /// Concurrency limits for constrained environments (None = use defaults).
-  ///
-  /// Controls Rayon thread pool size, ONNX Runtime intra-op threads, and
-  /// (when `max_concurrent_extractions` is unset) the batch concurrency
-  /// semaphore. See `ConcurrencyConfig` for details.
-  final String? concurrency;
-
   /// Maximum recursion depth for archive extraction (default: 3).
   /// Set to 0 to disable recursive extraction (legacy behavior).
   final PlatformInt64 maxArchiveDepth;
@@ -4708,17 +4555,6 @@ class ExtractionConfig {
   /// runs at the Middle stage and populates `ExtractedImage::qr_codes`.
   final bool? qrCodes;
 
-  /// Cancellation token for this extraction (None = no external cancellation).
-  ///
-  /// Pass a [`CancellationToken`] clone here and call [`CancellationToken::cancel`]
-  /// from another thread / task to abort the extraction in progress. The extractor
-  /// checks the token at safe checkpoints (before lock acquisition, between pages,
-  /// between batch items) and returns [`KreuzbergError::Cancelled`] when set.
-  ///
-  /// The field is excluded from serialization because `CancellationToken` is a
-  /// runtime handle, not a configuration value.
-  final String? cancelToken;
-
   const ExtractionConfig({
     required this.useCache,
     required this.enableQualityProcessing,
@@ -4735,7 +4571,6 @@ class ExtractionConfig {
     this.pages,
     this.keywords,
     this.postprocessor,
-    this.htmlOptions,
     this.htmlOutput,
     this.extractionTimeoutSecs,
     this.maxConcurrentExtractions,
@@ -4750,7 +4585,6 @@ class ExtractionConfig {
     this.cacheNamespace,
     this.cacheTtlSecs,
     this.email,
-    this.concurrency,
     required this.maxArchiveDepth,
     this.treeSitter,
     this.structuredExtraction,
@@ -4761,7 +4595,6 @@ class ExtractionConfig {
     this.pageClassification,
     this.captioning,
     this.qrCodes,
-    this.cancelToken,
   });
 
   @override
@@ -4781,7 +4614,6 @@ class ExtractionConfig {
       pages.hashCode ^
       keywords.hashCode ^
       postprocessor.hashCode ^
-      htmlOptions.hashCode ^
       htmlOutput.hashCode ^
       extractionTimeoutSecs.hashCode ^
       maxConcurrentExtractions.hashCode ^
@@ -4796,7 +4628,6 @@ class ExtractionConfig {
       cacheNamespace.hashCode ^
       cacheTtlSecs.hashCode ^
       email.hashCode ^
-      concurrency.hashCode ^
       maxArchiveDepth.hashCode ^
       treeSitter.hashCode ^
       structuredExtraction.hashCode ^
@@ -4806,8 +4637,7 @@ class ExtractionConfig {
       translation.hashCode ^
       pageClassification.hashCode ^
       captioning.hashCode ^
-      qrCodes.hashCode ^
-      cancelToken.hashCode;
+      qrCodes.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -4829,7 +4659,6 @@ class ExtractionConfig {
           pages == other.pages &&
           keywords == other.keywords &&
           postprocessor == other.postprocessor &&
-          htmlOptions == other.htmlOptions &&
           htmlOutput == other.htmlOutput &&
           extractionTimeoutSecs == other.extractionTimeoutSecs &&
           maxConcurrentExtractions == other.maxConcurrentExtractions &&
@@ -4844,7 +4673,6 @@ class ExtractionConfig {
           cacheNamespace == other.cacheNamespace &&
           cacheTtlSecs == other.cacheTtlSecs &&
           email == other.email &&
-          concurrency == other.concurrency &&
           maxArchiveDepth == other.maxArchiveDepth &&
           treeSitter == other.treeSitter &&
           structuredExtraction == other.structuredExtraction &&
@@ -4854,8 +4682,7 @@ class ExtractionConfig {
           translation == other.translation &&
           pageClassification == other.pageClassification &&
           captioning == other.captioning &&
-          qrCodes == other.qrCodes &&
-          cancelToken == other.cancelToken;
+          qrCodes == other.qrCodes;
 }
 
 /// The complete diff between two `ExtractionResult` values.
@@ -5126,13 +4953,6 @@ class ExtractionResult {
   /// of the pipeline, after post-processors have operated on plain text.
   final String? formattedContent;
 
-  /// Structured hOCR document for the OCR+layout pipeline.
-  ///
-  /// When tesseract produces hOCR output, the parsed `InternalDocument` carries
-  /// paragraph structure with bounding boxes and confidence scores. The layout
-  /// classification step enriches these elements before final rendering.
-  final String? ocrInternalDocument;
-
   const ExtractionResult({
     required this.content,
     required this.mimeType,
@@ -5163,7 +4983,6 @@ class ExtractionResult {
     this.pageClassifications,
     this.redactionReport,
     this.formattedContent,
-    this.ocrInternalDocument,
   });
 
   @override
@@ -5196,8 +5015,7 @@ class ExtractionResult {
       translation.hashCode ^
       pageClassifications.hashCode ^
       redactionReport.hashCode ^
-      formattedContent.hashCode ^
-      ocrInternalDocument.hashCode;
+      formattedContent.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -5232,8 +5050,7 @@ class ExtractionResult {
           translation == other.translation &&
           pageClassifications == other.pageClassifications &&
           redactionReport == other.redactionReport &&
-          formattedContent == other.formattedContent &&
-          ocrInternalDocument == other.ocrInternalDocument;
+          formattedContent == other.formattedContent;
 }
 
 /// FictionBook (FB2) metadata.
@@ -5332,9 +5149,6 @@ class FileExtractionConfig {
   /// Override post-processor for this file.
   final PostProcessorConfig? postprocessor;
 
-  /// Override HTML conversion options for this file.
-  final String? htmlOptions;
-
   /// Override result format for this file.
   final ResultFormat? resultFormat;
 
@@ -5379,7 +5193,6 @@ class FileExtractionConfig {
     this.pages,
     this.keywords,
     this.postprocessor,
-    this.htmlOptions,
     this.resultFormat,
     this.outputFormat,
     this.includeDocumentStructure,
@@ -5405,7 +5218,6 @@ class FileExtractionConfig {
       pages.hashCode ^
       keywords.hashCode ^
       postprocessor.hashCode ^
-      htmlOptions.hashCode ^
       resultFormat.hashCode ^
       outputFormat.hashCode ^
       includeDocumentStructure.hashCode ^
@@ -5433,7 +5245,6 @@ class FileExtractionConfig {
           pages == other.pages &&
           keywords == other.keywords &&
           postprocessor == other.postprocessor &&
-          htmlOptions == other.htmlOptions &&
           resultFormat == other.resultFormat &&
           outputFormat == other.outputFormat &&
           includeDocumentStructure == other.includeDocumentStructure &&
@@ -5508,8 +5319,6 @@ sealed class FormatMetadata with _$FormatMetadata {
       FormatMetadata_Epub;
   const factory FormatMetadata.pst({required PstMetadata field0}) =
       FormatMetadata_Pst;
-  const factory FormatMetadata.code({required String field0}) =
-      FormatMetadata_Code;
 }
 
 /// Block-level element in a Djot document.
@@ -5525,9 +5334,6 @@ class FormattedBlock {
   /// Inline content within the block
   final List<InlineElement> inlineContent;
 
-  /// Element attributes (classes, IDs, key-value pairs)
-  final String? attributes;
-
   /// Language identifier for code blocks
   final String? language;
 
@@ -5541,7 +5347,6 @@ class FormattedBlock {
     required this.blockType,
     this.level,
     required this.inlineContent,
-    this.attributes,
     this.language,
     this.code,
     required this.children,
@@ -5552,7 +5357,6 @@ class FormattedBlock {
       blockType.hashCode ^
       level.hashCode ^
       inlineContent.hashCode ^
-      attributes.hashCode ^
       language.hashCode ^
       code.hashCode ^
       children.hashCode;
@@ -5565,7 +5369,6 @@ class FormattedBlock {
           blockType == other.blockType &&
           level == other.level &&
           inlineContent == other.inlineContent &&
-          attributes == other.attributes &&
           language == other.language &&
           code == other.code &&
           children == other.children;
@@ -5739,21 +5542,14 @@ class HierarchicalBlock {
   /// - "body": Body text (no heading level)
   final String level;
 
-  /// Bounding box information for the block
-  ///
-  /// Contains coordinates as (left, top, right, bottom) in PDF units.
-  final Float64List? bbox;
-
   const HierarchicalBlock({
     required this.text,
     required this.fontSize,
     required this.level,
-    this.bbox,
   });
 
   @override
-  int get hashCode =>
-      text.hashCode ^ fontSize.hashCode ^ level.hashCode ^ bbox.hashCode;
+  int get hashCode => text.hashCode ^ fontSize.hashCode ^ level.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -5762,8 +5558,7 @@ class HierarchicalBlock {
           runtimeType == other.runtimeType &&
           text == other.text &&
           fontSize == other.fontSize &&
-          level == other.level &&
-          bbox == other.bbox;
+          level == other.level;
 }
 
 /// Hierarchy extraction configuration for PDF text structure analysis.
@@ -6228,32 +6023,19 @@ class ImageMetadataType {
   /// Title attribute
   final String? title;
 
-  /// Image dimensions as (width, height) if available
-  final Int64List? dimensions;
-
   /// Image type classification
   final ImageType imageType;
-
-  /// Additional attributes as key-value pairs
-  final List<List<String>> attributes;
 
   const ImageMetadataType({
     required this.src,
     this.alt,
     this.title,
-    this.dimensions,
     required this.imageType,
-    required this.attributes,
   });
 
   @override
   int get hashCode =>
-      src.hashCode ^
-      alt.hashCode ^
-      title.hashCode ^
-      dimensions.hashCode ^
-      imageType.hashCode ^
-      attributes.hashCode;
+      src.hashCode ^ alt.hashCode ^ title.hashCode ^ imageType.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -6263,9 +6045,7 @@ class ImageMetadataType {
           src == other.src &&
           alt == other.alt &&
           title == other.title &&
-          dimensions == other.dimensions &&
-          imageType == other.imageType &&
-          attributes == other.attributes;
+          imageType == other.imageType;
 }
 
 /// Image preprocessing configuration for OCR.
@@ -6334,12 +6114,6 @@ class ImagePreprocessingConfig {
 /// Tracks the transformations applied to an image during OCR preprocessing,
 /// including DPI normalization, resizing, and resampling.
 class ImagePreprocessingMetadata {
-  /// Original image dimensions (width, height) in pixels
-  final Int64List originalDimensions;
-
-  /// Original image DPI (horizontal, vertical)
-  final Float64List originalDpi;
-
   /// Target DPI from configuration
   final PlatformInt64 targetDpi;
 
@@ -6351,9 +6125,6 @@ class ImagePreprocessingMetadata {
 
   /// Final DPI after processing
   final PlatformInt64 finalDpi;
-
-  /// New dimensions after resizing (if resized)
-  final Int64List? newDimensions;
 
   /// Resampling algorithm used ("LANCZOS3", "CATMULLROM", etc.)
   final String resampleMethod;
@@ -6371,13 +6142,10 @@ class ImagePreprocessingMetadata {
   final String? resizeError;
 
   const ImagePreprocessingMetadata({
-    required this.originalDimensions,
-    required this.originalDpi,
     required this.targetDpi,
     required this.scaleFactor,
     required this.autoAdjusted,
     required this.finalDpi,
-    this.newDimensions,
     required this.resampleMethod,
     required this.dimensionClamped,
     this.calculatedDpi,
@@ -6387,13 +6155,10 @@ class ImagePreprocessingMetadata {
 
   @override
   int get hashCode =>
-      originalDimensions.hashCode ^
-      originalDpi.hashCode ^
       targetDpi.hashCode ^
       scaleFactor.hashCode ^
       autoAdjusted.hashCode ^
       finalDpi.hashCode ^
-      newDimensions.hashCode ^
       resampleMethod.hashCode ^
       dimensionClamped.hashCode ^
       calculatedDpi.hashCode ^
@@ -6405,13 +6170,10 @@ class ImagePreprocessingMetadata {
       identical(this, other) ||
       other is ImagePreprocessingMetadata &&
           runtimeType == other.runtimeType &&
-          originalDimensions == other.originalDimensions &&
-          originalDpi == other.originalDpi &&
           targetDpi == other.targetDpi &&
           scaleFactor == other.scaleFactor &&
           autoAdjusted == other.autoAdjusted &&
           finalDpi == other.finalDpi &&
-          newDimensions == other.newDimensions &&
           resampleMethod == other.resampleMethod &&
           dimensionClamped == other.dimensionClamped &&
           calculatedDpi == other.calculatedDpi &&
@@ -6444,25 +6206,18 @@ class InlineElement {
   /// Text content
   final String content;
 
-  /// Element attributes
-  final String? attributes;
-
   /// Additional metadata (e.g., href for links, src/alt for images)
   final Map<String, String>? metadata;
 
   const InlineElement({
     required this.elementType,
     required this.content,
-    this.attributes,
     this.metadata,
   });
 
   @override
   int get hashCode =>
-      elementType.hashCode ^
-      content.hashCode ^
-      attributes.hashCode ^
-      metadata.hashCode;
+      elementType.hashCode ^ content.hashCode ^ metadata.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -6471,7 +6226,6 @@ class InlineElement {
           runtimeType == other.runtimeType &&
           elementType == other.elementType &&
           content == other.content &&
-          attributes == other.attributes &&
           metadata == other.metadata;
 }
 
@@ -6604,13 +6358,6 @@ class KeywordConfig {
   /// Note: Score ranges differ between algorithms.
   final double minScore;
 
-  /// N-gram range for keyword extraction (min, max).
-  ///
-  /// (1, 1) = unigrams only
-  /// (1, 2) = unigrams and bigrams
-  /// (1, 3) = unigrams, bigrams, and trigrams (default)
-  final Int64List ngramRange;
-
   /// Language code for stopword filtering (e.g., "en", "de", "fr").
   ///
   /// If None, no stopword filtering is applied.
@@ -6626,7 +6373,6 @@ class KeywordConfig {
     required this.algorithm,
     required this.maxKeywords,
     required this.minScore,
-    required this.ngramRange,
     this.language,
     this.yakeParams,
     this.rakeParams,
@@ -6637,7 +6383,6 @@ class KeywordConfig {
       algorithm.hashCode ^
       maxKeywords.hashCode ^
       minScore.hashCode ^
-      ngramRange.hashCode ^
       language.hashCode ^
       yakeParams.hashCode ^
       rakeParams.hashCode;
@@ -6650,7 +6395,6 @@ class KeywordConfig {
           algorithm == other.algorithm &&
           maxKeywords == other.maxKeywords &&
           minScore == other.minScore &&
-          ngramRange == other.ngramRange &&
           language == other.language &&
           yakeParams == other.yakeParams &&
           rakeParams == other.rakeParams;
@@ -6888,16 +6632,12 @@ class LinkMetadata {
   /// Rel attribute values
   final List<String> rel;
 
-  /// Additional attributes as key-value pairs
-  final List<List<String>> attributes;
-
   const LinkMetadata({
     required this.href,
     required this.text,
     this.title,
     required this.linkType,
     required this.rel,
-    required this.attributes,
   });
 
   @override
@@ -6906,8 +6646,7 @@ class LinkMetadata {
       text.hashCode ^
       title.hashCode ^
       linkType.hashCode ^
-      rel.hashCode ^
-      attributes.hashCode;
+      rel.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -6918,8 +6657,7 @@ class LinkMetadata {
           text == other.text &&
           title == other.title &&
           linkType == other.linkType &&
-          rel == other.rel &&
-          attributes == other.attributes;
+          rel == other.rel;
 }
 
 /// Link type classification.
@@ -7474,9 +7212,7 @@ sealed class NodeContent with _$NodeContent {
   }) = NodeContent_RawBlock;
 
   /// Structured metadata block (email headers, YAML frontmatter, etc.).
-  const factory NodeContent.metadataBlock({
-    required List<List<String>> entries,
-  }) = NodeContent_MetadataBlock;
+  const factory NodeContent.metadataBlock() = NodeContent_MetadataBlock;
 }
 
 /// OCR backend types.
@@ -7517,10 +7253,8 @@ sealed class OcrBoundingGeometry with _$OcrBoundingGeometry {
   ///
   /// Points are in clockwise order starting from top-left:
   /// `[top_left, top_right, bottom_right, bottom_left]`
-  const factory OcrBoundingGeometry.quadrilateral({
-    /// Four corner points as `[[x, y], ...]` in clockwise order
-    required String points,
-  }) = OcrBoundingGeometry_Quadrilateral;
+  const factory OcrBoundingGeometry.quadrilateral() =
+      OcrBoundingGeometry_Quadrilateral;
 }
 
 /// Confidence scores for an OCR element.
@@ -7884,18 +7618,12 @@ class OcrExtractionResult {
   /// Available when TSV output is requested or table detection is enabled.
   final List<OcrElement>? ocrElements;
 
-  /// Structured document produced from hOCR parsing.
-  /// Carries paragraph structure, bounding boxes, and confidence scores
-  /// that the flattened `content` string discards.
-  final String? internalDocument;
-
   const OcrExtractionResult({
     required this.content,
     required this.mimeType,
     required this.metadata,
     required this.tables,
     this.ocrElements,
-    this.internalDocument,
   });
 
   @override
@@ -7904,8 +7632,7 @@ class OcrExtractionResult {
       mimeType.hashCode ^
       metadata.hashCode ^
       tables.hashCode ^
-      ocrElements.hashCode ^
-      internalDocument.hashCode;
+      ocrElements.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -7916,8 +7643,7 @@ class OcrExtractionResult {
           mimeType == other.mimeType &&
           metadata == other.metadata &&
           tables == other.tables &&
-          ocrElements == other.ocrElements &&
-          internalDocument == other.internalDocument;
+          ocrElements == other.ocrElements;
 }
 
 /// OCR processing metadata.
@@ -8791,9 +8517,6 @@ class PageInfo {
   /// Page title (usually for presentations)
   final String? title;
 
-  /// Dimensions in points (PDF) or pixels (images): (width, height)
-  final Float64List? dimensions;
-
   /// Number of images on this page
   final PlatformInt64? imageCount;
 
@@ -8825,7 +8548,6 @@ class PageInfo {
   const PageInfo({
     required this.number,
     this.title,
-    this.dimensions,
     this.imageCount,
     this.tableCount,
     this.hidden,
@@ -8837,7 +8559,6 @@ class PageInfo {
   int get hashCode =>
       number.hashCode ^
       title.hashCode ^
-      dimensions.hashCode ^
       imageCount.hashCode ^
       tableCount.hashCode ^
       hidden.hashCode ^
@@ -8851,7 +8572,6 @@ class PageInfo {
           runtimeType == other.runtimeType &&
           number == other.number &&
           title == other.title &&
-          dimensions == other.dimensions &&
           imageCount == other.imageCount &&
           tableCount == other.tableCount &&
           hidden == other.hidden &&
@@ -9386,9 +9106,6 @@ class PptxExtractionResult {
   /// Structured document representation
   final DocumentStructure? document;
 
-  /// Hyperlinks discovered in slides as (url, optional_label) pairs.
-  final List<String> hyperlinks;
-
   /// Office metadata extracted from docProps/core.xml and docProps/app.xml.
   ///
   /// Contains keys like "title", "author", "created_by", "subject", "keywords",
@@ -9413,7 +9130,6 @@ class PptxExtractionResult {
     this.pageStructure,
     this.pageContents,
     this.document,
-    required this.hyperlinks,
     required this.officeMetadata,
     this.revisions,
   });
@@ -9429,7 +9145,6 @@ class PptxExtractionResult {
       pageStructure.hashCode ^
       pageContents.hashCode ^
       document.hashCode ^
-      hyperlinks.hashCode ^
       officeMetadata.hashCode ^
       revisions.hashCode;
 
@@ -9447,7 +9162,6 @@ class PptxExtractionResult {
           pageStructure == other.pageStructure &&
           pageContents == other.pageContents &&
           document == other.document &&
-          hyperlinks == other.hyperlinks &&
           officeMetadata == other.officeMetadata &&
           revisions == other.revisions;
 }
@@ -10838,20 +10552,12 @@ class TextExtractionResult {
   /// Markdown headers (text only, Markdown files only)
   final List<String>? headers;
 
-  /// Markdown links as (text, URL) tuples (Markdown files only)
-  final List<List<String>>? links;
-
-  /// Code blocks as (language, code) tuples (Markdown files only)
-  final List<List<String>>? codeBlocks;
-
   const TextExtractionResult({
     required this.content,
     required this.lineCount,
     required this.wordCount,
     required this.characterCount,
     this.headers,
-    this.links,
-    this.codeBlocks,
   });
 
   @override
@@ -10860,9 +10566,7 @@ class TextExtractionResult {
       lineCount.hashCode ^
       wordCount.hashCode ^
       characterCount.hashCode ^
-      headers.hashCode ^
-      links.hashCode ^
-      codeBlocks.hashCode;
+      headers.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -10873,9 +10577,7 @@ class TextExtractionResult {
           lineCount == other.lineCount &&
           wordCount == other.wordCount &&
           characterCount == other.characterCount &&
-          headers == other.headers &&
-          links == other.links &&
-          codeBlocks == other.codeBlocks;
+          headers == other.headers;
 }
 
 /// Text/Markdown metadata.
@@ -10895,19 +10597,11 @@ class TextMetadata {
   /// Markdown headers (headings text only, for Markdown files)
   final List<String>? headers;
 
-  /// Markdown links as (text, url) tuples (for Markdown files)
-  final List<List<String>>? links;
-
-  /// Code blocks as (language, code) tuples (for Markdown files)
-  final List<List<String>>? codeBlocks;
-
   const TextMetadata({
     required this.lineCount,
     required this.wordCount,
     required this.characterCount,
     this.headers,
-    this.links,
-    this.codeBlocks,
   });
 
   @override
@@ -10915,9 +10609,7 @@ class TextMetadata {
       lineCount.hashCode ^
       wordCount.hashCode ^
       characterCount.hashCode ^
-      headers.hashCode ^
-      links.hashCode ^
-      codeBlocks.hashCode;
+      headers.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -10927,9 +10619,7 @@ class TextMetadata {
           lineCount == other.lineCount &&
           wordCount == other.wordCount &&
           characterCount == other.characterCount &&
-          headers == other.headers &&
-          links == other.links &&
-          codeBlocks == other.codeBlocks;
+          headers == other.headers;
 }
 
 class TokenReductionConfig {

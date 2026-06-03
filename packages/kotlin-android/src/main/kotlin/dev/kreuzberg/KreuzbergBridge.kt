@@ -118,9 +118,6 @@ object KreuzbergBridge {
     external fun nativeTokenCount(text: String): Int
 
     @Throws(KreuzbergBridgeException::class)
-    external fun nativeSummarizeWithLlm(text: String, llmConfig: String, maxTokens: Int): String
-
-    @Throws(KreuzbergBridgeException::class)
     external fun nativeTranslateResult(result: String, config: String)
 
     @Throws(KreuzbergBridgeException::class)
@@ -128,15 +125,6 @@ object KreuzbergBridge {
 
     @Throws(KreuzbergBridgeException::class)
     external fun nativeExtractRegionWithVlm(imageBytes: ByteArray, imageMime: String, regionKind: String, llmConfig: String, customPrompt: String): String
-
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeExtractRegionWithVlmUsage(imageBytes: ByteArray, imageMime: String, regionKind: String, llmConfig: String, customPrompt: String): String
-
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeCompleteWithJsonSchema(llmConfig: String, prompt: String, schemaName: String, schema: String, source: String): String
-
-    @Throws(KreuzbergBridgeException::class)
-    external fun nativeCompleteText(llmConfig: String, prompt: String, source: String): String
 
     @Throws(KreuzbergBridgeException::class)
     external fun nativeRenderPdfPageToPng(pdfBytes: ByteArray, pageIndex: Long, dpi: Int, password: String): ByteArray

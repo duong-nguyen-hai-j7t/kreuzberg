@@ -78,7 +78,7 @@ interface IDocumentExtractor {
         content: ByteArray,
         mimeType: String,
         config: ExtractionConfig,
-    ): ExtractionResult
+    ): InternalDocument
     /**
      * Extract content from a file.
      *
@@ -97,7 +97,7 @@ interface IDocumentExtractor {
         path: java.nio.file.Path,
         mimeType: String,
         config: ExtractionConfig,
-    ): ExtractionResult
+    ): InternalDocument
     /**
      * Get the list of MIME types supported by this extractor.
      *

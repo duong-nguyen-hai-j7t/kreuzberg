@@ -868,40 +868,6 @@ pub fn token_count(text: &str) -> u32
 
 ---
 
-#### summarize_with_llm()
-
-Run abstractive summarisation against the configured LLM.
-
-`text` is the document content to summarise (already extracted by the
-pipeline). `max_tokens` softly bounds the requested summary length in
-natural-language tokens; `None` uses `DEFAULT_MAX_TOKENS`.
-
-Returns the summary string and the (optional) usage record.
-
-**Errors:**
-
-Propagates any LLM client / request error returned by
-`complete_text`.
-
-**Signature:**
-
-```rust
-pub async fn summarize_with_llm(text: &str, llm_config: LlmConfig, max_tokens: Option<u32>) -> Result<String, Error>
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `text` | `String` | Yes | The text |
-| `llm_config` | `LlmConfig` | Yes | The llm config |
-| `max_tokens` | `Option<u32>` | No | The max tokens |
-
-**Returns:** `String`
-**Errors:** Returns `Err(Error)`.
-
----
-
 #### translate_result()
 
 Translate the extraction result in place.
@@ -987,115 +953,6 @@ pub async fn extract_region_with_vlm(image_bytes: &[u8], image_mime: &str, regio
 | `region_kind` | `RegionKind` | Yes | The region kind |
 | `llm_config` | `LlmConfig` | Yes | The llm config |
 | `custom_prompt` | `Option<String>` | No | The custom prompt |
-
-**Returns:** `String`
-**Errors:** Returns `Err(Error)`.
-
----
-
-#### extract_region_with_vlm_usage()
-
-Same as `extract_region_with_vlm`, but also returns the `LlmUsage` data captured
-from the underlying VLM call.
-
-Callers that need to track token / cost data per call (for example the captioning
-post-processor, which appends every call's usage to
-`ExtractionResult.llm_usage`) should
-prefer this variant. The plain `extract_region_with_vlm` is kept for callers that
-only care about the markdown output (PDF region splicing).
-
-**Errors:**
-
-Same as `extract_region_with_vlm`.
-
-**Signature:**
-
-```rust
-pub async fn extract_region_with_vlm_usage(image_bytes: &[u8], image_mime: &str, region_kind: RegionKind, llm_config: LlmConfig, custom_prompt: Option<String>) -> Result<String, Error>
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `image_bytes` | `Vec<u8>` | Yes | The image bytes |
-| `image_mime` | `String` | Yes | The image mime |
-| `region_kind` | `RegionKind` | Yes | The region kind |
-| `llm_config` | `LlmConfig` | Yes | The llm config |
-| `custom_prompt` | `Option<String>` | No | The custom prompt |
-
-**Returns:** `String`
-**Errors:** Returns `Err(Error)`.
-
----
-
-#### complete_with_json_schema()
-
-Send a free-form prompt to the configured LLM with a JSON-schema response
-constraint and return the parsed JSON value plus captured usage.
-
-This is the shared helper used by LLM-backed post-processors (page
-classification, LLM-driven NER, etc.) that need structured output but do not
-want to depend on `StructuredExtractionConfig`'s schema/prompt machinery.
-
-  distinguish multiple structured outputs).
-
-- `schema` — the JSON schema the LLM is required to obey.
-- `source` — label used for the returned `LlmUsage` entry.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-the response contains no content, or the response is not parseable JSON.
-
-**Signature:**
-
-```rust
-pub async fn complete_with_json_schema(llm_config: LlmConfig, prompt: &str, schema_name: &str, schema: serde_json::Value, source: &str) -> Result<String, Error>
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llm_config` | `LlmConfig` | Yes | The llm config |
-| `prompt` | `String` | Yes | The prompt |
-| `schema_name` | `String` | Yes | The schema name |
-| `schema` | `serde_json::Value` | Yes | The schema |
-| `source` | `String` | Yes | The source |
-
-**Returns:** `String`
-**Errors:** Returns `Err(Error)`.
-
----
-
-#### complete_text()
-
-Send a single user prompt to the configured LLM and return the response text
-along with the captured usage metadata.
-
-The `source` argument labels the `LlmUsage` entry that is returned so
-callers can aggregate per-feature spend (`"translation"`, `"summarisation"`,
-etc.). The helper performs a single non-streaming chat completion request.
-
-**Errors:**
-
-Returns an error if the LLM client cannot be constructed, the request fails,
-or the response does not contain assistant content.
-
-**Signature:**
-
-```rust
-pub async fn complete_text(llm_config: LlmConfig, prompt: &str, source: &str) -> Result<String, Error>
-```
-
-**Parameters:**
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `llm_config` | `LlmConfig` | Yes | The llm config |
-| `prompt` | `String` | Yes | The prompt |
-| `source` | `String` | Yes | The source |
 
 **Returns:** `String`
 **Errors:** Returns `Err(Error)`.
@@ -5990,7 +5847,6 @@ type-safe, clean metadata without nested optionals.
 | `Jats` | Jats — Fields: `0`: `JatsMetadata` |
 | `Epub` | Epub format — Fields: `0`: `EpubMetadata` |
 | `Pst` | Pst — Fields: `0`: `PstMetadata` |
-| `Code` | Code — Fields: `0`: `String` |
 
 ---
 
