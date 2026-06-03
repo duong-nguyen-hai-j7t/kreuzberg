@@ -128,8 +128,8 @@ impl OcrBackendRegistry {
         }
 
         // Candle-based VLM OCR backends. Per-model sub-features on
-        // `kreuzberg-candle-ocr` (trocr / paddleocr-vl / got-ocr / glm-ocr)
-        // gate the actual registrations.
+        // `kreuzberg-candle-ocr` (trocr / paddleocr-vl) gate the actual
+        // registrations.
         #[cfg(feature = "candle-trocr")]
         {
             use crate::candle_ocr::TrocrBackend;
