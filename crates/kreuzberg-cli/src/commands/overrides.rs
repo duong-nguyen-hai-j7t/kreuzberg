@@ -365,10 +365,19 @@ impl ExtractionOverrides {
 
         // OCR backend validation
         if let Some(ref backend) = self.ocr_backend
-            && !["tesseract", "paddle-ocr", "easyocr", "vlm"].contains(&backend.as_str())
+            && ![
+                "tesseract",
+                "paddle-ocr",
+                "easyocr",
+                "vlm",
+                "candle-trocr",
+                "candle-paddleocr-vl",
+            ]
+            .contains(&backend.as_str())
         {
             bail!(
-                "Invalid OCR backend '{}'. Valid backends: tesseract, paddle-ocr, easyocr, vlm",
+                "Invalid OCR backend '{}'. Valid backends: tesseract, paddle-ocr, easyocr, vlm, \
+                 candle-trocr, candle-paddleocr-vl",
                 backend
             );
         }
@@ -441,12 +450,14 @@ impl ExtractionOverrides {
                 let backend = match self.ocr_backend.as_deref() {
                     Some("paddle-ocr") => "paddle-ocr",
                     Some("easyocr") => "easyocr",
+                    Some("candle-trocr") => "candle-trocr",
+                    Some("candle-paddleocr-vl") => "candle-paddleocr-vl",
                     _ => "tesseract",
                 };
                 let language = match &self.ocr_language {
                     Some(lang) => lang.clone(),
                     None => match backend {
-                        "paddle-ocr" | "easyocr" => "en".to_string(),
+                        "paddle-ocr" | "easyocr" | "candle-paddleocr-vl" => "en".to_string(),
                         _ => "eng".to_string(),
                     },
                 };

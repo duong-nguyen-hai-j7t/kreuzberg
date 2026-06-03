@@ -20,7 +20,9 @@ pub use trocr_backend::TrocrBackend;
 #[cfg(feature = "candle-paddleocr-vl")]
 pub use paddleocr_vl_backend::PaddleOcrVlBackend;
 
+#[cfg(any(feature = "candle-trocr", feature = "candle-paddleocr-vl"))]
 use crate::core::config::{AccelerationConfig, ExecutionProviderType, OcrConfig};
+#[cfg(any(feature = "candle-trocr", feature = "candle-paddleocr-vl"))]
 use kreuzberg_candle_ocr::DevicePreference;
 
 /// Resolve a candle [`DevicePreference`] from the centralised acceleration
@@ -40,6 +42,7 @@ use kreuzberg_candle_ocr::DevicePreference;
 /// - `Cuda`     -> `DevicePreference::Cuda`
 /// - `CoreMl`   -> `DevicePreference::Metal` (Apple Neural Engine + GPU runs on Metal in candle)
 /// - `TensorRt` -> `DevicePreference::Cuda` (TensorRT runs on CUDA hardware; candle has no separate TRT path)
+#[cfg(any(feature = "candle-trocr", feature = "candle-paddleocr-vl"))]
 pub(crate) fn resolve_device_preference(config: &OcrConfig) -> DevicePreference {
     // 1. Inline override via backend_options
     if let Some(opts) = &config.backend_options
@@ -67,6 +70,7 @@ pub(crate) fn resolve_device_preference(config: &OcrConfig) -> DevicePreference 
 ///
 /// Lifted out of `resolve_device_preference` so the mapping is independently
 /// testable and reusable from future candle backends.
+#[cfg(any(feature = "candle-trocr", feature = "candle-paddleocr-vl"))]
 fn device_preference_from_acceleration(accel: &AccelerationConfig) -> DevicePreference {
     match accel.provider {
         ExecutionProviderType::Auto => DevicePreference::Auto,
