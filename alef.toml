@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.22.18"
+alef_version = "0.22.20"
 languages = [
   "python",
   "node",
@@ -392,6 +392,30 @@ features = ["android-target"]
 # and TranslationConfig, all of which are gated behind `not(target_os = "windows")`.
 [[crates.ffi.target_dep_overrides]]
 cfg = 'target_os = "windows"'
+# Curated Windows feature set: excludes paddle-ocr, paddle-ocr-types, layout-detection,
+# layout-types, embeddings, embedding-presets, liter-llm. Default features pull in
+# paddle-ocr et al, which fail to link on Windows (no ORT bundle).
+features = [
+  "pdf",
+  "ocr",
+  "chunking",
+  "keywords-yake",
+  "keywords-rake",
+  "language-detection",
+  "html",
+  "tree-sitter",
+  "office",
+  "email",
+  "archives",
+  "stopwords",
+  "auto-rotate",
+  "auto-rotate-types",
+  "tokio-runtime",
+  "api",
+  "mcp",
+  "quality",
+]
+default_features = false
 exclude_functions = [
   # Region/RegionKind (liter-llm feature, win-excluded)
   "region_kind_from_i32_rs",

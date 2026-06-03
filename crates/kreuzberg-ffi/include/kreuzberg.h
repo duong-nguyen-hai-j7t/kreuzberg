@@ -845,6 +845,10 @@ typedef struct KREUZBERGMetadata KREUZBERGMetadata;
  */
 typedef struct KREUZBERGModelPaths KREUZBERGModelPaths;
 /**
+ * NER backend trait (stub for Android x86_64).
+ */
+typedef struct KREUZBERGNerBackend KREUZBERGNerBackend;
+/**
  * NER backend selector.
  */
 typedef struct KREUZBERGNerBackendKind KREUZBERGNerBackendKind;
