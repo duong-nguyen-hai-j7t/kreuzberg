@@ -9,7 +9,7 @@ keywords = ["document", "extraction", "ocr", "pdf", "text"]
 categories = ["text-processing"]
 
 [package.metadata.cargo-machete]
-ignored = ["rb-sys"]
+ignored = ["tokio", "async-trait"]
 
 [lib]
 name = "kreuzberg_rb"

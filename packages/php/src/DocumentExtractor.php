@@ -12,6 +12,7 @@ namespace Kreuzberg;
  */
 interface DocumentExtractor
 {
+
     /**
      * Extract content from a byte array.
      *

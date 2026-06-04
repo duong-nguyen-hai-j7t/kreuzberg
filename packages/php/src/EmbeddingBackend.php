@@ -12,6 +12,7 @@ namespace Kreuzberg;
  */
 interface EmbeddingBackend
 {
+
     /**
      * Embedding vector dimension. Must be `> 0` and must match the length of
      *

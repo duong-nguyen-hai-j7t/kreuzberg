@@ -5,18 +5,18 @@ package dev.kreuzberg
 object DocumentExtractorBridge {
     private val registered = mutableMapOf<String, IDocumentExtractor>()
 
-    fun register(impl: IDocumentExtractor) {
+    fun register(impl: IDocumentExtractor): Unit {
         val name = impl.name()
         registered[name] = impl
         KreuzbergBridge.nativeRegisterDocumentExtractor(impl)
     }
 
-    fun unregister(name: String) {
+    fun unregister(name: String): Unit {
         registered.remove(name)
         KreuzbergBridge.nativeUnregisterDocumentExtractor(name)
     }
 
-    fun clearAll() {
+    fun clearAll(): Unit {
         registered.clear()
         KreuzbergBridge.nativeClearDocumentExtractors()
     }

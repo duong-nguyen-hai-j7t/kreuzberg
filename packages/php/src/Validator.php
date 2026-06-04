@@ -12,6 +12,7 @@ namespace Kreuzberg;
  */
 interface Validator
 {
+
     /**
      * Validate an extraction result.
      *

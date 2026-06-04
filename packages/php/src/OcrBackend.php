@@ -12,6 +12,7 @@ namespace Kreuzberg;
  */
 interface OcrBackend
 {
+
     /**
      * Process an image and extract text via OCR.
      *

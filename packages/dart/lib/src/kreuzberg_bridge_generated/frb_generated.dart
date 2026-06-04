@@ -3,9 +3,10 @@
 
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
-import 'dart:ffi';
 import 'dart:isolate';
 import 'dart:io';
+import 'dart:core' as _DartCore;
+import 'dart:core';
 import 'dart:async';
 import 'dart:convert';
 import 'frb_generated.dart';
@@ -20,30 +21,87 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   static final instance = RustLib._();
 
   RustLib._();
-
-  /// Resolve the prebuilt native library from this package's own installed
-  /// location so the load works from any working directory and under hardened
-  /// runtimes. Returns `null` to defer to flutter_rust_bridge's default loader.
+  /// Resolve the prebuilt native library from environment variable,
+  /// package-relative location, or defer to flutter_rust_bridge's default loader.
+  /// Returns `null` to defer to flutter_rust_bridge's default loader.
   ///
-  /// Published pub.dev packages stage natives under `lib/src/native/<rid>/`
-  /// (e.g. `macos-arm64`, `linux-x64`). For local FRB-dev builds the dylib is
-  /// emitted into `lib/src/kreuzberg_bridge_generated/`; that
-  /// path is searched as a fallback.
+  /// Checks in order:
+  /// 1. FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR environment variable
+  ///    (allows test harnesses to point to development build paths)
+  /// 2. Package-installed location with RID subdirectory (lib/src/native/<rid>/)
+  ///    (for published pub.dev packages with platform-specific bundled native libraries)
+  /// 3. Package-installed location (lib/src/kreuzberg_bridge_generated/)
+  ///    (legacy fallback for development or packages without per-platform binaries)
+  /// 4. Returns null (flutter_rust_bridge falls back to its default loader)
   static Future<ExternalLibrary?> _alefResolveExternalLibrary() async {
     try {
-      final packageRoot = await Isolate.resolvePackageUri(
-        Uri.parse('package:kreuzberg/kreuzberg.dart'),
-      );
-      if (packageRoot == null) return null;
-      final libNames = _alefHostLibNames();
-      final searchDirs = <Uri>[
-        if (_alefHostRid() != null)
-          packageRoot.resolve('src/native/${_alefHostRid()}/'),
-        packageRoot.resolve('src/kreuzberg_bridge_generated/'),
+      const candidates = <String>[
+        'libkreuzberg_dart.dylib',
+        'libkreuzberg_dart.so',
+        'kreuzberg_dart.dll',
       ];
-      for (final dir in searchDirs) {
-        for (final name in libNames) {
-          final libPath = dir.resolve(name).toFilePath();
+
+      // Check FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR env var first.
+      // This allows test harnesses to override library location for development.
+      final envDir = Platform.environment['FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR'];
+      if (envDir != null && envDir.isNotEmpty) {
+        final libDir = Directory(envDir);
+        if (libDir.existsSync()) {
+          for (final candidate in candidates) {
+            final libPath = '$envDir/$candidate';
+            if (File(libPath).existsSync()) {
+              return ExternalLibrary.open(libPath);
+            }
+          }
+        }
+      }
+
+      // Compute RID (runtime identifier) from platform and architecture.
+      String? computeRid() {
+        final os = Platform.operatingSystem;
+        // Use Dart's Platform.version to detect architecture.
+        // Format: "Dart <version> (stable) ... on \"<os> <arch>\""
+        final version = Platform.version;
+        final archMatch = version.contains('x86_64') ? 'x64'
+            : version.contains('aarch64') || version.contains('arm64') ? 'arm64'
+            : version.contains('armv7') ? 'arm'
+            : null;
+        if (archMatch == null) return null;
+
+        switch (os) {
+          case 'linux':
+            return 'linux-$archMatch';
+          case 'macos':
+            return 'macos-$archMatch';
+          case 'windows':
+            return 'windows-$archMatch';
+          default:
+            return null;
+        }
+      }
+
+      final rid = computeRid();
+      if (rid != null) {
+        final packageRoot =
+            await Isolate.resolvePackageUri(_DartCore.Uri.parse('package:kreuzberg/kreuzberg.dart'));
+        if (packageRoot != null) {
+          final ridDir = packageRoot.resolve('src/native/$rid/');
+          for (final candidate in candidates) {
+            final libPath = ridDir.resolve(candidate).toFilePath();
+            if (File(libPath).existsSync()) {
+              return ExternalLibrary.open(libPath);
+            }
+          }
+        }
+      }
+
+      // Check legacy package-installed location as fallback.
+      final packageRoot =
+          await Isolate.resolvePackageUri(_DartCore.Uri.parse('package:kreuzberg/kreuzberg.dart'));
+      if (packageRoot != null) {
+        final libDir = packageRoot.resolve('src/kreuzberg_bridge_generated/');
+        for (final candidate in candidates) {
+          final libPath = libDir.resolve(candidate).toFilePath();
           if (File(libPath).existsSync()) {
             return ExternalLibrary.open(libPath);
           }
@@ -53,28 +111,6 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
       // Fall through to the default loader on any resolution failure.
     }
     return null;
-  }
-
-  /// Map the host platform to the pub.dev native staging RID. Returns `null`
-  /// for unrecognized host triples so the FRB-dev fallback path runs instead.
-  static String? _alefHostRid() {
-    final abi = Abi.current();
-    if (abi == Abi.macosArm64) return 'macos-arm64';
-    if (abi == Abi.macosX64) return 'macos-x64';
-    if (abi == Abi.linuxArm64) return 'linux-arm64';
-    if (abi == Abi.linuxX64) return 'linux-x64';
-    if (abi == Abi.windowsArm64) return 'windows-arm64';
-    if (abi == Abi.windowsX64) return 'windows-x64';
-    return null;
-  }
-
-  static List<String> _alefHostLibNames() {
-    // The Dart-binding Rust crate is `{stem}-dart` (per the cargo manifest
-    // template), which produces a cdylib named `lib{stem}_dart.{ext}` on Unix
-    // and `{stem}_dart.dll` on Windows.
-    if (Platform.isMacOS) return const ['libkreuzberg_dart.dylib'];
-    if (Platform.isWindows) return const ['kreuzberg_dart.dll'];
-    return const ['libkreuzberg_dart.so'];
   }
 
   /// Initialize flutter_rust_bridge
@@ -1330,7 +1366,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<LlmBackend> crateLlmBackendNew({required LlmConfig config}) {
+  Future<LlmBackend> crateLlmBackendNew({required LlmConfig config}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -1563,7 +1599,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<TokenCounter> crateTokenCounterNew() {
+  Future<TokenCounter> crateTokenCounterNew() async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -1909,7 +1945,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   @override
-  Future<void> crateClearDocumentExtractors() {
+  Future<void> crateClearDocumentExtractors() async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -1936,7 +1972,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "clear_document_extractors", argNames: []);
 
   @override
-  Future<void> crateClearEmbeddingBackends() {
+  Future<void> crateClearEmbeddingBackends() async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -1963,7 +1999,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "clear_embedding_backends", argNames: []);
 
   @override
-  Future<void> crateClearOcrBackends() {
+  Future<void> crateClearOcrBackends() async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -1990,7 +2026,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "clear_ocr_backends", argNames: []);
 
   @override
-  Future<void> crateClearPostProcessors() {
+  Future<void> crateClearPostProcessors() async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -2017,7 +2053,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "clear_post_processors", argNames: []);
 
   @override
-  Future<void> crateClearRenderers() {
+  Future<void> crateClearRenderers() async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -2044,7 +2080,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "clear_renderers", argNames: []);
 
   @override
-  Future<void> crateClearValidators() {
+  Future<void> crateClearValidators() async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -2138,7 +2174,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<ArchiveEntry> crateCreateArchiveEntryFromJson({required String json}) {
+  Future<ArchiveEntry> crateCreateArchiveEntryFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -2202,7 +2238,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<BBox> crateCreateBBoxFromJson({required String json}) {
+  Future<BBox> crateCreateBBoxFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -2331,7 +2367,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<BoundingBox> crateCreateBoundingBoxFromJson({required String json}) {
+  Future<BoundingBox> crateCreateBoundingBoxFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -2362,7 +2398,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<CacheStats> crateCreateCacheStatsFromJson({required String json}) {
+  Future<CacheStats> crateCreateCacheStatsFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -2426,7 +2462,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<CellChange> crateCreateCellChangeFromJson({required String json}) {
+  Future<CellChange> crateCreateCellChangeFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -2457,7 +2493,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Chunk> crateCreateChunkFromJson({required String json}) {
+  Future<Chunk> crateCreateChunkFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -2718,7 +2754,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<CsvMetadata> crateCreateCsvMetadataFromJson({required String json}) {
+  Future<CsvMetadata> crateCreateCsvMetadataFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -2749,7 +2785,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<DbfFieldInfo> crateCreateDbfFieldInfoFromJson({required String json}) {
+  Future<DbfFieldInfo> crateCreateDbfFieldInfoFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -2780,7 +2816,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<DbfMetadata> crateCreateDbfMetadataFromJson({required String json}) {
+  Future<DbfMetadata> crateCreateDbfMetadataFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -2877,7 +2913,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<DiffHunk> crateCreateDiffHunkFromJson({required String json}) {
+  Future<DiffHunk> crateCreateDiffHunkFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -2908,7 +2944,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<DiffOptions> crateCreateDiffOptionsFromJson({required String json}) {
+  Future<DiffOptions> crateCreateDiffOptionsFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -2939,7 +2975,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<DjotContent> crateCreateDjotContentFromJson({required String json}) {
+  Future<DjotContent> crateCreateDjotContentFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -2970,7 +3006,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<DjotImage> crateCreateDjotImageFromJson({required String json}) {
+  Future<DjotImage> crateCreateDjotImageFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -3001,7 +3037,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<DjotLink> crateCreateDjotLinkFromJson({required String json}) {
+  Future<DjotLink> crateCreateDjotLinkFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -3119,7 +3155,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<DocumentNode> crateCreateDocumentNodeFromJson({required String json}) {
+  Future<DocumentNode> crateCreateDocumentNodeFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -3315,7 +3351,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<DocxMetadata> crateCreateDocxMetadataFromJson({required String json}) {
+  Future<DocxMetadata> crateCreateDocxMetadataFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -3346,7 +3382,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Element> crateCreateElementFromJson({required String json}) {
+  Future<Element> crateCreateElementFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -3442,7 +3478,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<EmailConfig> crateCreateEmailConfigFromJson({required String json}) {
+  Future<EmailConfig> crateCreateEmailConfigFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -3572,7 +3608,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<EmbeddedDiff> crateCreateEmbeddedDiffFromJson({required String json}) {
+  Future<EmbeddedDiff> crateCreateEmbeddedDiffFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -3603,7 +3639,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<EmbeddedFile> crateCreateEmbeddedFileFromJson({required String json}) {
+  Future<EmbeddedFile> crateCreateEmbeddedFileFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -3746,7 +3782,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Entity> crateCreateEntityFromJson({required String json}) {
+  Future<Entity> crateCreateEntityFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -3776,7 +3812,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   @override
-  Future<EpubMetadata> crateCreateEpubMetadataFromJson({required String json}) {
+  Future<EpubMetadata> crateCreateEpubMetadataFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -3873,7 +3909,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<ExcelSheet> crateCreateExcelSheetFromJson({required String json}) {
+  Future<ExcelSheet> crateCreateExcelSheetFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -3970,7 +4006,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<ExtractedUri> crateCreateExtractedUriFromJson({required String json}) {
+  Future<ExtractedUri> crateCreateExtractedUriFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -4166,7 +4202,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Footnote> crateCreateFootnoteFromJson({required String json}) {
+  Future<Footnote> crateCreateFootnoteFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -4230,7 +4266,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<GridCell> crateCreateGridCellFromJson({required String json}) {
+  Future<GridCell> crateCreateGridCellFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -4327,7 +4363,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<HeadingLevel> crateCreateHeadingLevelFromJson({required String json}) {
+  Future<HeadingLevel> crateCreateHeadingLevelFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -4424,7 +4460,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<HtmlMetadata> crateCreateHtmlMetadataFromJson({required String json}) {
+  Future<HtmlMetadata> crateCreateHtmlMetadataFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -4621,7 +4657,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<ImagePreprocessingMetadata>
-  crateCreateImagePreprocessingMetadataFromJson({required String json}) {
+  crateCreateImagePreprocessingMetadataFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -4685,7 +4721,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<JatsMetadata> crateCreateJatsMetadataFromJson({required String json}) {
+  Future<JatsMetadata> crateCreateJatsMetadataFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -4749,7 +4785,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Keyword> crateCreateKeywordFromJson({required String json}) {
+  Future<Keyword> crateCreateKeywordFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -4878,7 +4914,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<LayoutRegion> crateCreateLayoutRegionFromJson({required String json}) {
+  Future<LayoutRegion> crateCreateLayoutRegionFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -4909,7 +4945,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<LinkMetadata> crateCreateLinkMetadataFromJson({required String json}) {
+  Future<LinkMetadata> crateCreateLinkMetadataFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -4940,7 +4976,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<LlmConfig> crateCreateLlmConfigFromJson({required String json}) {
+  Future<LlmConfig> crateCreateLlmConfigFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -4971,7 +5007,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<LlmUsage> crateCreateLlmUsageFromJson({required String json}) {
+  Future<LlmUsage> crateCreateLlmUsageFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -5002,7 +5038,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Metadata> crateCreateMetadataFromJson({required String json}) {
+  Future<Metadata> crateCreateMetadataFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -5033,7 +5069,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<ModelPaths> crateCreateModelPathsFromJson({required String json}) {
+  Future<ModelPaths> crateCreateModelPathsFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -5064,7 +5100,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<NerConfig> crateCreateNerConfigFromJson({required String json}) {
+  Future<NerConfig> crateCreateNerConfigFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -5229,7 +5265,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<OcrConfig> crateCreateOcrConfigFromJson({required String json}) {
+  Future<OcrConfig> crateCreateOcrConfigFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -5293,7 +5329,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<OcrElement> crateCreateOcrElementFromJson({required String json}) {
+  Future<OcrElement> crateCreateOcrElementFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -5357,7 +5393,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<OcrMetadata> crateCreateOcrMetadataFromJson({required String json}) {
+  Future<OcrMetadata> crateCreateOcrMetadataFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -5487,7 +5523,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<OcrRotation> crateCreateOcrRotationFromJson({required String json}) {
+  Future<OcrRotation> crateCreateOcrRotationFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -5551,7 +5587,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<OcrTable> crateCreateOcrTableFromJson({required String json}) {
+  Future<OcrTable> crateCreateOcrTableFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -5648,7 +5684,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<PageBoundary> crateCreatePageBoundaryFromJson({required String json}) {
+  Future<PageBoundary> crateCreatePageBoundaryFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -5745,7 +5781,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<PageConfig> crateCreatePageConfigFromJson({required String json}) {
+  Future<PageConfig> crateCreatePageConfigFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -5776,7 +5812,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<PageContent> crateCreatePageContentFromJson({required String json}) {
+  Future<PageContent> crateCreatePageContentFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -5840,7 +5876,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<PageInfo> crateCreatePageInfoFromJson({required String json}) {
+  Future<PageInfo> crateCreatePageInfoFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -5937,7 +5973,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<PdfConfig> crateCreatePdfConfigFromJson({required String json}) {
+  Future<PdfConfig> crateCreatePdfConfigFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -5968,7 +6004,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<PdfMetadata> crateCreatePdfMetadataFromJson({required String json}) {
+  Future<PdfMetadata> crateCreatePdfMetadataFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -6178,7 +6214,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<PptxMetadata> crateCreatePptxMetadataFromJson({required String json}) {
+  Future<PptxMetadata> crateCreatePptxMetadataFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -6242,7 +6278,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<PstMetadata> crateCreatePstMetadataFromJson({required String json}) {
+  Future<PstMetadata> crateCreatePstMetadataFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -6306,7 +6342,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<QrCode> crateCreateQrCodeFromJson({required String json}) {
+  Future<QrCode> crateCreateQrCodeFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -6336,7 +6372,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   @override
-  Future<RakeParams> crateCreateRakeParamsFromJson({required String json}) {
+  Future<RakeParams> crateCreateRakeParamsFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -6672,7 +6708,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<ServerConfig> crateCreateServerConfigFromJson({required String json}) {
+  Future<ServerConfig> crateCreateServerConfigFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -6770,7 +6806,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<StructuredExtractionConfig>
-  crateCreateStructuredExtractionConfigFromJson({required String json}) {
+  crateCreateStructuredExtractionConfigFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -6867,7 +6903,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<TableCell> crateCreateTableCellFromJson({required String json}) {
+  Future<TableCell> crateCreateTableCellFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -6898,7 +6934,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<TableDiff> crateCreateTableDiffFromJson({required String json}) {
+  Future<TableDiff> crateCreateTableDiffFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -6929,7 +6965,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Table> crateCreateTableFromJson({required String json}) {
+  Future<Table> crateCreateTableFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -6959,7 +6995,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   @override
-  Future<TableGrid> crateCreateTableGridFromJson({required String json}) {
+  Future<TableGrid> crateCreateTableGridFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -7089,7 +7125,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<TextMetadata> crateCreateTextMetadataFromJson({required String json}) {
+  Future<TextMetadata> crateCreateTextMetadataFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -7219,7 +7255,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Translation> crateCreateTranslationFromJson({required String json}) {
+  Future<Translation> crateCreateTranslationFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -7447,7 +7483,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<XmlMetadata> crateCreateXmlMetadataFromJson({required String json}) {
+  Future<XmlMetadata> crateCreateXmlMetadataFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -7478,7 +7514,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<YakeParams> crateCreateYakeParamsFromJson({required String json}) {
+  Future<YakeParams> crateCreateYakeParamsFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -7509,7 +7545,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<YearRange> crateCreateYearRangeFromJson({required String json}) {
+  Future<YearRange> crateCreateYearRangeFromJson({required String json}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -7540,7 +7576,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<String> crateDefaultModelName() {
+  Future<String> crateDefaultModelName() async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -7601,7 +7637,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   @override
-  Future<String> crateDetectMimeTypeFromBytes({required List<int> content}) {
+  Future<String> crateDetectMimeTypeFromBytes({required List<int> content}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -7666,7 +7702,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   @override
-  Future<String> crateDownloadModel({required String name, String? cacheDir}) {
+  Future<String> crateDownloadModel({required String name, String? cacheDir}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -7955,7 +7991,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   @override
-  Future<List<PatternMatch>> crateFindAll({required String text}) {
+  Future<List<PatternMatch>> crateFindAll({required String text}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -7983,7 +8019,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "find_all", argNames: ["text"]);
 
   @override
-  Future<EmbeddingPreset?> crateGetEmbeddingPreset({required String name}) {
+  Future<EmbeddingPreset?> crateGetEmbeddingPreset({required String name}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8013,7 +8049,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   @override
-  Future<List<String>> crateGetExtensionsForMime({required String mimeType}) {
+  Future<List<String>> crateGetExtensionsForMime({required String mimeType}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8043,7 +8079,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   @override
-  Future<List<String>> crateKnownModels() {
+  Future<List<String>> crateKnownModels() async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8070,7 +8106,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "known_models", argNames: []);
 
   @override
-  Future<List<String>> crateListDocumentExtractors() {
+  Future<List<String>> crateListDocumentExtractors() async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8097,7 +8133,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "list_document_extractors", argNames: []);
 
   @override
-  Future<List<String>> crateListEmbeddingBackends() {
+  Future<List<String>> crateListEmbeddingBackends() async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8124,7 +8160,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "list_embedding_backends", argNames: []);
 
   @override
-  Future<List<String>> crateListEmbeddingPresets() {
+  Future<List<String>> crateListEmbeddingPresets() async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8151,7 +8187,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "list_embedding_presets", argNames: []);
 
   @override
-  Future<List<String>> crateListOcrBackends() {
+  Future<List<String>> crateListOcrBackends() async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8178,7 +8214,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "list_ocr_backends", argNames: []);
 
   @override
-  Future<List<String>> crateListPostProcessors() {
+  Future<List<String>> crateListPostProcessors() async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8205,7 +8241,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "list_post_processors", argNames: []);
 
   @override
-  Future<List<String>> crateListRenderers() {
+  Future<List<String>> crateListRenderers() async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8232,7 +8268,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "list_renderers", argNames: []);
 
   @override
-  Future<List<String>> crateListValidators() {
+  Future<List<String>> crateListValidators() async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8291,7 +8327,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "redact", argNames: ["result", "config"]);
 
   @override
-  Future<void> crateRegisterBuiltin() {
+  Future<void> crateRegisterBuiltin() async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8390,7 +8426,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateRegisterOcrBackend({required OcrBackendDartImpl impl}) {
+  Future<void> crateRegisterOcrBackend({required OcrBackendDartImpl impl}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8458,7 +8494,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   @override
-  Future<void> crateRegisterRenderer({required RendererDartImpl impl}) {
+  Future<void> crateRegisterRenderer({required RendererDartImpl impl}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8489,7 +8525,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "register_renderer", argNames: ["impl"]);
 
   @override
-  Future<void> crateRegisterValidator({required ValidatorDartImpl impl}) {
+  Future<void> crateRegisterValidator({required ValidatorDartImpl impl}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8628,7 +8664,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   @override
-  Future<PlatformInt64> crateTokenCount({required String text}) {
+  Future<PlatformInt64> crateTokenCount({required String text}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8690,7 +8726,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   @override
-  Future<void> crateUnregisterDocumentExtractor({required String name}) {
+  Future<void> crateUnregisterDocumentExtractor({required String name}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8721,7 +8757,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateUnregisterEmbeddingBackend({required String name}) {
+  Future<void> crateUnregisterEmbeddingBackend({required String name}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8752,7 +8788,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateUnregisterOcrBackend({required String name}) {
+  Future<void> crateUnregisterOcrBackend({required String name}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8782,7 +8818,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   @override
-  Future<void> crateUnregisterPostProcessor({required String name}) {
+  Future<void> crateUnregisterPostProcessor({required String name}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8813,7 +8849,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateUnregisterRenderer({required String name}) {
+  Future<void> crateUnregisterRenderer({required String name}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {
@@ -8841,7 +8877,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "unregister_renderer", argNames: ["name"]);
 
   @override
-  Future<void> crateUnregisterValidator({required String name}) {
+  Future<void> crateUnregisterValidator({required String name}) async {
     return await handler(
       NormalTask(
         callFfi: (port_) {

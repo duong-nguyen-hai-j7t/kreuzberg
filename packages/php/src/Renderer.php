@@ -12,6 +12,7 @@ namespace Kreuzberg;
  */
 interface Renderer
 {
+
     /**
      * Render an `InternalDocument` to the output format.
      *
