@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **fix(dart)**: enable `batchExtractBytes` / `batchExtractBytesSync` in Dart FRB bridge. Removed `stub_methods` declaration that prevented FRB code generation for batch extraction functions. The hand-authored Dart wrapper in `kreuzberg.dart` calls all four batch methods (`batchExtractBytes`, `batchExtractBytesSync`, `batchExtractFiles`, `batchExtractFilesSync`) via the bridge, so all four must be included in the FRB-generated `frb_generated.dart`.
+
 ### Changed
 
 - **chore(alef)**: pin to alef v0.23.0 + post-release fixes. Pulls v0.22.33→v0.23.0 (input DTO sequence collect target-inference, opaque-type wrapper re-emission, AsRef<str/Path/[u8]> monomorphisation, per-language scaffold fixes for php/ruby/zig/swift/kotlin) plus the post-0.23.0 unreleased fixes (php Vec<Named> let-binding, swift From<String> enum params + mut bindings + excluded-variant wildcard, wasm Vec→HashSet conv, FFI opaque allocators, swift name-shadow in shims, swift+wasm unreachable_patterns allow, swift hoisted Vec ref binding, wasm Option<Vec<T>> Some-wrap).

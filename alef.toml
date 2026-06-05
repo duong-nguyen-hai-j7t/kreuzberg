@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.23.4"
+alef_version = "0.23.6"
 languages = [
   "python",
   "node",
@@ -470,7 +470,6 @@ pubspec_name = "kreuzberg"
 lib_name = "kreuzberg"
 style = "frb"
 features = ["full"]
-stub_methods = ["batch_extract_bytes", "batch_extract_bytes_sync"]
 exclude_functions = [
   "calculate_quality_score",
   "embed_texts",
@@ -497,6 +496,11 @@ namespace = "dev.kreuzberg"
 artifact_id = "kreuzberg-android"
 group_id = "dev.kreuzberg"
 abis = ["arm64-v8a", "x86_64"]
+exclude_types = [
+  # Internal DTO type used by plugin trait-bridges; marshalled as JSON strings at FFI boundary.
+  # Not exposed in the Kotlin Android interface — methods that would reference it use String instead.
+  "InternalDocument",
+]
 exclude_functions = [
   # embed_texts_async creates naming conflict with suspend wrapper of embed_texts.
   # Callers should use embedTextsAsync (suspend) from embed_texts instead.
