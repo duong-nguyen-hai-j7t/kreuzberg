@@ -395,6 +395,9 @@ jobs:
       - name: Install Task
         uses: kreuzberg-dev/actions/install-task@v1
 
+      - name: Install alef CLI
+        uses: kreuzberg-dev/actions/install-alef@v1
+
       - name: Compile Ruby native extension
         if: matrix.lang == 'ruby'
         working-directory: packages/ruby
