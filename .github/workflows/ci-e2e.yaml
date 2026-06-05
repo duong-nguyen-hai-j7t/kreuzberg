@@ -55,6 +55,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
           - os: ubuntu-24.04-arm
             target: aarch64-unknown-linux-gnu
     steps:
@@ -146,7 +148,7 @@ jobs:
     name: E2E (${{ matrix.lang }})
     if: github.repository == 'kreuzberg-dev/kreuzberg' && github.actor != 'dependabot[bot]'
     needs: [build-ffi]
-    runs-on: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runs-on }}
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -154,34 +156,64 @@ jobs:
         include:
           - lang: python
             python-version: "3.13"
+            runs-on: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
           - lang: node
             node-version: "24"
+            runs-on: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
           - lang: go
             go-version: "1.26"
+            runs-on: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
           - lang: ruby
             ruby-version: "3.4"
+            runs-on: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
           - lang: java
             java-version: "25"
+            runs-on: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
           - lang: csharp
             dotnet-version: "10.0.x"
+            runs-on: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
           - lang: php
             php-version: "8.4"
+            runs-on: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
           - lang: elixir
             elixir-version: "1.19"
             otp-version: "28"
+            runs-on: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
           - lang: wasm
             node-version: "24"
+            runs-on: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
           - lang: rust
+            runs-on: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
           - lang: r
             r-version: "4.3"
+            runs-on: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
           - lang: dart
             dart-version: "3.11"
+            runs-on: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
           - lang: kotlin-android
             java-version: "25"
+            runs-on: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
           - lang: swift
             swift-version: "6.0"
+            runs-on: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
           - lang: zig
             zig-version: "0.16.0"
+            runs-on: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
     steps:
       - uses: actions/checkout@v6
         with:
@@ -195,7 +227,7 @@ jobs:
       - name: Download FFI artifacts
         uses: actions/download-artifact@v8
         with:
-          name: ffi-aarch64-unknown-linux-gnu
+          name: ffi-${{ matrix.target }}
           path: ffi-artifacts
 
       - name: Stage FFI artifacts
