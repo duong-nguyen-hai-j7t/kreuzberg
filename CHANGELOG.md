@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **fix(clippy)**: extend Dart FRB binding (`packages/dart/rust/src/lib.rs`) file-level allow block with `clippy::redundant_closure_call` and `clippy::into_iter_on_ref`. After removing the workspace clippy `--exclude` list in I1.3, latent clippy 1.95 violations in alef-emitted Dart FRB code surfaced (4× redundant closure call wrapper around `Vec`→`Vec` conversions, 1× `.into_iter()` on `&[T]`). The allows are scoped to the alef-generated file only; planned alef upstream fix tracked.
 - **chore(deny)**: add `symphonia-common` to MPL-2.0 license exceptions. After `cargo upgrade --incompatible` pulled `symphonia-common 0.6.0` as a new sub-crate transitive of the transcription extractor, `cargo-deny` rejected the MPL-2.0 license and `CI Lint` failed. `symphonia-common` is a file-scoped copyleft sub-crate identical in legal posture to the already-allowlisted `symphonia`/`symphonia-core` siblings; using it imposes no share-alike on kreuzberg.
 - **chore(jni)**: remove stale comment in `crates/kreuzberg-jni/Cargo.toml` claiming the dependency is pinned to `0.21` — the actual pin is `0.22` after the Phase A1 port.
 
