@@ -263,7 +263,7 @@ pub use llm::region_extractor::RegionKind;
 
 // Stub for targets without liter-llm (WASM) so alef-generated FFI bindings compile.
 #[cfg(not(all(feature = "liter-llm", not(target_arch = "wasm32"))))]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RegionKind {
     Figure,
     DenseTable,

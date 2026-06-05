@@ -7441,7 +7441,37 @@ extension UriKind {
 /// Each variant maps to a specific prompt optimised for that content type.
 /// The mapping is intentionally narrow — only region kinds for which VLM
 /// extraction provides a clear quality benefit over classical suppression.
-public typealias RegionKind = RustBridge.RegionKind
+public enum RegionKind: String, Codable, Sendable, Hashable {
+    /// A figure, diagram, chart, or image region.
+    ///
+    /// VLM prompt: describe the diagram / chart, including axis labels,
+    /// legend entries, and any embedded text.
+    case figure = "Figure"
+    /// A densely formatted or complex table that classical extraction garbles.
+    ///
+    /// VLM prompt: extract the table as GitHub-Flavoured Markdown.
+    case denseTable = "DenseTable"
+    /// A region whose layout the classical pipeline cannot handle (multi-column
+    /// insets, heavily annotated forms, mixed text+diagram).
+    ///
+    /// VLM prompt: extract all text and structure as markdown, preserving
+    /// reading order.
+    case complexLayout = "ComplexLayout"
+    /// A standalone image to be captioned (not extracted as figure markdown).
+    ///
+    /// VLM prompt: produce a single-sentence alt-text-style caption suitable
+    /// for accessibility tooling and downstream indexing. Used by the
+    /// captioning post-processor to populate
+    /// [`ExtractedImage::caption`](crate::types::ExtractedImage::caption).
+    case caption = "Caption"
+}
+extension RegionKind {
+    func intoRust() throws -> RustBridge.RegionKind {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "null"
+        return try RustBridge.regionKindFromJson(json)
+    }
+}
 
 /// Keyword algorithm selection.
 public enum KeywordAlgorithm: String, Codable, Sendable, Hashable {
@@ -8726,6 +8756,11 @@ public func uriKindFromJson(_ json: String) throws -> UriKind {
     return try JSONDecoder().decode(UriKind.self, from: data)
 }
 
+public func regionKindFromJson(_ json: String) throws -> RegionKind {
+    let data = json.data(using: .utf8) ?? Data()
+    return try JSONDecoder().decode(RegionKind.self, from: data)
+}
+
 public func keywordAlgorithmFromJson(_ json: String) throws -> KeywordAlgorithm {
     let data = json.data(using: .utf8) ?? Data()
     return try JSONDecoder().decode(KeywordAlgorithm.self, from: data)
@@ -9330,8 +9365,9 @@ public func compare(a: ExtractionResult, b: ExtractionResult, opts: DiffOptions)
 public func extractRegionWithVlm(imageBytes: [UInt8], imageMime: String, regionKind: RegionKind, llmConfig: LlmConfig, customPrompt: String?) async throws -> String {
     return try await Task.detached(priority: .userInitiated) {
         let _rb_imageBytes: RustVec<UInt8> = { let v = RustVec<UInt8>(); for b in imageBytes { v.push(value: b) }; return v }()
+        let _rb_regionKind = try regionKind.intoRust()
         let _rb_llmConfig = try llmConfig.intoRust()
-        let result = try RustBridge.extractRegionWithVlm(_rb_imageBytes, RustString(imageMime), regionKind, _rb_llmConfig, customPrompt)
+        let result = try RustBridge.extractRegionWithVlm(_rb_imageBytes, RustString(imageMime), _rb_regionKind, _rb_llmConfig, customPrompt)
         return result
     }.value
 }

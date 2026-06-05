@@ -3066,6 +3066,14 @@ mod ffi {
         #[swift_bridge(swift_name = "translateResult")]
         fn translate_result(result: ExtractionResult, config: TranslationConfig) -> Result<(), String>;
         fn compare(a: ExtractionResult, b: ExtractionResult, opts: DiffOptions) -> ExtractionDiff;
+        #[swift_bridge(swift_name = "extractRegionWithVlm")]
+        fn extract_region_with_vlm(
+            image_bytes: Vec<u8>,
+            image_mime: String,
+            region_kind: String,
+            llm_config: LlmConfig,
+            custom_prompt: Option<String>,
+        ) -> Result<String, String>;
         #[swift_bridge(swift_name = "renderPdfPageToPng")]
         fn render_pdf_page_to_png(
             pdf_bytes: Vec<u8>,
@@ -3660,6 +3668,8 @@ mod ffi {
         fn summary_strategy_from_json(json: String) -> Result<SummaryStrategy, String>;
         #[swift_bridge(swift_name = "uriKindFromJson")]
         fn uri_kind_from_json(json: String) -> Result<UriKind, String>;
+        #[swift_bridge(swift_name = "regionKindFromJson")]
+        fn region_kind_from_json(json: String) -> Result<RegionKind, String>;
         #[swift_bridge(swift_name = "keywordAlgorithmFromJson")]
         fn keyword_algorithm_from_json(json: String) -> Result<KeywordAlgorithm, String>;
         #[swift_bridge(swift_name = "psmModeFromJson")]
@@ -13317,6 +13327,27 @@ pub fn compare(a: ExtractionResult, b: ExtractionResult, opts: DiffOptions) -> E
     ExtractionDiff(kreuzberg::compare(&a.0, &b.0, &opts.0))
 }
 
+pub fn extract_region_with_vlm(
+    image_bytes: Vec<u8>,
+    image_mime: String,
+    region_kind: String,
+    llm_config: LlmConfig,
+    custom_prompt: Option<String>,
+) -> Result<String, String> {
+    crate::__alef_tokio_runtime().block_on(async {
+        kreuzberg::llm::region_extractor::extract_region_with_vlm(
+            &image_bytes,
+            &image_mime,
+            <kreuzberg::RegionKind as ::std::convert::From<String>>::from(region_kind),
+            &llm_config.0,
+            custom_prompt.as_deref(),
+        )
+        .await
+        .map_err(|e| e.to_string())
+        .map(|s| s.to_string())
+    })
+}
+
 pub fn render_pdf_page_to_png(
     pdf_bytes: Vec<u8>,
     page_index: usize,
@@ -15008,6 +15039,11 @@ pub fn summary_strategy_from_json(json: String) -> Result<SummaryStrategy, Strin
 pub fn uri_kind_from_json(json: String) -> Result<UriKind, String> {
     serde_json::from_str::<kreuzberg::UriKind>(&json)
         .map(UriKind::from)
+        .map_err(|e| e.to_string())
+}
+pub fn region_kind_from_json(json: String) -> Result<RegionKind, String> {
+    serde_json::from_str::<kreuzberg::RegionKind>(&json)
+        .map(RegionKind::from)
         .map_err(|e| e.to_string())
 }
 pub fn keyword_algorithm_from_json(json: String) -> Result<KeywordAlgorithm, String> {

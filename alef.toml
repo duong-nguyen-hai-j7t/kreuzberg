@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.23.3"
+alef_version = "0.23.4"
 languages = [
   "python",
   "node",
@@ -1412,7 +1412,10 @@ result_is_simple = true
 result_is_array = true
 options_type = "EmbeddingConfig"
 
+# PHP extension only exposes embedTextsAsync; the embedTexts wrapper delegates to
+# KreuzbergApi::embedTexts which does not exist in the native extension.
 [crates.e2e.calls.embed_texts.overrides.php]
+function = "embedTextsAsync"
 result_is_simple = true
 options_type = "EmbeddingConfig"
 
@@ -1427,6 +1430,15 @@ options_type = "EmbeddingConfig"
 # the parsed JSON value rather than struct fields.
 [crates.e2e.calls.embed_texts.overrides.zig]
 result_is_json_struct = true
+
+# Node only exposes the async variant embedTextsAsync (NAPI-RS sync functions are
+# only generated for non-async functions; the suspend wrapper is the public API).
+[crates.e2e.calls.embed_texts.overrides.node]
+function = "embedTextsAsync"
+module = "@kreuzberg/node"
+async = true
+result_is_simple = true
+result_is_array = true
 
 [crates.e2e.calls.batch_extract_bytes]
 function = "batch_extract_bytes"

@@ -14625,6 +14625,21 @@ char *kreuzberg_uri_kind_to_json(const KREUZBERGUriKind *ptr);
 char *kreuzberg_uri_kind_to_string(const KREUZBERGUriKind *ptr);
 
 /**
+ * Create a `RegionKind` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_region_kind_free`.
+ */
+KREUZBERGRegionKind *kreuzberg_region_kind_from_json(const char *json);
+
+/**
+ * Free a heap-allocated `RegionKind` returned by a pointer-returning FFI function.
+ * # Safety
+ * Pointer must have been returned by this library, or be null.
+ */
+void kreuzberg_region_kind_free(KREUZBERGRegionKind *ptr);
+
+/**
  * Free a heap-allocated `KeywordAlgorithm` returned by a pointer-returning FFI function.
  * # Safety
  * Pointer must have been returned by this library, or be null.

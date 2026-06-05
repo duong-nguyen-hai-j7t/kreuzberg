@@ -16,7 +16,7 @@ use crate::types::LlmUsage;
 /// Each variant maps to a specific prompt optimised for that content type.
 /// The mapping is intentionally narrow — only region kinds for which VLM
 /// extraction provides a clear quality benefit over classical suppression.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum RegionKind {
     /// A figure, diagram, chart, or image region.
     ///
