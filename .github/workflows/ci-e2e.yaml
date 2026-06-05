@@ -384,7 +384,8 @@ jobs:
           matrix.lang == 'go' || matrix.lang == 'java' ||
           matrix.lang == 'csharp' || matrix.lang == 'elixir' ||
           matrix.lang == 'r' || matrix.lang == 'kotlin-android' ||
-          matrix.lang == 'swift' || matrix.lang == 'zig'
+          matrix.lang == 'swift' || matrix.lang == 'zig' ||
+          matrix.lang == 'rust'
         shell: bash
         run: |
           export PKG_CONFIG_PATH="${PWD}/crates/kreuzberg-ffi:${PKG_CONFIG_PATH}"
