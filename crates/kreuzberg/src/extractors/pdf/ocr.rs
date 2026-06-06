@@ -461,9 +461,10 @@ pub(crate) async fn extract_mixed_ocr_native(
     // as extract_with_ocr: rayon-parallel PNG encoding + tokio JoinSet OCR calls.
     use image::ImageEncoder;
     use image::codecs::png::PngEncoder;
-    use rayon::prelude::*;
     use std::io::Cursor;
     use std::sync::Arc;
+    #[cfg(not(target_arch = "wasm32"))]
+    use rayon::prelude::*;
 
     let default_ocr_config = crate::core::config::OcrConfig::default();
     let mut ocr_config_resolved = config.ocr.as_ref().unwrap_or(&default_ocr_config).clone();
@@ -492,7 +493,10 @@ pub(crate) async fn extract_mixed_ocr_native(
         let batch_slice = &page_images[batch_start..batch_end];
 
         type EncodedPage = (usize, Arc<Vec<u8>>, u32, u32);
-        // Encode this batch's images to PNG in parallel (CPU-bound, rayon)
+        // Encode this batch's images to PNG. On native targets this runs in parallel
+        // via rayon (CPU-bound); on wasm32 it falls back to a sequential iterator
+        // because rayon's thread pool is unavailable without the `wasm-threads` feature.
+        #[cfg(not(target_arch = "wasm32"))]
         let encoded: crate::Result<Vec<EncodedPage>> = batch_slice
             .par_iter()
             .map(|(page_idx, image)| {
@@ -508,31 +512,62 @@ pub(crate) async fn extract_mixed_ocr_native(
                 Ok((*page_idx, Arc::new(buf.into_inner()), w, h))
             })
             .collect();
+        #[cfg(target_arch = "wasm32")]
+        let encoded: crate::Result<Vec<EncodedPage>> = batch_slice
+            .iter()
+            .map(|(page_idx, image)| {
+                let rgb = image.to_rgb8();
+                let (w, h) = rgb.dimensions();
+                let mut buf = Cursor::new(Vec::new());
+                PngEncoder::new(&mut buf)
+                    .write_image(&rgb, w, h, image::ColorType::Rgb8.into())
+                    .map_err(|e| crate::KreuzbergError::Parsing {
+                        message: format!("Failed to encode page {} for OCR: {}", page_idx + 1, e),
+                        source: None,
+                    })?;
+                Ok((*page_idx, Arc::new(buf.into_inner()), w, h))
+            })
+            .collect();
         let encoded = encoded?;
 
-        // OCR this batch concurrently (tokio JoinSet)
-        let mut join_set = tokio::task::JoinSet::new();
-        for (page_idx, data, _w, _h) in &encoded {
-            let backend_clone = Arc::clone(&backend);
-            let config_clone = ocr_config_owned.clone();
-            let data_clone = Arc::clone(data);
-            let idx = *page_idx;
-            join_set.spawn(async move {
-                let result = backend_clone.process_image(&data_clone, &config_clone).await;
-                (idx, result)
-            });
-        }
-
-        while let Some(join_result) = join_set.join_next().await {
-            let (page_idx, result) = join_result.map_err(|e| crate::KreuzbergError::Plugin {
-                message: format!("OCR task panicked: {}", e),
-                plugin_name: "ocr".to_string(),
-            })?;
-            let mut extraction_result = result?;
-            if let Some(usage) = extraction_result.llm_usage.take() {
-                accumulated_llm_usage.extend(usage);
+        // OCR this batch. On native targets tasks run concurrently via tokio::task::JoinSet
+        // (requires the multi-threaded runtime). On wasm32 futures are awaited sequentially
+        // because JoinSet::spawn requires thread-spawning, which is unavailable there.
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            let mut join_set = tokio::task::JoinSet::new();
+            for (page_idx, data, _w, _h) in &encoded {
+                let backend_clone = Arc::clone(&backend);
+                let config_clone = ocr_config_owned.clone();
+                let data_clone = Arc::clone(data);
+                let idx = *page_idx;
+                join_set.spawn(async move {
+                    let result = backend_clone.process_image(&data_clone, &config_clone).await;
+                    (idx, result)
+                });
             }
-            ocr_results.insert((page_idx + 1) as u32, extraction_result.content); // 1-indexed
+            while let Some(join_result) = join_set.join_next().await {
+                let (page_idx, result) = join_result.map_err(|e| crate::KreuzbergError::Plugin {
+                    message: format!("OCR task panicked: {}", e),
+                    plugin_name: "ocr".to_string(),
+                })?;
+                let mut extraction_result = result?;
+                if let Some(usage) = extraction_result.llm_usage.take() {
+                    accumulated_llm_usage.extend(usage);
+                }
+                ocr_results.insert((page_idx + 1) as u32, extraction_result.content); // 1-indexed
+            }
+        }
+        #[cfg(target_arch = "wasm32")]
+        {
+            for (page_idx, data, _w, _h) in &encoded {
+                let result = backend.process_image(data, &ocr_config_owned).await?;
+                let mut extraction_result = result;
+                if let Some(usage) = extraction_result.llm_usage.take() {
+                    accumulated_llm_usage.extend(usage);
+                }
+                ocr_results.insert((*page_idx + 1) as u32, extraction_result.content); // 1-indexed
+            }
         }
 
         if capture_rasters {
@@ -713,8 +748,10 @@ pub(crate) async fn extract_with_ocr(
     // batch_size * (encoded_PNG + OCR working set) instead of
     // page_count * that amount. Images are rendered and encoded one at a time
     // within each batch to avoid holding multiple decoded RGB buffers.
-    use rayon::prelude::*;
     use std::sync::Arc;
+    #[cfg(not(target_arch = "wasm32"))]
+    use rayon::prelude::*;
+    #[cfg(not(target_arch = "wasm32"))]
     use tokio::task::JoinSet;
 
     let configured_batch_size = crate::core::config::concurrency::resolve_thread_budget(config.concurrency.as_ref());
@@ -772,10 +809,33 @@ pub(crate) async fn extract_with_ocr(
         #[allow(unused_variables)]
         let (batch_slice, encoded_batch) = if let Some(imgs) = images {
             let slice: Cow<'_, [image::DynamicImage]> = Cow::Borrowed(&imgs[batch_start..batch_end]);
-            // Encode pre-rendered images in parallel.
+            // Encode pre-rendered images. On native targets this runs in parallel via rayon
+            // (CPU-bound); on wasm32 it falls back to a sequential iterator because
+            // rayon's thread pool is unavailable without the `wasm-threads` feature.
             #[allow(clippy::type_complexity)]
+            #[cfg(not(target_arch = "wasm32"))]
             let encoded: crate::Result<Vec<(usize, Arc<Vec<u8>>, u32, u32)>> = slice
                 .par_iter()
+                .enumerate()
+                .map(|(offset, image)| {
+                    let page_idx = batch_start + offset;
+                    let rgb_image = image.to_rgb8();
+                    let (width, height) = rgb_image.dimensions();
+                    let mut image_bytes = Cursor::new(Vec::new());
+                    let encoder = PngEncoder::new(&mut image_bytes);
+                    encoder
+                        .write_image(&rgb_image, width, height, image::ColorType::Rgb8.into())
+                        .map_err(|e| crate::KreuzbergError::Parsing {
+                            message: format!("Failed to encode image: {}", e),
+                            source: None,
+                        })?;
+                    Ok((page_idx, Arc::new(image_bytes.into_inner()), width, height))
+                })
+                .collect();
+            #[allow(clippy::type_complexity)]
+            #[cfg(target_arch = "wasm32")]
+            let encoded: crate::Result<Vec<(usize, Arc<Vec<u8>>, u32, u32)>> = slice
+                .iter()
                 .enumerate()
                 .map(|(offset, image)| {
                     let page_idx = batch_start + offset;
@@ -832,28 +892,40 @@ pub(crate) async fn extract_with_ocr(
             (None::<Cow<'_, [image::DynamicImage]>>, encoded)
         };
 
-        // OCR this batch concurrently (tokio JoinSet).
-        let mut join_set: JoinSet<(usize, crate::Result<crate::types::ExtractionResult>)> = JoinSet::new();
-
-        for (page_idx, image_data, _width, _height) in &encoded_batch {
-            let backend_clone = std::sync::Arc::clone(&backend);
-            let config_clone = ocr_config_owned.clone();
-            let data_clone = Arc::clone(image_data);
-            let idx = *page_idx;
-            join_set.spawn(async move {
-                let result = backend_clone.process_image(&data_clone, &config_clone).await;
-                (idx, result)
-            });
-        }
-
+        // OCR this batch. On native targets tasks run concurrently via tokio::task::JoinSet
+        // (requires the multi-threaded runtime). On wasm32 futures are awaited sequentially
+        // because JoinSet::spawn requires thread-spawning, which is unavailable there.
         let batch_count = encoded_batch.len();
         let mut batch_ocr_results: Vec<Option<crate::types::ExtractionResult>> = vec![None; batch_count];
-        while let Some(join_result) = join_set.join_next().await {
-            let (page_idx, ocr_result) = join_result.map_err(|e| crate::KreuzbergError::Plugin {
-                message: format!("OCR task panicked: {}", e),
-                plugin_name: "ocr".to_string(),
-            })?;
-            batch_ocr_results[page_idx - batch_start] = Some(ocr_result?);
+
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            let mut join_set: JoinSet<(usize, crate::Result<crate::types::ExtractionResult>)> = JoinSet::new();
+            for (page_idx, image_data, _width, _height) in &encoded_batch {
+                let backend_clone = std::sync::Arc::clone(&backend);
+                let config_clone = ocr_config_owned.clone();
+                let data_clone = Arc::clone(image_data);
+                let idx = *page_idx;
+                join_set.spawn(async move {
+                    let result = backend_clone.process_image(&data_clone, &config_clone).await;
+                    (idx, result)
+                });
+            }
+            while let Some(join_result) = join_set.join_next().await {
+                let (page_idx, ocr_result) = join_result.map_err(|e| crate::KreuzbergError::Plugin {
+                    message: format!("OCR task panicked: {}", e),
+                    plugin_name: "ocr".to_string(),
+                })?;
+                batch_ocr_results[page_idx - batch_start] = Some(ocr_result?);
+            }
+        }
+        #[cfg(target_arch = "wasm32")]
+        {
+            for (i, (page_idx, image_data, _width, _height)) in encoded_batch.iter().enumerate() {
+                let ocr_result = backend.process_image(image_data, &ocr_config_owned).await?;
+                batch_ocr_results[i] = Some(ocr_result);
+                let _ = page_idx; // page_idx used for ordering in native path; serial is in-order
+            }
         }
 
         // Sequential post-processing for this batch utilizing TATR.
