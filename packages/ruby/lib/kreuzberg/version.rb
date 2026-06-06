@@ -5,5 +5,5 @@
 # frozen_string_literal: true
 
 module Kreuzberg
-  VERSION = "5.0.0.pre.rc.3"
+  VERSION = "5.0.0.pre.rc.4"
 end

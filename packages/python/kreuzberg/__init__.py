@@ -4,7 +4,7 @@
 # To verify freshness: alef verify --exit-code
 """Public API for _kreuzberg.
 
-Version: 5.0.0-rc.3
+Version: 5.0.0-rc.4
 """
 
 from ._kreuzberg import (
@@ -580,4 +580,4 @@ __all__ = [
     "unregister_validator",
 ]
 
-__version__ = "5.0.0-rc.3"
+__version__ = "5.0.0-rc.4"

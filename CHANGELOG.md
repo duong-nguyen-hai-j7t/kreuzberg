@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0-rc.4] - 2026-06-06
+
+### Changed
+
+- **alef**: bump generator to v0.23.23. Codegen-only regen across every binding picks up four upstream codegen fixes — Java `@Nullable` placement on qualified types (`java.nio.file.@Nullable Path`), Java `NativeLib` MethodHandle emission for every `<type>_free` symbol referenced by the wrapper, extendr R param-name sanitization (strip leading underscore), and swift-bridge call sites that no longer wrap plain `String` in `RustString(...)`. cbindgen now emits named struct + typedef for `#[repr(C)]` vtable structs so cgo can unify them across function args and locals (fixes 6 register sites in `packages/go/v5/trait_bridges.go`). Dart binding picks up the macOS framework-bundle loader path candidate.
+
 ### Fixed
 
 - **bindings**: `embed_texts_async` is the supported entry-point for embedding in all 12 language bindings. Use `embed_texts_async` rather than the sync `embed_texts` variant.
