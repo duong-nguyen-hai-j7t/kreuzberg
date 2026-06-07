@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0-rc.6] - 2026-06-07
+
+### Changed
+
+- **alef**: bumped to `0.23.28`. Regen brings four codegen fixes — Python null-arg `NameError`, Go missing-method trait emission, C# `EmbeddingConfig` null handling, Java FFI runtime path — plus PHP `Option<&str>` vs `&str` nullability distinction, Kotlin Android `Files.readAllBytes(...)` for byte arrays, and Swift `TypeRef::String | TypeRef::Path` RustString wrapping.
+- **pre-commit-hooks**: bumped to `v2.1.9` (palantir multi-platform sha + `check-executables-have-shebangs` `.rs` exclusion).
+- **rust**: replaced bare `unreachable!()` / `.unwrap()` patterns across the workspace with documented `SAFETY:` invariant comments where panic-free alternatives exist.
+
 ### Fixed
 
 - **csharp/ffi**: fix macOS arm64 dylib rpath and runtime dependency bundling. `libkreuzberg_ffi.dylib` referenced `@rpath/libonnxruntime.1.24.2.dylib` but had no LC_RPATH entries and ORT dylib was not bundled in the NuGet package, causing all C# FFI calls to fail with dyld errors on macOS arm64. Added `-Wl,-rpath,@loader_path` linker flag in build.rs and implemented `copy_macos_runtime_deps()` in the build-csharp-natives action to extract and bundle referenced dylibs alongside the main FFI library.
