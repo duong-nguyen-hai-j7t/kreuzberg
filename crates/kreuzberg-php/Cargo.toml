@@ -1,8 +1,8 @@
 [package]
 name = "kreuzberg-php"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
+version = "5.0.0-rc.5"
+edition = "2024"
+license = "Elastic-2.0"
 description = "High-performance document intelligence library"
 readme = false
 keywords = ["document", "extraction", "ocr", "pdf", "text"]
@@ -21,7 +21,7 @@ extension-module = []
 [dependencies]
 async-trait = "0.1"
 ext-php-rs = "0.15"
-kreuzberg = { workspace = true, features = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "mcp", "liter-llm", "quality"] }
+kreuzberg = { version = "5.0.0-rc.5", path = "../kreuzberg", features = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "mcp", "liter-llm", "quality"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["full"] }

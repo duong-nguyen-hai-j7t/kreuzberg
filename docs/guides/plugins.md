@@ -1,6 +1,7 @@
-# Creating Plugins <span class="version-badge">v4.0.0</span>
+# Creating Plugins
 
-Extend Kreuzberg with custom extractors, post-processors, OCR backends, and validators registered globally for use across all extraction calls.
+Extend Kreuzberg with custom extractors, post-processors, OCR backends, and
+validators registered globally for use across all extraction calls.
 
 !!! Note "Wasm" Custom plugins are not supported in Wasm environments. Use Python, Rust, or other native bindings.
 
@@ -13,7 +14,8 @@ Extend Kreuzberg with custom extractors, post-processors, OCR backends, and vali
 | **OcrBackend**        | Perform OCR on images             | Cloud OCR services, custom OCR engines                     |
 | **Validator**         | Validate extraction quality       | Minimum content length, quality score thresholds           |
 
-All plugins must be thread-safe (`Send + Sync` in Rust, thread-safe in Python) and implement `initialize()` / `shutdown()` lifecycle methods.
+All plugins must be thread-safe (`Send + Sync` in Rust, thread-safe in Python) and
+implement `initialize()` / `shutdown()` lifecycle methods.
 
 ## Document Extractors
 

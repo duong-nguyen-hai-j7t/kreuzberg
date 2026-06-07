@@ -70,11 +70,17 @@ pub const KreuzbergError = error{
     OutOfMemory,
 };
 
+/// Aggregate statistics for a kreuzberg cache directory.
 pub const CacheStats = struct {
+    /// Total number of files currently in the cache directory.
     total_files: u64,
+    /// Combined size of all cache files in megabytes.
     total_size_mb: f64,
+    /// Free disk space available on the cache volume, in megabytes.
     available_space_mb: f64,
+    /// Age of the oldest cache file in days (0.0 if the cache is empty).
     oldest_file_age_days: f64,
+    /// Age of the most recently written cache file in days (0.0 if the cache is empty).
     newest_file_age_days: f64,
 };
 
@@ -571,7 +577,7 @@ pub const LanguageDetectionConfig = struct {
 
 /// Configuration for styled HTML output.
 ///
-/// When set on `ExtractionConfig.html_output` alongside
+/// When set on `html_output` alongside
 /// `output_format = OutputFormat.Html`, the pipeline builds a
 /// `StyledHtmlRenderer` instead of
 /// the plain comrak-based renderer.
@@ -1316,10 +1322,15 @@ pub const ServerConfig = struct {
     max_multipart_field_bytes: u64,
 };
 
+/// Result of parsing a structured data file (JSON, JSONL, YAML, or TOML).
 pub const StructuredDataResult = struct {
+    /// The extracted text content, formatted for readability.
     content: []const u8,
+    /// The source format identifier (e.g. `"json"`, `"yaml"`, `"toml"`).
     format: []const u8,
+    /// Key-value metadata extracted from recognized text fields.
     metadata: std.StringHashMap([]const u8),
+    /// JSON paths of fields that were classified as text-bearing.
     text_fields: []const []const u8,
 };
 
@@ -1487,17 +1498,29 @@ pub const SecurityLimits = struct {
     max_table_cells: u64,
 };
 
+/// Configuration for the token-reduction pipeline.
 pub const TokenReductionConfig = struct {
+    /// Reduction intensity level.
     level: ReductionLevel,
+    /// ISO 639-1 language code hint for stopword selection (e.g. `"en"`, `"de"`).
     language_hint: ?[]const u8,
+    /// Preserve Markdown formatting tokens during reduction.
     preserve_markdown: bool,
+    /// Preserve code block contents unchanged.
     preserve_code: bool,
+    /// Cosine similarity threshold below which sentences are considered dissimilar.
     semantic_threshold: f32,
+    /// Use Rayon parallel iterators for multi-core processing.
     enable_parallel: bool,
+    /// Use SIMD-optimized text scanning where available.
     use_simd: bool,
+    /// Per-language custom stopword lists (`language_code → stopword_list`).
     custom_stopwords: ?std.StringHashMap([]const []const u8),
+    /// Regex patterns whose matched text is always preserved unchanged.
     preserve_patterns: []const []const u8,
+    /// Target fraction of text to retain (0.0–1.0); `null` = no fixed target.
     target_reduction: ?f32,
+    /// Group semantically similar sentences and emit only one per cluster.
     enable_semantic_clustering: bool,
 };
 
@@ -1767,15 +1790,20 @@ pub const Entity = struct {
 ///
 /// This is the main result type returned by all extraction functions.
 pub const ExtractionResult = struct {
+    /// Plain-text representation of the extracted document content.
     content: []const u8,
+    /// MIME type of the source document (e.g. `"application/pdf"`).
     mime_type: []const u8,
+    /// Document-level metadata (author, title, dates, format-specific fields).
     metadata: Metadata,
     /// Extraction strategy used to produce the returned text.
     ///
     /// Populated when the extractor can reliably distinguish native text extraction,
     /// OCR-only extraction, or mixed native/OCR output.
     extraction_method: ?ExtractionMethod,
+    /// Tables extracted from the document, each with structured cell data.
     tables: []const Table,
+    /// ISO 639-1 language codes detected in the document content.
     detected_languages: ?[]const []const u8,
     /// Text chunks when chunking is enabled.
     ///
@@ -2739,13 +2767,17 @@ pub const OcrMetadata = struct {
     output_format: []const u8,
     /// Number of tables detected
     table_count: u32,
+    /// Number of rows in the detected table (if a single table was found).
     table_rows: ?u32,
+    /// Number of columns in the detected table (if a single table was found).
     table_cols: ?u32,
 };
 
 /// Error metadata (for batch operations).
 pub const ErrorMetadata = struct {
+    /// Machine-readable error type identifier (e.g. "UnsupportedFormat").
     error_type: []const u8,
+    /// Human-readable error description.
     message: []const u8,
 };
 
@@ -2787,10 +2819,15 @@ pub const DocxMetadata = struct {
 
 /// CSV/TSV file metadata.
 pub const CsvMetadata = struct {
+    /// Total number of data rows (excluding the header row if present).
     row_count: u32,
+    /// Number of columns detected.
     column_count: u32,
+    /// Field delimiter character (e.g. `","` or `"\t"`).
     delimiter: ?[]const u8,
+    /// Whether the first row was treated as a header.
     has_header: bool,
+    /// Inferred data type for each column (e.g. `"string"`, `"integer"`, `"float"`).
     column_types: ?[]const []const u8,
 };
 
@@ -2798,75 +2835,109 @@ pub const CsvMetadata = struct {
 pub const BibtexMetadata = struct {
     /// Number of entries in the bibliography.
     entry_count: u64,
+    /// BibTeX citation keys (e.g. `"knuth1984"`) for all entries.
     citation_keys: []const []const u8,
+    /// Author names collected across all bibliography entries.
     authors: []const []const u8,
+    /// Earliest and latest publication years found in the bibliography.
     year_range: ?YearRange,
+    /// Count of entries grouped by BibTeX entry type (e.g. `"article"` → 5).
     entry_types: ?std.StringHashMap(u64),
 };
 
 /// Citation file metadata (RIS, PubMed, EndNote).
 pub const CitationMetadata = struct {
+    /// Total number of citation records in the file.
     citation_count: u64,
+    /// Detected citation file format (e.g. `"ris"`, `"pubmed"`, `"endnote"`).
     format: ?[]const u8,
+    /// Author names collected across all citation records.
     authors: []const []const u8,
+    /// Earliest and latest publication years found in the file.
     year_range: ?YearRange,
+    /// DOI identifiers found in the citation records.
     dois: []const []const u8,
+    /// Keywords collected from all citation records.
     keywords: []const []const u8,
 };
 
 /// Year range for bibliographic metadata.
 pub const YearRange = struct {
+    /// Earliest (minimum) year in the range.
     min: ?u32,
+    /// Latest (maximum) year in the range.
     max: ?u32,
+    /// All individual years present in the collection.
     years: []const u32,
 };
 
 /// FictionBook (FB2) metadata.
 pub const FictionBookMetadata = struct {
+    /// Genre tags as declared in the FB2 `<genre>` elements.
     genres: []const []const u8,
+    /// Book series (sequence) names, if any.
     sequences: []const []const u8,
+    /// Short annotation / summary from the FB2 `<annotation>` element.
     annotation: ?[]const u8,
 };
 
 /// dBASE (DBF) file metadata.
 pub const DbfMetadata = struct {
+    /// Total number of data records in the DBF file.
     record_count: u64,
+    /// Number of field (column) definitions.
     field_count: u64,
+    /// Descriptor for each field in the table schema.
     fields: []const DbfFieldInfo,
 };
 
 /// dBASE field information.
 pub const DbfFieldInfo = struct {
+    /// Field (column) name.
     name: []const u8,
+    /// dBASE field type character (e.g. `"C"` for character, `"N"` for numeric).
     field_type: []const u8,
 };
 
 /// JATS (Journal Article Tag Suite) metadata.
 pub const JatsMetadata = struct {
+    /// Copyright statement from the article's `<permissions>` element.
     copyright: ?[]const u8,
+    /// Open-access license URI from the article's `<license>` element.
     license: ?[]const u8,
+    /// Publication history dates keyed by event type (e.g. `"received"`, `"accepted"`).
     history_dates: std.StringHashMap([]const u8),
+    /// Authors and contributors with their stated roles.
     contributor_roles: []const ContributorRole,
 };
 
 /// JATS contributor with role.
 pub const ContributorRole = struct {
+    /// Contributor display name.
     name: []const u8,
+    /// Contributor role (e.g. `"author"`, `"editor"`).
     role: ?[]const u8,
 };
 
 /// EPUB metadata (Dublin Core extensions).
 pub const EpubMetadata = struct {
+    /// Dublin Core `coverage` field (geographic or temporal scope).
     coverage: ?[]const u8,
+    /// Dublin Core `format` field (media type of the resource).
     dc_format: ?[]const u8,
+    /// Dublin Core `relation` field (related resource identifier).
     relation: ?[]const u8,
+    /// Dublin Core `source` field (origin resource identifier).
     source: ?[]const u8,
+    /// Dublin Core `type` field (nature or genre of the resource).
     dc_type: ?[]const u8,
+    /// Path or identifier of the cover image within the EPUB container.
     cover_image: ?[]const u8,
 };
 
 /// Outlook PST archive metadata.
 pub const PstMetadata = struct {
+    /// Total number of email messages found in the PST archive.
     message_count: u64,
 };
 
@@ -3157,9 +3228,13 @@ pub const QrCode = struct {
 
 /// Pixel-space bounding box of a QR code inside its source image.
 pub const QrBoundingBox = struct {
+    /// Horizontal pixel offset of the bounding box top-left corner.
     x: u32,
+    /// Vertical pixel offset of the bounding box top-left corner.
     y: u32,
+    /// Width of the bounding box in pixels.
     width: u32,
+    /// Height of the bounding box in pixels.
     height: u32,
 };
 
@@ -3427,8 +3502,11 @@ pub const EmbeddedDiff = struct {
 /// All string fields are owned `String` for FFI compatibility — instances
 /// are safe to clone and pass across language boundaries.
 pub const EmbeddingPreset = struct {
+    /// Short identifier for this preset (e.g. `"balanced"`, `"fast"`, `"quality"`).
     name: []const u8,
+    /// Target chunk size in characters.
     chunk_size: u64,
+    /// Overlap between consecutive chunks in characters.
     overlap: u64,
     /// HuggingFace repository name for the model.
     model_repo: []const u8,
@@ -3436,7 +3514,9 @@ pub const EmbeddingPreset = struct {
     pooling: []const u8,
     /// Path to the ONNX model file within the repo.
     model_file: []const u8,
+    /// Embedding vector dimension produced by this model.
     dimensions: u64,
+    /// Human-readable description of the preset's intended use case.
     description: []const u8,
 };
 
@@ -3555,16 +3635,23 @@ pub const OrientationResult = struct {
 
 /// Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-right.
 pub const BBox = struct {
+    /// Left edge (x-coordinate of the top-left corner).
     x1: f32,
+    /// Top edge (y-coordinate of the top-left corner).
     y1: f32,
+    /// Right edge (x-coordinate of the bottom-right corner).
     x2: f32,
+    /// Bottom edge (y-coordinate of the bottom-right corner).
     y2: f32,
 };
 
 /// A single layout detection result.
 pub const LayoutDetection = struct {
+    /// Detected layout class (e.g. `Table`, `Text`, `Title`).
     class_name: LayoutClass,
+    /// Detection confidence score in `[0.0, 1.0]`.
     confidence: f32,
+    /// Bounding box in image pixel coordinates.
     bbox: BBox,
 };
 
@@ -3585,8 +3672,11 @@ pub const RecognizedTable = struct {
 
 /// Page-level detection result containing all detections and page metadata.
 pub const DetectionResult = struct {
+    /// Page width in pixels (as seen by the model).
     page_width: u32,
+    /// Page height in pixels (as seen by the model).
     page_height: u32,
+    /// All layout detections on this page after postprocessing.
     detections: []const LayoutDetection,
 };
 
@@ -3766,9 +3856,13 @@ pub const VlmFallbackPolicy = union(enum) {
 ///   `max_characters` (default 1000). `topic_threshold` has no effect in the
 ///   fallback path. For best results, pair with an embedding model.
 pub const ChunkerType = enum {
+    /// Generic whitespace- and punctuation-aware text splitter (default).
     text,
+    /// Markdown-aware splitter that preserves heading and code-block boundaries.
     markdown,
+    /// YAML-aware splitter that creates one chunk per top-level key.
     yaml,
+    /// Topic-aware chunker that splits at embedding-based topic shifts.
     semantic,
 };
 
@@ -3915,11 +4009,17 @@ pub const ProcessingStage = enum {
     late,
 };
 
+/// Intensity level for the token-reduction pipeline.
 pub const ReductionLevel = enum {
+    /// No reduction applied; text is returned as-is.
     off,
+    /// Remove only the most common stopwords.
     light,
+    /// Balanced stopword removal and redundancy filtering.
     moderate,
+    /// Aggressive filtering; may remove less common content words.
     aggressive,
+    /// Maximum compression; prioritizes brevity over completeness.
     maximum,
 };
 
@@ -3943,41 +4043,73 @@ pub const PdfAnnotationType = enum {
 
 /// Types of block-level elements in Djot.
 pub const BlockType = enum {
+    /// Standard prose paragraph.
     paragraph,
+    /// Section heading (level stored in `FormattedBlock.level`).
     heading,
+    /// Block quotation container.
     blockquote,
+    /// Fenced or indented code block.
     code_block,
+    /// Individual item within a list.
     list_item,
+    /// Numbered (ordered) list container.
     ordered_list,
+    /// Unnumbered (bullet) list container.
     bullet_list,
+    /// Task / checkbox list container.
     task_list,
+    /// Definition list container.
     definition_list,
+    /// Term part of a definition list entry.
     definition_term,
+    /// Description / definition part of a definition list entry.
     definition_description,
+    /// Generic `div` container with optional attributes.
     div,
+    /// Logical section container, often associated with a heading.
     section,
+    /// Horizontal rule / thematic break.
     thematic_break,
+    /// Raw content block in a specified format (e.g. HTML, LaTeX).
     raw_block,
+    /// Display-mode mathematical expression.
     math_display,
 };
 
 /// Types of inline elements in Djot.
 pub const InlineType = enum {
+    /// Plain text run.
     text,
+    /// Bold / strong emphasis.
     strong,
+    /// Italic / regular emphasis.
     emphasis,
+    /// Highlighted text (marker pen).
     highlight,
+    /// Subscript text.
     subscript,
+    /// Superscript text.
     superscript,
+    /// Inserted text (tracked change).
     insert,
+    /// Deleted text (tracked change).
     delete,
+    /// Inline code span.
     code,
+    /// Hyperlink with URL.
     link,
+    /// Inline image reference.
     image,
+    /// Generic inline span with optional attributes.
     span,
+    /// Inline mathematical expression.
     math,
+    /// Raw inline content in a specified format.
     raw_inline,
+    /// Footnote reference marker.
     footnote_ref,
+    /// Named symbol or emoji shortcode.
     symbol,
 };
 
@@ -4099,13 +4231,21 @@ pub const NodeContent = union(enum) {
 
 /// Types of inline text annotations.
 pub const AnnotationKind = union(enum) {
+    /// Bold (strong) text formatting.
     bold: void,
+    /// Italic (emphasis) text formatting.
     italic: void,
+    /// Underlined text.
     underline: void,
+    /// Strikethrough text.
     strikethrough: void,
+    /// Inline code span.
     code: void,
+    /// Subscript text.
     subscript: void,
+    /// Superscript text.
     superscript: void,
+    /// Hyperlink annotation.
     link: struct {
         url: []const u8,
         title: ?[]const u8,
@@ -4128,23 +4268,37 @@ pub const AnnotationKind = union(enum) {
 /// The `Custom(String)` variant lets caller-supplied categories (e.g. LLM
 /// schemas) flow through without losing fidelity to the consumer.
 pub const EntityCategory = union(enum) {
+    /// A person's name.
     person: void,
+    /// A company, institution, or organisation name.
     organization: void,
+    /// A geographic location (city, country, address).
     location: void,
+    /// A calendar date.
     date: void,
+    /// A time of day or duration.
     time: void,
+    /// A monetary amount with optional currency.
     money: void,
+    /// A percentage value.
     percent: void,
+    /// An email address.
     email: void,
+    /// A phone number.
     phone: void,
+    /// A URL or URI.
     url: void,
+    /// A caller-supplied custom category label.
     custom: []const u8,
 };
 
 /// How the extracted text was produced.
 pub const ExtractionMethod = enum {
+    /// Text extracted directly from the document's native format (no OCR).
     native,
+    /// All text was obtained via OCR (e.g. scanned image-only PDF).
     ocr,
+    /// Text came from a combination of native extraction and OCR.
     mixed,
 };
 
@@ -4256,25 +4410,45 @@ pub const ElementType = enum {
 /// Only one format type can exist per extraction result. This provides
 /// type-safe, clean metadata without nested optionals.
 pub const FormatMetadata = union(enum) {
+    /// Metadata extracted from a PDF document.
     pdf: PdfMetadata,
+    /// Metadata extracted from a DOCX Word document.
     docx: DocxMetadata,
+    /// Metadata extracted from an Excel spreadsheet.
     excel: ExcelMetadata,
+    /// Metadata extracted from an email message (EML/MSG).
     email: EmailMetadata,
+    /// Metadata extracted from a PowerPoint presentation.
     pptx: PptxMetadata,
+    /// Metadata extracted from an archive (ZIP, TAR, 7Z, etc.).
     archive: ArchiveMetadata,
+    /// Metadata extracted from a raster or vector image.
     image: ImageMetadata,
+    /// Metadata extracted from an XML document.
     xml: XmlMetadata,
+    /// Metadata extracted from a plain-text file.
     text: TextMetadata,
+    /// Metadata extracted from an HTML document.
     html: HtmlMetadata,
+    /// Metadata produced by an OCR pipeline.
     ocr: OcrMetadata,
+    /// Metadata extracted from a CSV or TSV file.
     csv: CsvMetadata,
+    /// Metadata extracted from a BibTeX bibliography file.
     bibtex: BibtexMetadata,
+    /// Metadata extracted from a citation file (RIS, PubMed, EndNote).
     citation: CitationMetadata,
+    /// Metadata extracted from a FictionBook (FB2) e-book.
     fiction_book: FictionBookMetadata,
+    /// Metadata extracted from a dBASE (DBF) database file.
     dbf: DbfMetadata,
+    /// Metadata extracted from a JATS (Journal Article Tag Suite) XML file.
     jats: JatsMetadata,
+    /// Metadata extracted from an EPUB e-book.
     epub: EpubMetadata,
+    /// Metadata extracted from an Outlook PST archive.
     pst: PstMetadata,
+    /// Metadata extracted from an audio or video file.
     audio: AudioMetadata,
 };
 
@@ -4388,14 +4562,23 @@ pub const RedactionStrategy = enum {
 
 /// PII categories the pattern engine recognises.
 pub const PiiCategory = union(enum) {
+    /// Email address (e.g. `user@example.com`).
     email: void,
+    /// Phone number in any common format.
     phone: void,
+    /// US Social Security Number.
     ssn: void,
+    /// Payment card number (Visa, Mastercard, Amex, etc.).
     credit_card: void,
+    /// Postal / ZIP code.
     postal_code: void,
+    /// IPv4 or IPv6 address.
     ip_address: void,
+    /// International Bank Account Number.
     iban: void,
+    /// SWIFT / BIC bank identifier code.
     swift_bic: void,
+    /// Date of birth.
     date_of_birth: void,
     /// Person name, surfaced by the optional NER backend.
     person: void,
@@ -4527,18 +4710,29 @@ pub const KeywordAlgorithm = enum {
     rake,
 };
 
-/// Page Segmentation Mode for Tesseract OCR
+/// Page Segmentation Mode for Tesseract OCR.
 pub const PSMMode = enum {
+    /// Orientation and script detection only.
     osd_only,
+    /// Automatic page segmentation with OSD.
     auto_osd,
+    /// Automatic page segmentation without OSD or OCR.
     auto_only,
+    /// Fully automatic page segmentation with no OSD (default).
     auto,
+    /// Assume a single column of text of variable sizes.
     single_column,
+    /// Assume a single uniform block of vertically aligned text.
     single_block_vertical,
+    /// Assume a single uniform block of text.
     single_block,
+    /// Treat the image as a single text line.
     single_line,
+    /// Treat the image as a single word.
     single_word,
+    /// Treat the image as a single word in a circle.
     circle_word,
+    /// Treat the image as a single character.
     single_char,
 };
 
@@ -4588,22 +4782,39 @@ pub const PaddleLanguage = enum {
 ///
 /// Wire format is snake_case in all serializers (JSON, TOML, YAML).
 pub const LayoutClass = enum {
+    /// Figure or table caption text.
     caption,
+    /// Footnote or endnote text.
     footnote,
+    /// Mathematical formula or equation.
     formula,
+    /// A single item in a bulleted or numbered list.
     list_item,
+    /// Running footer at the bottom of a page.
     page_footer,
+    /// Running header at the top of a page.
     page_header,
+    /// Image, chart, or other graphical element.
     picture,
+    /// Section heading.
     section_header,
+    /// Data table.
     table,
+    /// Body text paragraph.
     text,
+    /// Document or chapter title.
     title,
+    /// Table of contents or index.
     document_index,
+    /// Source code block.
     code,
+    /// Checkbox in selected state.
     checkbox_selected,
+    /// Checkbox in unselected state.
     checkbox_unselected,
+    /// Form field or form element.
     form,
+    /// Key-value pair region (e.g. label + value in a form).
     key_value_region,
 };
 
@@ -4636,7 +4847,7 @@ pub fn extract_bytes(content: []const u8, mime_type: []const u8, config: []const
     if (config_handle == null) return _first_error(KreuzbergError);
     defer c.kreuzberg_extraction_config_free(config_handle);
     const _result = c.kreuzberg_extract_bytes(content.ptr, content.len, mime_type_z, config_handle);
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     return blk: {
@@ -4683,7 +4894,7 @@ pub fn extract_file(path: []const u8, mime_type: ?[]const u8, config: []const u8
     if (config_handle == null) return _first_error(KreuzbergError);
     defer c.kreuzberg_extraction_config_free(config_handle);
     const _result = c.kreuzberg_extract_file(path_z, if (mime_type_z) |z| z.ptr else null, config_handle);
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     return blk: {
@@ -4721,7 +4932,7 @@ pub fn extract_file_sync(path: []const u8, mime_type: ?[]const u8, config: []con
     if (config_handle == null) return _first_error(KreuzbergError);
     defer c.kreuzberg_extraction_config_free(config_handle);
     const _result = c.kreuzberg_extract_file_sync(path_z, if (mime_type_z) |z| z.ptr else null, config_handle);
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     return blk: {
@@ -4753,7 +4964,7 @@ pub fn extract_bytes_sync(content: []const u8, mime_type: []const u8, config: []
     if (config_handle == null) return _first_error(KreuzbergError);
     defer c.kreuzberg_extraction_config_free(config_handle);
     const _result = c.kreuzberg_extract_bytes_sync(content.ptr, content.len, mime_type_z, config_handle);
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     return blk: {
@@ -4783,7 +4994,7 @@ pub fn batch_extract_files_sync(items: []const u8, config: []const u8) Kreuzberg
     if (config_handle == null) return _first_error(KreuzbergError);
     defer c.kreuzberg_extraction_config_free(config_handle);
     const _result = c.kreuzberg_batch_extract_files_sync(items_z, config_handle);
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_batch_extract_files_sync_len(items_z, config_handle);
@@ -4815,7 +5026,7 @@ pub fn batch_extract_bytes_sync(items: []const u8, config: []const u8) Kreuzberg
     if (config_handle == null) return _first_error(KreuzbergError);
     defer c.kreuzberg_extraction_config_free(config_handle);
     const _result = c.kreuzberg_batch_extract_bytes_sync(items_z, config_handle);
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_batch_extract_bytes_sync_len(items_z, config_handle);
@@ -4870,7 +5081,7 @@ pub fn batch_extract_files(items: []const u8, config: []const u8) KreuzbergError
     if (config_handle == null) return _first_error(KreuzbergError);
     defer c.kreuzberg_extraction_config_free(config_handle);
     const _result = c.kreuzberg_batch_extract_files(items_z, config_handle);
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_batch_extract_files_len(items_z, config_handle);
@@ -4919,7 +5130,7 @@ pub fn batch_extract_bytes(items: []const u8, config: []const u8) KreuzbergError
     if (config_handle == null) return _first_error(KreuzbergError);
     defer c.kreuzberg_extraction_config_free(config_handle);
     const _result = c.kreuzberg_batch_extract_bytes(items_z, config_handle);
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_batch_extract_bytes_len(items_z, config_handle);
@@ -4950,7 +5161,7 @@ pub fn batch_extract_bytes(items: []const u8, config: []const u8) KreuzbergError
 /// Returns `KreuzbergError.UnsupportedFormat` if MIME type cannot be determined.
 pub fn detect_mime_type_from_bytes(content: []const u8) KreuzbergError![]u8 {
     const _result = c.kreuzberg_detect_mime_type_from_bytes(content.ptr, content.len);
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_detect_mime_type_from_bytes_len(content.ptr, content.len);
@@ -4976,7 +5187,7 @@ pub fn get_extensions_for_mime(mime_type: []const u8) KreuzbergError![]u8 {
         std.heap.c_allocator, "{s}", .{mime_type}, 0);
     defer std.heap.c_allocator.free(mime_type_z);
     const _result = c.kreuzberg_get_extensions_for_mime(mime_type_z);
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_get_extensions_for_mime_len(mime_type_z);
@@ -5029,7 +5240,7 @@ pub fn detect_qr_codes(image_bytes: []const u8, _format_hint: ?[]const u8) error
 /// bindings.
 pub fn list_embedding_backends() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_embedding_backends();
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_list_embedding_backends_len();
@@ -5046,7 +5257,7 @@ pub fn list_embedding_backends() KreuzbergError![]u8 {
 /// List names of all registered document extractors.
 pub fn list_document_extractors() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_document_extractors();
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_list_document_extractors_len();
@@ -5069,7 +5280,7 @@ pub fn list_document_extractors() KreuzbergError![]u8 {
 /// A vector of OCR backend names.
 pub fn list_ocr_backends() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_ocr_backends();
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_list_ocr_backends_len();
@@ -5109,7 +5320,7 @@ pub fn register_builtin() KreuzbergError!void {
 /// - `Err(...)` if the registry lock is poisoned
 pub fn list_post_processors() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_post_processors();
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_list_post_processors_len();
@@ -5130,7 +5341,7 @@ pub fn list_post_processors() KreuzbergError![]u8 {
 /// Returns an error if the registry lock is poisoned.
 pub fn list_renderers() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_renderers();
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_list_renderers_len();
@@ -5147,7 +5358,7 @@ pub fn list_renderers() KreuzbergError![]u8 {
 /// List names of all registered validators.
 pub fn list_validators() KreuzbergError![]u8 {
     const _result = c.kreuzberg_list_validators();
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_list_validators_len();
@@ -5203,7 +5414,7 @@ pub fn download_model(name: []const u8, cache_dir: ?[]const u8) KreuzbergError![
         std.heap.c_allocator, "{s}", .{v}, 0) else null;
     defer if (cache_dir_z) |z| std.heap.c_allocator.free(z);
     const _result = c.kreuzberg_download_model(name_z, if (cache_dir_z) |z| z.ptr else null);
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_download_model_len(name_z, if (cache_dir_z) |z| z.ptr else null);
@@ -5390,7 +5601,7 @@ pub fn extract_region_with_vlm(image_bytes: []const u8, image_mime: []const u8, 
         std.heap.c_allocator, "{s}", .{v}, 0) else null;
     defer if (custom_prompt_z) |z| std.heap.c_allocator.free(z);
     const _result = c.kreuzberg_extract_region_with_vlm(image_bytes.ptr, image_bytes.len, image_mime_z, region_kind, llm_config_handle, if (custom_prompt_z) |z| z.ptr else null);
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_extract_region_with_vlm_len(image_bytes.ptr, image_bytes.len, image_mime_z, region_kind, llm_config_handle, if (custom_prompt_z) |z| z.ptr else null);
@@ -5442,7 +5653,7 @@ pub fn detect_mime_type(path: []const u8, check_exists: bool) KreuzbergError![]u
         std.heap.c_allocator, "{s}", .{path}, 0);
     defer std.heap.c_allocator.free(path_z);
     const _result = c.kreuzberg_detect_mime_type(path_z, check_exists);
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_detect_mime_type_len(path_z, check_exists);
@@ -5468,7 +5679,7 @@ pub fn embed_texts_async(_texts: []const u8, _config: []const u8) KreuzbergError
     if (_config_handle == null) return _first_error(KreuzbergError);
     defer c.kreuzberg_embedding_config_free(_config_handle);
     const _result = c.kreuzberg_embed_texts_async(_texts_z, _config_handle);
-    if (c.kreuzberg_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(KreuzbergError);
     }
     const _result_len = c.kreuzberg_embed_texts_async_len(_texts_z, _config_handle);
@@ -7036,6 +7247,7 @@ pub fn make_renderer_vtable(comptime T: type, instance: *T) IRenderer {
     };
 }
 
+/// Create a new LLM-backed NER backend with the given LLM configuration.
 pub fn new_llm_backend(config: []const u8) error{OutOfMemory,InvalidJson}!LlmBackend {
     const config_z = try std.heap.c_allocator.dupeZ(u8, config);
     defer std.heap.c_allocator.free(config_z);
@@ -7057,7 +7269,7 @@ pub const LlmBackend = struct {
         const categories_z = try std.heap.c_allocator.dupeZ(u8, categories);
         defer std.heap.c_allocator.free(categories_z);
         const _result = c.kreuzberg_llm_backend_detect(@as(*c.KREUZBERGLlmBackend, @ptrCast(self._handle)), text_z, categories_z);
-        if (c.kreuzberg_last_error_code() != 0) {
+        if (_result == null) {
             return _first_error(KreuzbergError);
         }
         return blk: {
@@ -7076,7 +7288,7 @@ pub const LlmBackend = struct {
         const custom_labels_z = try std.heap.c_allocator.dupeZ(u8, custom_labels);
         defer std.heap.c_allocator.free(custom_labels_z);
         const _result = c.kreuzberg_llm_backend_detect_with_custom(@as(*c.KREUZBERGLlmBackend, @ptrCast(self._handle)), text_z, categories_z, custom_labels_z);
-        if (c.kreuzberg_last_error_code() != 0) {
+        if (_result == null) {
             return _first_error(KreuzbergError);
         }
         return blk: {
@@ -7093,6 +7305,7 @@ pub const LlmBackend = struct {
     }
 };
 
+/// Create a fresh counter with no previous state.
 pub fn new_token_counter() TokenCounter {
     const _handle = c.kreuzberg_token_counter_new();
     if (_handle == null) return _first_error(anyerror);

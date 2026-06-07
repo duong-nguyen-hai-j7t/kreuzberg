@@ -442,12 +442,12 @@ unregister_renderer <- function(name) .Call("wrap__unregister_renderer", name, P
 #' @return Invisible NULL on success; raises an R error on failure.
 #' @export
 clear_renderers <- function() .Call("wrap__clear_renderers", PACKAGE = "kreuzberg")
-#' CacheStats
-#' @field total_files total_files
-#' @field total_size_mb total_size_mb
-#' @field available_space_mb available_space_mb
-#' @field oldest_file_age_days oldest_file_age_days
-#' @field newest_file_age_days newest_file_age_days
+#' Aggregate statistics for a kreuzberg cache directory
+#' @field total_files Total number of files currently in the cache directory.
+#' @field total_size_mb Combined size of all cache files in megabytes.
+#' @field available_space_mb Free disk space available on the cache volume, in megabytes.
+#' @field oldest_file_age_days Age of the oldest cache file in days (0.0 if the cache is empty).
+#' @field newest_file_age_days Age of the most recently written cache file in days (0.0 if the cache is empty).
 #' @export
 CacheStats <- new.env(parent = emptyenv())
 #' @export
@@ -794,7 +794,7 @@ LanguageDetectionConfig$from_json <- function(json) {
 `[[.LanguageDetectionConfig` <- `$.LanguageDetectionConfig`
 #' Configuration for styled HTML output
 #'
-#' When set on [`ExtractionConfig::html_output`] alongside
+#' When set on `html_output` alongside
 #' `output_format = OutputFormat::Html`, the pipeline builds a
 #' [`StyledHtmlRenderer`](crate::rendering::StyledHtmlRenderer) instead of
 #' the plain comrak-based renderer.
@@ -1441,11 +1441,11 @@ is_origin_allowed.ServerConfig <- function(x, ...) x$is_origin_allowed(...)
 max_request_body_mb.ServerConfig <- function(x, ...) x$max_request_body_mb(...)
 #' @export
 max_multipart_field_mb.ServerConfig <- function(x, ...) x$max_multipart_field_mb(...)
-#' StructuredDataResult
-#' @field content content
-#' @field format format
-#' @field metadata metadata
-#' @field text_fields text_fields
+#' Result of parsing a structured data file (JSON, JSONL, YAML, or TOML)
+#' @field content The extracted text content, formatted for readability.
+#' @field format The source format identifier (e.g. `"json"`, `"yaml"`, `"toml"`).
+#' @field metadata Key-value metadata extracted from recognized text fields.
+#' @field text_fields JSON paths of fields that were classified as text-bearing.
 #' @export
 StructuredDataResult <- new.env(parent = emptyenv())
 #' @export
@@ -1615,18 +1615,18 @@ SecurityLimits$from_json <- function(json) {
 }
 #' @export
 `[[.SecurityLimits` <- `$.SecurityLimits`
-#' TokenReductionConfig
-#' @field level level
-#' @field language_hint language_hint
-#' @field preserve_markdown preserve_markdown
-#' @field preserve_code preserve_code
-#' @field semantic_threshold semantic_threshold
-#' @field enable_parallel enable_parallel
-#' @field use_simd use_simd
-#' @field custom_stopwords custom_stopwords
-#' @field preserve_patterns preserve_patterns
-#' @field target_reduction target_reduction
-#' @field enable_semantic_clustering enable_semantic_clustering
+#' Configuration for the token-reduction pipeline
+#' @field level Reduction intensity level.
+#' @field language_hint ISO 639-1 language code hint for stopword selection (e.g. `"en"`, `"de"`).
+#' @field preserve_markdown Preserve Markdown formatting tokens during reduction.
+#' @field preserve_code Preserve code block contents unchanged.
+#' @field semantic_threshold Cosine similarity threshold below which sentences are considered dissimilar.
+#' @field enable_parallel Use Rayon parallel iterators for multi-core processing.
+#' @field use_simd Use SIMD-optimized text scanning where available.
+#' @field custom_stopwords Per-language custom stopword lists (`language_code → stopword_list`).
+#' @field preserve_patterns Regex patterns whose matched text is always preserved unchanged.
+#' @field target_reduction Target fraction of text to retain (0.0–1.0); `None` = no fixed target.
+#' @field enable_semantic_clustering Group semantically similar sentences and emit only one per cluster.
 #' @export
 TokenReductionConfig <- new.env(parent = emptyenv())
 TokenReductionConfig$default <- function() .Call("wrap__TokenReductionConfig__default", PACKAGE = "kreuzberg")
@@ -2411,8 +2411,8 @@ StructuredData <- new.env(parent = emptyenv())
 #' @field psm Tesseract Page Segmentation Mode (PSM)
 #' @field output_format Output format (e.g., "text", "hocr")
 #' @field table_count Number of tables detected
-#' @field table_rows table_rows
-#' @field table_cols table_cols
+#' @field table_rows Number of rows in the detected table (if a single table was found).
+#' @field table_cols Number of columns in the detected table (if a single table was found).
 #' @export
 OcrMetadata <- new.env(parent = emptyenv())
 OcrMetadata$from_json <- function(json) {
@@ -2430,8 +2430,8 @@ OcrMetadata$from_json <- function(json) {
 #' @export
 `[[.OcrMetadata` <- `$.OcrMetadata`
 #' Error metadata (for batch operations)
-#' @field error_type error_type
-#' @field message message
+#' @field error_type Machine-readable error type identifier (e.g. "UnsupportedFormat").
+#' @field message Human-readable error description.
 #' @export
 ErrorMetadata <- new.env(parent = emptyenv())
 #' @export
@@ -2492,11 +2492,11 @@ DocxMetadata$from_json <- function(json) {
 #' @export
 `[[.DocxMetadata` <- `$.DocxMetadata`
 #' CSV/TSV file metadata
-#' @field row_count row_count
-#' @field column_count column_count
-#' @field delimiter delimiter
-#' @field has_header has_header
-#' @field column_types column_types
+#' @field row_count Total number of data rows (excluding the header row if present).
+#' @field column_count Number of columns detected.
+#' @field delimiter Field delimiter character (e.g. `","` or `"\t"`).
+#' @field has_header Whether the first row was treated as a header.
+#' @field column_types Inferred data type for each column (e.g. `"string"`, `"integer"`, `"float"`).
 #' @export
 CsvMetadata <- new.env(parent = emptyenv())
 CsvMetadata$from_json <- function(json) {
@@ -2515,10 +2515,10 @@ CsvMetadata$from_json <- function(json) {
 `[[.CsvMetadata` <- `$.CsvMetadata`
 #' BibTeX bibliography metadata
 #' @field entry_count Number of entries in the bibliography.
-#' @field citation_keys citation_keys
-#' @field authors authors
-#' @field year_range year_range
-#' @field entry_types entry_types
+#' @field citation_keys BibTeX citation keys (e.g. `"knuth1984"`) for all entries.
+#' @field authors Author names collected across all bibliography entries.
+#' @field year_range Earliest and latest publication years found in the bibliography.
+#' @field entry_types Count of entries grouped by BibTeX entry type (e.g. `"article"` → 5).
 #' @export
 BibtexMetadata <- new.env(parent = emptyenv())
 BibtexMetadata$from_json <- function(json) {
@@ -2536,12 +2536,12 @@ BibtexMetadata$from_json <- function(json) {
 #' @export
 `[[.BibtexMetadata` <- `$.BibtexMetadata`
 #' Citation file metadata (RIS, PubMed, EndNote)
-#' @field citation_count citation_count
-#' @field format format
-#' @field authors authors
-#' @field year_range year_range
-#' @field dois dois
-#' @field keywords keywords
+#' @field citation_count Total number of citation records in the file.
+#' @field format Detected citation file format (e.g. `"ris"`, `"pubmed"`, `"endnote"`).
+#' @field authors Author names collected across all citation records.
+#' @field year_range Earliest and latest publication years found in the file.
+#' @field dois DOI identifiers found in the citation records.
+#' @field keywords Keywords collected from all citation records.
 #' @export
 CitationMetadata <- new.env(parent = emptyenv())
 CitationMetadata$from_json <- function(json) {
@@ -2559,9 +2559,9 @@ CitationMetadata$from_json <- function(json) {
 #' @export
 `[[.CitationMetadata` <- `$.CitationMetadata`
 #' Year range for bibliographic metadata
-#' @field min min
-#' @field max max
-#' @field years years
+#' @field min Earliest (minimum) year in the range.
+#' @field max Latest (maximum) year in the range.
+#' @field years All individual years present in the collection.
 #' @export
 YearRange <- new.env(parent = emptyenv())
 #' @export
@@ -2576,9 +2576,9 @@ YearRange <- new.env(parent = emptyenv())
 #' @export
 `[[.YearRange` <- `$.YearRange`
 #' FictionBook (FB2) metadata
-#' @field genres genres
-#' @field sequences sequences
-#' @field annotation annotation
+#' @field genres Genre tags as declared in the FB2 `<genre>` elements.
+#' @field sequences Book series (sequence) names, if any.
+#' @field annotation Short annotation / summary from the FB2 `<annotation>` element.
 #' @export
 FictionBookMetadata <- new.env(parent = emptyenv())
 FictionBookMetadata$from_json <- function(json) {
@@ -2596,8 +2596,8 @@ FictionBookMetadata$from_json <- function(json) {
 #' @export
 `[[.FictionBookMetadata` <- `$.FictionBookMetadata`
 #' DBASE field information
-#' @field name name
-#' @field field_type field_type
+#' @field name Field (column) name.
+#' @field field_type dBASE field type character (e.g. `"C"` for character, `"N"` for numeric).
 #' @export
 DbfFieldInfo <- new.env(parent = emptyenv())
 #' @export
@@ -2612,8 +2612,8 @@ DbfFieldInfo <- new.env(parent = emptyenv())
 #' @export
 `[[.DbfFieldInfo` <- `$.DbfFieldInfo`
 #' JATS contributor with role
-#' @field name name
-#' @field role role
+#' @field name Contributor display name.
+#' @field role Contributor role (e.g. `"author"`, `"editor"`).
 #' @export
 ContributorRole <- new.env(parent = emptyenv())
 #' @export
@@ -2628,12 +2628,12 @@ ContributorRole <- new.env(parent = emptyenv())
 #' @export
 `[[.ContributorRole` <- `$.ContributorRole`
 #' EPUB metadata (Dublin Core extensions)
-#' @field coverage coverage
-#' @field dc_format dc_format
-#' @field relation relation
-#' @field source source
-#' @field dc_type dc_type
-#' @field cover_image cover_image
+#' @field coverage Dublin Core `coverage` field (geographic or temporal scope).
+#' @field dc_format Dublin Core `format` field (media type of the resource).
+#' @field relation Dublin Core `relation` field (related resource identifier).
+#' @field source Dublin Core `source` field (origin resource identifier).
+#' @field dc_type Dublin Core `type` field (nature or genre of the resource).
+#' @field cover_image Path or identifier of the cover image within the EPUB container.
 #' @export
 EpubMetadata <- new.env(parent = emptyenv())
 EpubMetadata$from_json <- function(json) {
@@ -2651,7 +2651,7 @@ EpubMetadata$from_json <- function(json) {
 #' @export
 `[[.EpubMetadata` <- `$.EpubMetadata`
 #' Outlook PST archive metadata
-#' @field message_count message_count
+#' @field message_count Total number of email messages found in the PST archive.
 #' @export
 PstMetadata <- new.env(parent = emptyenv())
 PstMetadata$from_json <- function(json) {
@@ -2891,10 +2891,10 @@ QrCode <- new.env(parent = emptyenv())
 #' @export
 `[[.QrCode` <- `$.QrCode`
 #' Pixel-space bounding box of a QR code inside its source image
-#' @field x x
-#' @field y y
-#' @field width width
-#' @field height height
+#' @field x Horizontal pixel offset of the bounding box top-left corner.
+#' @field y Vertical pixel offset of the bounding box top-left corner.
+#' @field width Width of the bounding box in pixels.
+#' @field height Height of the bounding box in pixels.
 #' @export
 QrBoundingBox <- new.env(parent = emptyenv())
 #' @export
@@ -3135,14 +3135,14 @@ EmbeddedDiff <- new.env(parent = emptyenv())
 #'
 #' All string fields are owned `String` for FFI compatibility — instances
 #' are safe to clone and pass across language boundaries.
-#' @field name name
-#' @field chunk_size chunk_size
-#' @field overlap overlap
+#' @field name Short identifier for this preset (e.g. `"balanced"`, `"fast"`, `"quality"`).
+#' @field chunk_size Target chunk size in characters.
+#' @field overlap Overlap between consecutive chunks in characters.
 #' @field model_repo HuggingFace repository name for the model.
 #' @field pooling Pooling strategy: "cls" or "mean".
 #' @field model_file Path to the ONNX model file within the repo.
-#' @field dimensions dimensions
-#' @field description description
+#' @field dimensions Embedding vector dimension produced by this model.
+#' @field description Human-readable description of the preset's intended use case.
 #' @export
 EmbeddingPreset <- new.env(parent = emptyenv())
 #' @export
@@ -3338,10 +3338,10 @@ OrientationResult <- new.env(parent = emptyenv())
 #' @export
 `[[.OrientationResult` <- `$.OrientationResult`
 #' Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-right
-#' @field x1 x1
-#' @field y1 y1
-#' @field x2 x2
-#' @field y2 y2
+#' @field x1 Left edge (x-coordinate of the top-left corner).
+#' @field y1 Top edge (y-coordinate of the top-left corner).
+#' @field x2 Right edge (x-coordinate of the bottom-right corner).
+#' @field y2 Bottom edge (y-coordinate of the bottom-right corner).
 #' @export
 BBox <- new.env(parent = emptyenv())
 #' @export
@@ -3356,9 +3356,9 @@ BBox <- new.env(parent = emptyenv())
 #' @export
 `[[.BBox` <- `$.BBox`
 #' A single layout detection result
-#' @field class_name class_name
-#' @field confidence confidence
-#' @field bbox bbox
+#' @field class_name Detected layout class (e.g. `Table`, `Text`, `Title`).
+#' @field confidence Detection confidence score in `[0.0, 1.0]`.
+#' @field bbox Bounding box in image pixel coordinates.
 #' @export
 LayoutDetection <- new.env(parent = emptyenv())
 #' @export
@@ -3478,17 +3478,17 @@ VlmFallbackPolicy <- new.env(parent = emptyenv())
 #'
 #' The `Custom(String)` variant lets caller-supplied categories (e.g. LLM
 #' schemas) flow through without losing fidelity to the consumer.
-#' @field Person Person
-#' @field Organization Organization
-#' @field Location Location
-#' @field Date Date
-#' @field Time Time
-#' @field Money Money
-#' @field Percent Percent
-#' @field Email Email
-#' @field Phone Phone
-#' @field Url Url
-#' @field Custom Custom
+#' @field Person A person's name.
+#' @field Organization A company, institution, or organisation name.
+#' @field Location A geographic location (city, country, address).
+#' @field Date A calendar date.
+#' @field Time A time of day or duration.
+#' @field Money A monetary amount with optional currency.
+#' @field Percent A percentage value.
+#' @field Email An email address.
+#' @field Phone A phone number.
+#' @field Url A URL or URI.
+#' @field Custom A caller-supplied custom category label.
 #' @export
 EntityCategory <- new.env(parent = emptyenv())
 #' @export
@@ -3506,26 +3506,26 @@ EntityCategory <- new.env(parent = emptyenv())
 #'
 #' Only one format type can exist per extraction result. This provides
 #' type-safe, clean metadata without nested optionals.
-#' @field Pdf Pdf
-#' @field Docx Docx
-#' @field Excel Excel
-#' @field Email Email
-#' @field Pptx Pptx
-#' @field Archive Archive
-#' @field Image Image
-#' @field Xml Xml
-#' @field Text Text
-#' @field Html Html
-#' @field Ocr Ocr
-#' @field Csv Csv
-#' @field Bibtex Bibtex
-#' @field Citation Citation
-#' @field FictionBook FictionBook
-#' @field Dbf Dbf
-#' @field Jats Jats
-#' @field Epub Epub
-#' @field Pst Pst
-#' @field Audio Audio
+#' @field Pdf Metadata extracted from a PDF document.
+#' @field Docx Metadata extracted from a DOCX Word document.
+#' @field Excel Metadata extracted from an Excel spreadsheet.
+#' @field Email Metadata extracted from an email message (EML/MSG).
+#' @field Pptx Metadata extracted from a PowerPoint presentation.
+#' @field Archive Metadata extracted from an archive (ZIP, TAR, 7Z, etc.).
+#' @field Image Metadata extracted from a raster or vector image.
+#' @field Xml Metadata extracted from an XML document.
+#' @field Text Metadata extracted from a plain-text file.
+#' @field Html Metadata extracted from an HTML document.
+#' @field Ocr Metadata produced by an OCR pipeline.
+#' @field Csv Metadata extracted from a CSV or TSV file.
+#' @field Bibtex Metadata extracted from a BibTeX bibliography file.
+#' @field Citation Metadata extracted from a citation file (RIS, PubMed, EndNote).
+#' @field FictionBook Metadata extracted from a FictionBook (FB2) e-book.
+#' @field Dbf Metadata extracted from a dBASE (DBF) database file.
+#' @field Jats Metadata extracted from a JATS (Journal Article Tag Suite) XML file.
+#' @field Epub Metadata extracted from an EPUB e-book.
+#' @field Pst Metadata extracted from an Outlook PST archive.
+#' @field Audio Metadata extracted from an audio or video file.
 #' @export
 FormatMetadata <- new.env(parent = emptyenv())
 #' @export
@@ -3540,15 +3540,15 @@ FormatMetadata <- new.env(parent = emptyenv())
 #' @export
 `[[.FormatMetadata` <- `$.FormatMetadata`
 #' PII categories the pattern engine recognises
-#' @field Email Email
-#' @field Phone Phone
-#' @field Ssn Ssn
-#' @field CreditCard CreditCard
-#' @field PostalCode PostalCode
-#' @field IpAddress IpAddress
-#' @field Iban Iban
-#' @field SwiftBic SwiftBic
-#' @field DateOfBirth DateOfBirth
+#' @field Email Email address (e.g. `user@example.com`).
+#' @field Phone Phone number in any common format.
+#' @field Ssn US Social Security Number.
+#' @field CreditCard Payment card number (Visa, Mastercard, Amex, etc.).
+#' @field PostalCode Postal / ZIP code.
+#' @field IpAddress IPv4 or IPv6 address.
+#' @field Iban International Bank Account Number.
+#' @field SwiftBic SWIFT / BIC bank identifier code.
+#' @field DateOfBirth Date of birth.
 #' @field Person Person name, surfaced by the optional NER backend.
 #' @field Organization Organization name, surfaced by the optional NER backend.
 #' @field Location Location, surfaced by the optional NER backend.

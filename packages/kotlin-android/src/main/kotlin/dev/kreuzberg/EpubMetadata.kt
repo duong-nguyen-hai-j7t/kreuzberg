@@ -25,10 +25,16 @@ package dev.kreuzberg
 
 /** EPUB metadata (Dublin Core extensions). */
 data class EpubMetadata(
+    /** Dublin Core `coverage` field (geographic or temporal scope). */
     val coverage: String? = null,
+    /** Dublin Core `format` field (media type of the resource). */
     val dcFormat: String? = null,
+    /** Dublin Core `relation` field (related resource identifier). */
     val relation: String? = null,
+    /** Dublin Core `source` field (origin resource identifier). */
     val source: String? = null,
+    /** Dublin Core `type` field (nature or genre of the resource). */
     val dcType: String? = null,
+    /** Path or identifier of the cover image within the EPUB container. */
     val coverImage: String? = null,
 )

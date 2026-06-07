@@ -24,4 +24,9 @@
 package dev.kreuzberg
 
 /** Error metadata (for batch operations). */
-data class ErrorMetadata(val errorType: String, val message: String)
+data class ErrorMetadata(
+    /** Machine-readable error type identifier (e.g. "UnsupportedFormat"). */
+    val errorType: String,
+    /** Human-readable error description. */
+    val message: String,
+)

@@ -1,4 +1,4 @@
-# QR-Code Detection <span class="version-badge">v5.0.0-rc.3</span>
+# QR-Code Detection
 
 Decode QR codes embedded in extracted images. Detection runs over every `ExtractedImage` and populates `ExtractedImage.qr_codes` with the decoded payloads.
 

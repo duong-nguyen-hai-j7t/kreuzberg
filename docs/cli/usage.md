@@ -38,9 +38,9 @@ Command-line access to all Kreuzberg extraction features.
 
     - All features enabled including embeddings (ONNX Runtime included)
 
-## Global Flags <span class="version-badge">v4.5.2</span>
+## Global Flags
 
-### Log Level <span class="version-badge">v4.5.2</span>
+### Log Level
 
 `--log-level` controls log verbosity and overrides `RUST_LOG`.
 
@@ -91,7 +91,7 @@ kreuzberg batch documents/*.pdf
 kreuzberg batch documents/**/*.pdf
 ```
 
-### Extract Structured Data <span class="version-badge">v4.8.0</span>
+### Extract Structured Data
 
 `extract-structured` pulls typed JSON out of a document via an LLM, using a JSON schema as constraint.
 
@@ -410,7 +410,7 @@ kreuzberg cache clear
 kreuzberg cache stats
 ```
 
-## Extraction Override Flags <span class="version-badge">v4.5.2</span>
+## Extraction Override Flags
 
 `extract` and `batch` accept the flags below; they take precedence over config-file settings.
 
@@ -829,7 +829,7 @@ The MCP server provides tools for AI agents:
 
 See [API Server Guide](../guides/api-server.md) for MCP integration details.
 
-## Embeddings <span class="version-badge">v4.5.2</span>
+## Embeddings
 
 Generate vector embeddings using pre-trained models. Input via `--text` or stdin.
 
@@ -854,7 +854,7 @@ Available presets: `fast`, `balanced` (default), `quality`, `multilingual`.
 
 !!! Info "Feature Availability" The `embed` command requires the `embeddings` feature. It is available in Docker images but not in Homebrew installations.
 
-## Chunking Command <span class="version-badge">v4.5.2</span>
+## Chunking Command
 
 Split text with configurable size and overlap. Input via `--text` or stdin.
 
@@ -881,7 +881,7 @@ kreuzberg chunk --text "long text..." --format text
 kreuzberg chunk --text "long text..." --config kreuzberg.toml
 ```
 
-## Shell Completions <span class="version-badge">v4.5.2</span>
+## Shell Completions
 
 Tab-completion scripts for bash, zsh, and fish:
 
@@ -902,9 +902,9 @@ eval "$(kreuzberg completions bash)"
 eval "$(kreuzberg completions zsh)"
 ```
 
-## API Utilities <span class="version-badge">v4.5.2</span>
+## API Utilities
 
-### Dump OpenAPI Schema <span class="version-badge">v4.5.2</span>
+### Dump OpenAPI Schema
 
 Output the OpenAPI 3.1 specification — useful for code generation and API client tooling.
 
@@ -918,7 +918,7 @@ kreuzberg api schema > openapi.json
 
 !!! Info "Feature Availability" The `api` subcommand requires the `api` feature.
 
-## List Supported Formats <span class="version-badge">v4.5.2</span>
+## List Supported Formats
 
 List supported formats with extensions and MIME types:
 
@@ -958,7 +958,7 @@ kreuzberg cache clear --cache-dir /path/to/cache
 kreuzberg cache clear --format json
 ```
 
-### Warm Model Cache <span class="version-badge">v4.5.0</span>
+### Warm Model Cache
 
 Pre-download ML models (PaddleOCR, layout detection) for offline use — useful for containerized deployments.
 
@@ -987,7 +987,7 @@ kreuzberg cache warm --embedding-model balanced
 kreuzberg cache warm --format json
 ```
 
-### Model Manifest <span class="version-badge">v4.5.0</span>
+### Model Manifest
 
 Manifest of expected model files with SHA256 checksums and sizes — for cache integrity checks or scripted pre-population.
 

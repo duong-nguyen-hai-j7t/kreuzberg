@@ -33,22 +33,39 @@ package dev.kreuzberg
  * Wire format is snake_case in all serializers (JSON, TOML, YAML).
  */
 enum class LayoutClass {
+    /** Figure or table caption text. */
     @com.fasterxml.jackson.annotation.JsonProperty("caption") CAPTION,
+    /** Footnote or endnote text. */
     @com.fasterxml.jackson.annotation.JsonProperty("footnote") FOOTNOTE,
+    /** Mathematical formula or equation. */
     @com.fasterxml.jackson.annotation.JsonProperty("formula") FORMULA,
+    /** A single item in a bulleted or numbered list. */
     @com.fasterxml.jackson.annotation.JsonProperty("list_item") LIST_ITEM,
+    /** Running footer at the bottom of a page. */
     @com.fasterxml.jackson.annotation.JsonProperty("page_footer") PAGE_FOOTER,
+    /** Running header at the top of a page. */
     @com.fasterxml.jackson.annotation.JsonProperty("page_header") PAGE_HEADER,
+    /** Image, chart, or other graphical element. */
     @com.fasterxml.jackson.annotation.JsonProperty("picture") PICTURE,
+    /** Section heading. */
     @com.fasterxml.jackson.annotation.JsonProperty("section_header") SECTION_HEADER,
+    /** Data table. */
     @com.fasterxml.jackson.annotation.JsonProperty("table") TABLE,
+    /** Body text paragraph. */
     @com.fasterxml.jackson.annotation.JsonProperty("text") TEXT,
+    /** Document or chapter title. */
     @com.fasterxml.jackson.annotation.JsonProperty("title") TITLE,
+    /** Table of contents or index. */
     @com.fasterxml.jackson.annotation.JsonProperty("document_index") DOCUMENT_INDEX,
+    /** Source code block. */
     @com.fasterxml.jackson.annotation.JsonProperty("code") CODE,
+    /** Checkbox in selected state. */
     @com.fasterxml.jackson.annotation.JsonProperty("checkbox_selected") CHECKBOX_SELECTED,
+    /** Checkbox in unselected state. */
     @com.fasterxml.jackson.annotation.JsonProperty("checkbox_unselected") CHECKBOX_UNSELECTED,
+    /** Form field or form element. */
     @com.fasterxml.jackson.annotation.JsonProperty("form") FORM,
+    /** Key-value pair region (e.g. label + value in a form). */
     @com.fasterxml.jackson.annotation.JsonProperty("key_value_region") KEY_VALUE_REGION;
 
     @com.fasterxml.jackson.annotation.JsonValue

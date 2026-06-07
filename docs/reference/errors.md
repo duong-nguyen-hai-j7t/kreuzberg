@@ -30,22 +30,22 @@ and provides context for debugging.
 
 | Variant | Message | Description |
 |---------|---------|-------------|
-| `Io` | IO error: {0} | Io errors |
-| `Parsing` | Parsing error: {message} | Parsing errors |
-| `Ocr` | OCR error: {message} | Ocr errors |
-| `Validation` | Validation error: {message} | Validation errors |
-| `Cache` | Cache error: {message} | Cache errors |
-| `ImageProcessing` | Image processing error: {message} | Image processing errors |
-| `Serialization` | Serialization error: {message} | Serialization errors |
-| `MissingDependency` | Missing dependency: {0} | Missing dependency errors |
-| `Plugin` | Plugin error in '{plugin_name}': {message} | Plugin errors |
-| `LockPoisoned` | Lock poisoned: {0} | Lock poisoned errors |
-| `UnsupportedFormat` | Unsupported format: {0} | Unsupported format errors |
-| `Embedding` | Embedding error: {message} | Embedding errors |
-| `Transcription` | Transcription error: {message} | Transcription errors |
-| `Timeout` | Extraction timed out after {elapsed_ms}ms (limit: {limit_ms}ms) | Timeout errors |
-| `Cancelled` | Extraction cancelled | Cancelled errors |
-| `Security` | Security violation: {message} | Security errors |
-| `Other` | {0} | Other errors |
+| `Io` | IO error: {0} | A file system or I/O operation failed. These errors always bubble up unchanged. |
+| `Parsing` | Parsing error: {message} | Document parsing failed (e.g. corrupt file, unsupported format feature). |
+| `Ocr` | OCR error: {message} | An OCR engine returned an error or produced unusable output. |
+| `Validation` | Validation error: {message} | Invalid configuration or input parameters were supplied. |
+| `Cache` | Cache error: {message} | A cache read or write operation failed. |
+| `ImageProcessing` | Image processing error: {message} | An image manipulation operation (resize, decode, DPI conversion) failed. |
+| `Serialization` | Serialization error: {message} | JSON or MessagePack serialization/deserialization failed. |
+| `MissingDependency` | Missing dependency: {0} | A required optional system dependency (e.g. `tesseract`) was not found. |
+| `Plugin` | Plugin error in '{plugin_name}': {message} | A registered plugin returned an error during extraction. |
+| `LockPoisoned` | Lock poisoned: {0} | An internal `Mutex` or `RwLock` was found in a poisoned state. |
+| `UnsupportedFormat` | Unsupported format: {0} | The document's MIME type is not supported by any registered extractor. |
+| `Embedding` | Embedding error: {message} | The embedding model or embedding pipeline returned an error. |
+| `Transcription` | Transcription error: {message} | Audio/video transcription failed. |
+| `Timeout` | Extraction timed out after {elapsed_ms}ms (limit: {limit_ms}ms) | The extraction operation exceeded the configured time limit. |
+| `Cancelled` | Extraction cancelled | The extraction was cancelled via a `CancellationToken`. |
+| `Security` | Security violation: {message} | A security policy was violated (e.g. zip bomb, oversized archive). |
+| `Other` | {0} | A catch-all for uncommon errors that do not fit another variant. |
 
 ---

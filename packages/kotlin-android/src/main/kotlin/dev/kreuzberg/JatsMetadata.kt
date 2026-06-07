@@ -25,8 +25,12 @@ package dev.kreuzberg
 
 /** JATS (Journal Article Tag Suite) metadata. */
 data class JatsMetadata(
+    /** Copyright statement from the article's `<permissions>` element. */
     val copyright: String? = null,
+    /** Open-access license URI from the article's `<license>` element. */
     val license: String? = null,
+    /** Publication history dates keyed by event type (e.g. `"received"`, `"accepted"`). */
     val historyDates: Map<String, String> = emptyMap(),
+    /** Authors and contributors with their stated roles. */
     val contributorRoles: List<ContributorRole> = emptyList(),
 )

@@ -301,10 +301,10 @@ data class ExtractionConfig(
     /**
      * Cancellation token for this extraction (None = no external cancellation).
      *
-     * Pass a `CancellationToken` clone here and call `CancellationToken.cancel`
+     * Pass a `CancellationToken` clone here and call its `cancel()`
      * from another thread / task to abort the extraction in progress. The extractor
      * checks the token at safe checkpoints (before lock acquisition, between pages,
-     * between batch items) and returns `KreuzbergError.Cancelled` when set.
+     * between batch items) and returns `Cancelled` when set.
      *
      * The field is excluded from serialization because `CancellationToken` is a
      * runtime handle, not a configuration value.

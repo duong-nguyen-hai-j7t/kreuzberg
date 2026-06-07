@@ -1,4 +1,4 @@
-# Configuration Guide <span class="version-badge">v4.0.0</span>
+# Configuration Guide
 
 All extraction behavior is controlled through `ExtractionConfig`. Pass it directly in code or load it from a TOML/YAML/JSON file. Every field is optional. For per-field documentation, see the [Configuration Reference](../reference/configuration.md).
 

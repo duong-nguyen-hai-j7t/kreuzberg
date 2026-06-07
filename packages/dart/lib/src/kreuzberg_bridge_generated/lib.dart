@@ -337,6 +337,7 @@ Future<void> redact({
   required RedactionConfig config,
 }) => RustLib.instance.api.crateRedact(result: result, config: config);
 
+/// Find all US Social Security Number spans in `text` (format: NNN-NN-NNNN).
 Future<List<PatternMatch>> findAll({required String text}) =>
     RustLib.instance.api.crateFindAll(text: text);
 
@@ -1409,15 +1410,33 @@ class AccelerationConfig {
 sealed class AnnotationKind with _$AnnotationKind {
   const AnnotationKind._();
 
+  /// Bold (strong) text formatting.
   const factory AnnotationKind.bold() = AnnotationKind_Bold;
+
+  /// Italic (emphasis) text formatting.
   const factory AnnotationKind.italic() = AnnotationKind_Italic;
+
+  /// Underlined text.
   const factory AnnotationKind.underline() = AnnotationKind_Underline;
+
+  /// Strikethrough text.
   const factory AnnotationKind.strikethrough() = AnnotationKind_Strikethrough;
+
+  /// Inline code span.
   const factory AnnotationKind.code() = AnnotationKind_Code;
+
+  /// Subscript text.
   const factory AnnotationKind.subscript() = AnnotationKind_Subscript;
+
+  /// Superscript text.
   const factory AnnotationKind.superscript() = AnnotationKind_Superscript;
+
+  /// Hyperlink annotation.
   const factory AnnotationKind.link({
+    /// Hyperlink target URL.
     required String url,
+
+    /// Optional link title attribute.
     required String title,
   }) = AnnotationKind_Link;
 
@@ -1425,16 +1444,23 @@ sealed class AnnotationKind with _$AnnotationKind {
   const factory AnnotationKind.highlight() = AnnotationKind_Highlight;
 
   /// Text color (CSS-compatible value, e.g. "#ff0000", "red").
-  const factory AnnotationKind.color({required String value}) =
-      AnnotationKind_Color;
+  const factory AnnotationKind.color({
+    /// CSS-compatible color value (e.g. `"#ff0000"`, `"red"`).
+    required String value,
+  }) = AnnotationKind_Color;
 
   /// Font size with units (e.g. "12pt", "1.2em", "16px").
-  const factory AnnotationKind.fontSize({required String value}) =
-      AnnotationKind_FontSize;
+  const factory AnnotationKind.fontSize({
+    /// Font size including unit (e.g. `"12pt"`, `"1.2em"`, `"16px"`).
+    required String value,
+  }) = AnnotationKind_FontSize;
 
   /// Extensible annotation for format-specific styling.
   const factory AnnotationKind.custom({
+    /// Name of the custom annotation kind.
     required String name,
+
+    /// Optional value or parameter for the annotation.
     required String value,
   }) = AnnotationKind_Custom;
 }
@@ -1575,9 +1601,16 @@ class AudioMetadata {
 
 /// Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-right.
 class BBox {
+  /// Left edge (x-coordinate of the top-left corner).
   final double x1;
+
+  /// Top edge (y-coordinate of the top-left corner).
   final double y1;
+
+  /// Right edge (x-coordinate of the bottom-right corner).
   final double x2;
+
+  /// Bottom edge (y-coordinate of the bottom-right corner).
   final double y2;
 
   const BBox({
@@ -1663,9 +1696,17 @@ class BatchFileItem {
 class BibtexMetadata {
   /// Number of entries in the bibliography.
   final PlatformInt64 entryCount;
+
+  /// BibTeX citation keys (e.g. `"knuth1984"`) for all entries.
   final List<String> citationKeys;
+
+  /// Author names collected across all bibliography entries.
   final List<String> authors;
+
+  /// Earliest and latest publication years found in the bibliography.
   final YearRange? yearRange;
+
+  /// Count of entries grouped by BibTeX entry type (e.g. `"article"` → 5).
   final Map<String, PlatformInt64>? entryTypes;
 
   const BibtexMetadata({
@@ -1698,21 +1739,52 @@ class BibtexMetadata {
 
 /// Types of block-level elements in Djot.
 enum BlockType {
+  /// Standard prose paragraph.
   paragraph,
+
+  /// Section heading (level stored in `FormattedBlock::level`).
   heading,
+
+  /// Block quotation container.
   blockquote,
+
+  /// Fenced or indented code block.
   codeBlock,
+
+  /// Individual item within a list.
   listItem,
+
+  /// Numbered (ordered) list container.
   orderedList,
+
+  /// Unnumbered (bullet) list container.
   bulletList,
+
+  /// Task / checkbox list container.
   taskList,
+
+  /// Definition list container.
   definitionList,
+
+  /// Term part of a definition list entry.
   definitionTerm,
+
+  /// Description / definition part of a definition list entry.
   definitionDescription,
+
+  /// Generic `div` container with optional attributes.
   div,
+
+  /// Logical section container, often associated with a heading.
   section,
+
+  /// Horizontal rule / thematic break.
   thematicBreak,
+
+  /// Raw content block in a specified format (e.g. HTML, LaTeX).
   rawBlock,
+
+  /// Display-mode mathematical expression.
   mathDisplay,
 }
 
@@ -1751,11 +1823,21 @@ class BoundingBox {
           y1 == other.y1;
 }
 
+/// Aggregate statistics for a kreuzberg cache directory.
 class CacheStats {
+  /// Total number of files currently in the cache directory.
   final PlatformInt64 totalFiles;
+
+  /// Combined size of all cache files in megabytes.
   final double totalSizeMb;
+
+  /// Free disk space available on the cache volume, in megabytes.
   final double availableSpaceMb;
+
+  /// Age of the oldest cache file in days (0.0 if the cache is empty).
   final double oldestFileAgeDays;
+
+  /// Age of the most recently written cache file in days (0.0 if the cache is empty).
   final double newestFileAgeDays;
 
   const CacheStats({
@@ -2067,7 +2149,19 @@ enum ChunkType {
 ///   blank-line paragraphs) and merges groups into chunks capped at
 ///   `max_characters` (default 1000). `topic_threshold` has no effect in the
 ///   fallback path. For best results, pair with an embedding model.
-enum ChunkerType { text, markdown, yaml, semantic }
+enum ChunkerType {
+  /// Generic whitespace- and punctuation-aware text splitter (default).
+  text,
+
+  /// Markdown-aware splitter that preserves heading and code-block boundaries.
+  markdown,
+
+  /// YAML-aware splitter that creates one chunk per top-level key.
+  yaml,
+
+  /// Topic-aware chunker that splits at embedding-based topic shifts.
+  semantic,
+}
 
 /// Chunking configuration.
 ///
@@ -2177,11 +2271,22 @@ class ChunkingConfig {
 
 /// Citation file metadata (RIS, PubMed, EndNote).
 class CitationMetadata {
+  /// Total number of citation records in the file.
   final PlatformInt64 citationCount;
+
+  /// Detected citation file format (e.g. `"ris"`, `"pubmed"`, `"endnote"`).
   final String? format;
+
+  /// Author names collected across all citation records.
   final List<String> authors;
+
+  /// Earliest and latest publication years found in the file.
   final YearRange? yearRange;
+
+  /// DOI identifiers found in the citation records.
   final List<String> dois;
+
+  /// Keywords collected from all citation records.
   final List<String> keywords;
 
   const CitationMetadata({
@@ -2353,7 +2458,10 @@ enum ContentLayer {
 
 /// JATS contributor with role.
 class ContributorRole {
+  /// Contributor display name.
   final String name;
+
+  /// Contributor role (e.g. `"author"`, `"editor"`).
   final String? role;
 
   const ContributorRole({required this.name, this.role});
@@ -2480,10 +2588,19 @@ class CoreProperties {
 
 /// CSV/TSV file metadata.
 class CsvMetadata {
+  /// Total number of data rows (excluding the header row if present).
   final PlatformInt64 rowCount;
+
+  /// Number of columns detected.
   final PlatformInt64 columnCount;
+
+  /// Field delimiter character (e.g. `","` or `"\t"`).
   final String? delimiter;
+
+  /// Whether the first row was treated as a header.
   final bool hasHeader;
+
+  /// Inferred data type for each column (e.g. `"string"`, `"integer"`, `"float"`).
   final List<String>? columnTypes;
 
   const CsvMetadata({
@@ -2516,7 +2633,10 @@ class CsvMetadata {
 
 /// dBASE field information.
 class DbfFieldInfo {
+  /// Field (column) name.
   final String name;
+
+  /// dBASE field type character (e.g. `"C"` for character, `"N"` for numeric).
   final String fieldType;
 
   const DbfFieldInfo({required this.name, required this.fieldType});
@@ -2535,8 +2655,13 @@ class DbfFieldInfo {
 
 /// dBASE (DBF) file metadata.
 class DbfMetadata {
+  /// Total number of data records in the DBF file.
   final PlatformInt64 recordCount;
+
+  /// Number of field (column) definitions.
   final PlatformInt64 fieldCount;
+
+  /// Descriptor for each field in the table schema.
   final List<DbfFieldInfo> fields;
 
   const DbfMetadata({
@@ -2583,8 +2708,13 @@ class DetectResponse {
 
 /// Page-level detection result containing all detections and page metadata.
 class DetectionResult {
+  /// Page width in pixels (as seen by the model).
   final PlatformInt64 pageWidth;
+
+  /// Page height in pixels (as seen by the model).
   final PlatformInt64 pageHeight;
+
+  /// All layout detections on this page after postprocessing.
   final List<LayoutDetection> detections;
 
   const DetectionResult({
@@ -3028,7 +3158,7 @@ class DocumentStructure {
   /// Each value is the snake_case `node_type` tag of the corresponding
   /// [`NodeContent`] variant (e.g. `"paragraph"`, `"heading"`, `"table"`, …).
   ///
-  /// Computed from [`nodes`] via [`DocumentStructure::finalize_node_types`].
+  /// Computed from `nodes` via [`DocumentStructure::finalize_node_types`].
   /// Empty until that method is called (internal construction paths call it
   /// at the end of derivation).
   final List<String> nodeTypes;
@@ -3778,12 +3908,17 @@ sealed class EmbeddingModelType with _$EmbeddingModelType {
   const EmbeddingModelType._();
 
   /// Use a preset model configuration (recommended)
-  const factory EmbeddingModelType.preset({required String name}) =
-      EmbeddingModelType_Preset;
+  const factory EmbeddingModelType.preset({
+    /// Preset name (e.g. "balanced", "multilingual", "large").
+    required String name,
+  }) = EmbeddingModelType_Preset;
 
   /// Use a custom ONNX model from HuggingFace
   const factory EmbeddingModelType.custom({
+    /// HuggingFace model repository ID (e.g. "BAAI/bge-small-en-v1.5").
     required String modelId,
+
+    /// Number of dimensions in the model's output embedding vectors.
     required PlatformInt64 dimensions,
   }) = EmbeddingModelType_Custom;
 
@@ -3791,8 +3926,10 @@ sealed class EmbeddingModelType with _$EmbeddingModelType {
   ///
   /// Uses the model specified in the nested `LlmConfig` (e.g.,
   /// `"openai/text-embedding-3-small"`).
-  const factory EmbeddingModelType.llm({required LlmConfig llm}) =
-      EmbeddingModelType_Llm;
+  const factory EmbeddingModelType.llm({
+    /// LLM provider configuration specifying the model and API credentials.
+    required LlmConfig llm,
+  }) = EmbeddingModelType_Llm;
 
   /// In-process embedding backend registered via the plugin system.
   ///
@@ -3813,8 +3950,10 @@ sealed class EmbeddingModelType with _$EmbeddingModelType {
   /// context window via `max_characters` directly.
   ///
   /// See `register_embedding_backend`.
-  const factory EmbeddingModelType.plugin({required String name}) =
-      EmbeddingModelType_Plugin;
+  const factory EmbeddingModelType.plugin({
+    /// Name the backend was registered under via `register_embedding_backend`.
+    required String name,
+  }) = EmbeddingModelType_Plugin;
 }
 
 /// Preset configurations for common RAG use cases.
@@ -3825,8 +3964,13 @@ sealed class EmbeddingModelType with _$EmbeddingModelType {
 /// All string fields are owned `String` for FFI compatibility — instances
 /// are safe to clone and pass across language boundaries.
 class EmbeddingPreset {
+  /// Short identifier for this preset (e.g. `"balanced"`, `"fast"`, `"quality"`).
   final String name;
+
+  /// Target chunk size in characters.
   final PlatformInt64 chunkSize;
+
+  /// Overlap between consecutive chunks in characters.
   final PlatformInt64 overlap;
 
   /// HuggingFace repository name for the model.
@@ -3837,7 +3981,11 @@ class EmbeddingPreset {
 
   /// Path to the ONNX model file within the repo.
   final String modelFile;
+
+  /// Embedding vector dimension produced by this model.
   final PlatformInt64 dimensions;
+
+  /// Human-readable description of the preset's intended use case.
   final String description;
 
   const EmbeddingPreset({
@@ -3927,27 +4075,59 @@ class Entity {
 sealed class EntityCategory with _$EntityCategory {
   const EntityCategory._();
 
+  /// A person's name.
   const factory EntityCategory.person() = EntityCategory_Person;
+
+  /// A company, institution, or organisation name.
   const factory EntityCategory.organization() = EntityCategory_Organization;
+
+  /// A geographic location (city, country, address).
   const factory EntityCategory.location() = EntityCategory_Location;
+
+  /// A calendar date.
   const factory EntityCategory.date() = EntityCategory_Date;
+
+  /// A time of day or duration.
   const factory EntityCategory.time() = EntityCategory_Time;
+
+  /// A monetary amount with optional currency.
   const factory EntityCategory.money() = EntityCategory_Money;
+
+  /// A percentage value.
   const factory EntityCategory.percent() = EntityCategory_Percent;
+
+  /// An email address.
   const factory EntityCategory.email() = EntityCategory_Email;
+
+  /// A phone number.
   const factory EntityCategory.phone() = EntityCategory_Phone;
+
+  /// A URL or URI.
   const factory EntityCategory.url() = EntityCategory_Url;
+
+  /// A caller-supplied custom category label.
   const factory EntityCategory.custom({required String field0}) =
       EntityCategory_Custom;
 }
 
 /// EPUB metadata (Dublin Core extensions).
 class EpubMetadata {
+  /// Dublin Core `coverage` field (geographic or temporal scope).
   final String? coverage;
+
+  /// Dublin Core `format` field (media type of the resource).
   final String? dcFormat;
+
+  /// Dublin Core `relation` field (related resource identifier).
   final String? relation;
+
+  /// Dublin Core `source` field (origin resource identifier).
   final String? source;
+
+  /// Dublin Core `type` field (nature or genre of the resource).
   final String? dcType;
+
+  /// Path or identifier of the cover image within the EPUB container.
   final String? coverImage;
 
   const EpubMetadata({
@@ -3983,7 +4163,10 @@ class EpubMetadata {
 
 /// Error metadata (for batch operations).
 class ErrorMetadata {
+  /// Machine-readable error type identifier (e.g. "UnsupportedFormat").
   final String errorType;
+
+  /// Human-readable error description.
   final String message;
 
   const ErrorMetadata({required this.errorType, required this.message});
@@ -4773,14 +4956,28 @@ class ExtractionDiff {
 }
 
 /// How the extracted text was produced.
-enum ExtractionMethod { native, ocr, mixed }
+enum ExtractionMethod {
+  /// Text extracted directly from the document's native format (no OCR).
+  native,
+
+  /// All text was obtained via OCR (e.g. scanned image-only PDF).
+  ocr,
+
+  /// Text came from a combination of native extraction and OCR.
+  mixed,
+}
 
 /// General extraction result used by the core extraction API.
 ///
 /// This is the main result type returned by all extraction functions.
 class ExtractionResult {
+  /// Plain-text representation of the extracted document content.
   final String content;
+
+  /// MIME type of the source document (e.g. `"application/pdf"`).
   final String mimeType;
+
+  /// Document-level metadata (author, title, dates, format-specific fields).
   final Metadata metadata;
 
   /// Extraction strategy used to produce the returned text.
@@ -4788,7 +4985,11 @@ class ExtractionResult {
   /// Populated when the extractor can reliably distinguish native text extraction,
   /// OCR-only extraction, or mixed native/OCR output.
   final ExtractionMethod? extractionMethod;
+
+  /// Tables extracted from the document, each with structured cell data.
   final List<Table> tables;
+
+  /// ISO 639-1 language codes detected in the document content.
   final List<String>? detectedLanguages;
 
   /// Text chunks when chunking is enabled.
@@ -5081,8 +5282,13 @@ class ExtractionResult {
 
 /// FictionBook (FB2) metadata.
 class FictionBookMetadata {
+  /// Genre tags as declared in the FB2 `<genre>` elements.
   final List<String> genres;
+
+  /// Book series (sequence) names, if any.
   final List<String> sequences;
+
+  /// Short annotation / summary from the FB2 `<annotation>` element.
   final String? annotation;
 
   const FictionBookMetadata({
@@ -5306,45 +5512,84 @@ class Footnote {
 sealed class FormatMetadata with _$FormatMetadata {
   const FormatMetadata._();
 
+  /// Metadata extracted from a PDF document.
   const factory FormatMetadata.pdf({required PdfMetadata field0}) =
       FormatMetadata_Pdf;
+
+  /// Metadata extracted from a DOCX Word document.
   const factory FormatMetadata.docx({required DocxMetadata field0}) =
       FormatMetadata_Docx;
+
+  /// Metadata extracted from an Excel spreadsheet.
   const factory FormatMetadata.excel({required ExcelMetadata field0}) =
       FormatMetadata_Excel;
+
+  /// Metadata extracted from an email message (EML/MSG).
   const factory FormatMetadata.email({required EmailMetadata field0}) =
       FormatMetadata_Email;
+
+  /// Metadata extracted from a PowerPoint presentation.
   const factory FormatMetadata.pptx({required PptxMetadata field0}) =
       FormatMetadata_Pptx;
+
+  /// Metadata extracted from an archive (ZIP, TAR, 7Z, etc.).
   const factory FormatMetadata.archive({required ArchiveMetadata field0}) =
       FormatMetadata_Archive;
+
+  /// Metadata extracted from a raster or vector image.
   const factory FormatMetadata.image({required ImageMetadata field0}) =
       FormatMetadata_Image;
+
+  /// Metadata extracted from an XML document.
   const factory FormatMetadata.xml({required XmlMetadata field0}) =
       FormatMetadata_Xml;
+
+  /// Metadata extracted from a plain-text file.
   const factory FormatMetadata.text({required TextMetadata field0}) =
       FormatMetadata_Text;
+
+  /// Metadata extracted from an HTML document.
   const factory FormatMetadata.html({required HtmlMetadata field0}) =
       FormatMetadata_Html;
+
+  /// Metadata produced by an OCR pipeline.
   const factory FormatMetadata.ocr({required OcrMetadata field0}) =
       FormatMetadata_Ocr;
+
+  /// Metadata extracted from a CSV or TSV file.
   const factory FormatMetadata.csv({required CsvMetadata field0}) =
       FormatMetadata_Csv;
+
+  /// Metadata extracted from a BibTeX bibliography file.
   const factory FormatMetadata.bibtex({required BibtexMetadata field0}) =
       FormatMetadata_Bibtex;
+
+  /// Metadata extracted from a citation file (RIS, PubMed, EndNote).
   const factory FormatMetadata.citation({required CitationMetadata field0}) =
       FormatMetadata_Citation;
+
+  /// Metadata extracted from a FictionBook (FB2) e-book.
   const factory FormatMetadata.fictionBook({
     required FictionBookMetadata field0,
   }) = FormatMetadata_FictionBook;
+
+  /// Metadata extracted from a dBASE (DBF) database file.
   const factory FormatMetadata.dbf({required DbfMetadata field0}) =
       FormatMetadata_Dbf;
+
+  /// Metadata extracted from a JATS (Journal Article Tag Suite) XML file.
   const factory FormatMetadata.jats({required JatsMetadata field0}) =
       FormatMetadata_Jats;
+
+  /// Metadata extracted from an EPUB e-book.
   const factory FormatMetadata.epub({required EpubMetadata field0}) =
       FormatMetadata_Epub;
+
+  /// Metadata extracted from an Outlook PST archive.
   const factory FormatMetadata.pst({required PstMetadata field0}) =
       FormatMetadata_Pst;
+
+  /// Metadata extracted from an audio or video file.
   const factory FormatMetadata.audio({required AudioMetadata field0}) =
       FormatMetadata_Audio;
 }
@@ -5752,7 +5997,7 @@ class HtmlMetadata {
 
 /// Configuration for styled HTML output.
 ///
-/// When set on [`ExtractionConfig::html_output`] alongside
+/// When set on `html_output` alongside
 /// `output_format = OutputFormat::Html`, the pipeline builds a
 /// [`StyledHtmlRenderer`](crate::rendering::StyledHtmlRenderer) instead of
 /// the plain comrak-based renderer.
@@ -6259,21 +6504,52 @@ class InlineElement {
 
 /// Types of inline elements in Djot.
 enum InlineType {
+  /// Plain text run.
   text,
+
+  /// Bold / strong emphasis.
   strong,
+
+  /// Italic / regular emphasis.
   emphasis,
+
+  /// Highlighted text (marker pen).
   highlight,
+
+  /// Subscript text.
   subscript,
+
+  /// Superscript text.
   superscript,
+
+  /// Inserted text (tracked change).
   insert,
+
+  /// Deleted text (tracked change).
   delete,
+
+  /// Inline code span.
   code,
+
+  /// Hyperlink with URL.
   link,
+
+  /// Inline image reference.
   image,
+
+  /// Generic inline span with optional attributes.
   span,
+
+  /// Inline mathematical expression.
   math,
+
+  /// Raw inline content in a specified format.
   rawInline,
+
+  /// Footnote reference marker.
   footnoteRef,
+
+  /// Named symbol or emoji shortcode.
   symbol,
 }
 
@@ -6297,9 +6573,16 @@ class InternalDocumentBridge {
 
 /// JATS (Journal Article Tag Suite) metadata.
 class JatsMetadata {
+  /// Copyright statement from the article's `<permissions>` element.
   final String? copyright;
+
+  /// Open-access license URI from the article's `<license>` element.
   final String? license;
+
+  /// Publication history dates keyed by event type (e.g. `"received"`, `"accepted"`).
   final Map<String, String> historyDates;
+
+  /// Authors and contributors with their stated roles.
   final List<ContributorRole> contributorRoles;
 
   const JatsMetadata({
@@ -6432,40 +6715,73 @@ class KeywordConfig {
 sealed class KreuzbergError with _$KreuzbergError {
   const KreuzbergError._();
 
+  /// A file system or I/O operation failed. These errors always bubble up unchanged.
   const factory KreuzbergError.io({required String field0}) = KreuzbergError_Io;
+
+  /// Document parsing failed (e.g. corrupt file, unsupported format feature).
   const factory KreuzbergError.parsing({required String message}) =
       KreuzbergError_Parsing;
+
+  /// An OCR engine returned an error or produced unusable output.
   const factory KreuzbergError.ocr({required String message}) =
       KreuzbergError_Ocr;
+
+  /// Invalid configuration or input parameters were supplied.
   const factory KreuzbergError.validation({required String message}) =
       KreuzbergError_Validation;
+
+  /// A cache read or write operation failed.
   const factory KreuzbergError.cache({required String message}) =
       KreuzbergError_Cache;
+
+  /// An image manipulation operation (resize, decode, DPI conversion) failed.
   const factory KreuzbergError.imageProcessing({required String message}) =
       KreuzbergError_ImageProcessing;
+
+  /// JSON or MessagePack serialization/deserialization failed.
   const factory KreuzbergError.serialization({required String message}) =
       KreuzbergError_Serialization;
+
+  /// A required optional system dependency (e.g. `tesseract`) was not found.
   const factory KreuzbergError.missingDependency({required String field0}) =
       KreuzbergError_MissingDependency;
+
+  /// A registered plugin returned an error during extraction.
   const factory KreuzbergError.plugin({
     required String message,
     required String pluginName,
   }) = KreuzbergError_Plugin;
+
+  /// An internal `Mutex` or `RwLock` was found in a poisoned state.
   const factory KreuzbergError.lockPoisoned({required String field0}) =
       KreuzbergError_LockPoisoned;
+
+  /// The document's MIME type is not supported by any registered extractor.
   const factory KreuzbergError.unsupportedFormat({required String field0}) =
       KreuzbergError_UnsupportedFormat;
+
+  /// The embedding model or embedding pipeline returned an error.
   const factory KreuzbergError.embedding({required String message}) =
       KreuzbergError_Embedding;
+
+  /// Audio/video transcription failed.
   const factory KreuzbergError.transcription({required String message}) =
       KreuzbergError_Transcription;
+
+  /// The extraction operation exceeded the configured time limit.
   const factory KreuzbergError.timeout({
     required PlatformInt64 elapsedMs,
     required PlatformInt64 limitMs,
   }) = KreuzbergError_Timeout;
+
+  /// The extraction was cancelled via a `CancellationToken`.
   const factory KreuzbergError.cancelled() = KreuzbergError_Cancelled;
+
+  /// A security policy was violated (e.g. zip bomb, oversized archive).
   const factory KreuzbergError.security({required String message}) =
       KreuzbergError_Security;
+
+  /// A catch-all for uncommon errors that do not fit another variant.
   const factory KreuzbergError.other({required String field0}) =
       KreuzbergError_Other;
 }
@@ -6509,29 +6825,67 @@ class LanguageDetectionConfig {
 ///
 /// Wire format is snake_case in all serializers (JSON, TOML, YAML).
 enum LayoutClass {
+  /// Figure or table caption text.
   caption,
+
+  /// Footnote or endnote text.
   footnote,
+
+  /// Mathematical formula or equation.
   formula,
+
+  /// A single item in a bulleted or numbered list.
   listItem,
+
+  /// Running footer at the bottom of a page.
   pageFooter,
+
+  /// Running header at the top of a page.
   pageHeader,
+
+  /// Image, chart, or other graphical element.
   picture,
+
+  /// Section heading.
   sectionHeader,
+
+  /// Data table.
   table,
+
+  /// Body text paragraph.
   text,
+
+  /// Document or chapter title.
   title,
+
+  /// Table of contents or index.
   documentIndex,
+
+  /// Source code block.
   code,
+
+  /// Checkbox in selected state.
   checkboxSelected,
+
+  /// Checkbox in unselected state.
   checkboxUnselected,
+
+  /// Form field or form element.
   form,
+
+  /// Key-value pair region (e.g. label + value in a form).
   keyValueRegion,
 }
 
 /// A single layout detection result.
 class LayoutDetection {
+  /// Detected layout class (e.g. `Table`, `Text`, `Title`).
   final LayoutClass className;
+
+  /// Detection confidence score in `[0.0, 1.0]`.
   final double confidence;
+
+  /// Bounding box in image pixel coordinates.
   final BBox bbox;
 
   const LayoutDetection({
@@ -7138,32 +7492,50 @@ sealed class NodeContent with _$NodeContent {
   const NodeContent._();
 
   /// Document title.
-  const factory NodeContent.title({required String text}) = NodeContent_Title;
+  const factory NodeContent.title({
+    /// The title text content.
+    required String text,
+  }) = NodeContent_Title;
 
   /// Section heading with level (1-6).
   const factory NodeContent.heading({
+    /// Heading depth (1 = h1, 2 = h2, …, 6 = h6).
     required PlatformInt64 level,
+
+    /// The heading text content.
     required String text,
   }) = NodeContent_Heading;
 
   /// Body text paragraph.
-  const factory NodeContent.paragraph({required String text}) =
-      NodeContent_Paragraph;
+  const factory NodeContent.paragraph({
+    /// The paragraph text content.
+    required String text,
+  }) = NodeContent_Paragraph;
 
   /// List container — children are `ListItem` nodes.
-  const factory NodeContent.list({required bool ordered}) = NodeContent_List;
+  const factory NodeContent.list({
+    /// `true` for ordered (numbered) lists; `false` for unordered (bullet) lists.
+    required bool ordered,
+  }) = NodeContent_List;
 
   /// Individual list item.
-  const factory NodeContent.listItem({required String text}) =
-      NodeContent_ListItem;
+  const factory NodeContent.listItem({
+    /// The list item text content.
+    required String text,
+  }) = NodeContent_ListItem;
 
   /// Table with structured cell grid.
-  const factory NodeContent.table({required TableGrid grid}) =
-      NodeContent_Table;
+  const factory NodeContent.table({
+    /// Structured grid of table cells.
+    required TableGrid grid,
+  }) = NodeContent_Table;
 
   /// Image reference.
   const factory NodeContent.image({
+    /// Optional alt text or caption describing the image.
     required String description,
+
+    /// Index into the parent `ExtractionResult::images` list.
     required PlatformInt64 imageIndex,
 
     /// Source URL or path of the image (from `<img src="...">` or `![](src)`).
@@ -7172,7 +7544,10 @@ sealed class NodeContent with _$NodeContent {
 
   /// Code block.
   const factory NodeContent.code({
+    /// The source code text content.
     required String text,
+
+    /// Programming language identifier (e.g. `"rust"`, `"python"`).
     required String language,
   }) = NodeContent_Code;
 
@@ -7180,20 +7555,29 @@ sealed class NodeContent with _$NodeContent {
   const factory NodeContent.quote() = NodeContent_Quote;
 
   /// Mathematical formula / equation.
-  const factory NodeContent.formula({required String text}) =
-      NodeContent_Formula;
+  const factory NodeContent.formula({
+    /// The formula source text (LaTeX or plain mathematical notation).
+    required String text,
+  }) = NodeContent_Formula;
 
   /// Footnote reference content.
-  const factory NodeContent.footnote({required String text}) =
-      NodeContent_Footnote;
+  const factory NodeContent.footnote({
+    /// The footnote body text.
+    required String text,
+  }) = NodeContent_Footnote;
 
   /// Logical grouping container (section, key-value area).
   ///
   /// `heading_level` + `heading_text` capture the section heading directly
   /// rather than relying on a first-child positional convention.
   const factory NodeContent.group({
+    /// Optional display label for the group (e.g. section name).
     required String label,
+
+    /// Heading level of the section heading that opened this group (1-6).
     required PlatformInt64 headingLevel,
+
+    /// Text of the section heading that opened this group.
     required String headingText,
   }) = NodeContent_Group;
 
@@ -7204,6 +7588,8 @@ sealed class NodeContent with _$NodeContent {
   const factory NodeContent.slide({
     /// 1-indexed slide number.
     required PlatformInt64 number,
+
+    /// Slide title text, if present.
     required String title,
   }) = NodeContent_Slide;
 
@@ -7212,13 +7598,19 @@ sealed class NodeContent with _$NodeContent {
 
   /// Individual definition list entry with term and definition.
   const factory NodeContent.definitionItem({
+    /// The term being defined.
     required String term,
+
+    /// The definition or description of the term.
     required String definition,
   }) = NodeContent_DefinitionItem;
 
   /// Citation or bibliographic reference.
   const factory NodeContent.citation({
+    /// Citation key (e.g. BibTeX key or reference ID).
     required String key,
+
+    /// Formatted citation text as it appears in the document.
     required String text,
   }) = NodeContent_Citation;
 
@@ -7228,6 +7620,8 @@ sealed class NodeContent with _$NodeContent {
   const factory NodeContent.admonition({
     /// Kind of admonition (e.g. "note", "warning", "tip", "danger").
     required String kind,
+
+    /// Optional explicit title overriding the default kind label.
     required String title,
   }) = NodeContent_Admonition;
 
@@ -7238,6 +7632,8 @@ sealed class NodeContent with _$NodeContent {
   const factory NodeContent.rawBlock({
     /// Source format identifier (e.g. "html", "latex", "jsx").
     required String format,
+
+    /// Verbatim source content in the specified format.
     required String content,
   }) = NodeContent_RawBlock;
 
@@ -7691,7 +8087,11 @@ class OcrMetadata {
 
   /// Number of tables detected
   final PlatformInt64 tableCount;
+
+  /// Number of rows in the detected table (if a single table was found).
   final PlatformInt64? tableRows;
+
+  /// Number of columns in the detected table (if a single table was found).
   final PlatformInt64? tableCols;
 
   const OcrMetadata({
@@ -8921,14 +9321,31 @@ class PdfMetadata {
 sealed class PiiCategory with _$PiiCategory {
   const PiiCategory._();
 
+  /// Email address (e.g. `user@example.com`).
   const factory PiiCategory.email() = PiiCategory_Email;
+
+  /// Phone number in any common format.
   const factory PiiCategory.phone() = PiiCategory_Phone;
+
+  /// US Social Security Number.
   const factory PiiCategory.ssn() = PiiCategory_Ssn;
+
+  /// Payment card number (Visa, Mastercard, Amex, etc.).
   const factory PiiCategory.creditCard() = PiiCategory_CreditCard;
+
+  /// Postal / ZIP code.
   const factory PiiCategory.postalCode() = PiiCategory_PostalCode;
+
+  /// IPv4 or IPv6 address.
   const factory PiiCategory.ipAddress() = PiiCategory_IpAddress;
+
+  /// International Bank Account Number.
   const factory PiiCategory.iban() = PiiCategory_Iban;
+
+  /// SWIFT / BIC bank identifier code.
   const factory PiiCategory.swiftBic() = PiiCategory_SwiftBic;
+
+  /// Date of birth.
   const factory PiiCategory.dateOfBirth() = PiiCategory_DateOfBirth;
 
   /// Person name, surfaced by the optional NER backend.
@@ -9296,23 +9713,45 @@ class ProcessingWarning {
           message == other.message;
 }
 
-/// Page Segmentation Mode for Tesseract OCR
+/// Page Segmentation Mode for Tesseract OCR.
 enum PSMMode {
+  /// Orientation and script detection only.
   osdOnly,
+
+  /// Automatic page segmentation with OSD.
   autoOsd,
+
+  /// Automatic page segmentation without OSD or OCR.
   autoOnly,
+
+  /// Fully automatic page segmentation with no OSD (default).
   auto,
+
+  /// Assume a single column of text of variable sizes.
   singleColumn,
+
+  /// Assume a single uniform block of vertically aligned text.
   singleBlockVertical,
+
+  /// Assume a single uniform block of text.
   singleBlock,
+
+  /// Treat the image as a single text line.
   singleLine,
+
+  /// Treat the image as a single word.
   singleWord,
+
+  /// Treat the image as a single word in a circle.
   circleWord,
+
+  /// Treat the image as a single character.
   singleChar,
 }
 
 /// Outlook PST archive metadata.
 class PstMetadata {
+  /// Total number of email messages found in the PST archive.
   final PlatformInt64 messageCount;
 
   const PstMetadata({required this.messageCount});
@@ -9330,9 +9769,16 @@ class PstMetadata {
 
 /// Pixel-space bounding box of a QR code inside its source image.
 class QrBoundingBox {
+  /// Horizontal pixel offset of the bounding box top-left corner.
   final PlatformInt64 x;
+
+  /// Vertical pixel offset of the bounding box top-left corner.
   final PlatformInt64 y;
+
+  /// Width of the bounding box in pixels.
   final PlatformInt64 width;
+
+  /// Height of the bounding box in pixels.
   final PlatformInt64 height;
 
   const QrBoundingBox({
@@ -9674,7 +10120,23 @@ class RedactionTerm {
           caseSensitive == other.caseSensitive;
 }
 
-enum ReductionLevel { off, light, moderate, aggressive, maximum }
+/// Intensity level for the token-reduction pipeline.
+enum ReductionLevel {
+  /// No reduction applied; text is returned as-is.
+  off,
+
+  /// Remove only the most common stopwords.
+  light,
+
+  /// Balanced stopword removal and redundancy filtering.
+  moderate,
+
+  /// Aggressive filtering; may remove less common content words.
+  aggressive,
+
+  /// Maximum compression; prioritizes brevity over completeness.
+  maximum,
+}
 
 /// Classification of a detected layout region that warrants VLM extraction.
 ///
@@ -9999,10 +10461,18 @@ class StructuredData {
           schemaType == other.schemaType;
 }
 
+/// Result of parsing a structured data file (JSON, JSONL, YAML, or TOML).
 class StructuredDataResult {
+  /// The extracted text content, formatted for readability.
   final String content;
+
+  /// The source format identifier (e.g. `"json"`, `"yaml"`, `"toml"`).
   final String format;
+
+  /// Key-value metadata extracted from recognized text fields.
   final Map<String, String> metadata;
+
+  /// JSON paths of fields that were classified as text-bearing.
   final List<String> textFields;
 
   const StructuredDataResult({
@@ -10652,17 +11122,39 @@ class TextMetadata {
           headers == other.headers;
 }
 
+/// Configuration for the token-reduction pipeline.
 class TokenReductionConfig {
+  /// Reduction intensity level.
   final ReductionLevel level;
+
+  /// ISO 639-1 language code hint for stopword selection (e.g. `"en"`, `"de"`).
   final String? languageHint;
+
+  /// Preserve Markdown formatting tokens during reduction.
   final bool preserveMarkdown;
+
+  /// Preserve code block contents unchanged.
   final bool preserveCode;
+
+  /// Cosine similarity threshold below which sentences are considered dissimilar.
   final double semanticThreshold;
+
+  /// Use Rayon parallel iterators for multi-core processing.
   final bool enableParallel;
+
+  /// Use SIMD-optimized text scanning where available.
   final bool useSimd;
+
+  /// Per-language custom stopword lists (`language_code → stopword_list`).
   final Map<String, List<String>>? customStopwords;
+
+  /// Regex patterns whose matched text is always preserved unchanged.
   final List<String> preservePatterns;
+
+  /// Target fraction of text to retain (0.0–1.0); `None` = no fixed target.
   final double? targetReduction;
+
+  /// Group semantically similar sentences and emit only one per cluster.
   final bool enableSemanticClustering;
 
   const TokenReductionConfig({
@@ -11294,8 +11786,13 @@ class YakeParams {
 
 /// Year range for bibliographic metadata.
 class YearRange {
+  /// Earliest (minimum) year in the range.
   final PlatformInt64? min;
+
+  /// Latest (maximum) year in the range.
   final PlatformInt64? max;
+
+  /// All individual years present in the collection.
   final Int64List years;
 
   const YearRange({this.min, this.max, required this.years});

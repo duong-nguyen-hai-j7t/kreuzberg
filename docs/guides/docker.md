@@ -1,4 +1,4 @@
-# Docker Deployment <span class="version-badge">v4.0.0</span>
+# Docker Deployment
 
 Official Docker images built on the Rust core with Debian 13 (Trixie). Each image supports three execution modes: API server (default), command-line tool, and MCP server.
 

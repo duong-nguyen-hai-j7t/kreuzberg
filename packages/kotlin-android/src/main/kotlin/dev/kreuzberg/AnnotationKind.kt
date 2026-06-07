@@ -27,13 +27,21 @@ package dev.kreuzberg
 @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = AnnotationKindDeserializer::class)
 @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = AnnotationKindSerializer::class)
 sealed class AnnotationKind {
+    /** Bold (strong) text formatting. */
     object Bold : AnnotationKind()
+    /** Italic (emphasis) text formatting. */
     object Italic : AnnotationKind()
+    /** Underlined text. */
     object Underline : AnnotationKind()
+    /** Strikethrough text. */
     object Strikethrough : AnnotationKind()
+    /** Inline code span. */
     object Code : AnnotationKind()
+    /** Subscript text. */
     object Subscript : AnnotationKind()
+    /** Superscript text. */
     object Superscript : AnnotationKind()
+    /** Hyperlink annotation. */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = com.fasterxml.jackson.databind.JsonDeserializer.None::class)
     @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = com.fasterxml.jackson.databind.JsonSerializer.None::class)
     data class Link(

@@ -1,6 +1,10 @@
 # Extraction Pipeline
 
-Every file Kreuzberg processes follows the same multi-stage pipeline. A PDF, a scanned image, a spreadsheet, an email attachment: they all enter at the top and come out as a structured `ExtractionResult` at the bottom. The stages run in a fixed order, but several of them are conditional. Caching can short-circuit the entire flow. OCR only runs when images are present. Post-processing steps only fire if you've configured them.
+Every file Kreuzberg processes follows the same multi-stage pipeline. A PDF, a scanned
+image, a spreadsheet, an email attachment: they all enter at the top and come out as a
+structured `ExtractionResult` at the bottom. The stages run in a fixed order, but several
+of them are conditional. Caching can short-circuit the entire flow. OCR only runs when
+images are present. Post-processing steps only fire if you've configured them.
 
 This page walks through each stage in detail so you understand what happens to your file, when, and why.
 
@@ -41,22 +45,31 @@ The diagram above shows every stage in sequence. Let's break each one down.
 
 ## 1. Cache Lookup
 
-When caching is enabled (`cache=True` in your `ExtractionConfig`), the pipeline starts by computing a hash from the file's content and your configuration. If a result with that exact hash already exists in the cache, it's returned immediately. No extraction, no OCR, no post-processing. The entire pipeline is skipped.
+When caching is enabled (`cache=True` in your `ExtractionConfig`), the pipeline starts by
+computing a hash from the file's content and your configuration. If a result with that
+exact hash already exists in the cache, it's returned immediately. No extraction, no OCR,
+no post-processing. The entire pipeline is skipped.
 
-This is significant for workloads that reprocess the same files. Repeated extractions of the same document go from hundreds of milliseconds to single-digit milliseconds.
+This is significant for workloads that reprocess the same files. Repeated extractions of
+the same document go from hundreds of milliseconds to single-digit milliseconds.
 
-Cache keys are content-based, not path-based. If you rename a file but the bytes are identical, the cache still hits. If you change your config (switch OCR backends, adjust chunking), a new cache key is generated so stale results are never returned.
+Cache keys are content-based, not path-based. If you rename a file but the bytes are
+identical, the cache still hits. If you change your config (switch OCR backends, adjust
+chunking), a new cache key is generated so stale results are never returned.
 
 ---
 
 ## 2. MIME Detection
 
-Before Kreuzberg can extract anything, it needs to know what format the file is. It resolves the MIME type through one of two paths:
+Before Kreuzberg can extract anything, it needs to know what format the file is. It resolves
+the MIME type through one of two paths:
 
 - **Explicit:** You pass `mime_type="application/pdf"` and Kreuzberg validates it against the list of supported types.
-- **Auto-detection:** Kreuzberg reads the file extension (for example, `.pdf` → `application/pdf`) from an internal mapping table.
+- **Auto-detection:** Kreuzberg reads the file extension (for example, `.pdf` →
+  `application/pdf`) from an internal mapping table.
 
-If the resolved MIME type isn't in the supported list, the pipeline stops immediately with an `UnsupportedFormat` error. No compute is wasted on files Kreuzberg can't handle.
+If the resolved MIME type isn't in the supported list, the pipeline stops immediately with
+an `UnsupportedFormat` error. No compute is wasted on files Kreuzberg can't handle.
 
 For the full details on how extension mapping, normalization, and validation work, see [Format Support](../reference/formats.md).
 
@@ -64,9 +77,14 @@ For the full details on how extension mapping, normalization, and validation wor
 
 ## 3. Registry Lookup
 
-With the MIME type resolved, Kreuzberg queries the extractor registry to find the `DocumentExtractor` that handles this format. The registry is a map from MIME types to extractor implementations, managed by the [plugin system](plugin-system.md).
+With the MIME type resolved, Kreuzberg queries the extractor registry to find the
+`DocumentExtractor` that handles this format. The registry is a map from MIME types to
+extractor implementations, managed by the [plugin system](plugin-system.md).
 
-If multiple extractors are registered for the same MIME type (for example, you registered a custom PDF extractor alongside the built-in one), the one with the higher `priority()` value is selected. All built-in extractors have a priority of 0, so any custom extractor with a priority above 0 takes precedence.
+If multiple extractors are registered for the same MIME type (for example, you registered a
+custom PDF extractor alongside the built-in one), the one with the higher `priority()` value
+is selected. All built-in extractors have a priority of 0, so any custom extractor with a
+priority above 0 takes precedence.
 
 ```rust title="registry_lookup.rs"
 let registry = get_document_extractor_registry();
@@ -77,7 +95,9 @@ let extractor = registry.get("application/pdf")?;
 
 ## 4. Format Extraction
 
-This is the core of the pipeline. The selected extractor reads the file and produces an `ExtractionResult` containing the extracted text, metadata (author, title, creation date), page count, and detected language.
+This is the core of the pipeline. The selected extractor reads the file and produces an
+`ExtractionResult` containing the extracted text, metadata (author, title, creation date),
+page count, and detected language.
 
 Each file format has a tailored extraction strategy:
 
@@ -98,9 +118,14 @@ The extraction result at this point contains raw extracted text. It hasn't been 
 
 OCR runs only when two conditions are true: the file contains images (or is an image itself), and OCR is enabled in the configuration. Even when both conditions are met, Kreuzberg applies a third check: if the format extractor already produced text, OCR is skipped. This avoids redundant processing on PDFs that have a searchable text layer.
 
-You can override this behavior with `force_ocr=True`, which tells Kreuzberg to always run OCR regardless of whether text was already extracted. This is useful for PDFs where the text layer is unreliable or incomplete.
+You can override this behavior with `force_ocr=True`, which tells Kreuzberg to always run
+OCR regardless of whether text was already extracted. This is useful for PDFs where the text
+layer is unreliable or incomplete.
 
-Conversely, `disable_ocr=True` skips OCR entirely. Image files that would normally require OCR return empty content instead of raising a `MissingDependencyError`. This is useful when you want to extract text from non-image formats only and avoid OCR overhead or dependency requirements.
+Conversely, `disable_ocr=True` skips OCR entirely. Image files that would normally require
+OCR return empty content instead of raising a `MissingDependencyError`. This is useful when
+you want to extract text from non-image formats only and avoid OCR overhead or dependency
+requirements.
 
 ```mermaid
 flowchart LR
@@ -126,15 +151,20 @@ Kreuzberg ships three OCR backends:
 | **PaddleOCR** | ONNX Runtime         | Best accuracy for Chinese, Japanese, Korean (CJK) scripts. Runs natively without Python.                                     |
 | **EasyOCR**   | Python + PyTorch     | Supports 80+ languages including Arabic, Hindi, Thai, and other complex scripts. Only available through the Python bindings. |
 
-When OCR completes, the OCR output is merged with any text the format extractor already produced. The merged result moves to post-processing.
+When OCR completes, the OCR output is merged with any text the format extractor already
+produced. The merged result moves to post-processing.
 
 ---
 
 ## 6. Validators
 
-Validators are the first post-processing step. They inspect the `ExtractionResult` and decide whether it meets your requirements. If a validator rejects the result, the pipeline stops immediately and the error is returned to the caller. No further processing happens.
+Validators are the first post-processing step. They inspect the `ExtractionResult` and decide
+whether it meets your requirements. If a validator rejects the result, the pipeline stops
+immediately and the error is returned to the caller. No further processing happens.
 
-This is intentionally strict. Validators exist to catch results that are fundamentally wrong (empty text, garbled output, suspiciously short content) before downstream systems consume them.
+This is intentionally strict. Validators exist to catch results that are fundamentally wrong
+(empty text, garbled output, suspiciously short content) before downstream systems consume
+them.
 
 ```python title="example_validator.py"
 class MinLengthValidator:
@@ -180,9 +210,15 @@ Post-processors run in three ordered stages so you can control what happens firs
 
 The seven OSS v5 enrichment processors all register through the shared `register_builtin()` umbrella (`crates/kreuzberg/src/plugins/processor/builtin/mod.rs`) behind their feature gates: `ner`, `redaction`, `summarization`, `translation`, `classification`, `captioning`, `qr-codes`. Each is feature-gated and registered only when its Cargo feature is active.
 
-An important design choice: **post-processor errors do not fail the extraction.** If a post-processor throws an exception, the error is logged and the pipeline continues with the result as-is. This means a buggy post-processor can't take down your extraction pipeline.
+An important design choice: **post-processor errors do not fail the extraction.** If a
+post-processor throws an exception, the error is logged and the pipeline continues with the
+result as-is. This means a buggy post-processor can't take down your extraction pipeline.
 
-Redaction runs Late by design: it must see the populated `entities`, `summary`, `translation`, and `page_classifications` fields so it can rewrite their textual content before the result leaves Kreuzberg. The original pre-redaction text is dropped at the end of the pipeline; only `ExtractionResult.redaction_report` carries byte offsets back into the original.
+Redaction runs Late by design: it must see the populated `entities`, `summary`,
+`translation`, and `page_classifications` fields so it can rewrite their textual content
+before the result leaves Kreuzberg. The original pre-redaction text is dropped at the end
+of the pipeline; only `ExtractionResult.redaction_report` carries byte offsets back into
+the original.
 
 ---
 
@@ -202,7 +238,8 @@ The final `ExtractionResult` returned to you contains:
 
 ## Error Handling Strategy
 
-The pipeline follows a deliberate error strategy: fail early for things the developer can fix, be resilient for things that are beyond their control.
+The pipeline follows a deliberate error strategy: fail early for things the developer can
+fix, be resilient for things that are beyond their control.
 
 | Stage             | Error type                                                | What happens                                                                         |
 | ----------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------ |

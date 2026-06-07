@@ -242,7 +242,7 @@ enum Commands {
     /// 3. Config file (TOML, YAML, or JSON)
     /// 4. Built-in defaults (127.0.0.1:8000)
     ///
-    /// The config file can contain both extraction and server settings under [server] section.
+    /// The config file can contain both extraction and server settings under `[server]` section.
     #[cfg(feature = "api")]
     Serve {
         /// Host to bind to (e.g., "127.0.0.1" or "0.0.0.0"). CLI arg overrides config file and env vars.

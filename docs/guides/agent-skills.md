@@ -1,4 +1,4 @@
-# AI Coding Assistants <span class="version-badge new">v4.2.15</span>
+# AI Coding Assistants
 
 Kreuzberg ships with an [Agent Skill](https://agentskills.io) that teaches AI coding assistants how to use the library correctly — covering extraction, configuration, OCR, chunking, embeddings, batch processing, error handling, and plugins across Python, Node.js/TypeScript, Rust, and CLI.
 

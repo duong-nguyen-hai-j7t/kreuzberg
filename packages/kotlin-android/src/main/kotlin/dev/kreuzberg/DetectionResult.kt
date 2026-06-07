@@ -25,7 +25,10 @@ package dev.kreuzberg
 
 /** Page-level detection result containing all detections and page metadata. */
 data class DetectionResult(
+    /** Page width in pixels (as seen by the model). */
     val pageWidth: Int,
+    /** Page height in pixels (as seen by the model). */
     val pageHeight: Int,
+    /** All layout detections on this page after postprocessing. */
     val detections: List<LayoutDetection> = emptyList(),
 )

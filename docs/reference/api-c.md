@@ -1080,10 +1080,10 @@ Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-ri
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `x1` | `float` | — | X1 |
-| `y1` | `float` | — | Y1 |
-| `x2` | `float` | — | X2 |
-| `y2` | `float` | — | Y2 |
+| `x1` | `float` | — | Left edge (x-coordinate of the top-left corner). |
+| `y1` | `float` | — | Top edge (y-coordinate of the top-left corner). |
+| `x2` | `float` | — | Right edge (x-coordinate of the bottom-right corner). |
+| `y2` | `float` | — | Bottom edge (y-coordinate of the bottom-right corner). |
 
 ---
 
@@ -1123,10 +1123,10 @@ BibTeX bibliography metadata.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `entry_count` | `uintptr_t` | — | Number of entries in the bibliography. |
-| `citation_keys` | `const char**` | `NULL` | Citation keys |
-| `authors` | `const char**` | `NULL` | Authors |
-| `year_range` | `KreuzbergYearRange*` | `NULL` | Year range (year range) |
-| `entry_types` | `void**` | `NULL` | Entry types |
+| `citation_keys` | `const char**` | `NULL` | BibTeX citation keys (e.g. `"knuth1984"`) for all entries. |
+| `authors` | `const char**` | `NULL` | Author names collected across all bibliography entries. |
+| `year_range` | `KreuzbergYearRange*` | `NULL` | Earliest and latest publication years found in the bibliography. |
+| `entry_types` | `void**` | `NULL` | Count of entries grouped by BibTeX entry type (e.g. `"article"` → 5). |
 
 ---
 
@@ -1145,13 +1145,15 @@ Bounding box coordinates for element positioning.
 
 #### KreuzbergCacheStats
 
+Aggregate statistics for a kreuzberg cache directory.
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `total_files` | `uintptr_t` | — | Total files |
-| `total_size_mb` | `double` | — | Total size mb |
-| `available_space_mb` | `double` | — | Available space mb |
-| `oldest_file_age_days` | `double` | — | Oldest file age days |
-| `newest_file_age_days` | `double` | — | Newest file age days |
+| `total_files` | `uintptr_t` | — | Total number of files currently in the cache directory. |
+| `total_size_mb` | `double` | — | Combined size of all cache files in megabytes. |
+| `available_space_mb` | `double` | — | Free disk space available on the cache volume, in megabytes. |
+| `oldest_file_age_days` | `double` | — | Age of the oldest cache file in days (0.0 if the cache is empty). |
+| `newest_file_age_days` | `double` | — | Age of the most recently written cache file in days (0.0 if the cache is empty). |
 
 ---
 
@@ -1258,12 +1260,12 @@ Citation file metadata (RIS, PubMed, EndNote).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `citation_count` | `uintptr_t` | — | Number of citations |
-| `format` | `const char**` | `NULL` | Format |
-| `authors` | `const char**` | `NULL` | Authors |
-| `year_range` | `KreuzbergYearRange*` | `NULL` | Year range (year range) |
-| `dois` | `const char**` | `NULL` | Dois |
-| `keywords` | `const char**` | `NULL` | Keywords |
+| `citation_count` | `uintptr_t` | — | Total number of citation records in the file. |
+| `format` | `const char**` | `NULL` | Detected citation file format (e.g. `"ris"`, `"pubmed"`, `"endnote"`). |
+| `authors` | `const char**` | `NULL` | Author names collected across all citation records. |
+| `year_range` | `KreuzbergYearRange*` | `NULL` | Earliest and latest publication years found in the file. |
+| `dois` | `const char**` | `NULL` | DOI identifiers found in the citation records. |
+| `keywords` | `const char**` | `NULL` | Keywords collected from all citation records. |
 
 ---
 
@@ -1315,8 +1317,8 @@ JATS contributor with role.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `name` | `const char*` | — | The name |
-| `role` | `const char**` | `NULL` | Role |
+| `name` | `const char*` | — | Contributor display name. |
+| `role` | `const char**` | `NULL` | Contributor role (e.g. `"author"`, `"editor"`). |
 
 ---
 
@@ -1353,11 +1355,11 @@ CSV/TSV file metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `row_count` | `uint32_t` | — | Number of rows |
-| `column_count` | `uint32_t` | — | Number of columns |
-| `delimiter` | `const char**` | `NULL` | Delimiter |
-| `has_header` | `bool` | — | Whether header |
-| `column_types` | `const char***` | `NULL` | Column types |
+| `row_count` | `uint32_t` | — | Total number of data rows (excluding the header row if present). |
+| `column_count` | `uint32_t` | — | Number of columns detected. |
+| `delimiter` | `const char**` | `NULL` | Field delimiter character (e.g. `","` or `"\t"`). |
+| `has_header` | `bool` | — | Whether the first row was treated as a header. |
+| `column_types` | `const char***` | `NULL` | Inferred data type for each column (e.g. `"string"`, `"integer"`, `"float"`). |
 
 ---
 
@@ -1367,8 +1369,8 @@ dBASE field information.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `name` | `const char*` | — | The name |
-| `field_type` | `const char*` | — | Field type |
+| `name` | `const char*` | — | Field (column) name. |
+| `field_type` | `const char*` | — | dBASE field type character (e.g. `"C"` for character, `"N"` for numeric). |
 
 ---
 
@@ -1378,9 +1380,9 @@ dBASE (DBF) file metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `record_count` | `uintptr_t` | — | Number of records |
-| `field_count` | `uintptr_t` | — | Number of fields |
-| `fields` | `KreuzbergDbfFieldInfo*` | `NULL` | Fields |
+| `record_count` | `uintptr_t` | — | Total number of data records in the DBF file. |
+| `field_count` | `uintptr_t` | — | Number of field (column) definitions. |
+| `fields` | `KreuzbergDbfFieldInfo*` | `NULL` | Descriptor for each field in the table schema. |
 
 ---
 
@@ -1401,9 +1403,9 @@ Page-level detection result containing all detections and page metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `page_width` | `uint32_t` | — | Page width |
-| `page_height` | `uint32_t` | — | Page height |
-| `detections` | `KreuzbergLayoutDetection*` | — | Detections |
+| `page_width` | `uint32_t` | — | Page width in pixels (as seen by the model). |
+| `page_height` | `uint32_t` | — | Page height in pixels (as seen by the model). |
+| `detections` | `KreuzbergLayoutDetection*` | — | All layout detections on this page after postprocessing. |
 
 ---
 
@@ -1953,7 +1955,7 @@ itself must serialize access internally (e.g. via `Mutex<Inner>`).
 ### Contract
 
 - `embed(texts)` MUST return exactly `texts.len()` vectors, each of length
-  `self.dimensions()`. The dispatcher in `embed_texts`
+  `self.dimensions()`. The dispatcher in `crate.embeddings.embed_texts`
   validates this before returning to downstream consumers; a non-conforming
   backend surfaces as a `KreuzbergError.Validation`, not a panic.
 
@@ -1981,8 +1983,7 @@ The synchronous `embed_texts` entry uses
 requires a multi-thread tokio runtime. Callers running inside a
 `current_thread` runtime (e.g. `#[tokio.test]` without `flavor = "multi_thread"`,
 or `tokio.runtime.Builder.new_current_thread()`) must use
-`embed_texts_async` instead, which awaits directly without
-`block_in_place`.
+`embed_texts_async` instead, which awaits directly without `block_in_place`.
 
 ### Methods
 
@@ -2056,14 +2057,14 @@ are safe to clone and pass across language boundaries.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `name` | `const char*` | — | The name |
-| `chunk_size` | `uintptr_t` | — | Chunk size |
-| `overlap` | `uintptr_t` | — | Overlap |
+| `name` | `const char*` | — | Short identifier for this preset (e.g. `"balanced"`, `"fast"`, `"quality"`). |
+| `chunk_size` | `uintptr_t` | — | Target chunk size in characters. |
+| `overlap` | `uintptr_t` | — | Overlap between consecutive chunks in characters. |
 | `model_repo` | `const char*` | — | HuggingFace repository name for the model. |
 | `pooling` | `const char*` | — | Pooling strategy: "cls" or "mean". |
 | `model_file` | `const char*` | — | Path to the ONNX model file within the repo. |
-| `dimensions` | `uintptr_t` | — | Dimensions |
-| `description` | `const char*` | — | Human-readable description |
+| `dimensions` | `uintptr_t` | — | Embedding vector dimension produced by this model. |
+| `description` | `const char*` | — | Human-readable description of the preset's intended use case. |
 
 ---
 
@@ -2087,12 +2088,12 @@ EPUB metadata (Dublin Core extensions).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `coverage` | `const char**` | `NULL` | Coverage |
-| `dc_format` | `const char**` | `NULL` | Dc format |
-| `relation` | `const char**` | `NULL` | Relation |
-| `source` | `const char**` | `NULL` | Source |
-| `dc_type` | `const char**` | `NULL` | Dc type |
-| `cover_image` | `const char**` | `NULL` | Cover image |
+| `coverage` | `const char**` | `NULL` | Dublin Core `coverage` field (geographic or temporal scope). |
+| `dc_format` | `const char**` | `NULL` | Dublin Core `format` field (media type of the resource). |
+| `relation` | `const char**` | `NULL` | Dublin Core `relation` field (related resource identifier). |
+| `source` | `const char**` | `NULL` | Dublin Core `source` field (origin resource identifier). |
+| `dc_type` | `const char**` | `NULL` | Dublin Core `type` field (nature or genre of the resource). |
+| `cover_image` | `const char**` | `NULL` | Path or identifier of the cover image within the EPUB container. |
 
 ---
 
@@ -2102,8 +2103,8 @@ Error metadata (for batch operations).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `error_type` | `const char*` | — | Error type |
-| `message` | `const char*` | — | Message |
+| `error_type` | `const char*` | — | Machine-readable error type identifier (e.g. "UnsupportedFormat"). |
+| `message` | `const char*` | — | Human-readable error description. |
 
 ---
 
@@ -2252,7 +2253,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `page_classification` | `KreuzbergPageClassificationConfig*` | `NULL` | Per-page classification configuration. When set, the classification post-processor runs at the Middle stage and populates `ExtractionResult.page_classifications`. |
 | `captioning` | `KreuzbergCaptioningConfig*` | `NULL` | VLM captioning configuration for extracted images. When set, the captioning post-processor runs at the Middle stage and writes a caption into each `ExtractedImage.caption`. |
 | `qr_codes` | `bool*` | `NULL` | Enable QR-code detection in extracted images. When `true`, the QR post-processor runs at the Middle stage and populates `ExtractedImage.qr_codes`. |
-| `cancel_token` | `const char**` | `NULL` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call `CancellationToken.cancel` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `KreuzbergError.Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
+| `cancel_token` | `const char**` | `NULL` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call its `cancel()` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
 
 ### Methods
 
@@ -2309,12 +2310,12 @@ This is the main result type returned by all extraction functions.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `content` | `const char*` | — | The extracted text content |
-| `mime_type` | `const char*` | — | The detected MIME type |
-| `metadata` | `KreuzbergMetadata` | — | Document metadata |
+| `content` | `const char*` | — | Plain-text representation of the extracted document content. |
+| `mime_type` | `const char*` | — | MIME type of the source document (e.g. `"application/pdf"`). |
+| `metadata` | `KreuzbergMetadata` | — | Document-level metadata (author, title, dates, format-specific fields). |
 | `extraction_method` | `KreuzbergExtractionMethod*` | `NULL` | Extraction strategy used to produce the returned text. Populated when the extractor can reliably distinguish native text extraction, OCR-only extraction, or mixed native/OCR output. |
-| `tables` | `KreuzbergTable*` | `NULL` | Tables extracted from the document |
-| `detected_languages` | `const char***` | `NULL` | Detected languages |
+| `tables` | `KreuzbergTable*` | `NULL` | Tables extracted from the document, each with structured cell data. |
+| `detected_languages` | `const char***` | `NULL` | ISO 639-1 language codes detected in the document content. |
 | `chunks` | `KreuzbergChunk**` | `NULL` | Text chunks when chunking is enabled. When chunking configuration is provided, the content is split into overlapping chunks for efficient processing. Each chunk contains the text, optional embeddings (if enabled), and metadata about its position. |
 | `images` | `KreuzbergExtractedImage**` | `NULL` | Extracted images from the document. When image extraction is enabled via `ImageExtractionConfig`, this field contains all images found in the document with their raw data and metadata. Each image may optionally contain a nested `ocr_result` if OCR was performed. |
 | `pages` | `KreuzbergPageContent**` | `NULL` | Per-page content when page extraction is enabled. When page extraction is configured, the document is split into per-page content with tables and images mapped to their respective pages. |
@@ -2360,9 +2361,9 @@ FictionBook (FB2) metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `genres` | `const char**` | `NULL` | Genres |
-| `sequences` | `const char**` | `NULL` | Sequences |
-| `annotation` | `const char**` | `NULL` | Annotation |
+| `genres` | `const char**` | `NULL` | Genre tags as declared in the FB2 `<genre>` elements. |
+| `sequences` | `const char**` | `NULL` | Book series (sequence) names, if any. |
+| `annotation` | `const char**` | `NULL` | Short annotation / summary from the FB2 `<annotation>` element. |
 
 ---
 
@@ -2568,7 +2569,7 @@ and extracted structural elements (headers, links, images, structured data).
 
 Configuration for styled HTML output.
 
-When set on `ExtractionConfig.html_output` alongside
+When set on `html_output` alongside
 `output_format = OutputFormat.Html`, the pipeline builds a
 `StyledHtmlRenderer` instead of
 the plain comrak-based renderer.
@@ -2730,10 +2731,10 @@ JATS (Journal Article Tag Suite) metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `copyright` | `const char**` | `NULL` | Copyright |
-| `license` | `const char**` | `NULL` | License |
-| `history_dates` | `void*` | `NULL` | History dates |
-| `contributor_roles` | `KreuzbergContributorRole*` | `NULL` | Contributor roles |
+| `copyright` | `const char**` | `NULL` | Copyright statement from the article's `<permissions>` element. |
+| `license` | `const char**` | `NULL` | Open-access license URI from the article's `<license>` element. |
+| `history_dates` | `void*` | `NULL` | Publication history dates keyed by event type (e.g. `"received"`, `"accepted"`). |
+| `contributor_roles` | `KreuzbergContributorRole*` | `NULL` | Authors and contributors with their stated roles. |
 
 ---
 
@@ -2804,9 +2805,9 @@ A single layout detection result.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `class_name` | `KreuzbergLayoutClass` | — | Class name (layout class) |
-| `confidence` | `float` | — | Confidence |
-| `bbox` | `KreuzbergBBox` | — | Bbox (b box) |
+| `class_name` | `KreuzbergLayoutClass` | — | Detected layout class (e.g. `Table`, `Text`, `Title`). |
+| `confidence` | `float` | — | Detection confidence score in `[0.0, 1.0]`. |
+| `bbox` | `KreuzbergBBox` | — | Bounding box in image pixel coordinates. |
 
 ---
 
@@ -2876,6 +2877,8 @@ liter-llm-backed NER backend.
 ### Methods
 
 #### kreuzberg_new()
+
+Create a new LLM-backed NER backend with the given LLM configuration.
 
 **Signature:**
 
@@ -3271,8 +3274,8 @@ Captures information about OCR processing configuration and results.
 | `psm` | `int32_t` | — | Tesseract Page Segmentation Mode (PSM) |
 | `output_format` | `const char*` | — | Output format (e.g., "text", "hocr") |
 | `table_count` | `uint32_t` | — | Number of tables detected |
-| `table_rows` | `uint32_t*` | `NULL` | Table rows |
-| `table_cols` | `uint32_t*` | `NULL` | Table cols |
+| `table_rows` | `uint32_t*` | `NULL` | Number of rows in the detected table (if a single table was found). |
+| `table_cols` | `uint32_t*` | `NULL` | Number of columns in the detected table (if a single table was found). |
 
 ---
 
@@ -4149,7 +4152,7 @@ Outlook PST archive metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `message_count` | `uintptr_t` | — | Number of messages |
+| `message_count` | `uintptr_t` | — | Total number of email messages found in the PST archive. |
 
 ---
 
@@ -4159,10 +4162,10 @@ Pixel-space bounding box of a QR code inside its source image.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `x` | `uint32_t` | — | X |
-| `y` | `uint32_t` | — | Y |
-| `width` | `uint32_t` | — | Width |
-| `height` | `uint32_t` | — | Height |
+| `x` | `uint32_t` | — | Horizontal pixel offset of the bounding box top-left corner. |
+| `y` | `uint32_t` | — | Vertical pixel offset of the bounding box top-left corner. |
+| `width` | `uint32_t` | — | Width of the bounding box in pixels. |
+| `height` | `uint32_t` | — | Height of the bounding box in pixels. |
 
 ---
 
@@ -4547,12 +4550,14 @@ Structured data (Schema.org, microdata, RDFa) block.
 
 #### KreuzbergStructuredDataResult
 
+Result of parsing a structured data file (JSON, JSONL, YAML, or TOML).
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `content` | `const char*` | — | The extracted text content |
-| `format` | `const char*` | — | Format |
-| `metadata` | `void*` | — | Document metadata |
-| `text_fields` | `const char**` | — | Text fields |
+| `content` | `const char*` | — | The extracted text content, formatted for readability. |
+| `format` | `const char*` | — | The source format identifier (e.g. `"json"`, `"yaml"`, `"toml"`). |
+| `metadata` | `void*` | — | Key-value metadata extracted from recognized text fields. |
+| `text_fields` | `const char**` | — | JSON paths of fields that were classified as text-bearing. |
 
 ---
 
@@ -4760,6 +4765,8 @@ Per-category running counter for `RedactionStrategy.TokenReplace`.
 
 #### kreuzberg_new()
 
+Create a fresh counter with no previous state.
+
 **Signature:**
 
 ```c
@@ -4770,19 +4777,21 @@ KreuzbergTokenCounter kreuzberg_new();
 
 #### KreuzbergTokenReductionConfig
 
+Configuration for the token-reduction pipeline.
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `level` | `KreuzbergReductionLevel` | `KREUZBERG_KREUZBERG_MODERATE` | Level (reduction level) |
-| `language_hint` | `const char**` | `NULL` | Language hint |
-| `preserve_markdown` | `bool` | `false` | Preserve markdown |
-| `preserve_code` | `bool` | `true` | Preserve code |
-| `semantic_threshold` | `float` | `0.3` | Semantic threshold |
-| `enable_parallel` | `bool` | `true` | Enable parallel |
-| `use_simd` | `bool` | `true` | Use simd |
-| `custom_stopwords` | `void**` | `NULL` | Custom stopwords |
-| `preserve_patterns` | `const char**` | `NULL` | Preserve patterns |
-| `target_reduction` | `float*` | `NULL` | Target reduction |
-| `enable_semantic_clustering` | `bool` | `false` | Enable semantic clustering |
+| `level` | `KreuzbergReductionLevel` | `KREUZBERG_KREUZBERG_MODERATE` | Reduction intensity level. |
+| `language_hint` | `const char**` | `NULL` | ISO 639-1 language code hint for stopword selection (e.g. `"en"`, `"de"`). |
+| `preserve_markdown` | `bool` | `false` | Preserve Markdown formatting tokens during reduction. |
+| `preserve_code` | `bool` | `true` | Preserve code block contents unchanged. |
+| `semantic_threshold` | `float` | `0.3` | Cosine similarity threshold below which sentences are considered dissimilar. |
+| `enable_parallel` | `bool` | `true` | Use Rayon parallel iterators for multi-core processing. |
+| `use_simd` | `bool` | `true` | Use SIMD-optimized text scanning where available. |
+| `custom_stopwords` | `void**` | `NULL` | Per-language custom stopword lists (`language_code → stopword_list`). |
+| `preserve_patterns` | `const char**` | `NULL` | Regex patterns whose matched text is always preserved unchanged. |
+| `target_reduction` | `float*` | `NULL` | Target fraction of text to retain (0.0–1.0); `NULL` = no fixed target. |
+| `enable_semantic_clustering` | `bool` | `false` | Group semantically similar sentences and emit only one per cluster. |
 
 ### Methods
 
@@ -5193,9 +5202,9 @@ Year range for bibliographic metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `min` | `uint32_t*` | `NULL` | Min |
-| `max` | `uint32_t*` | `NULL` | Max |
-| `years` | `uint32_t*` | `/* serde(default) */` | Years |
+| `min` | `uint32_t*` | `NULL` | Earliest (minimum) year in the range. |
+| `max` | `uint32_t*` | `NULL` | Latest (maximum) year in the range. |
+| `years` | `uint32_t*` | `/* serde(default) */` | All individual years present in the collection. |
 
 ---
 
@@ -5336,10 +5345,10 @@ Type of text chunker to use.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_TEXT` | Text format |
-| `KREUZBERG_MARKDOWN` | Markdown format |
-| `KREUZBERG_YAML` | Yaml format |
-| `KREUZBERG_SEMANTIC` | Semantic |
+| `KREUZBERG_TEXT` | Generic whitespace- and punctuation-aware text splitter (default). |
+| `KREUZBERG_MARKDOWN` | Markdown-aware splitter that preserves heading and code-block boundaries. |
+| `KREUZBERG_YAML` | YAML-aware splitter that creates one chunk per top-level key. |
+| `KREUZBERG_SEMANTIC` | Topic-aware chunker that splits at embedding-based topic shifts. |
 
 ---
 
@@ -5450,13 +5459,15 @@ Use stages to control the order of post-processing operations.
 
 #### KreuzbergReductionLevel
 
+Intensity level for the token-reduction pipeline.
+
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_OFF` | Off |
-| `KREUZBERG_LIGHT` | Light |
-| `KREUZBERG_MODERATE` | Moderate |
-| `KREUZBERG_AGGRESSIVE` | Aggressive |
-| `KREUZBERG_MAXIMUM` | Maximum |
+| `KREUZBERG_OFF` | No reduction applied; text is returned as-is. |
+| `KREUZBERG_LIGHT` | Remove only the most common stopwords. |
+| `KREUZBERG_MODERATE` | Balanced stopword removal and redundancy filtering. |
+| `KREUZBERG_AGGRESSIVE` | Aggressive filtering; may remove less common content words. |
+| `KREUZBERG_MAXIMUM` | Maximum compression; prioritizes brevity over completeness. |
 
 ---
 
@@ -5482,22 +5493,22 @@ Types of block-level elements in Djot.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_PARAGRAPH` | Paragraph element |
-| `KREUZBERG_HEADING` | Heading element |
-| `KREUZBERG_BLOCKQUOTE` | Blockquote element |
-| `KREUZBERG_CODE_BLOCK` | Code block |
-| `KREUZBERG_LIST_ITEM` | List item |
-| `KREUZBERG_ORDERED_LIST` | Ordered list |
-| `KREUZBERG_BULLET_LIST` | Bullet list |
-| `KREUZBERG_TASK_LIST` | Task list |
-| `KREUZBERG_DEFINITION_LIST` | Definition list |
-| `KREUZBERG_DEFINITION_TERM` | Definition term |
-| `KREUZBERG_DEFINITION_DESCRIPTION` | Definition description |
-| `KREUZBERG_DIV` | Div |
-| `KREUZBERG_SECTION` | Section element |
-| `KREUZBERG_THEMATIC_BREAK` | Thematic break |
-| `KREUZBERG_RAW_BLOCK` | Raw block |
-| `KREUZBERG_MATH_DISPLAY` | Math display |
+| `KREUZBERG_PARAGRAPH` | Standard prose paragraph. |
+| `KREUZBERG_HEADING` | Section heading (level stored in `FormattedBlock.level`). |
+| `KREUZBERG_BLOCKQUOTE` | Block quotation container. |
+| `KREUZBERG_CODE_BLOCK` | Fenced or indented code block. |
+| `KREUZBERG_LIST_ITEM` | Individual item within a list. |
+| `KREUZBERG_ORDERED_LIST` | Numbered (ordered) list container. |
+| `KREUZBERG_BULLET_LIST` | Unnumbered (bullet) list container. |
+| `KREUZBERG_TASK_LIST` | Task / checkbox list container. |
+| `KREUZBERG_DEFINITION_LIST` | Definition list container. |
+| `KREUZBERG_DEFINITION_TERM` | Term part of a definition list entry. |
+| `KREUZBERG_DEFINITION_DESCRIPTION` | Description / definition part of a definition list entry. |
+| `KREUZBERG_DIV` | Generic `div` container with optional attributes. |
+| `KREUZBERG_SECTION` | Logical section container, often associated with a heading. |
+| `KREUZBERG_THEMATIC_BREAK` | Horizontal rule / thematic break. |
+| `KREUZBERG_RAW_BLOCK` | Raw content block in a specified format (e.g. HTML, LaTeX). |
+| `KREUZBERG_MATH_DISPLAY` | Display-mode mathematical expression. |
 
 ---
 
@@ -5507,22 +5518,22 @@ Types of inline elements in Djot.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_TEXT` | Text format |
-| `KREUZBERG_STRONG` | Strong |
-| `KREUZBERG_EMPHASIS` | Emphasis |
-| `KREUZBERG_HIGHLIGHT` | Highlight |
-| `KREUZBERG_SUBSCRIPT` | Subscript |
-| `KREUZBERG_SUPERSCRIPT` | Superscript |
-| `KREUZBERG_INSERT` | Insert |
-| `KREUZBERG_DELETE` | Delete |
-| `KREUZBERG_CODE` | Code |
-| `KREUZBERG_LINK` | Link |
-| `KREUZBERG_IMAGE` | Image element |
-| `KREUZBERG_SPAN` | Span |
-| `KREUZBERG_MATH` | Math |
-| `KREUZBERG_RAW_INLINE` | Raw inline |
-| `KREUZBERG_FOOTNOTE_REF` | Footnote ref |
-| `KREUZBERG_SYMBOL` | Symbol |
+| `KREUZBERG_TEXT` | Plain text run. |
+| `KREUZBERG_STRONG` | Bold / strong emphasis. |
+| `KREUZBERG_EMPHASIS` | Italic / regular emphasis. |
+| `KREUZBERG_HIGHLIGHT` | Highlighted text (marker pen). |
+| `KREUZBERG_SUBSCRIPT` | Subscript text. |
+| `KREUZBERG_SUPERSCRIPT` | Superscript text. |
+| `KREUZBERG_INSERT` | Inserted text (tracked change). |
+| `KREUZBERG_DELETE` | Deleted text (tracked change). |
+| `KREUZBERG_CODE` | Inline code span. |
+| `KREUZBERG_LINK` | Hyperlink with URL. |
+| `KREUZBERG_IMAGE` | Inline image reference. |
+| `KREUZBERG_SPAN` | Generic inline span with optional attributes. |
+| `KREUZBERG_MATH` | Inline mathematical expression. |
+| `KREUZBERG_RAW_INLINE` | Raw inline content in a specified format. |
+| `KREUZBERG_FOOTNOTE_REF` | Footnote reference marker. |
+| `KREUZBERG_SYMBOL` | Named symbol or emoji shortcode. |
 
 ---
 
@@ -5595,14 +5606,14 @@ Types of inline text annotations.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_BOLD` | Bold |
-| `KREUZBERG_ITALIC` | Italic |
-| `KREUZBERG_UNDERLINE` | Underline |
-| `KREUZBERG_STRIKETHROUGH` | Strikethrough |
-| `KREUZBERG_CODE` | Code |
-| `KREUZBERG_SUBSCRIPT` | Subscript |
-| `KREUZBERG_SUPERSCRIPT` | Superscript |
-| `KREUZBERG_LINK` | Link — Fields: `url`: `const char*`, `title`: `const char*` |
+| `KREUZBERG_BOLD` | Bold (strong) text formatting. |
+| `KREUZBERG_ITALIC` | Italic (emphasis) text formatting. |
+| `KREUZBERG_UNDERLINE` | Underlined text. |
+| `KREUZBERG_STRIKETHROUGH` | Strikethrough text. |
+| `KREUZBERG_CODE` | Inline code span. |
+| `KREUZBERG_SUBSCRIPT` | Subscript text. |
+| `KREUZBERG_SUPERSCRIPT` | Superscript text. |
+| `KREUZBERG_LINK` | Hyperlink annotation. — Fields: `url`: `const char*`, `title`: `const char*` |
 | `KREUZBERG_HIGHLIGHT` | Highlighted text (PDF highlights, HTML `<mark>`). |
 | `KREUZBERG_COLOR` | Text color (CSS-compatible value, e.g. "#ff0000", "red"). — Fields: `value`: `const char*` |
 | `KREUZBERG_FONT_SIZE` | Font size with units (e.g. "12pt", "1.2em", "16px"). — Fields: `value`: `const char*` |
@@ -5619,17 +5630,17 @@ schemas) flow through without losing fidelity to the consumer.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_PERSON` | Person |
-| `KREUZBERG_ORGANIZATION` | Organization |
-| `KREUZBERG_LOCATION` | Location |
-| `KREUZBERG_DATE` | Date |
-| `KREUZBERG_TIME` | Time |
-| `KREUZBERG_MONEY` | Money |
-| `KREUZBERG_PERCENT` | Percent |
-| `KREUZBERG_EMAIL` | Email |
-| `KREUZBERG_PHONE` | Phone |
-| `KREUZBERG_URL` | Url |
-| `KREUZBERG_CUSTOM` | Custom — Fields: `0`: `const char*` |
+| `KREUZBERG_PERSON` | A person's name. |
+| `KREUZBERG_ORGANIZATION` | A company, institution, or organisation name. |
+| `KREUZBERG_LOCATION` | A geographic location (city, country, address). |
+| `KREUZBERG_DATE` | A calendar date. |
+| `KREUZBERG_TIME` | A time of day or duration. |
+| `KREUZBERG_MONEY` | A monetary amount with optional currency. |
+| `KREUZBERG_PERCENT` | A percentage value. |
+| `KREUZBERG_EMAIL` | An email address. |
+| `KREUZBERG_PHONE` | A phone number. |
+| `KREUZBERG_URL` | A URL or URI. |
+| `KREUZBERG_CUSTOM` | A caller-supplied custom category label. — Fields: `0`: `const char*` |
 
 ---
 
@@ -5639,9 +5650,9 @@ How the extracted text was produced.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_NATIVE` | Native |
-| `KREUZBERG_OCR` | Ocr |
-| `KREUZBERG_MIXED` | Mixed |
+| `KREUZBERG_NATIVE` | Text extracted directly from the document's native format (no OCR). |
+| `KREUZBERG_OCR` | All text was obtained via OCR (e.g. scanned image-only PDF). |
+| `KREUZBERG_MIXED` | Text came from a combination of native extraction and OCR. |
 
 ---
 
@@ -5739,26 +5750,26 @@ type-safe, clean metadata without nested optionals.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_PDF` | Pdf format — Fields: `0`: `KreuzbergPdfMetadata` |
-| `KREUZBERG_DOCX` | Docx format — Fields: `0`: `KreuzbergDocxMetadata` |
-| `KREUZBERG_EXCEL` | Excel — Fields: `0`: `KreuzbergExcelMetadata` |
-| `KREUZBERG_EMAIL` | Email — Fields: `0`: `KreuzbergEmailMetadata` |
-| `KREUZBERG_PPTX` | Pptx format — Fields: `0`: `KreuzbergPptxMetadata` |
-| `KREUZBERG_ARCHIVE` | Archive — Fields: `0`: `KreuzbergArchiveMetadata` |
-| `KREUZBERG_IMAGE` | Image element — Fields: `0`: `KreuzbergImageMetadata` |
-| `KREUZBERG_XML` | Xml format — Fields: `0`: `KreuzbergXmlMetadata` |
-| `KREUZBERG_TEXT` | Text format — Fields: `0`: `KreuzbergTextMetadata` |
-| `KREUZBERG_HTML` | Preserve as HTML `<mark>` tags — Fields: `0`: `KreuzbergHtmlMetadata` |
-| `KREUZBERG_OCR` | Ocr — Fields: `0`: `KreuzbergOcrMetadata` |
-| `KREUZBERG_CSV` | Csv format — Fields: `0`: `KreuzbergCsvMetadata` |
-| `KREUZBERG_BIBTEX` | Bibtex — Fields: `0`: `KreuzbergBibtexMetadata` |
-| `KREUZBERG_CITATION` | Citation — Fields: `0`: `KreuzbergCitationMetadata` |
-| `KREUZBERG_FICTION_BOOK` | Fiction book — Fields: `0`: `KreuzbergFictionBookMetadata` |
-| `KREUZBERG_DBF` | Dbf — Fields: `0`: `KreuzbergDbfMetadata` |
-| `KREUZBERG_JATS` | Jats — Fields: `0`: `KreuzbergJatsMetadata` |
-| `KREUZBERG_EPUB` | Epub format — Fields: `0`: `KreuzbergEpubMetadata` |
-| `KREUZBERG_PST` | Pst — Fields: `0`: `KreuzbergPstMetadata` |
-| `KREUZBERG_AUDIO` | Audio — Fields: `0`: `KreuzbergAudioMetadata` |
+| `KREUZBERG_PDF` | Metadata extracted from a PDF document. — Fields: `0`: `KreuzbergPdfMetadata` |
+| `KREUZBERG_DOCX` | Metadata extracted from a DOCX Word document. — Fields: `0`: `KreuzbergDocxMetadata` |
+| `KREUZBERG_EXCEL` | Metadata extracted from an Excel spreadsheet. — Fields: `0`: `KreuzbergExcelMetadata` |
+| `KREUZBERG_EMAIL` | Metadata extracted from an email message (EML/MSG). — Fields: `0`: `KreuzbergEmailMetadata` |
+| `KREUZBERG_PPTX` | Metadata extracted from a PowerPoint presentation. — Fields: `0`: `KreuzbergPptxMetadata` |
+| `KREUZBERG_ARCHIVE` | Metadata extracted from an archive (ZIP, TAR, 7Z, etc.). — Fields: `0`: `KreuzbergArchiveMetadata` |
+| `KREUZBERG_IMAGE` | Metadata extracted from a raster or vector image. — Fields: `0`: `KreuzbergImageMetadata` |
+| `KREUZBERG_XML` | Metadata extracted from an XML document. — Fields: `0`: `KreuzbergXmlMetadata` |
+| `KREUZBERG_TEXT` | Metadata extracted from a plain-text file. — Fields: `0`: `KreuzbergTextMetadata` |
+| `KREUZBERG_HTML` | Metadata extracted from an HTML document. — Fields: `0`: `KreuzbergHtmlMetadata` |
+| `KREUZBERG_OCR` | Metadata produced by an OCR pipeline. — Fields: `0`: `KreuzbergOcrMetadata` |
+| `KREUZBERG_CSV` | Metadata extracted from a CSV or TSV file. — Fields: `0`: `KreuzbergCsvMetadata` |
+| `KREUZBERG_BIBTEX` | Metadata extracted from a BibTeX bibliography file. — Fields: `0`: `KreuzbergBibtexMetadata` |
+| `KREUZBERG_CITATION` | Metadata extracted from a citation file (RIS, PubMed, EndNote). — Fields: `0`: `KreuzbergCitationMetadata` |
+| `KREUZBERG_FICTION_BOOK` | Metadata extracted from a FictionBook (FB2) e-book. — Fields: `0`: `KreuzbergFictionBookMetadata` |
+| `KREUZBERG_DBF` | Metadata extracted from a dBASE (DBF) database file. — Fields: `0`: `KreuzbergDbfMetadata` |
+| `KREUZBERG_JATS` | Metadata extracted from a JATS (Journal Article Tag Suite) XML file. — Fields: `0`: `KreuzbergJatsMetadata` |
+| `KREUZBERG_EPUB` | Metadata extracted from an EPUB e-book. — Fields: `0`: `KreuzbergEpubMetadata` |
+| `KREUZBERG_PST` | Metadata extracted from an Outlook PST archive. — Fields: `0`: `KreuzbergPstMetadata` |
+| `KREUZBERG_AUDIO` | Metadata extracted from an audio or video file. — Fields: `0`: `KreuzbergAudioMetadata` |
 
 ---
 
@@ -5877,15 +5888,15 @@ PII categories the pattern engine recognises.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_EMAIL` | Email |
-| `KREUZBERG_PHONE` | Phone |
-| `KREUZBERG_SSN` | Ssn |
-| `KREUZBERG_CREDIT_CARD` | Credit card |
-| `KREUZBERG_POSTAL_CODE` | Postal code |
-| `KREUZBERG_IP_ADDRESS` | Ip address |
-| `KREUZBERG_IBAN` | Iban |
-| `KREUZBERG_SWIFT_BIC` | Swift bic |
-| `KREUZBERG_DATE_OF_BIRTH` | Date of birth |
+| `KREUZBERG_EMAIL` | Email address (e.g. `user@example.com`). |
+| `KREUZBERG_PHONE` | Phone number in any common format. |
+| `KREUZBERG_SSN` | US Social Security Number. |
+| `KREUZBERG_CREDIT_CARD` | Payment card number (Visa, Mastercard, Amex, etc.). |
+| `KREUZBERG_POSTAL_CODE` | Postal / ZIP code. |
+| `KREUZBERG_IP_ADDRESS` | IPv4 or IPv6 address. |
+| `KREUZBERG_IBAN` | International Bank Account Number. |
+| `KREUZBERG_SWIFT_BIC` | SWIFT / BIC bank identifier code. |
+| `KREUZBERG_DATE_OF_BIRTH` | Date of birth. |
 | `KREUZBERG_PERSON` | Person name, surfaced by the optional NER backend. |
 | `KREUZBERG_ORGANIZATION` | Organization name, surfaced by the optional NER backend. |
 | `KREUZBERG_LOCATION` | Location, surfaced by the optional NER backend. |
@@ -5992,21 +6003,21 @@ Keyword algorithm selection.
 
 #### KreuzbergPsmMode
 
-Page Segmentation Mode for Tesseract OCR
+Page Segmentation Mode for Tesseract OCR.
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_OSD_ONLY` | Osd only |
-| `KREUZBERG_AUTO_OSD` | Auto osd |
-| `KREUZBERG_AUTO_ONLY` | Auto only |
-| `KREUZBERG_AUTO` | Auto |
-| `KREUZBERG_SINGLE_COLUMN` | Single column |
-| `KREUZBERG_SINGLE_BLOCK_VERTICAL` | Single block vertical |
-| `KREUZBERG_SINGLE_BLOCK` | Single block |
-| `KREUZBERG_SINGLE_LINE` | Single line |
-| `KREUZBERG_SINGLE_WORD` | Single word |
-| `KREUZBERG_CIRCLE_WORD` | Circle word |
-| `KREUZBERG_SINGLE_CHAR` | Single char |
+| `KREUZBERG_OSD_ONLY` | Orientation and script detection only. |
+| `KREUZBERG_AUTO_OSD` | Automatic page segmentation with OSD. |
+| `KREUZBERG_AUTO_ONLY` | Automatic page segmentation without OSD or OCR. |
+| `KREUZBERG_AUTO` | Fully automatic page segmentation with no OSD (default). |
+| `KREUZBERG_SINGLE_COLUMN` | Assume a single column of text of variable sizes. |
+| `KREUZBERG_SINGLE_BLOCK_VERTICAL` | Assume a single uniform block of vertically aligned text. |
+| `KREUZBERG_SINGLE_BLOCK` | Assume a single uniform block of text. |
+| `KREUZBERG_SINGLE_LINE` | Treat the image as a single text line. |
+| `KREUZBERG_SINGLE_WORD` | Treat the image as a single word. |
+| `KREUZBERG_CIRCLE_WORD` | Treat the image as a single word in a circle. |
+| `KREUZBERG_SINGLE_CHAR` | Treat the image as a single character. |
 
 ---
 
@@ -6049,23 +6060,23 @@ Wire format is snake_case in all serializers (JSON, TOML, YAML).
 
 | Value | Description |
 |-------|-------------|
-| `KREUZBERG_CAPTION` | Caption element |
-| `KREUZBERG_FOOTNOTE` | Footnote element |
-| `KREUZBERG_FORMULA` | Formula |
-| `KREUZBERG_LIST_ITEM` | List item |
-| `KREUZBERG_PAGE_FOOTER` | Page footer |
-| `KREUZBERG_PAGE_HEADER` | Page header |
-| `KREUZBERG_PICTURE` | Picture |
-| `KREUZBERG_SECTION_HEADER` | Section header |
-| `KREUZBERG_TABLE` | Table element |
-| `KREUZBERG_TEXT` | Text format |
-| `KREUZBERG_TITLE` | Title element |
-| `KREUZBERG_DOCUMENT_INDEX` | Document index |
-| `KREUZBERG_CODE` | Code |
-| `KREUZBERG_CHECKBOX_SELECTED` | Checkbox selected |
-| `KREUZBERG_CHECKBOX_UNSELECTED` | Checkbox unselected |
-| `KREUZBERG_FORM` | Form |
-| `KREUZBERG_KEY_VALUE_REGION` | Key value region |
+| `KREUZBERG_CAPTION` | Figure or table caption text. |
+| `KREUZBERG_FOOTNOTE` | Footnote or endnote text. |
+| `KREUZBERG_FORMULA` | Mathematical formula or equation. |
+| `KREUZBERG_LIST_ITEM` | A single item in a bulleted or numbered list. |
+| `KREUZBERG_PAGE_FOOTER` | Running footer at the bottom of a page. |
+| `KREUZBERG_PAGE_HEADER` | Running header at the top of a page. |
+| `KREUZBERG_PICTURE` | Image, chart, or other graphical element. |
+| `KREUZBERG_SECTION_HEADER` | Section heading. |
+| `KREUZBERG_TABLE` | Data table. |
+| `KREUZBERG_TEXT` | Body text paragraph. |
+| `KREUZBERG_TITLE` | Document or chapter title. |
+| `KREUZBERG_DOCUMENT_INDEX` | Table of contents or index. |
+| `KREUZBERG_CODE` | Source code block. |
+| `KREUZBERG_CHECKBOX_SELECTED` | Checkbox in selected state. |
+| `KREUZBERG_CHECKBOX_UNSELECTED` | Checkbox in unselected state. |
+| `KREUZBERG_FORM` | Form field or form element. |
+| `KREUZBERG_KEY_VALUE_REGION` | Key-value pair region (e.g. label + value in a form). |
 
 ---
 
@@ -6095,22 +6106,22 @@ and provides context for debugging.
 
 | Variant | Description |
 |---------|-------------|
-| `KREUZBERG_IO` | IO error: {0} |
-| `KREUZBERG_PARSING` | Parsing error: {message} |
-| `KREUZBERG_OCR` | OCR error: {message} |
-| `KREUZBERG_VALIDATION` | Validation error: {message} |
-| `KREUZBERG_CACHE` | Cache error: {message} |
-| `KREUZBERG_IMAGE_PROCESSING` | Image processing error: {message} |
-| `KREUZBERG_SERIALIZATION` | Serialization error: {message} |
-| `KREUZBERG_MISSING_DEPENDENCY` | Missing dependency: {0} |
-| `KREUZBERG_PLUGIN` | Plugin error in '{plugin_name}': {message} |
-| `KREUZBERG_LOCK_POISONED` | Lock poisoned: {0} |
-| `KREUZBERG_UNSUPPORTED_FORMAT` | Unsupported format: {0} |
-| `KREUZBERG_EMBEDDING` | Embedding error: {message} |
-| `KREUZBERG_TRANSCRIPTION` | Transcription error: {message} |
-| `KREUZBERG_TIMEOUT` | Extraction timed out after {elapsed_ms}ms (limit: {limit_ms}ms) |
-| `KREUZBERG_CANCELLED` | Extraction cancelled |
-| `KREUZBERG_SECURITY` | Security violation: {message} |
-| `KREUZBERG_OTHER` | {0} |
+| `KREUZBERG_IO` | A file system or I/O operation failed. These errors always bubble up unchanged. |
+| `KREUZBERG_PARSING` | Document parsing failed (e.g. corrupt file, unsupported format feature). |
+| `KREUZBERG_OCR` | An OCR engine returned an error or produced unusable output. |
+| `KREUZBERG_VALIDATION` | Invalid configuration or input parameters were supplied. |
+| `KREUZBERG_CACHE` | A cache read or write operation failed. |
+| `KREUZBERG_IMAGE_PROCESSING` | An image manipulation operation (resize, decode, DPI conversion) failed. |
+| `KREUZBERG_SERIALIZATION` | JSON or MessagePack serialization/deserialization failed. |
+| `KREUZBERG_MISSING_DEPENDENCY` | A required optional system dependency (e.g. `tesseract`) was not found. |
+| `KREUZBERG_PLUGIN` | A registered plugin returned an error during extraction. |
+| `KREUZBERG_LOCK_POISONED` | An internal `Mutex` or `RwLock` was found in a poisoned state. |
+| `KREUZBERG_UNSUPPORTED_FORMAT` | The document's MIME type is not supported by any registered extractor. |
+| `KREUZBERG_EMBEDDING` | The embedding model or embedding pipeline returned an error. |
+| `KREUZBERG_TRANSCRIPTION` | Audio/video transcription failed. |
+| `KREUZBERG_TIMEOUT` | The extraction operation exceeded the configured time limit. |
+| `KREUZBERG_CANCELLED` | The extraction was cancelled via a `CancellationToken`. |
+| `KREUZBERG_SECURITY` | A security policy was violated (e.g. zip bomb, oversized archive). |
+| `KREUZBERG_OTHER` | A catch-all for uncommon errors that do not fit another variant. |
 
 ---

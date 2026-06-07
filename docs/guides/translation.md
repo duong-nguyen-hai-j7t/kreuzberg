@@ -1,4 +1,4 @@
-# Document Translation <span class="version-badge">v5.0.0-rc.3</span>
+# Document Translation
 
 Translate extracted content into a target language with an LLM. Translates `content`, optionally `formatted_content`, and every chunk's text in place. Result populates `ExtractionResult.translation`.
 

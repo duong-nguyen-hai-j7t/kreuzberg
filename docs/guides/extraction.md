@@ -273,7 +273,7 @@ Batch functions accept an array of file paths (or byte arrays) and process them 
 
     --8<-- "snippets/wasm/api/batch_extract_bytes_sync.md"
 
-### Per-File Configuration <span class="version-badge">v4.5.0</span>
+### Per-File Configuration
 
 When a batch contains a mix of document types that need different settings (for example, scanned images needing OCR alongside text-based PDFs), use `FileExtractionConfig` to override options per file while sharing a common batch config.
 
@@ -360,7 +360,7 @@ When a batch contains a mix of document types that need different settings (for 
 
 Fields set to `None` in `FileExtractionConfig` inherit the batch default. Batch-level concerns like `max_concurrent_extractions`, `use_cache`, and `security_limits` cannot be overridden per file. See the [Configuration Reference](../reference/configuration.md#fileextractionconfig) for the full list of overridable fields.
 
-## Content Filtering <span class="version-badge">v4.8.0</span>
+## Content Filtering
 
 Kreuzberg strips running headers, footers, watermarks, and cross-page repeating text by default so that downstream RAG and LLM pipelines see clean body content. `ContentFilterConfig` lets you opt back in to any of these when you need them, for example when extracting legal forms where the header carries the case number, or when running text analysis on a PDF whose brand name was being incorrectly removed by the repeating-text heuristic.
 

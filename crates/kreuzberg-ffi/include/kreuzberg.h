@@ -83,6 +83,9 @@ typedef struct KREUZBERGBlockType KREUZBERGBlockType;
  * Bounding box coordinates for element positioning.
  */
 typedef struct KREUZBERGBoundingBox KREUZBERGBoundingBox;
+/**
+ * Aggregate statistics for a kreuzberg cache directory.
+ */
 typedef struct KREUZBERGCacheStats KREUZBERGCacheStats;
 /**
  * Configuration for the VLM captioning post-processor.
@@ -446,7 +449,7 @@ typedef struct KREUZBERGEmbeddedFile KREUZBERGEmbeddedFile;
  * # Contract
  *
  * - `embed(texts)` MUST return exactly `texts.len()` vectors, each of length
- *   `self.dimensions()`. The dispatcher in `embed_texts`
+ *   `self.dimensions()`. The dispatcher in `crate::embeddings::embed_texts`
  *   validates this before returning to downstream consumers; a non-conforming
  *   backend surfaces as a `KreuzbergError::Validation`, not a panic.
  * - `embed` may be called from any thread. Its future must be `Send`
@@ -471,8 +474,7 @@ typedef struct KREUZBERGEmbeddedFile KREUZBERGEmbeddedFile;
  * requires a multi-thread tokio runtime. Callers running inside a
  * `current_thread` runtime (e.g. `#[tokio::test]` without `flavor = "multi_thread"`,
  * or `tokio::runtime::Builder::new_current_thread()`) must use
- * `embed_texts_async` instead, which awaits directly without
- * `block_in_place`.
+ * `embed_texts_async` instead, which awaits directly without `block_in_place`.
  */
 typedef struct KREUZBERGEmbeddingBackend KREUZBERGEmbeddingBackend;
 /**
@@ -680,7 +682,7 @@ typedef struct KREUZBERGHtmlMetadata KREUZBERGHtmlMetadata;
 /**
  * Configuration for styled HTML output.
  *
- * When set on [`ExtractionConfig::html_output`] alongside
+ * When set on `html_output` alongside
  * `output_format = OutputFormat::Html`, the pipeline builds a
  * `StyledHtmlRenderer` (crate::rendering::StyledHtmlRenderer) instead of
  * the plain comrak-based renderer.
@@ -1020,7 +1022,7 @@ typedef struct KREUZBERGOrientationResult KREUZBERGOrientationResult;
  */
 typedef struct KREUZBERGOutputFormat KREUZBERGOutputFormat;
 /**
- * Page Segmentation Mode for Tesseract OCR
+ * Page Segmentation Mode for Tesseract OCR.
  */
 typedef struct KREUZBERGPSMMode KREUZBERGPSMMode;
 /**
@@ -1352,6 +1354,9 @@ typedef struct KREUZBERGRedactionStrategy KREUZBERGRedactionStrategy;
  * [`Self::case_sensitive`] to `true` for exact byte-match semantics.
  */
 typedef struct KREUZBERGRedactionTerm KREUZBERGRedactionTerm;
+/**
+ * Intensity level for the token-reduction pipeline.
+ */
 typedef struct KREUZBERGReductionLevel KREUZBERGReductionLevel;
 /**
  * Classification of a detected layout region that warrants VLM extraction.
@@ -1451,6 +1456,9 @@ typedef struct KREUZBERGServerConfig KREUZBERGServerConfig;
  * Structured data (Schema.org, microdata, RDFa) block.
  */
 typedef struct KREUZBERGStructuredData KREUZBERGStructuredData;
+/**
+ * Result of parsing a structured data file (JSON, JSONL, YAML, or TOML).
+ */
 typedef struct KREUZBERGStructuredDataResult KREUZBERGStructuredDataResult;
 /**
  * Structured data type classification.
@@ -1559,6 +1567,9 @@ typedef struct KREUZBERGTextMetadata KREUZBERGTextMetadata;
  * Per-category running counter for [`RedactionStrategy::TokenReplace`].
  */
 typedef struct KREUZBERGTokenCounter KREUZBERGTokenCounter;
+/**
+ * Configuration for the token-reduction pipeline.
+ */
 typedef struct KREUZBERGTokenReductionConfig KREUZBERGTokenReductionConfig;
 /**
  * Token reduction configuration.
@@ -1702,7 +1713,7 @@ typedef struct KREUZBERGValidator KREUZBERGValidator;
  * explicit pipeline takes precedence.
  * \note Both `OnLowQuality` and `Always` require [`OcrConfig::vlm_config`] to be `Some`.
  * Constructing an [`OcrConfig`] with one of these policies but no `vlm_config` is
- * detected by [`OcrConfig::validate`] and will surface as a
+ * detected by `OcrConfig::validate` and will surface as a
  * `Validation` error at extraction time, not a panic.
  * \code
  * use kreuzberg::{OcrConfig, VlmFallbackPolicy, LlmConfig};
@@ -15302,7 +15313,7 @@ char *kreuzberg_get_extensions_for_mime(const char *mime_type);
 uintptr_t kreuzberg_get_extensions_for_mime_len(const char *_mime_type);
 
 /**
- * Detect QR codes in the bytes of an [`ExtractedImage`].
+ * Detect QR codes in the bytes of an `ExtractedImage`.
  *
  * `format_hint` is currently unused â the `image` crate auto-detects the
  * container format from magic bytes â but the parameter is retained so future

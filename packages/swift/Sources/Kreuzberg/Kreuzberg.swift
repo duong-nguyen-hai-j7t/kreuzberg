@@ -3,11 +3,17 @@
 
 import Foundation
 import RustBridge
+/// Aggregate statistics for a kreuzberg cache directory.
 public struct CacheStats: Codable, Sendable, Hashable {
+    /// Total number of files currently in the cache directory.
     public let totalFiles: UInt
+    /// Combined size of all cache files in megabytes.
     public let totalSizeMb: Double
+    /// Free disk space available on the cache volume, in megabytes.
     public let availableSpaceMb: Double
+    /// Age of the oldest cache file in days (0.0 if the cache is empty).
     public let oldestFileAgeDays: Double
+    /// Age of the most recently written cache file in days (0.0 if the cache is empty).
     public let newestFileAgeDays: Double
     public init(totalFiles: UInt, totalSizeMb: Double, availableSpaceMb: Double, oldestFileAgeDays: Double, newestFileAgeDays: Double) {
         self.totalFiles = totalFiles
@@ -560,7 +566,7 @@ internal extension LanguageDetectionConfig {
 
 /// Configuration for styled HTML output.
 ///
-/// When set on [`ExtractionConfig::html_output`] alongside
+/// When set on `html_output` alongside
 /// `output_format = OutputFormat::Html`, the pipeline builds a
 /// [`StyledHtmlRenderer`](crate::rendering::StyledHtmlRenderer) instead of
 /// the plain comrak-based renderer.
@@ -1663,6 +1669,7 @@ internal extension ServerConfig {
     }
 }
 
+/// Result of parsing a structured data file (JSON, JSONL, YAML, or TOML).
 public typealias StructuredDataResult = RustBridge.StructuredDataResult
 
 /// Application properties from docProps/app.xml for DOCX
@@ -2174,6 +2181,7 @@ internal extension SecurityLimits {
     }
 }
 
+/// Configuration for the token-reduction pipeline.
 public typealias TokenReductionConfig = RustBridge.TokenReductionConfig
 
 /// One detected PII span in the input text.
@@ -3955,7 +3963,9 @@ public struct OcrMetadata: Codable, Sendable, Hashable {
     public let outputFormat: String
     /// Number of tables detected
     public let tableCount: UInt32
+    /// Number of rows in the detected table (if a single table was found).
     public let tableRows: UInt32?
+    /// Number of columns in the detected table (if a single table was found).
     public let tableCols: UInt32?
     public init(language: String, psm: Int32, outputFormat: String, tableCount: UInt32, tableRows: UInt32? = nil, tableCols: UInt32? = nil) {
         self.language = language
@@ -4002,7 +4012,9 @@ internal extension OcrMetadata {
 
 /// Error metadata (for batch operations).
 public struct ErrorMetadata: Codable, Sendable, Hashable {
+    /// Machine-readable error type identifier (e.g. "UnsupportedFormat").
     public let errorType: String
+    /// Human-readable error description.
     public let message: String
     public init(errorType: String, message: String) {
         self.errorType = errorType
@@ -4085,10 +4097,15 @@ public typealias DocxMetadata = RustBridge.DocxMetadata
 
 /// CSV/TSV file metadata.
 public struct CsvMetadata: Codable, Sendable, Hashable {
+    /// Total number of data rows (excluding the header row if present).
     public let rowCount: UInt32
+    /// Number of columns detected.
     public let columnCount: UInt32
+    /// Field delimiter character (e.g. `","` or `"\t"`).
     public let delimiter: String?
+    /// Whether the first row was treated as a header.
     public let hasHeader: Bool
+    /// Inferred data type for each column (e.g. `"string"`, `"integer"`, `"float"`).
     public let columnTypes: [String]?
     public init(rowCount: UInt32, columnCount: UInt32, delimiter: String? = nil, hasHeader: Bool, columnTypes: [String]? = nil) {
         self.rowCount = rowCount
@@ -4136,11 +4153,17 @@ public typealias BibtexMetadata = RustBridge.BibtexMetadata
 
 /// Citation file metadata (RIS, PubMed, EndNote).
 public struct CitationMetadata: Codable, Sendable, Hashable {
+    /// Total number of citation records in the file.
     public let citationCount: UInt
+    /// Detected citation file format (e.g. `"ris"`, `"pubmed"`, `"endnote"`).
     public let format: String?
+    /// Author names collected across all citation records.
     public let authors: [String]
+    /// Earliest and latest publication years found in the file.
     public let yearRange: YearRange?
+    /// DOI identifiers found in the citation records.
     public let dois: [String]
+    /// Keywords collected from all citation records.
     public let keywords: [String]
     public init(citationCount: UInt, format: String? = nil, authors: [String], yearRange: YearRange? = nil, dois: [String], keywords: [String]) {
         self.citationCount = citationCount
@@ -4189,8 +4212,11 @@ internal extension CitationMetadata {
 
 /// Year range for bibliographic metadata.
 public struct YearRange: Codable, Sendable, Hashable {
+    /// Earliest (minimum) year in the range.
     public let min: UInt32?
+    /// Latest (maximum) year in the range.
     public let max: UInt32?
+    /// All individual years present in the collection.
     public let years: [UInt32]
     public init(min: UInt32? = nil, max: UInt32? = nil, years: [UInt32]) {
         self.min = min
@@ -4216,8 +4242,11 @@ internal extension YearRange {
 
 /// FictionBook (FB2) metadata.
 public struct FictionBookMetadata: Codable, Sendable, Hashable {
+    /// Genre tags as declared in the FB2 `<genre>` elements.
     public let genres: [String]
+    /// Book series (sequence) names, if any.
     public let sequences: [String]
+    /// Short annotation / summary from the FB2 `<annotation>` element.
     public let annotation: String?
     public init(genres: [String], sequences: [String], annotation: String? = nil) {
         self.genres = genres
@@ -4256,8 +4285,11 @@ internal extension FictionBookMetadata {
 
 /// dBASE (DBF) file metadata.
 public struct DbfMetadata: Codable, Sendable, Hashable {
+    /// Total number of data records in the DBF file.
     public let recordCount: UInt
+    /// Number of field (column) definitions.
     public let fieldCount: UInt
+    /// Descriptor for each field in the table schema.
     public let fields: [DbfFieldInfo]
     public init(recordCount: UInt, fieldCount: UInt, fields: [DbfFieldInfo]) {
         self.recordCount = recordCount
@@ -4294,7 +4326,9 @@ internal extension DbfMetadata {
 
 /// dBASE field information.
 public struct DbfFieldInfo: Codable, Sendable, Hashable {
+    /// Field (column) name.
     public let name: String
+    /// dBASE field type character (e.g. `"C"` for character, `"N"` for numeric).
     public let fieldType: String
     public init(name: String, fieldType: String) {
         self.name = name
@@ -4325,7 +4359,9 @@ public typealias JatsMetadata = RustBridge.JatsMetadata
 
 /// JATS contributor with role.
 public struct ContributorRole: Codable, Sendable, Hashable {
+    /// Contributor display name.
     public let name: String
+    /// Contributor role (e.g. `"author"`, `"editor"`).
     public let role: String?
     public init(name: String, role: String? = nil) {
         self.name = name
@@ -4349,11 +4385,17 @@ internal extension ContributorRole {
 
 /// EPUB metadata (Dublin Core extensions).
 public struct EpubMetadata: Codable, Sendable, Hashable {
+    /// Dublin Core `coverage` field (geographic or temporal scope).
     public let coverage: String?
+    /// Dublin Core `format` field (media type of the resource).
     public let dcFormat: String?
+    /// Dublin Core `relation` field (related resource identifier).
     public let relation: String?
+    /// Dublin Core `source` field (origin resource identifier).
     public let source: String?
+    /// Dublin Core `type` field (nature or genre of the resource).
     public let dcType: String?
+    /// Path or identifier of the cover image within the EPUB container.
     public let coverImage: String?
     public init(coverage: String? = nil, dcFormat: String? = nil, relation: String? = nil, source: String? = nil, dcType: String? = nil, coverImage: String? = nil) {
         self.coverage = coverage
@@ -4400,6 +4442,7 @@ internal extension EpubMetadata {
 
 /// Outlook PST archive metadata.
 public struct PstMetadata: Codable, Sendable, Hashable {
+    /// Total number of email messages found in the PST archive.
     public let messageCount: UInt
     public init(messageCount: UInt) {
         self.messageCount = messageCount
@@ -5043,9 +5086,13 @@ internal extension QrCode {
 
 /// Pixel-space bounding box of a QR code inside its source image.
 public struct QrBoundingBox: Codable, Sendable, Hashable {
+    /// Horizontal pixel offset of the bounding box top-left corner.
     public let x: UInt32
+    /// Vertical pixel offset of the bounding box top-left corner.
     public let y: UInt32
+    /// Width of the bounding box in pixels.
     public let width: UInt32
+    /// Height of the bounding box in pixels.
     public let height: UInt32
     public init(x: UInt32, y: UInt32, width: UInt32, height: UInt32) {
         self.x = x
@@ -5888,9 +5935,13 @@ internal extension OrientationResult {
 
 /// Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-right.
 public struct BBox: Codable, Sendable, Hashable {
+    /// Left edge (x-coordinate of the top-left corner).
     public let x1: Float
+    /// Top edge (y-coordinate of the top-left corner).
     public let y1: Float
+    /// Right edge (x-coordinate of the bottom-right corner).
     public let x2: Float
+    /// Bottom edge (y-coordinate of the bottom-right corner).
     public let y2: Float
     public init(x1: Float, y1: Float, x2: Float, y2: Float) {
         self.x1 = x1
@@ -5916,8 +5967,11 @@ internal extension BBox {
 
 /// A single layout detection result.
 public struct LayoutDetection: Codable, Sendable, Hashable {
+    /// Detected layout class (e.g. `Table`, `Text`, `Title`).
     public let className: LayoutClass
+    /// Detection confidence score in `[0.0, 1.0]`.
     public let confidence: Float
+    /// Bounding box in image pixel coordinates.
     public let bbox: BBox
     public init(className: LayoutClass, confidence: Float, bbox: BBox) {
         self.className = className
@@ -5988,8 +6042,11 @@ internal extension RecognizedTable {
 
 /// Page-level detection result containing all detections and page metadata.
 public struct DetectionResult: Codable, Sendable, Hashable {
+    /// Page width in pixels (as seen by the model).
     public let pageWidth: UInt32
+    /// Page height in pixels (as seen by the model).
     public let pageHeight: UInt32
+    /// All layout detections on this page after postprocessing.
     public let detections: [LayoutDetection]
     public init(pageWidth: UInt32, pageHeight: UInt32, detections: [LayoutDetection]) {
         self.pageWidth = pageWidth
@@ -6226,7 +6283,7 @@ extension NerBackendKind {
 ///
 /// Both `OnLowQuality` and `Always` require [`OcrConfig::vlm_config`] to be `Some`.
 /// Constructing an [`OcrConfig`] with one of these policies but no `vlm_config` is
-/// detected by [`OcrConfig::validate`] and will surface as a
+/// detected by `OcrConfig::validate` and will surface as a
 /// `Validation` error at extraction time, not a panic.
 ///
 /// # Example
@@ -6320,9 +6377,13 @@ extension VlmFallbackPolicy {
 ///   `max_characters` (default 1000). `topic_threshold` has no effect in the
 ///   fallback path. For best results, pair with an embedding model.
 public enum ChunkerType: String, Codable, Sendable, Hashable {
+    /// Generic whitespace- and punctuation-aware text splitter (default).
     case text
+    /// Markdown-aware splitter that preserves heading and code-block boundaries.
     case markdown
+    /// YAML-aware splitter that creates one chunk per top-level key.
     case yaml
+    /// Topic-aware chunker that splits at embedding-based topic shifts.
     case semantic
 }
 extension ChunkerType {
@@ -6588,11 +6649,17 @@ extension ProcessingStage {
     }
 }
 
+/// Intensity level for the token-reduction pipeline.
 public enum ReductionLevel: String, Codable, Sendable, Hashable {
+    /// No reduction applied; text is returned as-is.
     case off = "Off"
+    /// Remove only the most common stopwords.
     case light = "Light"
+    /// Balanced stopword removal and redundancy filtering.
     case moderate = "Moderate"
+    /// Aggressive filtering; may remove less common content words.
     case aggressive = "Aggressive"
+    /// Maximum compression; prioritizes brevity over completeness.
     case maximum = "Maximum"
 }
 extension ReductionLevel {
@@ -6630,21 +6697,37 @@ extension PdfAnnotationType {
 
 /// Types of block-level elements in Djot.
 public enum BlockType: String, Codable, Sendable, Hashable {
+    /// Standard prose paragraph.
     case paragraph
+    /// Section heading (level stored in `FormattedBlock::level`).
     case heading
+    /// Block quotation container.
     case blockquote
+    /// Fenced or indented code block.
     case codeBlock = "code_block"
+    /// Individual item within a list.
     case listItem = "list_item"
+    /// Numbered (ordered) list container.
     case orderedList = "ordered_list"
+    /// Unnumbered (bullet) list container.
     case bulletList = "bullet_list"
+    /// Task / checkbox list container.
     case taskList = "task_list"
+    /// Definition list container.
     case definitionList = "definition_list"
+    /// Term part of a definition list entry.
     case definitionTerm = "definition_term"
+    /// Description / definition part of a definition list entry.
     case definitionDescription = "definition_description"
+    /// Generic `div` container with optional attributes.
     case div
+    /// Logical section container, often associated with a heading.
     case section
+    /// Horizontal rule / thematic break.
     case thematicBreak = "thematic_break"
+    /// Raw content block in a specified format (e.g. HTML, LaTeX).
     case rawBlock = "raw_block"
+    /// Display-mode mathematical expression.
     case mathDisplay = "math_display"
 }
 extension BlockType {
@@ -6657,21 +6740,37 @@ extension BlockType {
 
 /// Types of inline elements in Djot.
 public enum InlineType: String, Codable, Sendable, Hashable {
+    /// Plain text run.
     case text
+    /// Bold / strong emphasis.
     case strong
+    /// Italic / regular emphasis.
     case emphasis
+    /// Highlighted text (marker pen).
     case highlight
+    /// Subscript text.
     case subscript_ = "subscript"
+    /// Superscript text.
     case superscript
+    /// Inserted text (tracked change).
     case insert
+    /// Deleted text (tracked change).
     case delete
+    /// Inline code span.
     case code
+    /// Hyperlink with URL.
     case link
+    /// Inline image reference.
     case image
+    /// Generic inline span with optional attributes.
     case span
+    /// Inline mathematical expression.
     case math
+    /// Raw inline content in a specified format.
     case rawInline = "raw_inline"
+    /// Footnote reference marker.
     case footnoteRef = "footnote_ref"
+    /// Named symbol or emoji shortcode.
     case symbol
 }
 extension InlineType {
@@ -6960,13 +7059,21 @@ extension NodeContent {
 
 /// Types of inline text annotations.
 public enum AnnotationKind: Codable, Sendable, Hashable {
+    /// Bold (strong) text formatting.
     case bold
+    /// Italic (emphasis) text formatting.
     case italic
+    /// Underlined text.
     case underline
+    /// Strikethrough text.
     case strikethrough
+    /// Inline code span.
     case code
+    /// Subscript text.
     case subscript_
+    /// Superscript text.
     case superscript
+    /// Hyperlink annotation.
     case link(url: String, title: String?)
     /// Highlighted text (PDF highlights, HTML `<mark>`).
     case highlight
@@ -7075,16 +7182,27 @@ extension AnnotationKind {
 /// The `Custom(String)` variant lets caller-supplied categories (e.g. LLM
 /// schemas) flow through without losing fidelity to the consumer.
 public enum EntityCategory: Codable, Sendable, Hashable {
+    /// A person's name.
     case person
+    /// A company, institution, or organisation name.
     case organization
+    /// A geographic location (city, country, address).
     case location
+    /// A calendar date.
     case date
+    /// A time of day or duration.
     case time
+    /// A monetary amount with optional currency.
     case money
+    /// A percentage value.
     case percent
+    /// An email address.
     case email
+    /// A phone number.
     case phone
+    /// A URL or URI.
     case url
+    /// A caller-supplied custom category label.
     case custom(field0: String)
 }
 extension EntityCategory {
@@ -7097,8 +7215,11 @@ extension EntityCategory {
 
 /// How the extracted text was produced.
 public enum ExtractionMethod: String, Codable, Sendable, Hashable {
+    /// Text extracted directly from the document's native format (no OCR).
     case native
+    /// All text was obtained via OCR (e.g. scanned image-only PDF).
     case ocr
+    /// Text came from a combination of native extraction and OCR.
     case mixed
 }
 extension ExtractionMethod {
@@ -7450,14 +7571,23 @@ extension RedactionStrategy {
 
 /// PII categories the pattern engine recognises.
 public enum PiiCategory: Codable, Sendable, Hashable {
+    /// Email address (e.g. `user@example.com`).
     case email
+    /// Phone number in any common format.
     case phone
+    /// US Social Security Number.
     case ssn
+    /// Payment card number (Visa, Mastercard, Amex, etc.).
     case creditCard
+    /// Postal / ZIP code.
     case postalCode
+    /// IPv4 or IPv6 address.
     case ipAddress
+    /// International Bank Account Number.
     case iban
+    /// SWIFT / BIC bank identifier code.
     case swiftBic
+    /// Date of birth.
     case dateOfBirth
     /// Person name, surfaced by the optional NER backend.
     case person
@@ -7741,18 +7871,29 @@ extension KeywordAlgorithm {
     }
 }
 
-/// Page Segmentation Mode for Tesseract OCR
+/// Page Segmentation Mode for Tesseract OCR.
 public enum PSMMode: String, Codable, Sendable, Hashable {
+    /// Orientation and script detection only.
     case osdOnly = "OsdOnly"
+    /// Automatic page segmentation with OSD.
     case autoOsd = "AutoOsd"
+    /// Automatic page segmentation without OSD or OCR.
     case autoOnly = "AutoOnly"
+    /// Fully automatic page segmentation with no OSD (default).
     case auto = "Auto"
+    /// Assume a single column of text of variable sizes.
     case singleColumn = "SingleColumn"
+    /// Assume a single uniform block of vertically aligned text.
     case singleBlockVertical = "SingleBlockVertical"
+    /// Assume a single uniform block of text.
     case singleBlock = "SingleBlock"
+    /// Treat the image as a single text line.
     case singleLine = "SingleLine"
+    /// Treat the image as a single word.
     case singleWord = "SingleWord"
+    /// Treat the image as a single word in a circle.
     case circleWord = "CircleWord"
+    /// Treat the image as a single character.
     case singleChar = "SingleChar"
 }
 extension PSMMode {
@@ -7816,22 +7957,39 @@ extension PaddleLanguage {
 ///
 /// Wire format is snake_case in all serializers (JSON, TOML, YAML).
 public enum LayoutClass: String, Codable, Sendable, Hashable {
+    /// Figure or table caption text.
     case caption
+    /// Footnote or endnote text.
     case footnote
+    /// Mathematical formula or equation.
     case formula
+    /// A single item in a bulleted or numbered list.
     case listItem = "list_item"
+    /// Running footer at the bottom of a page.
     case pageFooter = "page_footer"
+    /// Running header at the top of a page.
     case pageHeader = "page_header"
+    /// Image, chart, or other graphical element.
     case picture
+    /// Section heading.
     case sectionHeader = "section_header"
+    /// Data table.
     case table
+    /// Body text paragraph.
     case text
+    /// Document or chapter title.
     case title
+    /// Table of contents or index.
     case documentIndex = "document_index"
+    /// Source code block.
     case code
+    /// Checkbox in selected state.
     case checkboxSelected = "checkbox_selected"
+    /// Checkbox in unselected state.
     case checkboxUnselected = "checkbox_unselected"
+    /// Form field or form element.
     case form
+    /// Key-value pair region (e.g. label + value in a form).
     case keyValueRegion = "key_value_region"
 }
 extension LayoutClass {
@@ -7862,22 +8020,39 @@ extension LayoutClass {
 /// - `UnsupportedFormat` - Unsupported MIME type or file format
 /// - `Other` - Catch-all for uncommon errors
 public enum KreuzbergError: Swift.Error {
+    /// A file system or I/O operation failed. These errors always bubble up unchanged.
     case io(message: String, field0: String)
+    /// Document parsing failed (e.g. corrupt file, unsupported format feature).
     case parsing(message: String, source: String?)
+    /// An OCR engine returned an error or produced unusable output.
     case ocr(message: String, source: String?)
+    /// Invalid configuration or input parameters were supplied.
     case validation(message: String, source: String?)
+    /// A cache read or write operation failed.
     case cache(message: String, source: String?)
+    /// An image manipulation operation (resize, decode, DPI conversion) failed.
     case imageProcessing(message: String, source: String?)
+    /// JSON or MessagePack serialization/deserialization failed.
     case serialization(message: String, source: String?)
+    /// A required optional system dependency (e.g. `tesseract`) was not found.
     case missingDependency(message: String, field0: String)
+    /// A registered plugin returned an error during extraction.
     case plugin(message: String, pluginName: String)
+    /// An internal `Mutex` or `RwLock` was found in a poisoned state.
     case lockPoisoned(message: String, field0: String)
+    /// The document's MIME type is not supported by any registered extractor.
     case unsupportedFormat(message: String, field0: String)
+    /// The embedding model or embedding pipeline returned an error.
     case embedding(message: String, source: String?)
+    /// Audio/video transcription failed.
     case transcription(message: String, source: String?)
+    /// The extraction operation exceeded the configured time limit.
     case timeout(message: String, elapsedMs: UInt64, limitMs: UInt64)
+    /// The extraction was cancelled via a `CancellationToken`.
     case cancelled
+    /// A security policy was violated (e.g. zip bomb, oversized archive).
     case security(message: String, source: String?)
+    /// A catch-all for uncommon errors that do not fit another variant.
     case other(message: String, field0: String)
 }
 
@@ -9109,7 +9284,7 @@ public func getExtensionsForMime(mimeType: String) throws -> [String] {
         let _rb_mimeType = RustString(mimeType)
     return try RustBridge.getExtensionsForMime(_rb_mimeType).map { $0.as_str().toString() }
 }
-/// Detect QR codes in the bytes of an [`ExtractedImage`].
+/// Detect QR codes in the bytes of an `ExtractedImage`.
 ///
 /// `format_hint` is currently unused — the `image` crate auto-detects the
 /// container format from magic bytes — but the parameter is retained so future

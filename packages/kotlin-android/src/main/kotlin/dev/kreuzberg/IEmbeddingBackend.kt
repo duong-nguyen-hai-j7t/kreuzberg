@@ -42,7 +42,7 @@ package dev.kreuzberg
  * # Contract
  *
  * - `embed(texts)` MUST return exactly `texts.len()` vectors, each of length
- *   `self.dimensions()`. The dispatcher in `embed_texts`
+ *   `self.dimensions()`. The dispatcher in `crate.embeddings.embed_texts`
  *   validates this before returning to downstream consumers; a non-conforming
  *   backend surfaces as a `KreuzbergError.Validation`, not a panic.
  *
@@ -70,8 +70,7 @@ package dev.kreuzberg
  * requires a multi-thread tokio runtime. Callers running inside a
  * `current_thread` runtime (e.g. `#[tokio.test]` without `flavor = "multi_thread"`,
  * or `tokio.runtime.Builder.new_current_thread()`) must use
- * `embed_texts_async` instead, which awaits directly without
- * `block_in_place`.
+ * `embed_texts_async` instead, which awaits directly without `block_in_place`.
  */
 interface IEmbeddingBackend {
     fun name(): String

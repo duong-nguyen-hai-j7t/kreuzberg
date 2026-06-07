@@ -1,4 +1,4 @@
-# VLM Image Captions <span class="version-badge">v5.0.0-rc.3</span>
+# VLM Image Captions
 
 Caption every extracted image with a vision-language model. Captions populate `ExtractedImage.caption` for every image whose area exceeds `CaptioningConfig.min_image_area`.
 

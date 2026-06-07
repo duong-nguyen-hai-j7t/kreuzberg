@@ -1,4 +1,4 @@
-# Redaction & Anonymisation <span class="version-badge">v5.0.0-rc.3</span>
+# Redaction & Anonymisation
 
 Rewrite every textual field of `ExtractionResult` to remove PII before the result leaves Kreuzberg. The pattern engine covers regex-detectable categories (emails, phones, SSNs, credit cards, IBANs, IP addresses, dates of birth, SWIFT/BIC, postal codes); the optional NER backend adds PERSON / ORGANIZATION / LOCATION. The audit trail lands on `ExtractionResult.redaction_report`.
 

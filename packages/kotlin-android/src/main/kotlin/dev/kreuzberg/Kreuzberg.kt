@@ -685,10 +685,12 @@ object Kreuzberg {
      * rewrite every textual field. Populates `result.redaction_report`.
      */
     fun redact(result: ExtractionResult, config: RedactionConfig): Unit = KreuzbergBridge.nativeRedact(mapper.writeValueAsString(result), mapper.writeValueAsString(config))
+    /** Find all US Social Security Number spans in `text` (format: NNN-NN-NNNN). */
     fun findAll(text: String): List<PatternMatch> {
         val resultJson = KreuzbergBridge.nativeFindAll(text)
         return mapper.readValue(resultJson, object : TypeReference<List<PatternMatch>>() {})
     }
+    /** Find all US Social Security Number spans in `text` (format: NNN-NN-NNNN). */
     suspend fun findAllAsync(text: String): List<PatternMatch> =
         withContext(Dispatchers.IO) { findAll(text) }
     /**

@@ -25,7 +25,10 @@ package dev.kreuzberg
 
 /** FictionBook (FB2) metadata. */
 data class FictionBookMetadata(
+    /** Genre tags as declared in the FB2 `<genre>` elements. */
     val genres: List<String> = emptyList(),
+    /** Book series (sequence) names, if any. */
     val sequences: List<String> = emptyList(),
+    /** Short annotation / summary from the FB2 `<annotation>` element. */
     val annotation: String? = null,
 )

@@ -32,25 +32,45 @@ package dev.kreuzberg
 @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = FormatMetadataDeserializer::class)
 @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = FormatMetadataSerializer::class)
 sealed class FormatMetadata {
+    /** Metadata extracted from a PDF document. */
     data class Pdf(val metadata: PdfMetadata) : FormatMetadata()
+    /** Metadata extracted from a DOCX Word document. */
     data class Docx(val metadata: DocxMetadata) : FormatMetadata()
+    /** Metadata extracted from an Excel spreadsheet. */
     data class Excel(val metadata: ExcelMetadata) : FormatMetadata()
+    /** Metadata extracted from an email message (EML/MSG). */
     data class Email(val metadata: EmailMetadata) : FormatMetadata()
+    /** Metadata extracted from a PowerPoint presentation. */
     data class Pptx(val metadata: PptxMetadata) : FormatMetadata()
+    /** Metadata extracted from an archive (ZIP, TAR, 7Z, etc.). */
     data class Archive(val metadata: ArchiveMetadata) : FormatMetadata()
+    /** Metadata extracted from a raster or vector image. */
     data class Image(val metadata: ImageMetadata) : FormatMetadata()
+    /** Metadata extracted from an XML document. */
     data class Xml(val metadata: XmlMetadata) : FormatMetadata()
+    /** Metadata extracted from a plain-text file. */
     data class Text(val metadata: TextMetadata) : FormatMetadata()
+    /** Metadata extracted from an HTML document. */
     data class Html(val metadata: HtmlMetadata) : FormatMetadata()
+    /** Metadata produced by an OCR pipeline. */
     data class Ocr(val metadata: OcrMetadata) : FormatMetadata()
+    /** Metadata extracted from a CSV or TSV file. */
     data class Csv(val metadata: CsvMetadata) : FormatMetadata()
+    /** Metadata extracted from a BibTeX bibliography file. */
     data class Bibtex(val metadata: BibtexMetadata) : FormatMetadata()
+    /** Metadata extracted from a citation file (RIS, PubMed, EndNote). */
     data class Citation(val metadata: CitationMetadata) : FormatMetadata()
+    /** Metadata extracted from a FictionBook (FB2) e-book. */
     data class FictionBook(val metadata: FictionBookMetadata) : FormatMetadata()
+    /** Metadata extracted from a dBASE (DBF) database file. */
     data class Dbf(val metadata: DbfMetadata) : FormatMetadata()
+    /** Metadata extracted from a JATS (Journal Article Tag Suite) XML file. */
     data class Jats(val metadata: JatsMetadata) : FormatMetadata()
+    /** Metadata extracted from an EPUB e-book. */
     data class Epub(val metadata: EpubMetadata) : FormatMetadata()
+    /** Metadata extracted from an Outlook PST archive. */
     data class Pst(val metadata: PstMetadata) : FormatMetadata()
+    /** Metadata extracted from an audio or video file. */
     data class Audio(val metadata: AudioMetadata) : FormatMetadata()
 }
 

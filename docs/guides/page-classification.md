@@ -1,4 +1,4 @@
-# Page Classification <span class="version-badge">v5.0.0-rc.3</span>
+# Page Classification
 
 Classify each page of a document against a caller-supplied label set. Single-label (exactly one) or multi-label (any subset). Result populates `ExtractionResult.page_classifications`.
 

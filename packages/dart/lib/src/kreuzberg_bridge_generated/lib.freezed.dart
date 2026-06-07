@@ -462,7 +462,9 @@ class AnnotationKind_Link extends AnnotationKind {
   const AnnotationKind_Link({required this.url, required this.title}): super._();
   
 
+/// Hyperlink target URL.
  final  String url;
+/// Optional link title attribute.
  final  String title;
 
 /// Create a copy of AnnotationKind
@@ -562,6 +564,7 @@ class AnnotationKind_Color extends AnnotationKind {
   const AnnotationKind_Color({required this.value}): super._();
   
 
+/// CSS-compatible color value (e.g. `"#ff0000"`, `"red"`).
  final  String value;
 
 /// Create a copy of AnnotationKind
@@ -628,6 +631,7 @@ class AnnotationKind_FontSize extends AnnotationKind {
   const AnnotationKind_FontSize({required this.value}): super._();
   
 
+/// Font size including unit (e.g. `"12pt"`, `"1.2em"`, `"16px"`).
  final  String value;
 
 /// Create a copy of AnnotationKind
@@ -694,7 +698,9 @@ class AnnotationKind_Custom extends AnnotationKind {
   const AnnotationKind_Custom({required this.name, required this.value}): super._();
   
 
+/// Name of the custom annotation kind.
  final  String name;
+/// Optional value or parameter for the annotation.
  final  String value;
 
 /// Create a copy of AnnotationKind
@@ -1593,6 +1599,7 @@ class EmbeddingModelType_Preset extends EmbeddingModelType {
   const EmbeddingModelType_Preset({required this.name}): super._();
   
 
+/// Preset name (e.g. "balanced", "multilingual", "large").
  final  String name;
 
 /// Create a copy of EmbeddingModelType
@@ -1659,7 +1666,9 @@ class EmbeddingModelType_Custom extends EmbeddingModelType {
   const EmbeddingModelType_Custom({required this.modelId, required this.dimensions}): super._();
   
 
+/// HuggingFace model repository ID (e.g. "BAAI/bge-small-en-v1.5").
  final  String modelId;
+/// Number of dimensions in the model's output embedding vectors.
  final  PlatformInt64 dimensions;
 
 /// Create a copy of EmbeddingModelType
@@ -1727,6 +1736,7 @@ class EmbeddingModelType_Llm extends EmbeddingModelType {
   const EmbeddingModelType_Llm({required this.llm}): super._();
   
 
+/// LLM provider configuration specifying the model and API credentials.
  final  LlmConfig llm;
 
 /// Create a copy of EmbeddingModelType
@@ -1793,6 +1803,7 @@ class EmbeddingModelType_Plugin extends EmbeddingModelType {
   const EmbeddingModelType_Plugin({required this.name}): super._();
   
 
+/// Name the backend was registered under via `register_embedding_backend`.
  final  String name;
 
 /// Create a copy of EmbeddingModelType
@@ -5657,6 +5668,7 @@ class NodeContent_Title extends NodeContent {
   const NodeContent_Title({required this.text}): super._();
   
 
+/// The title text content.
  final  String text;
 
 /// Create a copy of NodeContent
@@ -5723,7 +5735,9 @@ class NodeContent_Heading extends NodeContent {
   const NodeContent_Heading({required this.level, required this.text}): super._();
   
 
+/// Heading depth (1 = h1, 2 = h2, …, 6 = h6).
  final  PlatformInt64 level;
+/// The heading text content.
  final  String text;
 
 /// Create a copy of NodeContent
@@ -5791,6 +5805,7 @@ class NodeContent_Paragraph extends NodeContent {
   const NodeContent_Paragraph({required this.text}): super._();
   
 
+/// The paragraph text content.
  final  String text;
 
 /// Create a copy of NodeContent
@@ -5857,6 +5872,7 @@ class NodeContent_List extends NodeContent {
   const NodeContent_List({required this.ordered}): super._();
   
 
+/// `true` for ordered (numbered) lists; `false` for unordered (bullet) lists.
  final  bool ordered;
 
 /// Create a copy of NodeContent
@@ -5923,6 +5939,7 @@ class NodeContent_ListItem extends NodeContent {
   const NodeContent_ListItem({required this.text}): super._();
   
 
+/// The list item text content.
  final  String text;
 
 /// Create a copy of NodeContent
@@ -5989,6 +6006,7 @@ class NodeContent_Table extends NodeContent {
   const NodeContent_Table({required this.grid}): super._();
   
 
+/// Structured grid of table cells.
  final  TableGrid grid;
 
 /// Create a copy of NodeContent
@@ -6055,7 +6073,9 @@ class NodeContent_Image extends NodeContent {
   const NodeContent_Image({required this.description, required this.imageIndex, required this.src}): super._();
   
 
+/// Optional alt text or caption describing the image.
  final  String description;
+/// Index into the parent `ExtractionResult::images` list.
  final  PlatformInt64 imageIndex;
 /// Source URL or path of the image (from `<img src="...">` or `![](src)`).
  final  String src;
@@ -6126,7 +6146,9 @@ class NodeContent_Code extends NodeContent {
   const NodeContent_Code({required this.text, required this.language}): super._();
   
 
+/// The source code text content.
  final  String text;
+/// Programming language identifier (e.g. `"rust"`, `"python"`).
  final  String language;
 
 /// Create a copy of NodeContent
@@ -6226,6 +6248,7 @@ class NodeContent_Formula extends NodeContent {
   const NodeContent_Formula({required this.text}): super._();
   
 
+/// The formula source text (LaTeX or plain mathematical notation).
  final  String text;
 
 /// Create a copy of NodeContent
@@ -6292,6 +6315,7 @@ class NodeContent_Footnote extends NodeContent {
   const NodeContent_Footnote({required this.text}): super._();
   
 
+/// The footnote body text.
  final  String text;
 
 /// Create a copy of NodeContent
@@ -6358,8 +6382,11 @@ class NodeContent_Group extends NodeContent {
   const NodeContent_Group({required this.label, required this.headingLevel, required this.headingText}): super._();
   
 
+/// Optional display label for the group (e.g. section name).
  final  String label;
+/// Heading level of the section heading that opened this group (1-6).
  final  PlatformInt64 headingLevel;
+/// Text of the section heading that opened this group.
  final  String headingText;
 
 /// Create a copy of NodeContent
@@ -6462,6 +6489,7 @@ class NodeContent_Slide extends NodeContent {
 
 /// 1-indexed slide number.
  final  PlatformInt64 number;
+/// Slide title text, if present.
  final  String title;
 
 /// Create a copy of NodeContent
@@ -6561,7 +6589,9 @@ class NodeContent_DefinitionItem extends NodeContent {
   const NodeContent_DefinitionItem({required this.term, required this.definition}): super._();
   
 
+/// The term being defined.
  final  String term;
+/// The definition or description of the term.
  final  String definition;
 
 /// Create a copy of NodeContent
@@ -6629,7 +6659,9 @@ class NodeContent_Citation extends NodeContent {
   const NodeContent_Citation({required this.key, required this.text}): super._();
   
 
+/// Citation key (e.g. BibTeX key or reference ID).
  final  String key;
+/// Formatted citation text as it appears in the document.
  final  String text;
 
 /// Create a copy of NodeContent
@@ -6699,6 +6731,7 @@ class NodeContent_Admonition extends NodeContent {
 
 /// Kind of admonition (e.g. "note", "warning", "tip", "danger").
  final  String kind;
+/// Optional explicit title overriding the default kind label.
  final  String title;
 
 /// Create a copy of NodeContent
@@ -6768,6 +6801,7 @@ class NodeContent_RawBlock extends NodeContent {
 
 /// Source format identifier (e.g. "html", "latex", "jsx").
  final  String format;
+/// Verbatim source content in the specified format.
  final  String content;
 
 /// Create a copy of NodeContent

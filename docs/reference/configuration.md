@@ -126,7 +126,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `page_classification` | `PageClassificationConfig \| None` | `None` | Per-page classification configuration. When set, the classification post-processor runs at the Middle stage and populates `ExtractionResult.page_classifications`. |
 | `captioning` | `CaptioningConfig \| None` | `None` | VLM captioning configuration for extracted images. When set, the captioning post-processor runs at the Middle stage and writes a caption into each `ExtractedImage.caption`. |
 | `qr_codes` | `bool \| None` | `None` | Enable QR-code detection in extracted images. When `True`, the QR post-processor runs at the Middle stage and populates `ExtractedImage.qr_codes`. |
-| `cancel_token` | `str \| None` | `None` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call `CancellationToken.cancel` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `KreuzbergError.Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
+| `cancel_token` | `str \| None` | `None` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call its `cancel()` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
 
 ---
 
@@ -225,7 +225,7 @@ Language detection configuration.
 
 Configuration for styled HTML output.
 
-When set on `ExtractionConfig.html_output` alongside
+When set on `html_output` alongside
 `output_format = OutputFormat.Html`, the pipeline builds a
 `StyledHtmlRenderer` instead of
 the plain comrak-based renderer.
@@ -363,7 +363,7 @@ OCR configuration.
 | `tesseract_config` | `TesseractConfig \| None` | `None` | Tesseract-specific configuration (optional) |
 | `output_format` | `OutputFormat \| None` | `None` | Output format for OCR results (optional, for format conversion) |
 | `paddle_ocr_config` | `dict[str, Any] \| None` | `None` | PaddleOCR-specific configuration (optional, JSON passthrough) |
-| `backend_options` | `dict[str, Any] \| None` | `None` | Arbitrary per-call options passed through to the backend unchanged. Custom OCR backends and built-in backends that support runtime tuning can read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored. This is the recommended extension point for per-call parameters that are not covered by the typed fields above (e.g. mode switching, preprocessing flags, inference batch size). **Scope:** when `pipeline` is `None`, this value is propagated to the primary stage of the auto-constructed pipeline. When `pipeline` is explicitly set, this field has **no effect** — the caller must set `OcrPipelineStage.backend_options` directly on the relevant stage(s) instead. Example: ```json { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 }``` |
+| `backend_options` | `dict[str, Any] \| None` | `None` | Arbitrary per-call options passed through to the backend unchanged. Custom OCR backends and built-in backends that support runtime tuning can read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored. This is the recommended extension point for per-call parameters that are not covered by the typed fields above (e.g. mode switching, preprocessing flags, inference batch size). **Scope:** when `pipeline` is `None`, this value is propagated to the primary stage of the auto-constructed pipeline. When `pipeline` is explicitly set, this field has **no effect** — the caller must set `OcrPipelineStage.backend_options` directly on the relevant stage(s) instead. Example: ```json { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 } ``` |
 | `element_config` | `OcrElementConfig \| None` | `None` | OCR element extraction configuration |
 | `quality_thresholds` | `OcrQualityThresholds \| None` | `None` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
 | `pipeline` | `OcrPipelineConfig \| None` | `None` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
@@ -758,19 +758,21 @@ while still supporting legitimate documents.
 
 ### TokenReductionConfig
 
+Configuration for the token-reduction pipeline.
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `level` | `ReductionLevel` | `ReductionLevel.MODERATE` | Level (reduction level) |
-| `language_hint` | `str \| None` | `None` | Language hint |
-| `preserve_markdown` | `bool` | `False` | Preserve markdown |
-| `preserve_code` | `bool` | `True` | Preserve code |
-| `semantic_threshold` | `float` | `0.3` | Semantic threshold |
-| `enable_parallel` | `bool` | `True` | Enable parallel |
-| `use_simd` | `bool` | `True` | Use simd |
-| `custom_stopwords` | `dict[str, list[str]] \| None` | `None` | Custom stopwords |
-| `preserve_patterns` | `list[str]` | `[]` | Preserve patterns |
-| `target_reduction` | `float \| None` | `None` | Target reduction |
-| `enable_semantic_clustering` | `bool` | `False` | Enable semantic clustering |
+| `level` | `ReductionLevel` | `ReductionLevel.MODERATE` | Reduction intensity level. |
+| `language_hint` | `str \| None` | `None` | ISO 639-1 language code hint for stopword selection (e.g. `"en"`, `"de"`). |
+| `preserve_markdown` | `bool` | `False` | Preserve Markdown formatting tokens during reduction. |
+| `preserve_code` | `bool` | `True` | Preserve code block contents unchanged. |
+| `semantic_threshold` | `float` | `0.3` | Cosine similarity threshold below which sentences are considered dissimilar. |
+| `enable_parallel` | `bool` | `True` | Use Rayon parallel iterators for multi-core processing. |
+| `use_simd` | `bool` | `True` | Use SIMD-optimized text scanning where available. |
+| `custom_stopwords` | `dict[str, list[str]] \| None` | `None` | Per-language custom stopword lists (`language_code → stopword_list`). |
+| `preserve_patterns` | `list[str]` | `[]` | Regex patterns whose matched text is always preserved unchanged. |
+| `target_reduction` | `float \| None` | `None` | Target fraction of text to retain (0.0–1.0); `None` = no fixed target. |
+| `enable_semantic_clustering` | `bool` | `False` | Group semantically similar sentences and emit only one per cluster. |
 
 ---
 
@@ -818,12 +820,12 @@ This is the main result type returned by all extraction functions.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `content` | `str` | — | The extracted text content |
-| `mime_type` | `str` | — | The detected MIME type |
-| `metadata` | `Metadata` | — | Document metadata |
+| `content` | `str` | — | Plain-text representation of the extracted document content. |
+| `mime_type` | `str` | — | MIME type of the source document (e.g. `"application/pdf"`). |
+| `metadata` | `Metadata` | — | Document-level metadata (author, title, dates, format-specific fields). |
 | `extraction_method` | `ExtractionMethod \| None` | `None` | Extraction strategy used to produce the returned text. Populated when the extractor can reliably distinguish native text extraction, OCR-only extraction, or mixed native/OCR output. |
-| `tables` | `list[Table]` | `[]` | Tables extracted from the document |
-| `detected_languages` | `list[str] \| None` | `[]` | Detected languages |
+| `tables` | `list[Table]` | `[]` | Tables extracted from the document, each with structured cell data. |
+| `detected_languages` | `list[str] \| None` | `[]` | ISO 639-1 language codes detected in the document content. |
 | `chunks` | `list[Chunk] \| None` | `[]` | Text chunks when chunking is enabled. When chunking configuration is provided, the content is split into overlapping chunks for efficient processing. Each chunk contains the text, optional embeddings (if enabled), and metadata about its position. |
 | `images` | `list[ExtractedImage] \| None` | `[]` | Extracted images from the document. When image extraction is enabled via `ImageExtractionConfig`, this field contains all images found in the document with their raw data and metadata. Each image may optionally contain a nested `ocr_result` if OCR was performed. |
 | `pages` | `list[PageContent] \| None` | `[]` | Per-page content when page extraction is enabled. When page extraction is configured, the document is split into per-page content with tables and images mapped to their respective pages. |
@@ -1136,8 +1138,8 @@ Captures information about OCR processing configuration and results.
 | `psm` | `int` | — | Tesseract Page Segmentation Mode (PSM) |
 | `output_format` | `str` | — | Output format (e.g., "text", "hocr") |
 | `table_count` | `int` | — | Number of tables detected |
-| `table_rows` | `int \| None` | `None` | Table rows |
-| `table_cols` | `int \| None` | `None` | Table cols |
+| `table_rows` | `int \| None` | `None` | Number of rows in the detected table (if a single table was found). |
+| `table_cols` | `int \| None` | `None` | Number of columns in the detected table (if a single table was found). |
 
 ---
 
@@ -1177,11 +1179,11 @@ CSV/TSV file metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `row_count` | `int` | — | Number of rows |
-| `column_count` | `int` | — | Number of columns |
-| `delimiter` | `str \| None` | `None` | Delimiter |
-| `has_header` | `bool` | — | Whether header |
-| `column_types` | `list[str] \| None` | `[]` | Column types |
+| `row_count` | `int` | — | Total number of data rows (excluding the header row if present). |
+| `column_count` | `int` | — | Number of columns detected. |
+| `delimiter` | `str \| None` | `None` | Field delimiter character (e.g. `","` or `"\t"`). |
+| `has_header` | `bool` | — | Whether the first row was treated as a header. |
+| `column_types` | `list[str] \| None` | `[]` | Inferred data type for each column (e.g. `"string"`, `"integer"`, `"float"`). |
 
 ---
 
@@ -1192,10 +1194,10 @@ BibTeX bibliography metadata.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `entry_count` | `int` | — | Number of entries in the bibliography. |
-| `citation_keys` | `list[str]` | `[]` | Citation keys |
-| `authors` | `list[str]` | `[]` | Authors |
-| `year_range` | `YearRange \| None` | `None` | Year range (year range) |
-| `entry_types` | `dict[str, int] \| None` | `{}` | Entry types |
+| `citation_keys` | `list[str]` | `[]` | BibTeX citation keys (e.g. `"knuth1984"`) for all entries. |
+| `authors` | `list[str]` | `[]` | Author names collected across all bibliography entries. |
+| `year_range` | `YearRange \| None` | `None` | Earliest and latest publication years found in the bibliography. |
+| `entry_types` | `dict[str, int] \| None` | `{}` | Count of entries grouped by BibTeX entry type (e.g. `"article"` → 5). |
 
 ---
 
@@ -1205,12 +1207,12 @@ Citation file metadata (RIS, PubMed, EndNote).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `citation_count` | `int` | — | Number of citations |
-| `format` | `str \| None` | `None` | Format |
-| `authors` | `list[str]` | `[]` | Authors |
-| `year_range` | `YearRange \| None` | `None` | Year range (year range) |
-| `dois` | `list[str]` | `[]` | Dois |
-| `keywords` | `list[str]` | `[]` | Keywords |
+| `citation_count` | `int` | — | Total number of citation records in the file. |
+| `format` | `str \| None` | `None` | Detected citation file format (e.g. `"ris"`, `"pubmed"`, `"endnote"`). |
+| `authors` | `list[str]` | `[]` | Author names collected across all citation records. |
+| `year_range` | `YearRange \| None` | `None` | Earliest and latest publication years found in the file. |
+| `dois` | `list[str]` | `[]` | DOI identifiers found in the citation records. |
+| `keywords` | `list[str]` | `[]` | Keywords collected from all citation records. |
 
 ---
 
@@ -1220,9 +1222,9 @@ FictionBook (FB2) metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `genres` | `list[str]` | `[]` | Genres |
-| `sequences` | `list[str]` | `[]` | Sequences |
-| `annotation` | `str \| None` | `None` | Annotation |
+| `genres` | `list[str]` | `[]` | Genre tags as declared in the FB2 `<genre>` elements. |
+| `sequences` | `list[str]` | `[]` | Book series (sequence) names, if any. |
+| `annotation` | `str \| None` | `None` | Short annotation / summary from the FB2 `<annotation>` element. |
 
 ---
 
@@ -1232,9 +1234,9 @@ dBASE (DBF) file metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `record_count` | `int` | — | Number of records |
-| `field_count` | `int` | — | Number of fields |
-| `fields` | `list[DbfFieldInfo]` | `[]` | Fields |
+| `record_count` | `int` | — | Total number of data records in the DBF file. |
+| `field_count` | `int` | — | Number of field (column) definitions. |
+| `fields` | `list[DbfFieldInfo]` | `[]` | Descriptor for each field in the table schema. |
 
 ---
 
@@ -1244,10 +1246,10 @@ JATS (Journal Article Tag Suite) metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `copyright` | `str \| None` | `None` | Copyright |
-| `license` | `str \| None` | `None` | License |
-| `history_dates` | `dict[str, str]` | `{}` | History dates |
-| `contributor_roles` | `list[ContributorRole]` | `[]` | Contributor roles |
+| `copyright` | `str \| None` | `None` | Copyright statement from the article's `<permissions>` element. |
+| `license` | `str \| None` | `None` | Open-access license URI from the article's `<license>` element. |
+| `history_dates` | `dict[str, str]` | `{}` | Publication history dates keyed by event type (e.g. `"received"`, `"accepted"`). |
+| `contributor_roles` | `list[ContributorRole]` | `[]` | Authors and contributors with their stated roles. |
 
 ---
 
@@ -1257,12 +1259,12 @@ EPUB metadata (Dublin Core extensions).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `coverage` | `str \| None` | `None` | Coverage |
-| `dc_format` | `str \| None` | `None` | Dc format |
-| `relation` | `str \| None` | `None` | Relation |
-| `source` | `str \| None` | `None` | Source |
-| `dc_type` | `str \| None` | `None` | Dc type |
-| `cover_image` | `str \| None` | `None` | Cover image |
+| `coverage` | `str \| None` | `None` | Dublin Core `coverage` field (geographic or temporal scope). |
+| `dc_format` | `str \| None` | `None` | Dublin Core `format` field (media type of the resource). |
+| `relation` | `str \| None` | `None` | Dublin Core `relation` field (related resource identifier). |
+| `source` | `str \| None` | `None` | Dublin Core `source` field (origin resource identifier). |
+| `dc_type` | `str \| None` | `None` | Dublin Core `type` field (nature or genre of the resource). |
+| `cover_image` | `str \| None` | `None` | Path or identifier of the cover image within the EPUB container. |
 
 ---
 
@@ -1272,7 +1274,7 @@ Outlook PST archive metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `message_count` | `int` | — | Number of messages |
+| `message_count` | `int` | — | Total number of email messages found in the PST archive. |
 
 ---
 
@@ -1538,10 +1540,10 @@ Type of text chunker to use.
 
 | Variant | Wire value | Description |
 |---------|------------|-------------|
-| `Text` | `text` | Text format |
-| `Markdown` | `markdown` | Markdown format |
-| `Yaml` | `yaml` | Yaml format |
-| `Semantic` | `semantic` | Semantic |
+| `Text` | `text` | Generic whitespace- and punctuation-aware text splitter (default). |
+| `Markdown` | `markdown` | Markdown-aware splitter that preserves heading and code-block boundaries. |
+| `Yaml` | `yaml` | YAML-aware splitter that creates one chunk per top-level key. |
+| `Semantic` | `semantic` | Topic-aware chunker that splits at embedding-based topic shifts. |
 
 ---
 
@@ -1598,17 +1600,17 @@ schemas) flow through without losing fidelity to the consumer.
 
 | Variant | Wire value | Description |
 |---------|------------|-------------|
-| `Person` | `person` | Person |
-| `Organization` | `organization` | Organization |
-| `Location` | `location` | Location |
-| `Date` | `date` | Date |
-| `Time` | `time` | Time |
-| `Money` | `money` | Money |
-| `Percent` | `percent` | Percent |
-| `Email` | `email` | Email |
-| `Phone` | `phone` | Phone |
-| `Url` | `url` | Url |
-| `Custom` | `custom` | Custom — Fields: `_0`: `String` |
+| `Person` | `person` | A person's name. |
+| `Organization` | `organization` | A company, institution, or organisation name. |
+| `Location` | `location` | A geographic location (city, country, address). |
+| `Date` | `date` | A calendar date. |
+| `Time` | `time` | A time of day or duration. |
+| `Money` | `money` | A monetary amount with optional currency. |
+| `Percent` | `percent` | A percentage value. |
+| `Email` | `email` | An email address. |
+| `Phone` | `phone` | A phone number. |
+| `Url` | `url` | A URL or URI. |
+| `Custom` | `custom` | A caller-supplied custom category label. — Fields: `_0`: `String` |
 
 ---
 
@@ -1635,9 +1637,9 @@ How the extracted text was produced.
 
 | Variant | Wire value | Description |
 |---------|------------|-------------|
-| `Native` | `native` | Native |
-| `Ocr` | `ocr` | Ocr |
-| `Mixed` | `mixed` | Mixed |
+| `Native` | `native` | Text extracted directly from the document's native format (no OCR). |
+| `Ocr` | `ocr` | All text was obtained via OCR (e.g. scanned image-only PDF). |
+| `Mixed` | `mixed` | Text came from a combination of native extraction and OCR. |
 
 ---
 
@@ -1650,26 +1652,26 @@ type-safe, clean metadata without nested optionals.
 
 | Variant | Wire value | Description |
 |---------|------------|-------------|
-| `Pdf` | `pdf` | Pdf format — Fields: `_0`: `PdfMetadata` |
-| `Docx` | `docx` | Docx format — Fields: `_0`: `DocxMetadata` |
-| `Excel` | `excel` | Excel — Fields: `_0`: `ExcelMetadata` |
-| `Email` | `email` | Email — Fields: `_0`: `EmailMetadata` |
-| `Pptx` | `pptx` | Pptx format — Fields: `_0`: `PptxMetadata` |
-| `Archive` | `archive` | Archive — Fields: `_0`: `ArchiveMetadata` |
-| `Image` | `image` | Image element — Fields: `_0`: `ImageMetadata` |
-| `Xml` | `xml` | Xml format — Fields: `_0`: `XmlMetadata` |
-| `Text` | `text` | Text format — Fields: `_0`: `TextMetadata` |
-| `Html` | `html` | Preserve as HTML `<mark>` tags — Fields: `_0`: `HtmlMetadata` |
-| `Ocr` | `ocr` | Ocr — Fields: `_0`: `OcrMetadata` |
-| `Csv` | `csv` | Csv format — Fields: `_0`: `CsvMetadata` |
-| `Bibtex` | `bibtex` | Bibtex — Fields: `_0`: `BibtexMetadata` |
-| `Citation` | `citation` | Citation — Fields: `_0`: `CitationMetadata` |
-| `FictionBook` | `fiction_book` | Fiction book — Fields: `_0`: `FictionBookMetadata` |
-| `Dbf` | `dbf` | Dbf — Fields: `_0`: `DbfMetadata` |
-| `Jats` | `jats` | Jats — Fields: `_0`: `JatsMetadata` |
-| `Epub` | `epub` | Epub format — Fields: `_0`: `EpubMetadata` |
-| `Pst` | `pst` | Pst — Fields: `_0`: `PstMetadata` |
-| `Audio` | `audio` | Audio — Fields: `_0`: `AudioMetadata` |
+| `Pdf` | `pdf` | Metadata extracted from a PDF document. — Fields: `_0`: `PdfMetadata` |
+| `Docx` | `docx` | Metadata extracted from a DOCX Word document. — Fields: `_0`: `DocxMetadata` |
+| `Excel` | `excel` | Metadata extracted from an Excel spreadsheet. — Fields: `_0`: `ExcelMetadata` |
+| `Email` | `email` | Metadata extracted from an email message (EML/MSG). — Fields: `_0`: `EmailMetadata` |
+| `Pptx` | `pptx` | Metadata extracted from a PowerPoint presentation. — Fields: `_0`: `PptxMetadata` |
+| `Archive` | `archive` | Metadata extracted from an archive (ZIP, TAR, 7Z, etc.). — Fields: `_0`: `ArchiveMetadata` |
+| `Image` | `image` | Metadata extracted from a raster or vector image. — Fields: `_0`: `ImageMetadata` |
+| `Xml` | `xml` | Metadata extracted from an XML document. — Fields: `_0`: `XmlMetadata` |
+| `Text` | `text` | Metadata extracted from a plain-text file. — Fields: `_0`: `TextMetadata` |
+| `Html` | `html` | Metadata extracted from an HTML document. — Fields: `_0`: `HtmlMetadata` |
+| `Ocr` | `ocr` | Metadata produced by an OCR pipeline. — Fields: `_0`: `OcrMetadata` |
+| `Csv` | `csv` | Metadata extracted from a CSV or TSV file. — Fields: `_0`: `CsvMetadata` |
+| `Bibtex` | `bibtex` | Metadata extracted from a BibTeX bibliography file. — Fields: `_0`: `BibtexMetadata` |
+| `Citation` | `citation` | Metadata extracted from a citation file (RIS, PubMed, EndNote). — Fields: `_0`: `CitationMetadata` |
+| `FictionBook` | `fiction_book` | Metadata extracted from a FictionBook (FB2) e-book. — Fields: `_0`: `FictionBookMetadata` |
+| `Dbf` | `dbf` | Metadata extracted from a dBASE (DBF) database file. — Fields: `_0`: `DbfMetadata` |
+| `Jats` | `jats` | Metadata extracted from a JATS (Journal Article Tag Suite) XML file. — Fields: `_0`: `JatsMetadata` |
+| `Epub` | `epub` | Metadata extracted from an EPUB e-book. — Fields: `_0`: `EpubMetadata` |
+| `Pst` | `pst` | Metadata extracted from an Outlook PST archive. — Fields: `_0`: `PstMetadata` |
+| `Audio` | `audio` | Metadata extracted from an audio or video file. — Fields: `_0`: `AudioMetadata` |
 
 ---
 
@@ -1788,15 +1790,15 @@ PII categories the pattern engine recognises.
 
 | Variant | Wire value | Description |
 |---------|------------|-------------|
-| `Email` | `email` | Email |
-| `Phone` | `phone` | Phone |
-| `Ssn` | `ssn` | Ssn |
-| `CreditCard` | `credit_card` | Credit card |
-| `PostalCode` | `postal_code` | Postal code |
-| `IpAddress` | `ip_address` | Ip address |
-| `Iban` | `iban` | Iban |
-| `SwiftBic` | `swift_bic` | Swift bic |
-| `DateOfBirth` | `date_of_birth` | Date of birth |
+| `Email` | `email` | Email address (e.g. `user@example.com`). |
+| `Phone` | `phone` | Phone number in any common format. |
+| `Ssn` | `ssn` | US Social Security Number. |
+| `CreditCard` | `credit_card` | Payment card number (Visa, Mastercard, Amex, etc.). |
+| `PostalCode` | `postal_code` | Postal / ZIP code. |
+| `IpAddress` | `ip_address` | IPv4 or IPv6 address. |
+| `Iban` | `iban` | International Bank Account Number. |
+| `SwiftBic` | `swift_bic` | SWIFT / BIC bank identifier code. |
+| `DateOfBirth` | `date_of_birth` | Date of birth. |
 | `Person` | `person` | Person name, surfaced by the optional NER backend. |
 | `Organization` | `organization` | Organization name, surfaced by the optional NER backend. |
 | `Location` | `location` | Location, surfaced by the optional NER backend. |
@@ -1819,13 +1821,15 @@ Strategy applied when a PII match is rewritten.
 
 #### ReductionLevel
 
+Intensity level for the token-reduction pipeline.
+
 | Variant | Description |
 |---------|-------------|
-| `Off` | Off |
-| `Light` | Light |
-| `Moderate` | Moderate |
-| `Aggressive` | Aggressive |
-| `Maximum` | Maximum |
+| `Off` | No reduction applied; text is returned as-is. |
+| `Light` | Remove only the most common stopwords. |
+| `Moderate` | Balanced stopword removal and redundancy filtering. |
+| `Aggressive` | Aggressive filtering; may remove less common content words. |
+| `Maximum` | Maximum compression; prioritizes brevity over completeness. |
 
 ---
 

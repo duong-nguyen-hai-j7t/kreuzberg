@@ -25,14 +25,23 @@ package dev.kreuzberg
 
 /** PII categories the pattern engine recognises. */
 sealed class PiiCategory {
+    /** Email address (e.g. `user@example.com`). */
     object Email : PiiCategory()
+    /** Phone number in any common format. */
     object Phone : PiiCategory()
+    /** US Social Security Number. */
     object Ssn : PiiCategory()
+    /** Payment card number (Visa, Mastercard, Amex, etc.). */
     object CreditCard : PiiCategory()
+    /** Postal / ZIP code. */
     object PostalCode : PiiCategory()
+    /** IPv4 or IPv6 address. */
     object IpAddress : PiiCategory()
+    /** International Bank Account Number. */
     object Iban : PiiCategory()
+    /** SWIFT / BIC bank identifier code. */
     object SwiftBic : PiiCategory()
+    /** Date of birth. */
     object DateOfBirth : PiiCategory()
     /** Person name, surfaced by the optional NER backend. */
     object Person : PiiCategory()

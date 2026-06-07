@@ -24,4 +24,11 @@
 package dev.kreuzberg
 
 /** A single layout detection result. */
-data class LayoutDetection(val className: LayoutClass, val confidence: Float, val bbox: BBox)
+data class LayoutDetection(
+    /** Detected layout class (e.g. `Table`, `Text`, `Title`). */
+    val className: LayoutClass,
+    /** Detection confidence score in `[0.0, 1.0]`. */
+    val confidence: Float,
+    /** Bounding box in image pixel coordinates. */
+    val bbox: BBox,
+)

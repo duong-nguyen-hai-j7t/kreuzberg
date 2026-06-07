@@ -1,4 +1,4 @@
-# Document Summarisation <span class="version-badge">v5.0.0-rc.3</span>
+# Document Summarisation
 
 Produce a prose summary of an extracted document. Extractive backend uses pure-Rust TextRank; abstractive backend uses liter-llm. Result populates `ExtractionResult.summary`.
 

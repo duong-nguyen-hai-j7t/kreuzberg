@@ -33,8 +33,11 @@ package dev.kreuzberg
  * are safe to clone and pass across language boundaries.
  */
 data class EmbeddingPreset(
+    /** Short identifier for this preset (e.g. `"balanced"`, `"fast"`, `"quality"`). */
     val name: String,
+    /** Target chunk size in characters. */
     val chunkSize: Long,
+    /** Overlap between consecutive chunks in characters. */
     val overlap: Long,
     /** HuggingFace repository name for the model. */
     val modelRepo: String,
@@ -42,6 +45,8 @@ data class EmbeddingPreset(
     val pooling: String,
     /** Path to the ONNX model file within the repo. */
     val modelFile: String,
+    /** Embedding vector dimension produced by this model. */
     val dimensions: Long,
+    /** Human-readable description of the preset's intended use case. */
     val description: String,
 )

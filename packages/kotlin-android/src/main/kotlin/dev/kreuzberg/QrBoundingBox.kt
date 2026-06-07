@@ -24,4 +24,13 @@
 package dev.kreuzberg
 
 /** Pixel-space bounding box of a QR code inside its source image. */
-data class QrBoundingBox(val x: Int, val y: Int, val width: Int, val height: Int)
+data class QrBoundingBox(
+    /** Horizontal pixel offset of the bounding box top-left corner. */
+    val x: Int,
+    /** Vertical pixel offset of the bounding box top-left corner. */
+    val y: Int,
+    /** Width of the bounding box in pixels. */
+    val width: Int,
+    /** Height of the bounding box in pixels. */
+    val height: Int,
+)

@@ -25,8 +25,11 @@ package dev.kreuzberg
 
 /** How the extracted text was produced. */
 enum class ExtractionMethod {
+    /** Text extracted directly from the document's native format (no OCR). */
     @com.fasterxml.jackson.annotation.JsonProperty("native") NATIVE,
+    /** All text was obtained via OCR (e.g. scanned image-only PDF). */
     @com.fasterxml.jackson.annotation.JsonProperty("ocr") OCR,
+    /** Text came from a combination of native extraction and OCR. */
     @com.fasterxml.jackson.annotation.JsonProperty("mixed") MIXED;
 
     @com.fasterxml.jackson.annotation.JsonValue

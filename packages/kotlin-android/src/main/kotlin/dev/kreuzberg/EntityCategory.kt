@@ -30,15 +30,26 @@ package dev.kreuzberg
  * schemas) flow through without losing fidelity to the consumer.
  */
 sealed class EntityCategory {
+    /** A person's name. */
     object Person : EntityCategory()
+    /** A company, institution, or organisation name. */
     object Organization : EntityCategory()
+    /** A geographic location (city, country, address). */
     object Location : EntityCategory()
+    /** A calendar date. */
     object Date : EntityCategory()
+    /** A time of day or duration. */
     object Time : EntityCategory()
+    /** A monetary amount with optional currency. */
     object Money : EntityCategory()
+    /** A percentage value. */
     object Percent : EntityCategory()
+    /** An email address. */
     object Email : EntityCategory()
+    /** A phone number. */
     object Phone : EntityCategory()
+    /** A URL or URI. */
     object Url : EntityCategory()
+    /** A caller-supplied custom category label. */
     data class Custom(val value: String) : EntityCategory()
 }

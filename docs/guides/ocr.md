@@ -290,7 +290,7 @@ When `disable_ocr` is set, image files return empty content instead of raising `
 
     --8<-- "snippets/r/ocr/ocr_paddleocr.md"
 
-### Using VLM OCR <span class="version-badge">v4.8.0</span>
+### Using VLM OCR
 
 Use a vision-language model (e.g. GPT-4o, Claude) as the OCR backend — each page is rendered and sent to the VLM. Cloud providers need an API key; local engines (Ollama, etc.) use the `ollama/` prefix — see [Local LLM Support](llm-integration.md#local-llm-support).
 

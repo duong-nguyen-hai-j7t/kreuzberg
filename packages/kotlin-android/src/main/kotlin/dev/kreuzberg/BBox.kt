@@ -24,4 +24,13 @@
 package dev.kreuzberg
 
 /** Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-right. */
-data class BBox(val x1: Float, val y1: Float, val x2: Float, val y2: Float)
+data class BBox(
+    /** Left edge (x-coordinate of the top-left corner). */
+    val x1: Float,
+    /** Top edge (y-coordinate of the top-left corner). */
+    val y1: Float,
+    /** Right edge (x-coordinate of the bottom-right corner). */
+    val x2: Float,
+    /** Bottom edge (y-coordinate of the bottom-right corner). */
+    val y2: Float,
+)

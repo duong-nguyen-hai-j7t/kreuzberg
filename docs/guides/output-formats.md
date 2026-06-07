@@ -1,4 +1,4 @@
-# Output Formats <span class="version-badge">v4.1.0</span>
+# Output Formats
 
 Choose the format that matches your downstream processing:
 
@@ -18,7 +18,7 @@ No configuration required. The result contains:
 
 ---
 
-## Element-Based Output <span class="version-badge">v4.1.0</span>
+## Element-Based Output
 
 A flat array of typed elements (titles, paragraphs, tables, list items, code blocks, images, etc.). Each carries a page number; PDF text elements also carry bounding boxes when hierarchy extraction is enabled.
 

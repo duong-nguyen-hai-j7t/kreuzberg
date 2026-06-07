@@ -1,4 +1,4 @@
-# Layout Detection <span class="version-badge">v4.5.0</span>
+# Layout Detection
 
 Detect document layout regions (tables, figures, headers, text blocks, etc.) in PDFs using ONNX-based deep learning models. Enables table extraction, figure isolation, reading-order reconstruction, and selective OCR.
 
@@ -96,7 +96,7 @@ _171-document PDF corpus, CPU only. GPU acceleration significantly reduces the t
 
 See [LayoutDetectionConfig](../reference/configuration.md#layoutdetectionconfig) for all fields.
 
-## Table Structure Models <span class="version-badge">v4.5.3</span>
+## Table Structure Models
 
 When layout detection identifies a table region, a table structure model analyzes rows, columns, headers, and spanning cells. Set `LayoutDetectionConfig.table_model` to one of:
 

@@ -25,9 +25,14 @@ package dev.kreuzberg
 
 /** CSV/TSV file metadata. */
 data class CsvMetadata(
+    /** Total number of data rows (excluding the header row if present). */
     val rowCount: Int = 0,
+    /** Number of columns detected. */
     val columnCount: Int = 0,
+    /** Field delimiter character (e.g. `","` or `"\t"`). */
     val delimiter: String? = null,
+    /** Whether the first row was treated as a header. */
     val hasHeader: Boolean = false,
+    /** Inferred data type for each column (e.g. `"string"`, `"integer"`, `"float"`). */
     val columnTypes: List<String>? = null,
 )

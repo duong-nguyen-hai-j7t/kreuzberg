@@ -23,9 +23,14 @@
 
 package dev.kreuzberg
 
+/** Result of parsing a structured data file (JSON, JSONL, YAML, or TOML). */
 data class StructuredDataResult(
+    /** The extracted text content, formatted for readability. */
     val content: String,
+    /** The source format identifier (e.g. `"json"`, `"yaml"`, `"toml"`). */
     val format: String,
+    /** Key-value metadata extracted from recognized text fields. */
     val metadata: Map<String, String> = emptyMap(),
+    /** JSON paths of fields that were classified as text-bearing. */
     val textFields: List<String> = emptyList(),
 )

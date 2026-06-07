@@ -24,4 +24,9 @@
 package dev.kreuzberg
 
 /** dBASE field information. */
-data class DbfFieldInfo(val name: String, val fieldType: String)
+data class DbfFieldInfo(
+    /** Field (column) name. */
+    val name: String,
+    /** dBASE field type character (e.g. `"C"` for character, `"N"` for numeric). */
+    val fieldType: String,
+)

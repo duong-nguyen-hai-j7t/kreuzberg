@@ -1,4 +1,4 @@
-# API Server <span class="version-badge">v4.0.0</span>
+# API Server
 
 Kreuzberg runs as an HTTP REST API server (`kreuzberg serve`) or as an MCP server (`kreuzberg mcp`) for AI agent integration.
 
@@ -140,7 +140,7 @@ curl -X POST http://localhost:8000/chunk \
 
     --8<-- "snippets/ruby/api/client_chunk_text.md"
 
-#### POST /extract-structured <span class="version-badge">v4.8.0</span>
+#### POST /extract-structured
 
 Extract typed JSON from a document by running an LLM against the extracted text with a JSON schema (requires `liter-llm` feature; `multipart/form-data` request).
 
@@ -182,11 +182,11 @@ Errors follow the same shape as `/extract`. A `501` response indicates the serve
 | Endpoint          | Method | Description                                                               |
 | ----------------- | ------ | ------------------------------------------------------------------------- |
 | `/health`         | GET    | `{"status":"healthy","version":"4.6.3"}`                                  |
-| `/version`        | GET    | `{"version":"4.6.3"}` <span class="version-badge">v4.5.2</span>           |
-| `/detect`         | POST   | MIME type detection (multipart) <span class="version-badge">v4.5.2</span> |
+| `/version`        | GET    | `{"version":"4.6.3"}`                                                     |
+| `/detect`         | POST   | MIME type detection (multipart)                                           |
 | `/cache/stats`    | GET    | Cache statistics                                                          |
-| `/cache/warm`     | POST   | Pre-download models <span class="version-badge">v4.5.2</span>             |
-| `/cache/manifest` | GET    | Model manifest with checksums <span class="version-badge">v4.5.2</span>   |
+| `/cache/warm`     | POST   | Pre-download models                                                       |
+| `/cache/manifest` | GET    | Model manifest with checksums                                             |
 | `/cache/clear`    | DELETE | Clear all cached files                                                    |
 | `/info`           | GET    | `{"version":"...","rust_backend":true}`                                   |
 | `/openapi.json`   | GET    | OpenAPI 3.0 schema                                                        |
@@ -325,15 +325,15 @@ kreuzberg mcp --config kreuzberg.toml
 | `extract_bytes`       | `data` (base64)                                                                                                                                   | Extract from encoded bytes                                                |
 | `batch_extract_files` | `paths`                                                                                                                                           | Extract multiple files                                                    |
 | `detect_mime_type`    | `path`                                                                                                                                            | Detect file format                                                        |
-| `list_formats`        | —                                                                                                                                                 | List supported formats <span class="version-badge">v4.5.2</span>          |
-| `get_version`         | —                                                                                                                                                 | Library version <span class="version-badge">v4.5.2</span>                 |
+| `list_formats`        | —                                                                                                                                                 | List supported formats                                                    |
+| `get_version`         | —                                                                                                                                                 | Library version                                                           |
 | `cache_stats`         | —                                                                                                                                                 | Cache usage                                                               |
 | `cache_clear`         | —                                                                                                                                                 | Remove cached files                                                       |
-| `cache_manifest`      | —                                                                                                                                                 | Model checksums <span class="version-badge">v4.5.2</span>                 |
-| `cache_warm`          | —                                                                                                                                                 | Pre-download models <span class="version-badge">v4.5.2</span>             |
-| `embed_text`          | `texts`                                                                                                                                           | Generate embeddings <span class="version-badge">v4.5.2</span>             |
-| `chunk_text`          | `text`                                                                                                                                            | Split text <span class="version-badge">v4.5.2</span>                      |
-| `extract_structured`  | `path`, `schema`, `model`; optional `schema_name` (default `"extraction"`), `schema_description`, `prompt`, `api_key`, `strict` (default `false`) | Extract structured JSON via LLM <span class="version-badge">v4.8.0</span> |
+| `cache_manifest`      | —                                                                                                                                                 | Model checksums                                                           |
+| `cache_warm`          | —                                                                                                                                                 | Pre-download models                                                       |
+| `embed_text`          | `texts`                                                                                                                                           | Generate embeddings                                                       |
+| `chunk_text`          | `text`                                                                                                                                            | Split text                                                                |
+| `extract_structured`  | `path`, `schema`, `model`; optional `schema_name` (default `"extraction"`), `schema_description`, `prompt`, `api_key`, `strict` (default `false`) | Extract structured JSON via LLM |
 
 All tools accept an optional `config` object. `extract_file` and `extract_bytes` also accept `pdf_password`. `extract_structured` requires the server to be built with the `liter-llm` feature; see the row above for optional fields and defaults.
 

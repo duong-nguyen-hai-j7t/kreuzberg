@@ -1,4 +1,4 @@
-# MCP Integration <span class="version-badge">v5.0.0</span>
+# MCP Integration
 
 Kreuzberg speaks [Model Context Protocol](https://modelcontextprotocol.io/). That means any AI agent — Claude, Cursor, a custom LangChain pipeline — can extract documents, generate embeddings, and manage caches through a standard tool interface without writing extraction code.
 

@@ -23,10 +23,16 @@
 
 package dev.kreuzberg
 
+/** Aggregate statistics for a kreuzberg cache directory. */
 data class CacheStats(
+    /** Total number of files currently in the cache directory. */
     val totalFiles: Long,
+    /** Combined size of all cache files in megabytes. */
     val totalSizeMb: Double,
+    /** Free disk space available on the cache volume, in megabytes. */
     val availableSpaceMb: Double,
+    /** Age of the oldest cache file in days (0.0 if the cache is empty). */
     val oldestFileAgeDays: Double,
+    /** Age of the most recently written cache file in days (0.0 if the cache is empty). */
     val newestFileAgeDays: Double,
 )

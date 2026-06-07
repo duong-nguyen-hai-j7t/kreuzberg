@@ -1,8 +1,8 @@
-# Kubernetes Deployment <span class="version-badge new">v4.2.2</span>
+# Kubernetes Deployment
 
 Deploy Kreuzberg to Kubernetes with proper OCR configuration, permissions, and health checks.
 
-## Helm Chart <span class="version-badge new">v4.8.4</span>
+## Helm Chart
 
 Deploy via the official Helm chart (OCI artifact on GHCR).
 

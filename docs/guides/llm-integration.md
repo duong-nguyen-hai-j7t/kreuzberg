@@ -1,4 +1,4 @@
-# LLM Integration <span class="version-badge">v4.8.0</span>
+# LLM Integration
 
 Kreuzberg integrates with 143 LLM providers (including local inference engines) via [liter-llm](https://github.com/kreuzberg-dev/liter-llm) for three capabilities: VLM OCR, structured extraction, and provider-hosted embeddings.
 
@@ -254,9 +254,8 @@ Use provider-hosted embedding models when you need to match your vector database
 
 ## Local LLM Support
 
-<span class="version-badge">v4.8.0</span>
-
-Run local LLM inference engines via [liter-llm](https://github.com/kreuzberg-dev/liter-llm)'s provider routing; point to your local server without needing an API key.
+Run local LLM inference engines via [liter-llm](https://github.com/kreuzberg-dev/liter-llm)'s
+provider routing; point to your local server without needing an API key.
 
 ### Supported Local Engines
 

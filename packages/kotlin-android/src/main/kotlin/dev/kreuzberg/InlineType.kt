@@ -25,21 +25,37 @@ package dev.kreuzberg
 
 /** Types of inline elements in Djot. */
 enum class InlineType {
+    /** Plain text run. */
     @com.fasterxml.jackson.annotation.JsonProperty("text") TEXT,
+    /** Bold / strong emphasis. */
     @com.fasterxml.jackson.annotation.JsonProperty("strong") STRONG,
+    /** Italic / regular emphasis. */
     @com.fasterxml.jackson.annotation.JsonProperty("emphasis") EMPHASIS,
+    /** Highlighted text (marker pen). */
     @com.fasterxml.jackson.annotation.JsonProperty("highlight") HIGHLIGHT,
+    /** Subscript text. */
     @com.fasterxml.jackson.annotation.JsonProperty("subscript") SUBSCRIPT,
+    /** Superscript text. */
     @com.fasterxml.jackson.annotation.JsonProperty("superscript") SUPERSCRIPT,
+    /** Inserted text (tracked change). */
     @com.fasterxml.jackson.annotation.JsonProperty("insert") INSERT,
+    /** Deleted text (tracked change). */
     @com.fasterxml.jackson.annotation.JsonProperty("delete") DELETE,
+    /** Inline code span. */
     @com.fasterxml.jackson.annotation.JsonProperty("code") CODE,
+    /** Hyperlink with URL. */
     @com.fasterxml.jackson.annotation.JsonProperty("link") LINK,
+    /** Inline image reference. */
     @com.fasterxml.jackson.annotation.JsonProperty("image") IMAGE,
+    /** Generic inline span with optional attributes. */
     @com.fasterxml.jackson.annotation.JsonProperty("span") SPAN,
+    /** Inline mathematical expression. */
     @com.fasterxml.jackson.annotation.JsonProperty("math") MATH,
+    /** Raw inline content in a specified format. */
     @com.fasterxml.jackson.annotation.JsonProperty("raw_inline") RAW_INLINE,
+    /** Footnote reference marker. */
     @com.fasterxml.jackson.annotation.JsonProperty("footnote_ref") FOOTNOTE_REF,
+    /** Named symbol or emoji shortcode. */
     @com.fasterxml.jackson.annotation.JsonProperty("symbol") SYMBOL;
 
     @com.fasterxml.jackson.annotation.JsonValue

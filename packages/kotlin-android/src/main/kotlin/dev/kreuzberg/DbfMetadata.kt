@@ -25,7 +25,10 @@ package dev.kreuzberg
 
 /** dBASE (DBF) file metadata. */
 data class DbfMetadata(
+    /** Total number of data records in the DBF file. */
     val recordCount: Long = 0L,
+    /** Number of field (column) definitions. */
     val fieldCount: Long = 0L,
+    /** Descriptor for each field in the table schema. */
     val fields: List<DbfFieldInfo> = emptyList(),
 )

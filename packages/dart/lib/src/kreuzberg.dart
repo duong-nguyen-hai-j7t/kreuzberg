@@ -373,7 +373,7 @@ class KreuzbergBridge {
     return await rust_bridge.getExtensionsForMime(mimeType: mimeType);
   }
 
-  /// Detect QR codes in the bytes of an [`ExtractedImage`].
+  /// Detect QR codes in the bytes of an `ExtractedImage`.
   ///
   /// `format_hint` is currently unused — the `image` crate auto-detects the
   /// container format from magic bytes — but the parameter is retained so future
@@ -527,6 +527,7 @@ class KreuzbergBridge {
     return await rust_bridge.redact(result: result, config: config ?? RedactionConfig(categories: [], strategy: RedactionStrategy.mask, ner: null, preserveOffsets: true, customTerms: [], customPatterns: []));
   }
 
+  /// Find all US Social Security Number spans in `text` (format: NNN-NN-NNNN).
   static Future<List<PatternMatch>> findAll(String text) async {
     return await rust_bridge.findAll(text: text);
   }

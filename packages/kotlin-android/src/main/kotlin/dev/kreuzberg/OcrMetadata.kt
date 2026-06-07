@@ -37,6 +37,8 @@ data class OcrMetadata(
     val outputFormat: String = "",
     /** Number of tables detected */
     val tableCount: Int = 0,
+    /** Number of rows in the detected table (if a single table was found). */
     val tableRows: Int? = null,
+    /** Number of columns in the detected table (if a single table was found). */
     val tableCols: Int? = null,
 )

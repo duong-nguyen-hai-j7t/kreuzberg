@@ -23,16 +23,28 @@
 
 package dev.kreuzberg
 
+/** Configuration for the token-reduction pipeline. */
 data class TokenReductionConfig(
+    /** Reduction intensity level. */
     val level: ReductionLevel = ReductionLevel.MODERATE,
+    /** ISO 639-1 language code hint for stopword selection (e.g. `"en"`, `"de"`). */
     val languageHint: String? = null,
+    /** Preserve Markdown formatting tokens during reduction. */
     val preserveMarkdown: Boolean = false,
+    /** Preserve code block contents unchanged. */
     val preserveCode: Boolean = true,
+    /** Cosine similarity threshold below which sentences are considered dissimilar. */
     val semanticThreshold: Float = 0.3f,
+    /** Use Rayon parallel iterators for multi-core processing. */
     val enableParallel: Boolean = true,
+    /** Use SIMD-optimized text scanning where available. */
     val useSimd: Boolean = true,
+    /** Per-language custom stopword lists (`language_code → stopword_list`). */
     val customStopwords: Map<String, List<String>>? = null,
+    /** Regex patterns whose matched text is always preserved unchanged. */
     val preservePatterns: List<String> = emptyList(),
+    /** Target fraction of text to retain (0.0–1.0); `null` = no fixed target. */
     val targetReduction: Float? = null,
+    /** Group semantically similar sentences and emit only one per cluster. */
     val enableSemanticClustering: Boolean = false,
 )

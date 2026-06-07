@@ -24,4 +24,9 @@
 package dev.kreuzberg
 
 /** JATS contributor with role. */
-data class ContributorRole(val name: String, val role: String? = null)
+data class ContributorRole(
+    /** Contributor display name. */
+    val name: String,
+    /** Contributor role (e.g. `"author"`, `"editor"`). */
+    val role: String? = null,
+)

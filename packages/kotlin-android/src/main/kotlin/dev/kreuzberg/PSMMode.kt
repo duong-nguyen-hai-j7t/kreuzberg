@@ -23,18 +23,29 @@
 
 package dev.kreuzberg
 
-/** Page Segmentation Mode for Tesseract OCR */
+/** Page Segmentation Mode for Tesseract OCR. */
 enum class PSMMode {
+    /** Orientation and script detection only. */
     @com.fasterxml.jackson.annotation.JsonProperty("OsdOnly") OSD_ONLY,
+    /** Automatic page segmentation with OSD. */
     @com.fasterxml.jackson.annotation.JsonProperty("AutoOsd") AUTO_OSD,
+    /** Automatic page segmentation without OSD or OCR. */
     @com.fasterxml.jackson.annotation.JsonProperty("AutoOnly") AUTO_ONLY,
+    /** Fully automatic page segmentation with no OSD (default). */
     @com.fasterxml.jackson.annotation.JsonProperty("Auto") AUTO,
+    /** Assume a single column of text of variable sizes. */
     @com.fasterxml.jackson.annotation.JsonProperty("SingleColumn") SINGLE_COLUMN,
+    /** Assume a single uniform block of vertically aligned text. */
     @com.fasterxml.jackson.annotation.JsonProperty("SingleBlockVertical") SINGLE_BLOCK_VERTICAL,
+    /** Assume a single uniform block of text. */
     @com.fasterxml.jackson.annotation.JsonProperty("SingleBlock") SINGLE_BLOCK,
+    /** Treat the image as a single text line. */
     @com.fasterxml.jackson.annotation.JsonProperty("SingleLine") SINGLE_LINE,
+    /** Treat the image as a single word. */
     @com.fasterxml.jackson.annotation.JsonProperty("SingleWord") SINGLE_WORD,
+    /** Treat the image as a single word in a circle. */
     @com.fasterxml.jackson.annotation.JsonProperty("CircleWord") CIRCLE_WORD,
+    /** Treat the image as a single character. */
     @com.fasterxml.jackson.annotation.JsonProperty("SingleChar") SINGLE_CHAR;
 
     @com.fasterxml.jackson.annotation.JsonValue

@@ -25,21 +25,37 @@ package dev.kreuzberg
 
 /** Types of block-level elements in Djot. */
 enum class BlockType {
+    /** Standard prose paragraph. */
     @com.fasterxml.jackson.annotation.JsonProperty("paragraph") PARAGRAPH,
+    /** Section heading (level stored in `FormattedBlock.level`). */
     @com.fasterxml.jackson.annotation.JsonProperty("heading") HEADING,
+    /** Block quotation container. */
     @com.fasterxml.jackson.annotation.JsonProperty("blockquote") BLOCKQUOTE,
+    /** Fenced or indented code block. */
     @com.fasterxml.jackson.annotation.JsonProperty("code_block") CODE_BLOCK,
+    /** Individual item within a list. */
     @com.fasterxml.jackson.annotation.JsonProperty("list_item") LIST_ITEM,
+    /** Numbered (ordered) list container. */
     @com.fasterxml.jackson.annotation.JsonProperty("ordered_list") ORDERED_LIST,
+    /** Unnumbered (bullet) list container. */
     @com.fasterxml.jackson.annotation.JsonProperty("bullet_list") BULLET_LIST,
+    /** Task / checkbox list container. */
     @com.fasterxml.jackson.annotation.JsonProperty("task_list") TASK_LIST,
+    /** Definition list container. */
     @com.fasterxml.jackson.annotation.JsonProperty("definition_list") DEFINITION_LIST,
+    /** Term part of a definition list entry. */
     @com.fasterxml.jackson.annotation.JsonProperty("definition_term") DEFINITION_TERM,
+    /** Description / definition part of a definition list entry. */
     @com.fasterxml.jackson.annotation.JsonProperty("definition_description") DEFINITION_DESCRIPTION,
+    /** Generic `div` container with optional attributes. */
     @com.fasterxml.jackson.annotation.JsonProperty("div") DIV,
+    /** Logical section container, often associated with a heading. */
     @com.fasterxml.jackson.annotation.JsonProperty("section") SECTION,
+    /** Horizontal rule / thematic break. */
     @com.fasterxml.jackson.annotation.JsonProperty("thematic_break") THEMATIC_BREAK,
+    /** Raw content block in a specified format (e.g. HTML, LaTeX). */
     @com.fasterxml.jackson.annotation.JsonProperty("raw_block") RAW_BLOCK,
+    /** Display-mode mathematical expression. */
     @com.fasterxml.jackson.annotation.JsonProperty("math_display") MATH_DISPLAY;
 
     @com.fasterxml.jackson.annotation.JsonValue

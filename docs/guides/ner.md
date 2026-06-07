@@ -1,4 +1,4 @@
-# Named-Entity Recognition <span class="version-badge">v5.0.0-rc.3</span>
+# Named-Entity Recognition
 
 Detect named entities (people, organisations, locations, dates, money amounts, emails, phones, URLs, plus caller-supplied custom labels) in extracted text. Result populates `ExtractionResult.entities`.
 

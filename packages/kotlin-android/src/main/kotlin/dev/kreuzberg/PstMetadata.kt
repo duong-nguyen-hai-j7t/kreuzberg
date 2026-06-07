@@ -24,4 +24,7 @@
 package dev.kreuzberg
 
 /** Outlook PST archive metadata. */
-data class PstMetadata(val messageCount: Long = 0L)
+data class PstMetadata(
+    /** Total number of email messages found in the PST archive. */
+    val messageCount: Long = 0L,
+)

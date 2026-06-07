@@ -40,9 +40,13 @@ package dev.kreuzberg
  *   fallback path. For best results, pair with an embedding model.
  */
 enum class ChunkerType {
+    /** Generic whitespace- and punctuation-aware text splitter (default). */
     @com.fasterxml.jackson.annotation.JsonProperty("text") TEXT,
+    /** Markdown-aware splitter that preserves heading and code-block boundaries. */
     @com.fasterxml.jackson.annotation.JsonProperty("markdown") MARKDOWN,
+    /** YAML-aware splitter that creates one chunk per top-level key. */
     @com.fasterxml.jackson.annotation.JsonProperty("yaml") YAML,
+    /** Topic-aware chunker that splits at embedding-based topic shifts. */
     @com.fasterxml.jackson.annotation.JsonProperty("semantic") SEMANTIC;
 
     @com.fasterxml.jackson.annotation.JsonValue

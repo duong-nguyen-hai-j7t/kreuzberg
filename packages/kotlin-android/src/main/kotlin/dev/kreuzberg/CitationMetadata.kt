@@ -25,10 +25,16 @@ package dev.kreuzberg
 
 /** Citation file metadata (RIS, PubMed, EndNote). */
 data class CitationMetadata(
+    /** Total number of citation records in the file. */
     val citationCount: Long = 0L,
+    /** Detected citation file format (e.g. `"ris"`, `"pubmed"`, `"endnote"`). */
     val format: String? = null,
+    /** Author names collected across all citation records. */
     val authors: List<String> = emptyList(),
+    /** Earliest and latest publication years found in the file. */
     val yearRange: YearRange? = null,
+    /** DOI identifiers found in the citation records. */
     val dois: List<String> = emptyList(),
+    /** Keywords collected from all citation records. */
     val keywords: List<String> = emptyList(),
 )

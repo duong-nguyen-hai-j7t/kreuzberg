@@ -27,7 +27,7 @@ import java.nio.file.Path
 /**
  * Configuration for styled HTML output.
  *
- * When set on `ExtractionConfig.html_output` alongside
+ * When set on `html_output` alongside
  * `output_format = OutputFormat.Html`, the pipeline builds a
  * `StyledHtmlRenderer` instead of
  * the plain comrak-based renderer.

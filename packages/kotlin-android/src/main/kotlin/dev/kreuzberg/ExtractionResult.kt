@@ -29,8 +29,11 @@ package dev.kreuzberg
  * This is the main result type returned by all extraction functions.
  */
 data class ExtractionResult(
+    /** Plain-text representation of the extracted document content. */
     val content: String = "",
+    /** MIME type of the source document (e.g. `"application/pdf"`). */
     val mimeType: String = "",
+    /** Document-level metadata (author, title, dates, format-specific fields). */
     val metadata: Metadata = Metadata(),
     /**
      * Extraction strategy used to produce the returned text.
@@ -39,7 +42,9 @@ data class ExtractionResult(
      * OCR-only extraction, or mixed native/OCR output.
      */
     val extractionMethod: ExtractionMethod? = null,
+    /** Tables extracted from the document, each with structured cell data. */
     val tables: List<Table> = emptyList(),
+    /** ISO 639-1 language codes detected in the document content. */
     val detectedLanguages: List<String>? = null,
     /**
      * Text chunks when chunking is enabled.

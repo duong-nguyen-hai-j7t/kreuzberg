@@ -23,11 +23,17 @@
 
 package dev.kreuzberg
 
+/** Intensity level for the token-reduction pipeline. */
 enum class ReductionLevel {
+    /** No reduction applied; text is returned as-is. */
     @com.fasterxml.jackson.annotation.JsonProperty("Off") OFF,
+    /** Remove only the most common stopwords. */
     @com.fasterxml.jackson.annotation.JsonProperty("Light") LIGHT,
+    /** Balanced stopword removal and redundancy filtering. */
     @com.fasterxml.jackson.annotation.JsonProperty("Moderate") MODERATE,
+    /** Aggressive filtering; may remove less common content words. */
     @com.fasterxml.jackson.annotation.JsonProperty("Aggressive") AGGRESSIVE,
+    /** Maximum compression; prioritizes brevity over completeness. */
     @com.fasterxml.jackson.annotation.JsonProperty("Maximum") MAXIMUM;
 
     @com.fasterxml.jackson.annotation.JsonValue

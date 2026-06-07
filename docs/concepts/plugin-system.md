@@ -1,14 +1,21 @@
-# Plugin System <span class="version-badge">v5.0.0</span>
+# Plugin System
 
-Kreuzberg's extraction pipeline is entirely plugin-driven. Every format extractor, OCR engine, post-processor, validator, and renderer is a plugin that registers itself into a typed registry. The pipeline queries these registries at each stage to find the right handler. You extend Kreuzberg by writing your own plugin and registering it. The pipeline picks it up automatically.
+Kreuzberg's extraction pipeline is entirely plugin-driven. Every format
+extractor, OCR engine, post-processor, validator, and renderer is a plugin that
+registers itself into a typed registry. The pipeline queries these registries
+at each stage to find the right handler. You extend Kreuzberg by writing your
+own plugin and registering it. The pipeline picks it up automatically.
 
-This page explains the five plugin types, the registry mechanism, the plugin lifecycle, and how plugins work across language boundaries.
+This page explains the five plugin types, the registry mechanism, the plugin
+lifecycle, and how plugins work across language boundaries.
 
 ---
 
 ## Overview
 
-The plugin system has three layers: plugins, registries, and the pipeline. Plugins implement a trait. Registries store them by key (MIME type, name, or processing stage). The pipeline queries the registries during extraction.
+The plugin system has three layers: plugins, registries, and the pipeline.
+Plugins implement a trait. Registries store them by key (MIME type, name, or
+processing stage). The pipeline queries the registries during extraction.
 
 ```mermaid
 flowchart TB
@@ -58,7 +65,9 @@ flowchart TB
     style RR fill:#e1bee7,stroke:#7b1fa2
 ```
 
-You register a plugin once. From that point on, the pipeline uses it wherever the MIME type, name, or stage matches. No wiring, no config files, no boilerplate.
+You register a plugin once. From that point on, the pipeline uses it wherever
+the MIME type, name, or stage matches. No wiring, no config files, no
+boilerplate.
 
 ---
 
@@ -66,13 +75,19 @@ You register a plugin once. From that point on, the pipeline uses it wherever th
 
 ### DocumentExtractor
 
-A `DocumentExtractor` teaches Kreuzberg how to extract text from a specific file format. It declares supported MIME types and provides async methods to extract from file paths or raw bytes.
+A `DocumentExtractor` teaches Kreuzberg how to extract text from a specific file
+format. It declares supported MIME types and provides async methods to extract
+from file paths or raw bytes.
 
 See [`DocumentExtractor`](../reference/types.md) for the trait signature.
 
-Kreuzberg ships with built-in extractors for PDF, Excel, images (routed to OCR), XML, plain text, email, and Office formats (DOCX, PPTX).
+Kreuzberg ships with built-in extractors for PDF, Excel, images (routed to
+OCR), XML, plain text, email, and Office formats (DOCX, PPTX).
 
-**Priority resolution.** When two extractors are registered for the same MIME type, the one with the higher `priority()` value wins. Every built-in extractor has a priority of 0. To override the built-in PDF extractor with your own, register yours with a higher priority:
+**Priority resolution.** When two extractors are registered for the same MIME
+type, the one with the higher `priority()` value wins. Every built-in extractor
+has a priority of 0. To override the built-in PDF extractor with your own,
+register yours with a higher priority:
 
 ```rust title="override_builtin.rs"
 impl DocumentExtractor for BetterPDFExtractor {
@@ -87,7 +102,9 @@ Now when the pipeline encounters `application/pdf`, it selects `BetterPDFExtract
 
 ### OcrBackend
 
-An `OcrBackend` performs optical character recognition on image data. It declares supported languages and provides async methods to process image bytes or files.
+An `OcrBackend` performs optical character recognition on image data. It
+declares supported languages and provides async methods to process image bytes
+or files.
 
 See [`OcrBackend`](../reference/types.md) for the trait signature.
 
@@ -105,7 +122,9 @@ You can register your own OCR backend (for example, a cloud-based API, a custom 
 
 ### PostProcessor
 
-A `PostProcessor` transforms extraction results after the main extraction and OCR stages are complete. Each processor declares a processing stage that determines its execution order.
+A `PostProcessor` transforms extraction results after the main extraction and
+OCR stages are complete. Each processor declares a processing stage that
+determines its execution order.
 
 See [`PostProcessor`](../reference/types.md) for the trait signature.
 
@@ -117,13 +136,17 @@ The three stages execute in fixed order:
 | `Middle` | Second | Analyze content      | Extract named entities, detect language, classify document type |
 | `Late`   | Third  | Final output shaping | Format output, generate summaries, redact PII                   |
 
-**Error handling:** Post-processor errors do not fail the extraction. Errors are logged and the pipeline continues unchanged, ensuring no processor can take down extraction.
+**Error handling:** Post-processor errors do not fail the extraction. Errors are
+logged and the pipeline continues unchanged, ensuring no processor can take down
+extraction.
 
 ---
 
 ### Validator
 
-A `Validator` inspects extraction results and can reject them if they don't meet requirements. Unlike post-processors, validator errors stop the pipeline immediately — they're a hard gate.
+A `Validator` inspects extraction results and can reject them if they don't meet
+requirements. Unlike post-processors, validator errors stop the pipeline
+immediately — they're a hard gate.
 
 See [`Validator`](../reference/types.md) for the trait signature.
 
@@ -149,7 +172,8 @@ Validators run before post-processors. This means you can catch and reject bad r
 
 ### Renderer
 
-A `Renderer` converts the internal document representation into a specific output format. It declares a name and provides a render method.
+A `Renderer` converts the internal document representation into a specific output
+format. It declares a name and provides a render method.
 
 ```rust
 pub trait Renderer: Send + Sync {
@@ -178,7 +202,9 @@ let mut registry = registry.write().unwrap();
 registry.register(Arc::new(MyCustomRenderer))?;
 ```
 
-Custom renderers participate in the pipeline just like built-in ones. When the user requests your renderer's name via `--content-format`, the RendererRegistry dispatches to your implementation.
+Custom renderers participate in the pipeline just like built-in ones. When the user
+requests your renderer's name via `--content-format`, the RendererRegistry
+dispatches to your implementation.
 
 ---
 
@@ -197,19 +223,27 @@ stateDiagram-v2
 
 See [`Plugin`](../reference/types.md) for the base trait signature.
 
-Key behaviors: `initialize()` is called lazily the first time the plugin is used, not at registration. This avoids startup overhead for plugins that may never be invoked. `shutdown()` runs when the plugin is unregistered or on process exit. Both have default no-op implementations — override only if your plugin needs setup or cleanup.
+Key behaviors: `initialize()` is called lazily the first time the plugin is used,
+not at registration. This avoids startup overhead for plugins that may never be
+invoked. `shutdown()` runs when the plugin is unregistered or on process exit.
+Both have default no-op implementations — override only if your plugin needs
+setup or cleanup.
 
 ---
 
 ## Registering Plugins
 
-Get the appropriate registry for your plugin type and call `register()`. Once registered, the pipeline automatically dispatches to your plugin based on MIME type (extractors), backend name (OCR), processing stage (post-processors), or validator name.
+Get the appropriate registry for your plugin type and call `register()`. Once
+registered, the pipeline automatically dispatches to your plugin based on MIME
+type (extractors), backend name (OCR), processing stage (post-processors), or
+validator name.
 
 ---
 
 ## Cross-Language Plugins
 
-Plugins written in Python can integrate directly with the Rust extraction pipeline via PyO3 FFI. The bridge layer handles all type conversion automatically.
+Plugins written in Python can integrate directly with the Rust extraction pipeline
+via PyO3 FFI. The bridge layer handles all type conversion automatically.
 
 ```mermaid
 sequenceDiagram
@@ -227,13 +261,16 @@ sequenceDiagram
     B-->>R: Convert to ExtractionResult
 ```
 
-Type mapping: `Vec<u8>` ↔ `bytes`, `String` ↔ `str`, Rust structs ↔ Python dataclasses. Large buffers use Python's buffer protocol to minimize copying.
+Type mapping: `Vec<u8>` ↔ `bytes`, `String` ↔ `str`, Rust structs ↔ Python dataclasses.
+Large buffers use Python's buffer protocol to minimize copying.
 
 ---
 
 ## Thread Safety
 
-All plugins must implement `Send + Sync` because the extraction pipeline invokes them concurrently from Tokio's worker thread pool. For mutable internal state, use `Mutex`, `RwLock`, or atomic types. The compiler will enforce this requirement.
+All plugins must implement `Send + Sync` because the extraction pipeline invokes
+them concurrently from Tokio's worker thread pool. For mutable internal state, use
+`Mutex`, `RwLock`, or atomic types. The compiler will enforce this requirement.
 
 ---
 
@@ -241,7 +278,14 @@ All plugins must implement `Send + Sync` because the extraction pipeline invokes
 
 Plugins can be registered in two ways:
 
-1. **Built-in** — automatically registered when Kreuzberg initializes. These are the default extractors, OCR backends, and processors. The seven OSS v5 enrichment processors (NER, redaction, summarisation, translation, page classification, image captioning, QR-code detection) all register through the shared `register_builtin()` umbrella in `crates/kreuzberg/src/plugins/processor/builtin/mod.rs`. Each is gated behind its Cargo feature (`ner`, `redaction`, `summarization`, `translation`, `classification`, `captioning`, `qr-codes`) and only joins the registry when the feature is active.
+1. **Built-in** — automatically registered when Kreuzberg initializes. These are the
+   default extractors, OCR backends, and processors. The seven OSS v5 enrichment
+   processors (NER, redaction, summarisation, translation, page classification,
+   image captioning, QR-code detection) all register through the shared
+   `register_builtin()` umbrella in `crates/kreuzberg/src/plugins/processor/builtin/mod.rs`.
+   Each is gated behind its Cargo feature (`ner`, `redaction`, `summarization`,
+   `translation`, `classification`, `captioning`, `qr-codes`) and only joins the
+   registry when the feature is active.
 2. **Programmatic** — registered manually via the registry API at runtime.
 
 ---

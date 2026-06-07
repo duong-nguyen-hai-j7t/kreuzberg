@@ -1080,10 +1080,10 @@ Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-ri
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `x1` | `float` | — | X1 |
-| `y1` | `float` | — | Y1 |
-| `x2` | `float` | — | X2 |
-| `y2` | `float` | — | Y2 |
+| `x1` | `float` | — | Left edge (x-coordinate of the top-left corner). |
+| `y1` | `float` | — | Top edge (y-coordinate of the top-left corner). |
+| `x2` | `float` | — | Right edge (x-coordinate of the bottom-right corner). |
+| `y2` | `float` | — | Bottom edge (y-coordinate of the bottom-right corner). |
 
 ---
 
@@ -1123,10 +1123,10 @@ BibTeX bibliography metadata.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `entryCount` | `long` | — | Number of entries in the bibliography. |
-| `citationKeys` | `List<String>` | `Collections.emptyList()` | Citation keys |
-| `authors` | `List<String>` | `Collections.emptyList()` | Authors |
-| `yearRange` | `Optional<YearRange>` | `null` | Year range (year range) |
-| `entryTypes` | `Optional<Map<String, Long>>` | `Collections.emptyMap()` | Entry types |
+| `citationKeys` | `List<String>` | `Collections.emptyList()` | BibTeX citation keys (e.g. `"knuth1984"`) for all entries. |
+| `authors` | `List<String>` | `Collections.emptyList()` | Author names collected across all bibliography entries. |
+| `yearRange` | `Optional<YearRange>` | `null` | Earliest and latest publication years found in the bibliography. |
+| `entryTypes` | `Optional<Map<String, Long>>` | `Collections.emptyMap()` | Count of entries grouped by BibTeX entry type (e.g. `"article"` → 5). |
 
 ---
 
@@ -1145,13 +1145,15 @@ Bounding box coordinates for element positioning.
 
 #### CacheStats
 
+Aggregate statistics for a kreuzberg cache directory.
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `totalFiles` | `long` | — | Total files |
-| `totalSizeMb` | `double` | — | Total size mb |
-| `availableSpaceMb` | `double` | — | Available space mb |
-| `oldestFileAgeDays` | `double` | — | Oldest file age days |
-| `newestFileAgeDays` | `double` | — | Newest file age days |
+| `totalFiles` | `long` | — | Total number of files currently in the cache directory. |
+| `totalSizeMb` | `double` | — | Combined size of all cache files in megabytes. |
+| `availableSpaceMb` | `double` | — | Free disk space available on the cache volume, in megabytes. |
+| `oldestFileAgeDays` | `double` | — | Age of the oldest cache file in days (0.0 if the cache is empty). |
+| `newestFileAgeDays` | `double` | — | Age of the most recently written cache file in days (0.0 if the cache is empty). |
 
 ---
 
@@ -1258,12 +1260,12 @@ Citation file metadata (RIS, PubMed, EndNote).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `citationCount` | `long` | — | Number of citations |
-| `format` | `Optional<String>` | `null` | Format |
-| `authors` | `List<String>` | `Collections.emptyList()` | Authors |
-| `yearRange` | `Optional<YearRange>` | `null` | Year range (year range) |
-| `dois` | `List<String>` | `Collections.emptyList()` | Dois |
-| `keywords` | `List<String>` | `Collections.emptyList()` | Keywords |
+| `citationCount` | `long` | — | Total number of citation records in the file. |
+| `format` | `Optional<String>` | `null` | Detected citation file format (e.g. `"ris"`, `"pubmed"`, `"endnote"`). |
+| `authors` | `List<String>` | `Collections.emptyList()` | Author names collected across all citation records. |
+| `yearRange` | `Optional<YearRange>` | `null` | Earliest and latest publication years found in the file. |
+| `dois` | `List<String>` | `Collections.emptyList()` | DOI identifiers found in the citation records. |
+| `keywords` | `List<String>` | `Collections.emptyList()` | Keywords collected from all citation records. |
 
 ---
 
@@ -1315,8 +1317,8 @@ JATS contributor with role.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `name` | `String` | — | The name |
-| `role` | `Optional<String>` | `null` | Role |
+| `name` | `String` | — | Contributor display name. |
+| `role` | `Optional<String>` | `null` | Contributor role (e.g. `"author"`, `"editor"`). |
 
 ---
 
@@ -1353,11 +1355,11 @@ CSV/TSV file metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `rowCount` | `int` | — | Number of rows |
-| `columnCount` | `int` | — | Number of columns |
-| `delimiter` | `Optional<String>` | `null` | Delimiter |
-| `hasHeader` | `boolean` | — | Whether header |
-| `columnTypes` | `Optional<List<String>>` | `Collections.emptyList()` | Column types |
+| `rowCount` | `int` | — | Total number of data rows (excluding the header row if present). |
+| `columnCount` | `int` | — | Number of columns detected. |
+| `delimiter` | `Optional<String>` | `null` | Field delimiter character (e.g. `","` or `"\t"`). |
+| `hasHeader` | `boolean` | — | Whether the first row was treated as a header. |
+| `columnTypes` | `Optional<List<String>>` | `Collections.emptyList()` | Inferred data type for each column (e.g. `"string"`, `"integer"`, `"float"`). |
 
 ---
 
@@ -1367,8 +1369,8 @@ dBASE field information.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `name` | `String` | — | The name |
-| `fieldType` | `String` | — | Field type |
+| `name` | `String` | — | Field (column) name. |
+| `fieldType` | `String` | — | dBASE field type character (e.g. `"C"` for character, `"N"` for numeric). |
 
 ---
 
@@ -1378,9 +1380,9 @@ dBASE (DBF) file metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `recordCount` | `long` | — | Number of records |
-| `fieldCount` | `long` | — | Number of fields |
-| `fields` | `List<DbfFieldInfo>` | `Collections.emptyList()` | Fields |
+| `recordCount` | `long` | — | Total number of data records in the DBF file. |
+| `fieldCount` | `long` | — | Number of field (column) definitions. |
+| `fields` | `List<DbfFieldInfo>` | `Collections.emptyList()` | Descriptor for each field in the table schema. |
 
 ---
 
@@ -1401,9 +1403,9 @@ Page-level detection result containing all detections and page metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `pageWidth` | `int` | — | Page width |
-| `pageHeight` | `int` | — | Page height |
-| `detections` | `List<LayoutDetection>` | — | Detections |
+| `pageWidth` | `int` | — | Page width in pixels (as seen by the model). |
+| `pageHeight` | `int` | — | Page height in pixels (as seen by the model). |
+| `detections` | `List<LayoutDetection>` | — | All layout detections on this page after postprocessing. |
 
 ---
 
@@ -1953,7 +1955,7 @@ itself must serialize access internally (e.g. via `Mutex<Inner>`).
 ### Contract
 
 - `embed(texts)` MUST return exactly `texts.len()` vectors, each of length
-  `self.dimensions()`. The dispatcher in `embed_texts`
+  `self.dimensions()`. The dispatcher in `crate.embeddings.embed_texts`
   validates this before returning to downstream consumers; a non-conforming
   backend surfaces as a `KreuzbergError.Validation`, not a panic.
 
@@ -1981,8 +1983,7 @@ The synchronous `embed_texts` entry uses
 requires a multi-thread tokio runtime. Callers running inside a
 `current_thread` runtime (e.g. `#[tokio.test]` without `flavor = "multi_thread"`,
 or `tokio.runtime.Builder.new_current_thread()`) must use
-`embed_texts_async` instead, which awaits directly without
-`block_in_place`.
+`embed_texts_async` instead, which awaits directly without `block_in_place`.
 
 ### Methods
 
@@ -2056,14 +2057,14 @@ are safe to clone and pass across language boundaries.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `name` | `String` | — | The name |
-| `chunkSize` | `long` | — | Chunk size |
-| `overlap` | `long` | — | Overlap |
+| `name` | `String` | — | Short identifier for this preset (e.g. `"balanced"`, `"fast"`, `"quality"`). |
+| `chunkSize` | `long` | — | Target chunk size in characters. |
+| `overlap` | `long` | — | Overlap between consecutive chunks in characters. |
 | `modelRepo` | `String` | — | HuggingFace repository name for the model. |
 | `pooling` | `String` | — | Pooling strategy: "cls" or "mean". |
 | `modelFile` | `String` | — | Path to the ONNX model file within the repo. |
-| `dimensions` | `long` | — | Dimensions |
-| `description` | `String` | — | Human-readable description |
+| `dimensions` | `long` | — | Embedding vector dimension produced by this model. |
+| `description` | `String` | — | Human-readable description of the preset's intended use case. |
 
 ---
 
@@ -2087,12 +2088,12 @@ EPUB metadata (Dublin Core extensions).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `coverage` | `Optional<String>` | `null` | Coverage |
-| `dcFormat` | `Optional<String>` | `null` | Dc format |
-| `relation` | `Optional<String>` | `null` | Relation |
-| `source` | `Optional<String>` | `null` | Source |
-| `dcType` | `Optional<String>` | `null` | Dc type |
-| `coverImage` | `Optional<String>` | `null` | Cover image |
+| `coverage` | `Optional<String>` | `null` | Dublin Core `coverage` field (geographic or temporal scope). |
+| `dcFormat` | `Optional<String>` | `null` | Dublin Core `format` field (media type of the resource). |
+| `relation` | `Optional<String>` | `null` | Dublin Core `relation` field (related resource identifier). |
+| `source` | `Optional<String>` | `null` | Dublin Core `source` field (origin resource identifier). |
+| `dcType` | `Optional<String>` | `null` | Dublin Core `type` field (nature or genre of the resource). |
+| `coverImage` | `Optional<String>` | `null` | Path or identifier of the cover image within the EPUB container. |
 
 ---
 
@@ -2102,8 +2103,8 @@ Error metadata (for batch operations).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `errorType` | `String` | — | Error type |
-| `message` | `String` | — | Message |
+| `errorType` | `String` | — | Machine-readable error type identifier (e.g. "UnsupportedFormat"). |
+| `message` | `String` | — | Human-readable error description. |
 
 ---
 
@@ -2252,7 +2253,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `pageClassification` | `Optional<PageClassificationConfig>` | `null` | Per-page classification configuration. When set, the classification post-processor runs at the Middle stage and populates `ExtractionResult.page_classifications`. |
 | `captioning` | `Optional<CaptioningConfig>` | `null` | VLM captioning configuration for extracted images. When set, the captioning post-processor runs at the Middle stage and writes a caption into each `ExtractedImage.caption`. |
 | `qrCodes` | `Optional<Boolean>` | `null` | Enable QR-code detection in extracted images. When `true`, the QR post-processor runs at the Middle stage and populates `ExtractedImage.qr_codes`. |
-| `cancelToken` | `Optional<String>` | `null` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call `CancellationToken.cancel` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `KreuzbergError.Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
+| `cancelToken` | `Optional<String>` | `null` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call its `cancel()` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
 
 ### Methods
 
@@ -2309,12 +2310,12 @@ This is the main result type returned by all extraction functions.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `content` | `String` | — | The extracted text content |
-| `mimeType` | `String` | — | The detected MIME type |
-| `metadata` | `Metadata` | — | Document metadata |
+| `content` | `String` | — | Plain-text representation of the extracted document content. |
+| `mimeType` | `String` | — | MIME type of the source document (e.g. `"application/pdf"`). |
+| `metadata` | `Metadata` | — | Document-level metadata (author, title, dates, format-specific fields). |
 | `extractionMethod` | `Optional<ExtractionMethod>` | `null` | Extraction strategy used to produce the returned text. Populated when the extractor can reliably distinguish native text extraction, OCR-only extraction, or mixed native/OCR output. |
-| `tables` | `List<Table>` | `Collections.emptyList()` | Tables extracted from the document |
-| `detectedLanguages` | `Optional<List<String>>` | `Collections.emptyList()` | Detected languages |
+| `tables` | `List<Table>` | `Collections.emptyList()` | Tables extracted from the document, each with structured cell data. |
+| `detectedLanguages` | `Optional<List<String>>` | `Collections.emptyList()` | ISO 639-1 language codes detected in the document content. |
 | `chunks` | `Optional<List<Chunk>>` | `Collections.emptyList()` | Text chunks when chunking is enabled. When chunking configuration is provided, the content is split into overlapping chunks for efficient processing. Each chunk contains the text, optional embeddings (if enabled), and metadata about its position. |
 | `images` | `Optional<List<ExtractedImage>>` | `Collections.emptyList()` | Extracted images from the document. When image extraction is enabled via `ImageExtractionConfig`, this field contains all images found in the document with their raw data and metadata. Each image may optionally contain a nested `ocr_result` if OCR was performed. |
 | `pages` | `Optional<List<PageContent>>` | `Collections.emptyList()` | Per-page content when page extraction is enabled. When page extraction is configured, the document is split into per-page content with tables and images mapped to their respective pages. |
@@ -2360,9 +2361,9 @@ FictionBook (FB2) metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `genres` | `List<String>` | `Collections.emptyList()` | Genres |
-| `sequences` | `List<String>` | `Collections.emptyList()` | Sequences |
-| `annotation` | `Optional<String>` | `null` | Annotation |
+| `genres` | `List<String>` | `Collections.emptyList()` | Genre tags as declared in the FB2 `<genre>` elements. |
+| `sequences` | `List<String>` | `Collections.emptyList()` | Book series (sequence) names, if any. |
+| `annotation` | `Optional<String>` | `null` | Short annotation / summary from the FB2 `<annotation>` element. |
 
 ---
 
@@ -2568,7 +2569,7 @@ and extracted structural elements (headers, links, images, structured data).
 
 Configuration for styled HTML output.
 
-When set on `ExtractionConfig.html_output` alongside
+When set on `html_output` alongside
 `output_format = OutputFormat.Html`, the pipeline builds a
 `StyledHtmlRenderer` instead of
 the plain comrak-based renderer.
@@ -2730,10 +2731,10 @@ JATS (Journal Article Tag Suite) metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `copyright` | `Optional<String>` | `null` | Copyright |
-| `license` | `Optional<String>` | `null` | License |
-| `historyDates` | `Map<String, String>` | `Collections.emptyMap()` | History dates |
-| `contributorRoles` | `List<ContributorRole>` | `Collections.emptyList()` | Contributor roles |
+| `copyright` | `Optional<String>` | `null` | Copyright statement from the article's `<permissions>` element. |
+| `license` | `Optional<String>` | `null` | Open-access license URI from the article's `<license>` element. |
+| `historyDates` | `Map<String, String>` | `Collections.emptyMap()` | Publication history dates keyed by event type (e.g. `"received"`, `"accepted"`). |
+| `contributorRoles` | `List<ContributorRole>` | `Collections.emptyList()` | Authors and contributors with their stated roles. |
 
 ---
 
@@ -2804,9 +2805,9 @@ A single layout detection result.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `className` | `LayoutClass` | — | Class name (layout class) |
-| `confidence` | `float` | — | Confidence |
-| `bbox` | `BBox` | — | Bbox (b box) |
+| `className` | `LayoutClass` | — | Detected layout class (e.g. `Table`, `Text`, `Title`). |
+| `confidence` | `float` | — | Detection confidence score in `[0.0, 1.0]`. |
+| `bbox` | `BBox` | — | Bounding box in image pixel coordinates. |
 
 ---
 
@@ -2876,6 +2877,8 @@ liter-llm-backed NER backend.
 ### Methods
 
 #### new()
+
+Create a new LLM-backed NER backend with the given LLM configuration.
 
 **Signature:**
 
@@ -3271,8 +3274,8 @@ Captures information about OCR processing configuration and results.
 | `psm` | `int` | — | Tesseract Page Segmentation Mode (PSM) |
 | `outputFormat` | `String` | — | Output format (e.g., "text", "hocr") |
 | `tableCount` | `int` | — | Number of tables detected |
-| `tableRows` | `Optional<Integer>` | `null` | Table rows |
-| `tableCols` | `Optional<Integer>` | `null` | Table cols |
+| `tableRows` | `Optional<Integer>` | `null` | Number of rows in the detected table (if a single table was found). |
+| `tableCols` | `Optional<Integer>` | `null` | Number of columns in the detected table (if a single table was found). |
 
 ---
 
@@ -4149,7 +4152,7 @@ Outlook PST archive metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `messageCount` | `long` | — | Number of messages |
+| `messageCount` | `long` | — | Total number of email messages found in the PST archive. |
 
 ---
 
@@ -4159,10 +4162,10 @@ Pixel-space bounding box of a QR code inside its source image.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `x` | `int` | — | X |
-| `y` | `int` | — | Y |
-| `width` | `int` | — | Width |
-| `height` | `int` | — | Height |
+| `x` | `int` | — | Horizontal pixel offset of the bounding box top-left corner. |
+| `y` | `int` | — | Vertical pixel offset of the bounding box top-left corner. |
+| `width` | `int` | — | Width of the bounding box in pixels. |
+| `height` | `int` | — | Height of the bounding box in pixels. |
 
 ---
 
@@ -4547,12 +4550,14 @@ Structured data (Schema.org, microdata, RDFa) block.
 
 #### StructuredDataResult
 
+Result of parsing a structured data file (JSON, JSONL, YAML, or TOML).
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `content` | `String` | — | The extracted text content |
-| `format` | `String` | — | Format |
-| `metadata` | `Map<String, String>` | — | Document metadata |
-| `textFields` | `List<String>` | — | Text fields |
+| `content` | `String` | — | The extracted text content, formatted for readability. |
+| `format` | `String` | — | The source format identifier (e.g. `"json"`, `"yaml"`, `"toml"`). |
+| `metadata` | `Map<String, String>` | — | Key-value metadata extracted from recognized text fields. |
+| `textFields` | `List<String>` | — | JSON paths of fields that were classified as text-bearing. |
 
 ---
 
@@ -4760,6 +4765,8 @@ Per-category running counter for `RedactionStrategy.TokenReplace`.
 
 #### new()
 
+Create a fresh counter with no previous state.
+
 **Signature:**
 
 ```java
@@ -4770,19 +4777,21 @@ public static TokenCounter new()
 
 #### TokenReductionConfig
 
+Configuration for the token-reduction pipeline.
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `level` | `ReductionLevel` | `ReductionLevel.MODERATE` | Level (reduction level) |
-| `languageHint` | `Optional<String>` | `null` | Language hint |
-| `preserveMarkdown` | `boolean` | `false` | Preserve markdown |
-| `preserveCode` | `boolean` | `true` | Preserve code |
-| `semanticThreshold` | `float` | `0.3` | Semantic threshold |
-| `enableParallel` | `boolean` | `true` | Enable parallel |
-| `useSimd` | `boolean` | `true` | Use simd |
-| `customStopwords` | `Optional<Map<String, List<String>>>` | `null` | Custom stopwords |
-| `preservePatterns` | `List<String>` | `Collections.emptyList()` | Preserve patterns |
-| `targetReduction` | `Optional<Float>` | `null` | Target reduction |
-| `enableSemanticClustering` | `boolean` | `false` | Enable semantic clustering |
+| `level` | `ReductionLevel` | `ReductionLevel.MODERATE` | Reduction intensity level. |
+| `languageHint` | `Optional<String>` | `null` | ISO 639-1 language code hint for stopword selection (e.g. `"en"`, `"de"`). |
+| `preserveMarkdown` | `boolean` | `false` | Preserve Markdown formatting tokens during reduction. |
+| `preserveCode` | `boolean` | `true` | Preserve code block contents unchanged. |
+| `semanticThreshold` | `float` | `0.3` | Cosine similarity threshold below which sentences are considered dissimilar. |
+| `enableParallel` | `boolean` | `true` | Use Rayon parallel iterators for multi-core processing. |
+| `useSimd` | `boolean` | `true` | Use SIMD-optimized text scanning where available. |
+| `customStopwords` | `Optional<Map<String, List<String>>>` | `null` | Per-language custom stopword lists (`language_code → stopword_list`). |
+| `preservePatterns` | `List<String>` | `Collections.emptyList()` | Regex patterns whose matched text is always preserved unchanged. |
+| `targetReduction` | `Optional<Float>` | `null` | Target fraction of text to retain (0.0–1.0); `null` = no fixed target. |
+| `enableSemanticClustering` | `boolean` | `false` | Group semantically similar sentences and emit only one per cluster. |
 
 ### Methods
 
@@ -5193,9 +5202,9 @@ Year range for bibliographic metadata.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `min` | `Optional<Integer>` | `null` | Min |
-| `max` | `Optional<Integer>` | `null` | Max |
-| `years` | `List<Integer>` | `/* serde(default) */` | Years |
+| `min` | `Optional<Integer>` | `null` | Earliest (minimum) year in the range. |
+| `max` | `Optional<Integer>` | `null` | Latest (maximum) year in the range. |
+| `years` | `List<Integer>` | `/* serde(default) */` | All individual years present in the collection. |
 
 ---
 
@@ -5336,10 +5345,10 @@ Type of text chunker to use.
 
 | Value | Description |
 |-------|-------------|
-| `TEXT` | Text format |
-| `MARKDOWN` | Markdown format |
-| `YAML` | Yaml format |
-| `SEMANTIC` | Semantic |
+| `TEXT` | Generic whitespace- and punctuation-aware text splitter (default). |
+| `MARKDOWN` | Markdown-aware splitter that preserves heading and code-block boundaries. |
+| `YAML` | YAML-aware splitter that creates one chunk per top-level key. |
+| `SEMANTIC` | Topic-aware chunker that splits at embedding-based topic shifts. |
 
 ---
 
@@ -5422,13 +5431,15 @@ Type of list detection.
 
 #### ReductionLevel
 
+Intensity level for the token-reduction pipeline.
+
 | Value | Description |
 |-------|-------------|
-| `OFF` | Off |
-| `LIGHT` | Light |
-| `MODERATE` | Moderate |
-| `AGGRESSIVE` | Aggressive |
-| `MAXIMUM` | Maximum |
+| `OFF` | No reduction applied; text is returned as-is. |
+| `LIGHT` | Remove only the most common stopwords. |
+| `MODERATE` | Balanced stopword removal and redundancy filtering. |
+| `AGGRESSIVE` | Aggressive filtering; may remove less common content words. |
+| `MAXIMUM` | Maximum compression; prioritizes brevity over completeness. |
 
 ---
 
@@ -5454,22 +5465,22 @@ Types of block-level elements in Djot.
 
 | Value | Description |
 |-------|-------------|
-| `PARAGRAPH` | Paragraph element |
-| `HEADING` | Heading element |
-| `BLOCKQUOTE` | Blockquote element |
-| `CODE_BLOCK` | Code block |
-| `LIST_ITEM` | List item |
-| `ORDERED_LIST` | Ordered list |
-| `BULLET_LIST` | Bullet list |
-| `TASK_LIST` | Task list |
-| `DEFINITION_LIST` | Definition list |
-| `DEFINITION_TERM` | Definition term |
-| `DEFINITION_DESCRIPTION` | Definition description |
-| `DIV` | Div |
-| `SECTION` | Section element |
-| `THEMATIC_BREAK` | Thematic break |
-| `RAW_BLOCK` | Raw block |
-| `MATH_DISPLAY` | Math display |
+| `PARAGRAPH` | Standard prose paragraph. |
+| `HEADING` | Section heading (level stored in `FormattedBlock.level`). |
+| `BLOCKQUOTE` | Block quotation container. |
+| `CODE_BLOCK` | Fenced or indented code block. |
+| `LIST_ITEM` | Individual item within a list. |
+| `ORDERED_LIST` | Numbered (ordered) list container. |
+| `BULLET_LIST` | Unnumbered (bullet) list container. |
+| `TASK_LIST` | Task / checkbox list container. |
+| `DEFINITION_LIST` | Definition list container. |
+| `DEFINITION_TERM` | Term part of a definition list entry. |
+| `DEFINITION_DESCRIPTION` | Description / definition part of a definition list entry. |
+| `DIV` | Generic `div` container with optional attributes. |
+| `SECTION` | Logical section container, often associated with a heading. |
+| `THEMATIC_BREAK` | Horizontal rule / thematic break. |
+| `RAW_BLOCK` | Raw content block in a specified format (e.g. HTML, LaTeX). |
+| `MATH_DISPLAY` | Display-mode mathematical expression. |
 
 ---
 
@@ -5479,22 +5490,22 @@ Types of inline elements in Djot.
 
 | Value | Description |
 |-------|-------------|
-| `TEXT` | Text format |
-| `STRONG` | Strong |
-| `EMPHASIS` | Emphasis |
-| `HIGHLIGHT` | Highlight |
-| `SUBSCRIPT` | Subscript |
-| `SUPERSCRIPT` | Superscript |
-| `INSERT` | Insert |
-| `DELETE` | Delete |
-| `CODE` | Code |
-| `LINK` | Link |
-| `IMAGE` | Image element |
-| `SPAN` | Span |
-| `MATH` | Math |
-| `RAW_INLINE` | Raw inline |
-| `FOOTNOTE_REF` | Footnote ref |
-| `SYMBOL` | Symbol |
+| `TEXT` | Plain text run. |
+| `STRONG` | Bold / strong emphasis. |
+| `EMPHASIS` | Italic / regular emphasis. |
+| `HIGHLIGHT` | Highlighted text (marker pen). |
+| `SUBSCRIPT` | Subscript text. |
+| `SUPERSCRIPT` | Superscript text. |
+| `INSERT` | Inserted text (tracked change). |
+| `DELETE` | Deleted text (tracked change). |
+| `CODE` | Inline code span. |
+| `LINK` | Hyperlink with URL. |
+| `IMAGE` | Inline image reference. |
+| `SPAN` | Generic inline span with optional attributes. |
+| `MATH` | Inline mathematical expression. |
+| `RAW_INLINE` | Raw inline content in a specified format. |
+| `FOOTNOTE_REF` | Footnote reference marker. |
+| `SYMBOL` | Named symbol or emoji shortcode. |
 
 ---
 
@@ -5567,14 +5578,14 @@ Types of inline text annotations.
 
 | Value | Description |
 |-------|-------------|
-| `BOLD` | Bold |
-| `ITALIC` | Italic |
-| `UNDERLINE` | Underline |
-| `STRIKETHROUGH` | Strikethrough |
-| `CODE` | Code |
-| `SUBSCRIPT` | Subscript |
-| `SUPERSCRIPT` | Superscript |
-| `LINK` | Link — Fields: `url`: `String`, `title`: `String` |
+| `BOLD` | Bold (strong) text formatting. |
+| `ITALIC` | Italic (emphasis) text formatting. |
+| `UNDERLINE` | Underlined text. |
+| `STRIKETHROUGH` | Strikethrough text. |
+| `CODE` | Inline code span. |
+| `SUBSCRIPT` | Subscript text. |
+| `SUPERSCRIPT` | Superscript text. |
+| `LINK` | Hyperlink annotation. — Fields: `url`: `String`, `title`: `String` |
 | `HIGHLIGHT` | Highlighted text (PDF highlights, HTML `<mark>`). |
 | `COLOR` | Text color (CSS-compatible value, e.g. "#ff0000", "red"). — Fields: `value`: `String` |
 | `FONT_SIZE` | Font size with units (e.g. "12pt", "1.2em", "16px"). — Fields: `value`: `String` |
@@ -5591,17 +5602,17 @@ schemas) flow through without losing fidelity to the consumer.
 
 | Value | Description |
 |-------|-------------|
-| `PERSON` | Person |
-| `ORGANIZATION` | Organization |
-| `LOCATION` | Location |
-| `DATE` | Date |
-| `TIME` | Time |
-| `MONEY` | Money |
-| `PERCENT` | Percent |
-| `EMAIL` | Email |
-| `PHONE` | Phone |
-| `URL` | Url |
-| `CUSTOM` | Custom — Fields: `0`: `String` |
+| `PERSON` | A person's name. |
+| `ORGANIZATION` | A company, institution, or organisation name. |
+| `LOCATION` | A geographic location (city, country, address). |
+| `DATE` | A calendar date. |
+| `TIME` | A time of day or duration. |
+| `MONEY` | A monetary amount with optional currency. |
+| `PERCENT` | A percentage value. |
+| `EMAIL` | An email address. |
+| `PHONE` | A phone number. |
+| `URL` | A URL or URI. |
+| `CUSTOM` | A caller-supplied custom category label. — Fields: `0`: `String` |
 
 ---
 
@@ -5611,9 +5622,9 @@ How the extracted text was produced.
 
 | Value | Description |
 |-------|-------------|
-| `NATIVE` | Native |
-| `OCR` | Ocr |
-| `MIXED` | Mixed |
+| `NATIVE` | Text extracted directly from the document's native format (no OCR). |
+| `OCR` | All text was obtained via OCR (e.g. scanned image-only PDF). |
+| `MIXED` | Text came from a combination of native extraction and OCR. |
 
 ---
 
@@ -5711,26 +5722,26 @@ type-safe, clean metadata without nested optionals.
 
 | Value | Description |
 |-------|-------------|
-| `PDF` | Pdf format — Fields: `0`: `PdfMetadata` |
-| `DOCX` | Docx format — Fields: `0`: `DocxMetadata` |
-| `EXCEL` | Excel — Fields: `0`: `ExcelMetadata` |
-| `EMAIL` | Email — Fields: `0`: `EmailMetadata` |
-| `PPTX` | Pptx format — Fields: `0`: `PptxMetadata` |
-| `ARCHIVE` | Archive — Fields: `0`: `ArchiveMetadata` |
-| `IMAGE` | Image element — Fields: `0`: `ImageMetadata` |
-| `XML` | Xml format — Fields: `0`: `XmlMetadata` |
-| `TEXT` | Text format — Fields: `0`: `TextMetadata` |
-| `HTML` | Preserve as HTML `<mark>` tags — Fields: `0`: `HtmlMetadata` |
-| `OCR` | Ocr — Fields: `0`: `OcrMetadata` |
-| `CSV` | Csv format — Fields: `0`: `CsvMetadata` |
-| `BIBTEX` | Bibtex — Fields: `0`: `BibtexMetadata` |
-| `CITATION` | Citation — Fields: `0`: `CitationMetadata` |
-| `FICTION_BOOK` | Fiction book — Fields: `0`: `FictionBookMetadata` |
-| `DBF` | Dbf — Fields: `0`: `DbfMetadata` |
-| `JATS` | Jats — Fields: `0`: `JatsMetadata` |
-| `EPUB` | Epub format — Fields: `0`: `EpubMetadata` |
-| `PST` | Pst — Fields: `0`: `PstMetadata` |
-| `AUDIO` | Audio — Fields: `0`: `AudioMetadata` |
+| `PDF` | Metadata extracted from a PDF document. — Fields: `0`: `PdfMetadata` |
+| `DOCX` | Metadata extracted from a DOCX Word document. — Fields: `0`: `DocxMetadata` |
+| `EXCEL` | Metadata extracted from an Excel spreadsheet. — Fields: `0`: `ExcelMetadata` |
+| `EMAIL` | Metadata extracted from an email message (EML/MSG). — Fields: `0`: `EmailMetadata` |
+| `PPTX` | Metadata extracted from a PowerPoint presentation. — Fields: `0`: `PptxMetadata` |
+| `ARCHIVE` | Metadata extracted from an archive (ZIP, TAR, 7Z, etc.). — Fields: `0`: `ArchiveMetadata` |
+| `IMAGE` | Metadata extracted from a raster or vector image. — Fields: `0`: `ImageMetadata` |
+| `XML` | Metadata extracted from an XML document. — Fields: `0`: `XmlMetadata` |
+| `TEXT` | Metadata extracted from a plain-text file. — Fields: `0`: `TextMetadata` |
+| `HTML` | Metadata extracted from an HTML document. — Fields: `0`: `HtmlMetadata` |
+| `OCR` | Metadata produced by an OCR pipeline. — Fields: `0`: `OcrMetadata` |
+| `CSV` | Metadata extracted from a CSV or TSV file. — Fields: `0`: `CsvMetadata` |
+| `BIBTEX` | Metadata extracted from a BibTeX bibliography file. — Fields: `0`: `BibtexMetadata` |
+| `CITATION` | Metadata extracted from a citation file (RIS, PubMed, EndNote). — Fields: `0`: `CitationMetadata` |
+| `FICTION_BOOK` | Metadata extracted from a FictionBook (FB2) e-book. — Fields: `0`: `FictionBookMetadata` |
+| `DBF` | Metadata extracted from a dBASE (DBF) database file. — Fields: `0`: `DbfMetadata` |
+| `JATS` | Metadata extracted from a JATS (Journal Article Tag Suite) XML file. — Fields: `0`: `JatsMetadata` |
+| `EPUB` | Metadata extracted from an EPUB e-book. — Fields: `0`: `EpubMetadata` |
+| `PST` | Metadata extracted from an Outlook PST archive. — Fields: `0`: `PstMetadata` |
+| `AUDIO` | Metadata extracted from an audio or video file. — Fields: `0`: `AudioMetadata` |
 
 ---
 
@@ -5849,15 +5860,15 @@ PII categories the pattern engine recognises.
 
 | Value | Description |
 |-------|-------------|
-| `EMAIL` | Email |
-| `PHONE` | Phone |
-| `SSN` | Ssn |
-| `CREDIT_CARD` | Credit card |
-| `POSTAL_CODE` | Postal code |
-| `IP_ADDRESS` | Ip address |
-| `IBAN` | Iban |
-| `SWIFT_BIC` | Swift bic |
-| `DATE_OF_BIRTH` | Date of birth |
+| `EMAIL` | Email address (e.g. `user@example.com`). |
+| `PHONE` | Phone number in any common format. |
+| `SSN` | US Social Security Number. |
+| `CREDIT_CARD` | Payment card number (Visa, Mastercard, Amex, etc.). |
+| `POSTAL_CODE` | Postal / ZIP code. |
+| `IP_ADDRESS` | IPv4 or IPv6 address. |
+| `IBAN` | International Bank Account Number. |
+| `SWIFT_BIC` | SWIFT / BIC bank identifier code. |
+| `DATE_OF_BIRTH` | Date of birth. |
 | `PERSON` | Person name, surfaced by the optional NER backend. |
 | `ORGANIZATION` | Organization name, surfaced by the optional NER backend. |
 | `LOCATION` | Location, surfaced by the optional NER backend. |
@@ -5964,21 +5975,21 @@ Keyword algorithm selection.
 
 #### PsmMode
 
-Page Segmentation Mode for Tesseract OCR
+Page Segmentation Mode for Tesseract OCR.
 
 | Value | Description |
 |-------|-------------|
-| `OSD_ONLY` | Osd only |
-| `AUTO_OSD` | Auto osd |
-| `AUTO_ONLY` | Auto only |
-| `AUTO` | Auto |
-| `SINGLE_COLUMN` | Single column |
-| `SINGLE_BLOCK_VERTICAL` | Single block vertical |
-| `SINGLE_BLOCK` | Single block |
-| `SINGLE_LINE` | Single line |
-| `SINGLE_WORD` | Single word |
-| `CIRCLE_WORD` | Circle word |
-| `SINGLE_CHAR` | Single char |
+| `OSD_ONLY` | Orientation and script detection only. |
+| `AUTO_OSD` | Automatic page segmentation with OSD. |
+| `AUTO_ONLY` | Automatic page segmentation without OSD or OCR. |
+| `AUTO` | Fully automatic page segmentation with no OSD (default). |
+| `SINGLE_COLUMN` | Assume a single column of text of variable sizes. |
+| `SINGLE_BLOCK_VERTICAL` | Assume a single uniform block of vertically aligned text. |
+| `SINGLE_BLOCK` | Assume a single uniform block of text. |
+| `SINGLE_LINE` | Treat the image as a single text line. |
+| `SINGLE_WORD` | Treat the image as a single word. |
+| `CIRCLE_WORD` | Treat the image as a single word in a circle. |
+| `SINGLE_CHAR` | Treat the image as a single character. |
 
 ---
 
@@ -6021,23 +6032,23 @@ Wire format is snake_case in all serializers (JSON, TOML, YAML).
 
 | Value | Description |
 |-------|-------------|
-| `CAPTION` | Caption element |
-| `FOOTNOTE` | Footnote element |
-| `FORMULA` | Formula |
-| `LIST_ITEM` | List item |
-| `PAGE_FOOTER` | Page footer |
-| `PAGE_HEADER` | Page header |
-| `PICTURE` | Picture |
-| `SECTION_HEADER` | Section header |
-| `TABLE` | Table element |
-| `TEXT` | Text format |
-| `TITLE` | Title element |
-| `DOCUMENT_INDEX` | Document index |
-| `CODE` | Code |
-| `CHECKBOX_SELECTED` | Checkbox selected |
-| `CHECKBOX_UNSELECTED` | Checkbox unselected |
-| `FORM` | Form |
-| `KEY_VALUE_REGION` | Key value region |
+| `CAPTION` | Figure or table caption text. |
+| `FOOTNOTE` | Footnote or endnote text. |
+| `FORMULA` | Mathematical formula or equation. |
+| `LIST_ITEM` | A single item in a bulleted or numbered list. |
+| `PAGE_FOOTER` | Running footer at the bottom of a page. |
+| `PAGE_HEADER` | Running header at the top of a page. |
+| `PICTURE` | Image, chart, or other graphical element. |
+| `SECTION_HEADER` | Section heading. |
+| `TABLE` | Data table. |
+| `TEXT` | Body text paragraph. |
+| `TITLE` | Document or chapter title. |
+| `DOCUMENT_INDEX` | Table of contents or index. |
+| `CODE` | Source code block. |
+| `CHECKBOX_SELECTED` | Checkbox in selected state. |
+| `CHECKBOX_UNSELECTED` | Checkbox in unselected state. |
+| `FORM` | Form field or form element. |
+| `KEY_VALUE_REGION` | Key-value pair region (e.g. label + value in a form). |
 
 ---
 
@@ -6067,22 +6078,22 @@ and provides context for debugging.
 
 | Variant | Description |
 |---------|-------------|
-| `IO` | IO error: {0} |
-| `PARSING` | Parsing error: {message} |
-| `OCR` | OCR error: {message} |
-| `VALIDATION` | Validation error: {message} |
-| `CACHE` | Cache error: {message} |
-| `IMAGE_PROCESSING` | Image processing error: {message} |
-| `SERIALIZATION` | Serialization error: {message} |
-| `MISSING_DEPENDENCY` | Missing dependency: {0} |
-| `PLUGIN` | Plugin error in '{plugin_name}': {message} |
-| `LOCK_POISONED` | Lock poisoned: {0} |
-| `UNSUPPORTED_FORMAT` | Unsupported format: {0} |
-| `EMBEDDING` | Embedding error: {message} |
-| `TRANSCRIPTION` | Transcription error: {message} |
-| `TIMEOUT` | Extraction timed out after {elapsed_ms}ms (limit: {limit_ms}ms) |
-| `CANCELLED` | Extraction cancelled |
-| `SECURITY` | Security violation: {message} |
-| `OTHER` | {0} |
+| `IO` | A file system or I/O operation failed. These errors always bubble up unchanged. |
+| `PARSING` | Document parsing failed (e.g. corrupt file, unsupported format feature). |
+| `OCR` | An OCR engine returned an error or produced unusable output. |
+| `VALIDATION` | Invalid configuration or input parameters were supplied. |
+| `CACHE` | A cache read or write operation failed. |
+| `IMAGE_PROCESSING` | An image manipulation operation (resize, decode, DPI conversion) failed. |
+| `SERIALIZATION` | JSON or MessagePack serialization/deserialization failed. |
+| `MISSING_DEPENDENCY` | A required optional system dependency (e.g. `tesseract`) was not found. |
+| `PLUGIN` | A registered plugin returned an error during extraction. |
+| `LOCK_POISONED` | An internal `Mutex` or `RwLock` was found in a poisoned state. |
+| `UNSUPPORTED_FORMAT` | The document's MIME type is not supported by any registered extractor. |
+| `EMBEDDING` | The embedding model or embedding pipeline returned an error. |
+| `TRANSCRIPTION` | Audio/video transcription failed. |
+| `TIMEOUT` | The extraction operation exceeded the configured time limit. |
+| `CANCELLED` | The extraction was cancelled via a `CancellationToken`. |
+| `SECURITY` | A security policy was violated (e.g. zip bomb, oversized archive). |
+| `OTHER` | A catch-all for uncommon errors that do not fit another variant. |
 
 ---
