@@ -34,8 +34,22 @@
   ],
   "skip": {
     "languages": [
+      "java",
+      "typescript",
+      "python",
+      "ruby",
+      "php",
+      "go",
+      "csharp",
+      "elixir",
+      "r",
+      "dart",
+      "kotlin_android",
+      "swift",
+      "zig",
+      "c",
       "wasm"
     ],
-    "reason": "WASM cannot access filesystem; use extractBytes with file content instead"
+    "reason": "Code metadata variant is excluded from all language bindings (tree-sitter-specific; not part of polyglot API)"
   }
 }

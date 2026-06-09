@@ -5,7 +5,13 @@
   "call": "embed_texts_async",
   "assertion_recipes": ["embeddings"],
   "input": {
-    "texts": []
+    "texts": [],
+    "config": {
+      "model": {
+        "type": "preset",
+        "name": "balanced"
+      }
+    }
   },
   "assertions": [
     {

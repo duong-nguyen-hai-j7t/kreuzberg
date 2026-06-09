@@ -50,22 +50,6 @@ pub fn build(b: *std.Build) void {
     batch_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&batch_run.step);
 
-    const code_module = b.createModule(.{
-        .root_source_file = b.path("src/code_test.zig"),
-        .target = target,
-        .optimize = optimize,
-        .link_libc = true,
-    });
-    code_module.addImport("kreuzberg", kreuzberg_module);
-    const code_tests = b.addTest(.{
-        .name = "code_test",
-        .root_module = code_module,
-        .use_llvm = true,
-    });
-    const code_run = b.addRunArtifact(code_tests);
-    code_run.setCwd(b.path("../../test_documents"));
-    test_step.dependOn(&code_run.step);
-
     const contract_module = b.createModule(.{
         .root_source_file = b.path("src/contract_test.zig"),
         .target = target,

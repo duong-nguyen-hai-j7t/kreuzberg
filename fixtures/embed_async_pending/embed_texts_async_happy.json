@@ -8,7 +8,13 @@
     "texts": [
       "First",
       "Second"
-    ]
+    ],
+    "config": {
+      "model": {
+        "type": "preset",
+        "name": "balanced"
+      }
+    }
   },
   "assertions": [
     {

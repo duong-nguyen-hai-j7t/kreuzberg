@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.23.68"
+alef_version = "0.23.70"
 languages = [
   "python",
   "node",
@@ -752,7 +752,7 @@ e2e = "cd e2e/python && uv run --no-sync pytest tests/ -q"
 
 [crates.test.node]
 precondition = "command -v pnpm >/dev/null 2>&1"
-before = "cd crates/kreuzberg-node && pnpm install && pnpm exec napi build --output-dir . --release --platform --jobs 1"
+before = "cd crates/kreuzberg-node && pnpm install && CARGO_BUILD_JOBS=1 pnpm exec napi build --output-dir . --release --platform"
 e2e = "cd e2e/node && CI=true pnpm install && pnpm test"
 
 [crates.test.go]
@@ -1000,6 +1000,11 @@ class = "dev.kreuzberg.Kreuzberg"
 function = "extractFile"
 options_type = "ExtractionConfig"
 enum_fields = { outputFormat = "OutputFormat" }
+
+[crates.e2e.call.overrides.kotlin]
+class = "Kreuzberg"
+function = "extractFile"
+options_type = "ExtractionConfig"
 
 [crates.e2e.call.overrides.csharp]
 class = "KreuzbergLib"

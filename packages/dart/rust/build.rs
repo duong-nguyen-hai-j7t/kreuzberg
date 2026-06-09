@@ -249,7 +249,7 @@ fn fix_handler_executor_calls() {
                 }
             }
             i += 1;
-            if body_started && brace <= 0 {
+            if body_started && brace <= 0 && paren <= 0 {
                 break;
             }
         }
