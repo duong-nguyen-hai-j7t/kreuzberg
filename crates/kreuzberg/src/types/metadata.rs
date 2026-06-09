@@ -118,10 +118,9 @@ pub enum FormatMetadata {
     /// Metadata extracted from an audio or video file.
     #[cfg(feature = "transcription-types")]
     Audio(AudioMetadata),
-    /// Code metadata (tree-sitter analysis results, not exposed in bindings).
+    /// Code metadata (tree-sitter analysis results).
     #[cfg(feature = "tree-sitter")]
     #[cfg_attr(alef, alef(skip))]
-    #[serde(skip)]
     #[doc(hidden)]
     Code(CodeMetadataInner),
 }

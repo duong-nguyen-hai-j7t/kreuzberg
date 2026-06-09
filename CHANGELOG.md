@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **`FormatMetadata::Code` now serializes correctly.** The `#[serde(skip)]` annotation on the
+  `Code` variant caused `serde_json::to_string` (and every `*_to_json` FFI call) to return an
+  error whenever tree-sitter code extraction produced metadata. Removed the annotation — the
+  inner `CodeMetadataInner(ProcessResult)` wrapper already derives `Serialize`/`Deserialize`
+  via the upstream `serde` feature. Affects Java, Go, C#, Dart, and all other FFI consumers
+  that exercise code-file extraction.
+
 - **Python sdist publish step now uses split-layout invocation.** `.github/workflows/publish.yaml`
   passed `manifest-path: crates/kreuzberg-py/Cargo.toml` to `build-python-sdist@v1`. That input
   routes the action into its single-tree branch, which cd's into the Rust crate directory and
