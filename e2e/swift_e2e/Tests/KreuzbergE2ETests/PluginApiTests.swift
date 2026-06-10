@@ -31,7 +31,7 @@ final class PluginApiTests: XCTestCase {
 }
 
         let result = try Kreuzberg.registerDocumentExtractor(TestStubRegisterDocumentExtractorTraitBridge())
-        try? Kreuzberg.unregisterDocumentExtractor("register_document_extractor_trait_bridge")
+        try? Kreuzberg.unregisterDocumentExtractor("swift-bridge-document_extractor")
     }
 
     func testRegisterEmbeddingBackendTraitBridge() throws {
@@ -46,7 +46,7 @@ final class PluginApiTests: XCTestCase {
 }
 
         let result = try Kreuzberg.registerEmbeddingBackend(TestStubRegisterEmbeddingBackendTraitBridge())
-        try? Kreuzberg.unregisterEmbeddingBackend("register_embedding_backend_trait_bridge")
+        try? Kreuzberg.unregisterEmbeddingBackend("swift-bridge-embedding_backend")
     }
 
     func testRegisterOcrBackendTraitBridge() throws {
@@ -62,7 +62,7 @@ final class PluginApiTests: XCTestCase {
 }
 
         let result = try Kreuzberg.registerOcrBackend(TestStubRegisterOcrBackendTraitBridge())
-        try? Kreuzberg.unregisterOcrBackend("register_ocr_backend_trait_bridge")
+        try? Kreuzberg.unregisterOcrBackend("swift-bridge-ocr_backend")
     }
 
     func testRegisterPostProcessorTraitBridge() throws {
@@ -77,7 +77,7 @@ final class PluginApiTests: XCTestCase {
 }
 
         let result = try Kreuzberg.registerPostProcessor(TestStubRegisterPostProcessorTraitBridge())
-        try? Kreuzberg.unregisterPostProcessor("register_post_processor_trait_bridge")
+        try? Kreuzberg.unregisterPostProcessor("swift-bridge-post_processor")
     }
 
     func testRegisterRendererTraitBridge() throws {
@@ -91,7 +91,7 @@ final class PluginApiTests: XCTestCase {
 }
 
         let result = try Kreuzberg.registerRenderer(TestStubRegisterRendererTraitBridge())
-        try? Kreuzberg.unregisterRenderer("register_renderer_trait_bridge")
+        try? Kreuzberg.unregisterRenderer("swift-bridge-renderer")
     }
 
     func testRegisterValidatorTraitBridge() throws {
@@ -105,7 +105,7 @@ final class PluginApiTests: XCTestCase {
 }
 
         let result = try Kreuzberg.registerValidator(TestStubRegisterValidatorTraitBridge())
-        try? Kreuzberg.unregisterValidator("register_validator_trait_bridge")
+        try? Kreuzberg.unregisterValidator("swift-bridge-validator")
     }
 
     func testUnregisterDocumentExtractorAfterRegister() throws {

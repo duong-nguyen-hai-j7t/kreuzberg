@@ -64,7 +64,6 @@ describe("plugin_api", () => {
   supportedMimeTypes(): string { return []; }
   priority(): number { return 1; }
   canHandle(_p0?: any, _p1?: any): boolean { return false; }
-  async dispose(): Promise<void> { return undefined; }
 }
 
 		const _bridge_extractor = new _TestStub_register_document_extractor_trait_bridge();
@@ -75,7 +74,6 @@ describe("plugin_api", () => {
   name(): string { return "test-embedding-backend"; }
   dimensions(): number { return 768; }
   async embed(_p0?: any): Promise<string> { return []; }
-  async dispose(): Promise<void> { return undefined; }
 }
 
 		const _bridge_backend = new _TestStub_register_embedding_backend_trait_bridge();
@@ -92,7 +90,6 @@ describe("plugin_api", () => {
   supportsTableDetection(): boolean { return false; }
   supportsDocumentProcessing(): boolean { return false; }
   async processDocument(_p0?: any, _p1?: any): Promise<string> { return "{}"; }
-  async dispose(): Promise<void> { return undefined; }
 }
 
 		const _bridge_backend = new _TestStub_register_ocr_backend_trait_bridge();
@@ -106,7 +103,6 @@ describe("plugin_api", () => {
   shouldProcess(_p0?: any, _p1?: any): boolean { return false; }
   estimatedDurationMs(_p0?: any): number { return 1; }
   priority(): number { return 1; }
-  async dispose(): Promise<void> { return undefined; }
 }
 
 		const _bridge_processor = new _TestStub_register_post_processor_trait_bridge();
@@ -116,7 +112,6 @@ describe("plugin_api", () => {
 		class _TestStub_register_renderer_trait_bridge {
   name(): string { return "test-renderer"; }
   render(_p0?: any): string { return ""; }
-  async dispose(): Promise<void> { return undefined; }
 }
 
 		const _bridge_renderer = new _TestStub_register_renderer_trait_bridge();
@@ -128,7 +123,6 @@ describe("plugin_api", () => {
   async validate(_p0?: any, _p1?: any): Promise<void> { return undefined; }
   shouldValidate(_p0?: any, _p1?: any): boolean { return false; }
   priority(): number { return 1; }
-  async dispose(): Promise<void> { return undefined; }
 }
 
 		const _bridge_validator = new _TestStub_register_validator_trait_bridge();
