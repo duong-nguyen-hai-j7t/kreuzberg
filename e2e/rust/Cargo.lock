@@ -433,9 +433,9 @@ checksum = "2af50177e190e07a26ab74f8b1efbfe2ef87da2116221318cb1c2e82baf7de06"
 
 [[package]]
 name = "biblatex"
-version = "0.11.0"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "53d0c374feba1b9a59042a7c1cf00ce7c34b977b9134fe7c42b08e5183729f66"
+checksum = "591eba69b7c085632e22ca03606f0bbea68d53bbe26c8962e2d549af20c6a561"
 dependencies = [
  "paste",
  "roman-numerals-rs",
@@ -2921,7 +2921,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg"
-version = "5.0.0-rc.3"
+version = "5.0.0-rc.10"
 dependencies = [
  "ahash",
  "async-trait",
@@ -3025,12 +3025,12 @@ dependencies = [
  "uuid",
  "v_htmlescape",
  "whatlang",
- "zip 8.6.0",
+ "zip 7.2.0",
 ]
 
 [[package]]
 name = "kreuzberg-e2e-rust"
-version = "5.0.0-rc.3"
+version = "5.0.0-rc.10"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3070,7 +3070,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-paddle-ocr"
-version = "5.0.0-rc.3"
+version = "5.0.0-rc.10"
 dependencies = [
  "geo-clipper",
  "geo-types",
@@ -3084,13 +3084,13 @@ dependencies = [
 
 [[package]]
 name = "kreuzberg-tesseract"
-version = "5.0.0-rc.3"
+version = "5.0.0-rc.10"
 dependencies = [
  "cc",
  "cmake",
  "reqwest",
  "thiserror 2.0.18",
- "zip 8.6.0",
+ "zip 7.2.0",
 ]
 
 [[package]]
@@ -3183,9 +3183,9 @@ checksum = "92daf443525c4cce67b150400bc2316076100ce0b3686209eb8cf3c31612e6f0"
 
 [[package]]
 name = "liter-llm"
-version = "1.4.1"
+version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "11ef45cb14a67adc575face64f727c8b95ca9444960f6582b67b61ead8d55841"
+checksum = "442609bd522ffd20983c7c9b852c1f33a6490d8dddb1b566f2c40960026db1e8"
 dependencies = [
  "base64 0.22.1",
  "bytes",
@@ -3203,6 +3203,7 @@ dependencies = [
  "tokio",
  "toml",
  "tracing",
+ "url",
 ]
 
 [[package]]
@@ -4010,9 +4011,9 @@ dependencies = [
 
 [[package]]
 name = "pdf_oxide"
-version = "0.3.60"
+version = "0.3.63"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9fe6f0b96883f92c6e958a14114a530263b893913a57d1783515982c0472dd16"
+checksum = "6f0b90c85ca0756d2bfa358a033c24d1546ba7ce4324f5a98956250323f0fb26"
 dependencies = [
  "aes 0.9.0",
  "base64 0.22.1",
@@ -6221,9 +6222,9 @@ checksum = "009994f150cc0cd50ff54917d5bc8bffe8cad10ca10d81c34da2ec421ae61782"
 
 [[package]]
 name = "tree-sitter-language-pack"
-version = "1.9.0-rc.20"
+version = "1.9.0-rc.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ddc04d05ead0552aae1d3700a263a02c762b62ad72a6c197f0c05dddc277d631"
+checksum = "a7f2ab6930da8302faf571bcb8d6685386042a76a54b0e15deb948852a71381c"
 dependencies = [
  "ahash",
  "cc",

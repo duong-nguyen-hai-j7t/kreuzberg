@@ -43,7 +43,7 @@ wheels = [
 
 [[package]]
 name = "kreuzberg"
-version = "5.0.0rc3"
+version = "5.0.0rc10"
 source = { directory = "../../packages/python" }
 
 [package.metadata]
