@@ -2161,6 +2161,14 @@ jobs:
     # have it download the assembled Dart package artifact from this run.
     if: ${{ needs.prepare.outputs.release_dart == 'true' && needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.dry_run != 'true' && (needs.check-pub.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
     runs-on: ubuntu-latest
+    # `gh workflow run` requires `actions: write` on whichever token it uses.
+    # The job below mints a kreuzberg-dev-publisher App token, but that path
+    # 403'd on rc.10. Adding explicit job-level permissions covers the fallback
+    # when GITHUB_TOKEN is used; the App also needs `actions: write` configured
+    # on github.com/organizations/kreuzberg-dev/settings/apps.
+    permissions:
+      actions: write
+      contents: read
     steps:
       - uses: actions/create-github-app-token@v2
         id: app-token

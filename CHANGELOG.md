@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **publish.yaml `trigger-pubdev` job: explicit `permissions: actions: write`.** Since the `a8f8597e45` migration to the `kreuzberg-dev-publisher` App-token, the `gh workflow run publish-pubdev.yaml` step has 403'd with "Resource not accessible by integration" — the App's installation token didn't carry `actions: write`. Adding job-level `permissions: { actions: write, contents: read }` covers the case where GITHUB_TOKEN is used as a fallback, and documents that the App's permissions also need `actions: write` configured on github.com.
+
 ### Changed
 
 - **Root Taskfile now includes test-apps task namespace.** Added `test-apps` to the root
