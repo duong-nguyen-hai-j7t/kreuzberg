@@ -30,14 +30,33 @@ public extension SwiftPostProcessorBridge {
 }
 
 /// Internal adapter wrapping a `SwiftPostProcessorBridge` conformer.
-/// Marshals Swift types and trait calls to/from the C boundary.
-/// Excluded/internal types are serialised to/from JSON strings.
+/// Wraps a user-supplied bridge and forwards calls through marshalling entry points.
 final class SwiftPostProcessorAdapter {
     private let bridge: any SwiftPostProcessorBridge
 
     init(bridge: any SwiftPostProcessorBridge) {
         self.bridge = bridge
     }
+
+    // MARK: - SwiftPluginBridge lifecycle
+
+    var name: String {
+        return bridge.name
+    }
+
+    func version() -> String {
+        return bridge.version()
+    }
+
+    func initialize() throws {
+        try bridge.initialize()
+    }
+
+    func shutdown() throws {
+        try bridge.shutdown()
+    }
+
+    // MARK: - FFI marshalling entry points
 
     func processCall(result: String, config: String) throws -> String {
         do {
@@ -63,6 +82,7 @@ final class SwiftPostProcessorAdapter {
         let result = self.bridge.priority()
         return result
     }
+
 }
 
 // MARK: - Marshalling helpers

@@ -25,14 +25,33 @@ public extension SwiftValidatorBridge {
 }
 
 /// Internal adapter wrapping a `SwiftValidatorBridge` conformer.
-/// Marshals Swift types and trait calls to/from the C boundary.
-/// Excluded/internal types are serialised to/from JSON strings.
+/// Wraps a user-supplied bridge and forwards calls through marshalling entry points.
 final class SwiftValidatorAdapter {
     private let bridge: any SwiftValidatorBridge
 
     init(bridge: any SwiftValidatorBridge) {
         self.bridge = bridge
     }
+
+    // MARK: - SwiftPluginBridge lifecycle
+
+    var name: String {
+        return bridge.name
+    }
+
+    func version() -> String {
+        return bridge.version()
+    }
+
+    func initialize() throws {
+        try bridge.initialize()
+    }
+
+    func shutdown() throws {
+        try bridge.shutdown()
+    }
+
+    // MARK: - FFI marshalling entry points
 
     func validateCall(result: String, config: String) throws -> String {
         do {
@@ -50,6 +69,7 @@ final class SwiftValidatorAdapter {
         let result = self.bridge.priority()
         return result
     }
+
 }
 
 // MARK: - Marshalling helpers

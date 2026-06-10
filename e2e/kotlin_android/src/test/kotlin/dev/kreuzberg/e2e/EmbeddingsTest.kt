@@ -26,7 +26,7 @@ class EmbeddingsTest {
     fun testEmbedTextsDifferentPreset() = runBlocking {
         // embed_texts: multilingual preset
         val config = MAPPER.readValue("{\"model\":{\"name\":\"multilingual\",\"type\":\"preset\"}}", EmbeddingConfig::class.java)
-        val result = Kreuzberg.embedTexts(listOf(String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("Hello world")), java.nio.charset.StandardCharsets.UTF_8), String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("Test")), java.nio.charset.StandardCharsets.UTF_8)), config)
+        val result = Kreuzberg.embedTexts(listOf("Hello world", "Test"), config)
         // skipped: field 'embeddings' not available on result type
     }
 

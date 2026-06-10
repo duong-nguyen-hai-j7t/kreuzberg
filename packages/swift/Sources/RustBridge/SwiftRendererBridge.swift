@@ -17,14 +17,33 @@ public extension SwiftRendererBridge {
 }
 
 /// Internal adapter wrapping a `SwiftRendererBridge` conformer.
-/// Marshals Swift types and trait calls to/from the C boundary.
-/// Excluded/internal types are serialised to/from JSON strings.
+/// Wraps a user-supplied bridge and forwards calls through marshalling entry points.
 final class SwiftRendererAdapter {
     private let bridge: any SwiftRendererBridge
 
     init(bridge: any SwiftRendererBridge) {
         self.bridge = bridge
     }
+
+    // MARK: - SwiftPluginBridge lifecycle
+
+    var name: String {
+        return bridge.name
+    }
+
+    func version() -> String {
+        return bridge.version()
+    }
+
+    func initialize() throws {
+        try bridge.initialize()
+    }
+
+    func shutdown() throws {
+        try bridge.shutdown()
+    }
+
+    // MARK: - FFI marshalling entry points
 
     func renderCall(doc: String) throws -> String {
         do {
@@ -34,6 +53,7 @@ final class SwiftRendererAdapter {
             return marshal_error_result(error)
         }
     }
+
 }
 
 // MARK: - Marshalling helpers

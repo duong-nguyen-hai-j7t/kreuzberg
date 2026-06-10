@@ -34,7 +34,7 @@ class EmbedAsyncPendingTest {
     fun testEmbedTextsAsyncHappy() = runBlocking {
         // embed_texts_async: basic async embedding
         val config = MAPPER.readValue("{\"model\":{\"name\":\"balanced\",\"type\":\"preset\"}}", EmbeddingConfig::class.java)
-        val result = Kreuzberg.embedTextsAsync(listOf(String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("First")), java.nio.charset.StandardCharsets.UTF_8), String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("Second")), java.nio.charset.StandardCharsets.UTF_8)), config)
+        val result = Kreuzberg.embedTextsAsync(listOf("First", "Second"), config)
         // skipped: field 'embeddings' not available on result type
     }
 
@@ -42,7 +42,7 @@ class EmbedAsyncPendingTest {
     fun testEmbedTextsAsyncPresetSwitch() = runBlocking {
         // embed_texts_async: preset override
         val config = MAPPER.readValue("{\"model\":{\"name\":\"balanced\",\"type\":\"preset\"}}", EmbeddingConfig::class.java)
-        val result = Kreuzberg.embedTextsAsync(listOf(String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("Text")), java.nio.charset.StandardCharsets.UTF_8)), config)
+        val result = Kreuzberg.embedTextsAsync(listOf("Text"), config)
     }
 
 }

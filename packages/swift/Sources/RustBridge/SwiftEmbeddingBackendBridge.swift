@@ -18,14 +18,33 @@ public extension SwiftEmbeddingBackendBridge {
 }
 
 /// Internal adapter wrapping a `SwiftEmbeddingBackendBridge` conformer.
-/// Marshals Swift types and trait calls to/from the C boundary.
-/// Excluded/internal types are serialised to/from JSON strings.
+/// Wraps a user-supplied bridge and forwards calls through marshalling entry points.
 final class SwiftEmbeddingBackendAdapter {
     private let bridge: any SwiftEmbeddingBackendBridge
 
     init(bridge: any SwiftEmbeddingBackendBridge) {
         self.bridge = bridge
     }
+
+    // MARK: - SwiftPluginBridge lifecycle
+
+    var name: String {
+        return bridge.name
+    }
+
+    func version() -> String {
+        return bridge.version()
+    }
+
+    func initialize() throws {
+        try bridge.initialize()
+    }
+
+    func shutdown() throws {
+        try bridge.shutdown()
+    }
+
+    // MARK: - FFI marshalling entry points
 
     func dimensionsCall() -> UInt {
         let result = self.bridge.dimensions()
@@ -39,6 +58,7 @@ final class SwiftEmbeddingBackendAdapter {
             return marshal_error_result(error)
         }
     }
+
 }
 
 // MARK: - Marshalling helpers

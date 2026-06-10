@@ -26,7 +26,7 @@ final class PluginApiTests: XCTestCase {
     func version() -> String { "1.0.0" }
     func initialize() throws {}
     func shutdown() throws {}
-    func extractBytes(content: Data, mimeType: String, config: String) throws -> String { "" }
+    func extractBytes(content: Data, mimeType: String, config: String) throws -> String { "null" }
     func supportedMimeTypes() -> [String] { [] }
 }
 
@@ -56,9 +56,9 @@ final class PluginApiTests: XCTestCase {
     func version() -> String { "1.0.0" }
     func initialize() throws {}
     func shutdown() throws {}
-    func processImage(imageBytes: Data, config: String) throws -> String { "" }
+    func processImage(imageBytes: Data, config: String) throws -> String { "null" }
     func supportsLanguage(lang: String) -> Bool { false }
-    func backendType() -> String { "" }
+    func backendType() -> String { "null" }
 }
 
         let result = try Kreuzberg.registerOcrBackend(TestStubRegisterOcrBackendTraitBridge())
@@ -73,7 +73,7 @@ final class PluginApiTests: XCTestCase {
     func initialize() throws {}
     func shutdown() throws {}
     func process(result: String, config: String) throws -> Void { () }
-    func processingStage() -> String { "" }
+    func processingStage() -> String { "null" }
 }
 
         let result = try Kreuzberg.registerPostProcessor(TestStubRegisterPostProcessorTraitBridge())

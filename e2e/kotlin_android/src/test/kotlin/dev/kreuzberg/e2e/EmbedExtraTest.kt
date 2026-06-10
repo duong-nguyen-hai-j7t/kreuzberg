@@ -26,7 +26,7 @@ class EmbedExtraTest {
     fun testEmbedTextsBatch() = runBlocking {
         // Batch embed texts
         val config = MAPPER.readValue("{\"model\":{\"name\":\"balanced\",\"type\":\"preset\"}}", EmbeddingConfig::class.java)
-        val result = Kreuzberg.embedTexts(listOf(String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("Hello")), java.nio.charset.StandardCharsets.UTF_8), String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("World")), java.nio.charset.StandardCharsets.UTF_8)), config)
+        val result = Kreuzberg.embedTexts(listOf("Hello", "World"), config)
     }
 
 }

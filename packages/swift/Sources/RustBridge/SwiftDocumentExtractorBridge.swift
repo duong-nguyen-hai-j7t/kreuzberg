@@ -30,14 +30,33 @@ public extension SwiftDocumentExtractorBridge {
 }
 
 /// Internal adapter wrapping a `SwiftDocumentExtractorBridge` conformer.
-/// Marshals Swift types and trait calls to/from the C boundary.
-/// Excluded/internal types are serialised to/from JSON strings.
+/// Wraps a user-supplied bridge and forwards calls through marshalling entry points.
 final class SwiftDocumentExtractorAdapter {
     private let bridge: any SwiftDocumentExtractorBridge
 
     init(bridge: any SwiftDocumentExtractorBridge) {
         self.bridge = bridge
     }
+
+    // MARK: - SwiftPluginBridge lifecycle
+
+    var name: String {
+        return bridge.name
+    }
+
+    func version() -> String {
+        return bridge.version()
+    }
+
+    func initialize() throws {
+        try bridge.initialize()
+    }
+
+    func shutdown() throws {
+        try bridge.shutdown()
+    }
+
+    // MARK: - FFI marshalling entry points
 
     func extractBytesCall(content: Data, mimeType: String, config: String) throws -> String {
         do {
@@ -75,6 +94,7 @@ final class SwiftDocumentExtractorAdapter {
         let result = self.bridge.canHandle(path: path, mimeType: mimeType)
         return result
     }
+
 }
 
 // MARK: - Marshalling helpers
