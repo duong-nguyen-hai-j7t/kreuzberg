@@ -33,13 +33,6 @@ class PluginApiTest {
         class TestStubRegisterDocumentExtractorTraitBridge : IDocumentExtractor {
     override fun name(): String = "register_document_extractor_trait_bridge"
     override fun supportedMimeTypes(): List<String> = emptyList()
-    override fun priority(): Int = 0
-    override fun canHandle(path: java.nio.file.Path, mimeType: String): Boolean = false
-    override fun version(): String = ""
-    override fun initialize(): Unit {}
-    override fun shutdown(): Unit {}
-    override fun description(): String = ""
-    override fun author(): String = ""
 }
 // register via: DocumentExtractorBridge.register(TestStubRegisterDocumentExtractorTraitBridge())
 
@@ -53,11 +46,6 @@ class PluginApiTest {
     override fun name(): String = "register_embedding_backend_trait_bridge"
     override fun dimensions(): Long = 768
     override suspend fun embed(texts: List<String>): List<List<Float>> = emptyList()
-    override fun version(): String = ""
-    override fun initialize(): Unit {}
-    override fun shutdown(): Unit {}
-    override fun description(): String = ""
-    override fun author(): String = ""
 }
 // register via: EmbeddingBackendBridge.register(TestStubRegisterEmbeddingBackendTraitBridge())
 
@@ -70,18 +58,8 @@ class PluginApiTest {
         class TestStubRegisterOcrBackendTraitBridge : IOcrBackend {
     override fun name(): String = "register_ocr_backend_trait_bridge"
     override suspend fun processImage(imageBytes: ByteArray, config: OcrConfig): ExtractionResult = ExtractionResult()
-    override suspend fun processImageFile(path: java.nio.file.Path, config: OcrConfig): ExtractionResult = ExtractionResult()
     override fun supportsLanguage(lang: String): Boolean = false
     override fun backendType(): OcrBackendType = OcrBackendType.UNKNOWN
-    override fun supportedLanguages(): List<String> = emptyList()
-    override fun supportsTableDetection(): Boolean = false
-    override fun supportsDocumentProcessing(): Boolean = false
-    override suspend fun processDocument(path: java.nio.file.Path, config: OcrConfig): ExtractionResult = ExtractionResult()
-    override fun version(): String = ""
-    override fun initialize(): Unit {}
-    override fun shutdown(): Unit {}
-    override fun description(): String = ""
-    override fun author(): String = ""
 }
 // register via: OcrBackendBridge.register(TestStubRegisterOcrBackendTraitBridge())
 
@@ -95,14 +73,6 @@ class PluginApiTest {
     override fun name(): String = "register_post_processor_trait_bridge"
     override suspend fun process(result: ExtractionResult, config: ExtractionConfig): Unit {}
     override fun processingStage(): ProcessingStage = ProcessingStage.EARLY
-    override fun shouldProcess(result: ExtractionResult, config: ExtractionConfig): Boolean = false
-    override fun estimatedDurationMs(result: ExtractionResult): Long = 0
-    override fun priority(): Int = 0
-    override fun version(): String = ""
-    override fun initialize(): Unit {}
-    override fun shutdown(): Unit {}
-    override fun description(): String = ""
-    override fun author(): String = ""
 }
 // register via: PostProcessorBridge.register(TestStubRegisterPostProcessorTraitBridge())
 
@@ -114,11 +84,6 @@ class PluginApiTest {
         // register_renderer: trait bridge
         class TestStubRegisterRendererTraitBridge : IRenderer {
     override fun name(): String = "register_renderer_trait_bridge"
-    override fun version(): String = ""
-    override fun initialize(): Unit {}
-    override fun shutdown(): Unit {}
-    override fun description(): String = ""
-    override fun author(): String = ""
 }
 // register via: RendererBridge.register(TestStubRegisterRendererTraitBridge())
 
@@ -131,13 +96,6 @@ class PluginApiTest {
         class TestStubRegisterValidatorTraitBridge : IValidator {
     override fun name(): String = "register_validator_trait_bridge"
     override suspend fun validate(result: ExtractionResult, config: ExtractionConfig): Unit {}
-    override fun shouldValidate(result: ExtractionResult, config: ExtractionConfig): Boolean = false
-    override fun priority(): Int = 0
-    override fun version(): String = ""
-    override fun initialize(): Unit {}
-    override fun shutdown(): Unit {}
-    override fun description(): String = ""
-    override fun author(): String = ""
 }
 // register via: ValidatorBridge.register(TestStubRegisterValidatorTraitBridge())
 

@@ -284,7 +284,6 @@ no-ort-target = [
     "email",
     "language-detection",
     "chunking",
-    "chunking-tokenizers",
     "quality",
     "keywords",
     "office",
@@ -310,6 +309,7 @@ wasm-target = ["no-ort-target", "excel-wasm", "tree-sitter-wasm", "ocr-wasm"]
 # Excludes ORT-dependent features (paddle-ocr, layout-detection, embeddings, auto-rotate).
 android-target = [
     "no-ort-target",
+    "chunking-tokenizers",
     "excel",
     "tree-sitter",
     "ocr",
