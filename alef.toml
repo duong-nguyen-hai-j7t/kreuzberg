@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.24.10"
+alef_version = "0.24.11"
 languages = [
   "python",
   "node",
@@ -784,7 +784,7 @@ e2e = "cd e2e/python && uv run --no-sync pytest tests/ -q"
 [crates.test.node]
 precondition = "command -v pnpm >/dev/null 2>&1"
 before = "cd crates/kreuzberg-node && pnpm install && CARGO_BUILD_JOBS=1 pnpm exec napi build --output-dir . --release --platform"
-e2e = "cd e2e/node && CI=true pnpm install && pnpm test"
+e2e = "cd e2e/node && pnpm install --frozen-lockfile=false && pnpm test"
 
 [crates.test.go]
 precondition = "command -v go >/dev/null 2>&1"
@@ -1078,6 +1078,7 @@ result_is_json_struct = true
 # instead of extractFile (path string). The file_path arg type generates readAsBytesSync().
 function = "extractBytes"
 arg_name_map = { path = "content" }
+options_type = "ExtractionConfig"
 
 [crates.e2e.calls.extract_file]
 function = "extract_file"
@@ -1119,6 +1120,9 @@ result_is_json_struct = true
 [crates.e2e.calls.extract_file.overrides.php]
 # PHP facade exposes the async variant under the bare name (`extractFile`);
 # the codegen emits it automatically — no override needed.
+
+[crates.e2e.calls.extract_file.overrides.r]
+options_type = "ExtractionConfig"
 
 [crates.e2e.calls.extract_bytes]
 function = "extract_bytes"
@@ -2815,7 +2819,7 @@ returns_result = true
 skip_languages = ["wasm"]
 options_type = "RerankerConfig"
 args = [
-  { name = "query", field = "input.query", type = "string" },
+  { name = "query", field = "input.query", type = "string", owned = true },
   { name = "documents", field = "input.documents", type = "json_object", owned = true, element_type = "String" },
   { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
@@ -2917,7 +2921,7 @@ returns_result = true
 skip_languages = ["wasm", "swift"]
 options_type = "RerankerConfig"
 args = [
-  { name = "query", field = "input.query", type = "string" },
+  { name = "query", field = "input.query", type = "string", owned = true },
   { name = "documents", field = "input.documents", type = "json_object", owned = true, element_type = "String" },
   { name = "config", field = "input.config", type = "json_object", optional = true },
 ]
