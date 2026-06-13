@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.24.15"
+alef_version = "0.24.16"
 languages = [
   "python",
   "node",
@@ -13,6 +13,7 @@ languages = [
   "wasm",
   "r",
   "dart",
+  "jni",
   "kotlin_android",
   "swift",
   "zig",
@@ -956,6 +957,13 @@ fields_optional = [
   "extracted_keywords",
   "quality_score",
   "annotations",
+  "summary",
+  "summary.text",
+  "summary.strategy",
+  "translation",
+  "page_classifications",
+  "redaction_report",
+  "formatted_content",
 ]
 fields_array = [
   "tables",

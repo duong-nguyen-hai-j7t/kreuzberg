@@ -152,6 +152,154 @@ def extract_bytes_sync(content, mime_type, config)
 
 ---
 
+#### batch_extract_files_sync()
+
+Synchronous wrapper for `batch_extract_files`.
+
+Uses the global Tokio runtime for optimal performance.
+Only available with `tokio-runtime` (WASM has no filesystem).
+
+**Signature:**
+
+```elixir
+@spec batch_extract_files_sync(items, config) :: {:ok, term()} | {:error, term()}
+def batch_extract_files_sync(items, config)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `items` | `list(BatchFileItem)` | Yes | The items |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `list(ExtractionResult)`
+**Errors:** Returns `{:error, reason}`
+
+---
+
+#### batch_extract_bytes_sync()
+
+Synchronous wrapper for `batch_extract_bytes`.
+
+Uses the global Tokio runtime for optimal performance.
+With the `tokio-runtime` feature, this blocks the current thread using the global
+Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
+that iterates through items and calls `extract_bytes_sync()`.
+
+**Signature:**
+
+```elixir
+@spec batch_extract_bytes_sync(items, config) :: {:ok, term()} | {:error, term()}
+def batch_extract_bytes_sync(items, config)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `items` | `list(BatchBytesItem)` | Yes | The items |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `list(ExtractionResult)`
+**Errors:** Returns `{:error, reason}`
+
+---
+
+#### batch_extract_files()
+
+Extract content from multiple files concurrently.
+
+This function processes multiple files in parallel, automatically managing
+concurrency to prevent resource exhaustion. The concurrency limit can be
+configured via `ExtractionConfig.max_concurrent_extractions` or defaults
+to `(num_cpus * 1.5).ceil()`.
+
+Each file can optionally specify a `FileExtractionConfig` that overrides specific
+fields from the batch-level `config`. Pass `nil` for a file to use the batch defaults.
+Batch-level settings like `max_concurrent_extractions` and `use_cache` are always
+taken from the batch-level `config`.
+
+  per-file configuration overrides.
+
+- `config` - Batch-level extraction configuration (provides defaults and batch settings)
+
+**Returns:**
+
+A vector of `ExtractionResult` in the same order as the input items.
+
+**Errors:**
+
+Individual file errors are captured in the result metadata. System errors
+(IO, RuntimeError equivalents) will bubble up and fail the entire batch.
+
+Simple usage with no per-file overrides:
+
+Per-file configuration overrides:
+
+**Signature:**
+
+```elixir
+@spec batch_extract_files(items, config) :: {:ok, term()} | {:error, term()}
+def batch_extract_files(items, config)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `items` | `list(BatchFileItem)` | Yes | Vector of `BatchFileItem` structs, each containing a path and optional |
+| `config` | `ExtractionConfig` | Yes | Batch-level extraction configuration (provides defaults and batch settings) |
+
+**Returns:** `list(ExtractionResult)`
+**Errors:** Returns `{:error, reason}`
+
+---
+
+#### batch_extract_bytes()
+
+Extract content from multiple byte arrays concurrently.
+
+This function processes multiple byte arrays in parallel, automatically managing
+concurrency to prevent resource exhaustion. The concurrency limit can be
+configured via `ExtractionConfig.max_concurrent_extractions` or defaults
+to `(num_cpus * 1.5).ceil()`.
+
+Each item can optionally specify a `FileExtractionConfig` that overrides specific
+fields from the batch-level `config`. Pass `nil` as the config to use
+the batch-level defaults for that item.
+
+  MIME type, and optional per-item configuration overrides.
+
+- `config` - Batch-level extraction configuration
+
+**Returns:**
+
+A vector of `ExtractionResult` in the same order as the input items.
+
+Simple usage with no per-item overrides:
+
+Per-item configuration overrides:
+
+**Signature:**
+
+```elixir
+@spec batch_extract_bytes(items, config) :: {:ok, term()} | {:error, term()}
+def batch_extract_bytes(items, config)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `items` | `list(BatchBytesItem)` | Yes | Vector of `BatchBytesItem` structs, each containing content bytes, |
+| `config` | `ExtractionConfig` | Yes | Batch-level extraction configuration |
+
+**Returns:** `list(ExtractionResult)`
+**Errors:** Returns `{:error, reason}`
+
+---
+
 #### detect_mime_type_from_bytes()
 
 Detect MIME type from raw file bytes.

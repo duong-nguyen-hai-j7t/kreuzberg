@@ -41,7 +41,7 @@ enumn = "0.1.14"
 four-cc = "0.4"
 image = { workspace = true, optional = true }
 libc = { workspace = true }
-libheif-sys = "5.2"
+libheif-sys = "5.3"
 
 [lints]
 workspace = true
