@@ -14,6 +14,7 @@
 !crates/kreuzberg-tesseract/
 !crates/kreuzberg-paddle-ocr/
 !crates/kreuzberg-ffi/
+!crates/kreuzberg-libheif/
 !crates/kreuzberg-py/
 !crates/kreuzberg-node/
 !crates/kreuzberg-wasm/
