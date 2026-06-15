@@ -74,6 +74,8 @@ Document intelligence with a Rust core and native bindings for 17 languages. Ext
 | **CLI**                 | `brew install kreuzberg-dev/tap/kreuzberg`     | [CLI Guide](cli/usage.md)                    |
 | **Docker**              | `ghcr.io/kreuzberg-dev/kreuzberg`              | [Docker Guide](guides/docker.md)             |
 
+Homebrew 6.0+ requires explicit trust for third-party taps. Run `brew trust kreuzberg-dev/tap` once before installing the CLI from `kreuzberg-dev/tap`.
+
 !!! Tip "Choosing Between TypeScript Packages"
 
     **`@kreuzberg/node`** — Use for Node.js servers and CLI tools. Native performance (100% speed).

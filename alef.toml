@@ -3830,10 +3830,29 @@ output_pattern = "packages/{language}/README.md"
 discord_url = "https://discord.gg/xt9WY3GnKR"
 banner_url = "https://github.com/user-attachments/assets/419fc06c-8313-4324-b159-4b4d3cfce5c0"
 
-[crates.readme.languages.rust]
+[crates.readme.targets.root]
 template = "root.md"
 name = "Kreuzberg"
 output_path = "README.md"
+
+[crates.readme.targets.cli]
+template = "cli.md"
+name = "kreuzberg-cli"
+output_path = "crates/kreuzberg-cli/README.md"
+
+[crates.readme.languages.rust]
+template = "rust.md"
+output_path = "crates/kreuzberg/README.md"
+name = "Rust"
+package_name = "kreuzberg"
+badge_url = "https://img.shields.io/crates/v/kreuzberg?label=Rust&color=007ec6"
+docs_url = "https://kreuzberg.dev/"
+description = "High-performance document intelligence library for Rust. Extract text, tables, metadata, and code intelligence from 96 file formats and 306 programming languages."
+package_manager = ["cargo"]
+features = { ocr = true, async = true, plugin_system = true, embeddings = true, code_intelligence = true }
+ocr_backends = ["tesseract", "paddleocr"]
+optional_sections = ["system_requirements", "ocr_backends"]
+snippets = { basic_extraction = "getting-started/basic_usage.md", async_extraction = "getting-started/extract_file.md", batch_processing = "getting-started/extract_with_ocr.md", ocr_configuration = "ocr/ocr_extraction.md", table_extraction = "api/tables.md" }
 
 [crates.readme.languages.python]
 template = "python.md"

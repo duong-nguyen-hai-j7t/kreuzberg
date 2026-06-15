@@ -21,6 +21,7 @@ No SDK, no code — just your terminal.
 === "Homebrew"
 
     ```bash
+    brew trust kreuzberg-dev/tap
     brew install kreuzberg-dev/tap/kreuzberg
     ```
 

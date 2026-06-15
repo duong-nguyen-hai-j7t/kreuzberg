@@ -68,6 +68,14 @@ Kreuzberg provides async/sync APIs, text chunking, language detection, keyword e
 - [Types](https://docs.kreuzberg.dev/reference/types/): Type definitions
 - [Errors](https://docs.kreuzberg.dev/reference/errors/): Error types and handling
 
+## Kreuzberg Ecosystem
+
+- [Kreuzberg Cloud](https://docs.kreuzberg.cloud): Managed extraction API with SDKs, dashboards, and observability
+- [kreuzcrawl](https://docs.kreuzcrawl.kreuzberg.dev): Web crawling and scraping with HTML to Markdown and headless-Chrome fallback
+- [html-to-markdown](https://docs.html-to-markdown.kreuzberg.dev): Fast, lossless HTML to Markdown engine
+- [liter-llm](https://docs.liter-llm.kreuzberg.dev): Universal LLM API client with native bindings for 14 languages and 143 providers
+- [tree-sitter-language-pack](https://docs.tree-sitter-language-pack.kreuzberg.dev): Tree-sitter grammars and code-intelligence primitives
+
 ## Migration
 
 - [From Unstructured](https://docs.kreuzberg.dev/migration/from-unstructured/): Migrate from the Unstructured library
