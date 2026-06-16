@@ -46,7 +46,7 @@ fn decode_mp3_yields_16khz_mono_pcm() {
     assert_eq!(pcm.sample_rate_hz, 16_000);
     assert_eq!(pcm.channels, 1);
     assert!(!pcm.samples.is_empty());
-    // The fixture is a 440 Hz sine wave — should have non-trivial signal.
+    // The fixture is recorded speech ("hello world…") — non-zero amplitude expected.
     assert!(
         pcm.samples.iter().any(|s| s.abs() > 0.01),
         "audio fixture should have non-trivial signal"

@@ -30,6 +30,8 @@ ignored = [
     # symphonia is optional behind the `transcription` feature; cargo-machete cannot
     # resolve optional dep usage through feature-gated cfg blocks.
     "symphonia",
+    # mel_spec is optional behind the `transcription` feature; same constraint.
+    "mel_spec",
 ]
 
 [lib]
@@ -193,11 +195,14 @@ auto-rotate-types = []
 transcription-types = []
 transcription = [
     "transcription-types",
+    "dep:mel_spec",
+    "dep:ndarray",
     "dep:ort",
     "dep:hf-hub",
     "dep:sha2",
     "dep:symphonia",
     "dep:lofty",
+    "dep:tokenizers",
     "ort-bundled",
     "tokio-runtime",
 ]
@@ -528,6 +533,7 @@ lofty = { version = "0.24", optional = true }
 log = { workspace = true }
 lopdf = { version = "0.41.0", optional = true }
 mail-parser = { version = "0.11.3", optional = true }
+mel_spec = { version = "0.4", optional = true }
 memchr = "2.8.2"
 memmap2 = { workspace = true }
 mime_guess = "2.0"

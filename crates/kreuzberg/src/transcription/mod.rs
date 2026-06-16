@@ -7,6 +7,8 @@
 
 pub mod decode;
 #[cfg(feature = "transcription")]
+pub mod engine;
+#[cfg(feature = "transcription")]
 pub mod model;
 #[cfg(feature = "transcription")]
 pub mod tags;

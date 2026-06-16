@@ -107,7 +107,8 @@ pub mod ocr;
     feature = "embeddings",
     feature = "reranker",
     feature = "layout-detection",
-    feature = "auto-rotate"
+    feature = "auto-rotate",
+    feature = "transcription"
 ))]
 pub mod ort_discovery;
 
