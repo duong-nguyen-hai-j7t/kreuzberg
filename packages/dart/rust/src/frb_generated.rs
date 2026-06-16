@@ -8099,6 +8099,7 @@ const _: fn() = || {
         let _: Option<i64> = ExtractionConfig.max_embedded_file_bytes;
         let _: crate::OutputFormat = ExtractionConfig.output_format;
         let _: Option<crate::LayoutDetectionConfig> = ExtractionConfig.layout;
+        let _: Option<crate::TranscriptionConfig> = ExtractionConfig.transcription;
         let _: bool = ExtractionConfig.use_layout_for_markdown;
         let _: bool = ExtractionConfig.include_document_structure;
         let _: Option<crate::AccelerationConfig> = ExtractionConfig.acceleration;
@@ -8183,6 +8184,7 @@ const _: fn() = || {
         let _: Option<crate::OutputFormat> = FileExtractionConfig.output_format;
         let _: Option<bool> = FileExtractionConfig.include_document_structure;
         let _: Option<crate::LayoutDetectionConfig> = FileExtractionConfig.layout;
+        let _: Option<crate::TranscriptionConfig> = FileExtractionConfig.transcription;
         let _: Option<i64> = FileExtractionConfig.timeout_secs;
         let _: Option<crate::TreeSitterConfig> = FileExtractionConfig.tree_sitter;
         let _: Option<crate::StructuredExtractionConfig> = FileExtractionConfig.structured_extraction;
@@ -8346,6 +8348,7 @@ const _: fn() = || {
         let _: bool = ImageExtractionConfig.ocr_text_only;
         let _: bool = ImageExtractionConfig.append_ocr_text;
         let _: crate::ImageOutputFormat = ImageExtractionConfig.output_format;
+        let _: crate::SvgOptions = ImageExtractionConfig.svg;
     }
     {
         let ImageMetadata = None::<crate::ImageMetadata>.unwrap();
@@ -11593,6 +11596,7 @@ impl SseDecode for crate::ExtractionConfig {
         let mut var_maxEmbeddedFileBytes = <Option<i64>>::sse_decode(deserializer);
         let mut var_outputFormat = <crate::OutputFormat>::sse_decode(deserializer);
         let mut var_layout = <Option<crate::LayoutDetectionConfig>>::sse_decode(deserializer);
+        let mut var_transcription = <Option<crate::TranscriptionConfig>>::sse_decode(deserializer);
         let mut var_useLayoutForMarkdown = <bool>::sse_decode(deserializer);
         let mut var_includeDocumentStructure = <bool>::sse_decode(deserializer);
         let mut var_acceleration = <Option<crate::AccelerationConfig>>::sse_decode(deserializer);
@@ -11633,6 +11637,7 @@ impl SseDecode for crate::ExtractionConfig {
             max_embedded_file_bytes: var_maxEmbeddedFileBytes,
             output_format: var_outputFormat,
             layout: var_layout,
+            transcription: var_transcription,
             use_layout_for_markdown: var_useLayoutForMarkdown,
             include_document_structure: var_includeDocumentStructure,
             acceleration: var_acceleration,
@@ -11794,6 +11799,7 @@ impl SseDecode for crate::FileExtractionConfig {
         let mut var_outputFormat = <Option<crate::OutputFormat>>::sse_decode(deserializer);
         let mut var_includeDocumentStructure = <Option<bool>>::sse_decode(deserializer);
         let mut var_layout = <Option<crate::LayoutDetectionConfig>>::sse_decode(deserializer);
+        let mut var_transcription = <Option<crate::TranscriptionConfig>>::sse_decode(deserializer);
         let mut var_timeoutSecs = <Option<i64>>::sse_decode(deserializer);
         let mut var_treeSitter = <Option<crate::TreeSitterConfig>>::sse_decode(deserializer);
         let mut var_structuredExtraction = <Option<crate::StructuredExtractionConfig>>::sse_decode(deserializer);
@@ -11816,6 +11822,7 @@ impl SseDecode for crate::FileExtractionConfig {
             output_format: var_outputFormat,
             include_document_structure: var_includeDocumentStructure,
             layout: var_layout,
+            transcription: var_transcription,
             timeout_secs: var_timeoutSecs,
             tree_sitter: var_treeSitter,
             structured_extraction: var_structuredExtraction,
@@ -12142,6 +12149,7 @@ impl SseDecode for crate::ImageExtractionConfig {
         let mut var_ocrTextOnly = <bool>::sse_decode(deserializer);
         let mut var_appendOcrText = <bool>::sse_decode(deserializer);
         let mut var_outputFormat = <crate::ImageOutputFormat>::sse_decode(deserializer);
+        let mut var_svg = <crate::SvgOptions>::sse_decode(deserializer);
         return crate::ImageExtractionConfig {
             extract_images: var_extractImages,
             target_dpi: var_targetDpi,
@@ -12157,6 +12165,7 @@ impl SseDecode for crate::ImageExtractionConfig {
             ocr_text_only: var_ocrTextOnly,
             append_ocr_text: var_appendOcrText,
             output_format: var_outputFormat,
+            svg: var_svg,
         };
     }
 }
@@ -14744,6 +14753,17 @@ impl SseDecode for Option<crate::TokenReductionOptions> {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         if (<bool>::sse_decode(deserializer)) {
             return Some(<crate::TokenReductionOptions>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
+impl SseDecode for Option<crate::TranscriptionConfig> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<crate::TranscriptionConfig>::sse_decode(deserializer));
         } else {
             return None;
         }
@@ -18560,6 +18580,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::ExtractionConfig> {
             self.0.max_embedded_file_bytes.into_into_dart().into_dart(),
             self.0.output_format.into_into_dart().into_dart(),
             self.0.layout.into_into_dart().into_dart(),
+            self.0.transcription.into_into_dart().into_dart(),
             self.0.use_layout_for_markdown.into_into_dart().into_dart(),
             self.0.include_document_structure.into_into_dart().into_dart(),
             self.0.acceleration.into_into_dart().into_dart(),
@@ -18705,6 +18726,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::FileExtractionConfig> {
             self.0.output_format.into_into_dart().into_dart(),
             self.0.include_document_structure.into_into_dart().into_dart(),
             self.0.layout.into_into_dart().into_dart(),
+            self.0.transcription.into_into_dart().into_dart(),
             self.0.timeout_secs.into_into_dart().into_dart(),
             self.0.tree_sitter.into_into_dart().into_dart(),
             self.0.structured_extraction.into_into_dart().into_dart(),
@@ -18989,6 +19011,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::ImageExtractionConfig> 
             self.0.ocr_text_only.into_into_dart().into_dart(),
             self.0.append_ocr_text.into_into_dart().into_dart(),
             self.0.output_format.into_into_dart().into_dart(),
+            self.0.svg.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -22994,6 +23017,7 @@ impl SseEncode for crate::ExtractionConfig {
         <Option<i64>>::sse_encode(self.max_embedded_file_bytes, serializer);
         <crate::OutputFormat>::sse_encode(self.output_format, serializer);
         <Option<crate::LayoutDetectionConfig>>::sse_encode(self.layout, serializer);
+        <Option<crate::TranscriptionConfig>>::sse_encode(self.transcription, serializer);
         <bool>::sse_encode(self.use_layout_for_markdown, serializer);
         <bool>::sse_encode(self.include_document_structure, serializer);
         <Option<crate::AccelerationConfig>>::sse_encode(self.acceleration, serializer);
@@ -23114,6 +23138,7 @@ impl SseEncode for crate::FileExtractionConfig {
         <Option<crate::OutputFormat>>::sse_encode(self.output_format, serializer);
         <Option<bool>>::sse_encode(self.include_document_structure, serializer);
         <Option<crate::LayoutDetectionConfig>>::sse_encode(self.layout, serializer);
+        <Option<crate::TranscriptionConfig>>::sse_encode(self.transcription, serializer);
         <Option<i64>>::sse_encode(self.timeout_secs, serializer);
         <Option<crate::TreeSitterConfig>>::sse_encode(self.tree_sitter, serializer);
         <Option<crate::StructuredExtractionConfig>>::sse_encode(self.structured_extraction, serializer);
@@ -23374,6 +23399,7 @@ impl SseEncode for crate::ImageExtractionConfig {
         <bool>::sse_encode(self.ocr_text_only, serializer);
         <bool>::sse_encode(self.append_ocr_text, serializer);
         <crate::ImageOutputFormat>::sse_encode(self.output_format, serializer);
+        <crate::SvgOptions>::sse_encode(self.svg, serializer);
     }
 }
 
@@ -25527,6 +25553,16 @@ impl SseEncode for Option<crate::TokenReductionOptions> {
         <bool>::sse_encode(self.is_some(), serializer);
         if let Some(value) = self {
             <crate::TokenReductionOptions>::sse_encode(value, serializer);
+        }
+    }
+}
+
+impl SseEncode for Option<crate::TranscriptionConfig> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <crate::TranscriptionConfig>::sse_encode(value, serializer);
         }
     }
 }

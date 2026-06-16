@@ -6,6 +6,8 @@
 import 'dart:ffi';
 import 'dart:isolate';
 import 'dart:io';
+import 'dart:core' as _DartCore;
+import 'dart:core';
 import 'dart:async';
 import 'dart:convert';
 import 'frb_generated.dart';
@@ -20,64 +22,161 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   static final instance = RustLib._();
 
   RustLib._();
-
-  /// Resolve the prebuilt native library from this package's own installed
-  /// location so the load works from any working directory and under hardened
-  /// runtimes. Returns `null` to defer to flutter_rust_bridge's default loader.
+  /// Resolve the prebuilt native library from environment variable,
+  /// package-relative location, or defer to flutter_rust_bridge's default loader.
+  /// Returns `null` to defer to flutter_rust_bridge's default loader.
   ///
-  /// Published pub.dev packages stage natives under `lib/src/native/<rid>/`
-  /// (e.g. `macos-arm64`, `linux-x64`). For local FRB-dev builds the dylib is
-  /// emitted into `lib/src/kreuzberg_bridge_generated/`; that
-  /// path is searched as a fallback.
+  /// Checks in order:
+  /// 1. FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR environment variable
+  ///    (allows test harnesses to point to development build paths)
+  /// 2. Package-installed location with RID subdirectory (lib/src/native/<rid>/)
+  ///    (for published pub.dev packages with platform-specific bundled native libraries)
+  /// 3. Package-installed location (lib/src/kreuzberg_bridge_generated/)
+  ///    (legacy fallback for development or packages without per-platform binaries)
+  /// 4. Returns null (flutter_rust_bridge falls back to its default loader)
   static Future<ExternalLibrary?> _alefResolveExternalLibrary() async {
     try {
-      final packageRoot = await Isolate.resolvePackageUri(
-        Uri.parse('package:kreuzberg/kreuzberg.dart'),
-      );
-      if (packageRoot == null) return null;
-      final libNames = _alefHostLibNames();
-      final searchDirs = <Uri>[
-        if (_alefHostRid() != null)
-          packageRoot.resolve('src/native/${_alefHostRid()}/'),
-        packageRoot.resolve('src/kreuzberg_bridge_generated/'),
+      const candidates = <String>[
+        // macOS: framework bundle (preferred modern packaging)
+        'kreuzberg_dart.framework',
+        // macOS: bare dylib fallback
+        'libkreuzberg_dart.dylib',
+        // Linux
+        'libkreuzberg_dart.so',
+        // Windows
+        'kreuzberg_dart.dll',
       ];
-      for (final dir in searchDirs) {
-        for (final name in libNames) {
-          final libPath = dir.resolve(name).toFilePath();
-          if (File(libPath).existsSync() || Directory(libPath).existsSync()) {
-            return ExternalLibrary.open(libPath);
+
+      // Helper to open a native library by absolute path.
+      // Normalizes path to absolute to avoid hardened-runtime "relative path rejected" errors.
+      ExternalLibrary? tryOpenAbsolute(String libPath) {
+        try {
+          final absPath = File(libPath).absolute.path;
+          return ExternalLibrary.open(absPath);
+        } catch (_) {
+          return null;
+        }
+      }
+
+      bool candidateExists(String libPath) {
+        return File(libPath).existsSync() || Directory(libPath).existsSync();
+      }
+
+      // Check FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR env var first.
+      // This allows test harnesses to override library location for development.
+      final envDir = Platform.environment['FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR'];
+      if (envDir != null && envDir.isNotEmpty) {
+        final absEnvDir = Directory(envDir).absolute.path;
+        final libDir = Directory(absEnvDir);
+        if (libDir.existsSync()) {
+          for (final candidate in candidates) {
+            final libPath = '$absEnvDir/$candidate';
+            if (candidateExists(libPath)) {
+              final result = tryOpenAbsolute(libPath);
+              if (result != null) return result;
+            }
           }
         }
+      }
+
+      // Compute RID (runtime identifier) from platform and architecture using Abi.current().
+      // This is more reliable than parsing Platform.version.
+      String? computeRid() {
+        final abi = Abi.current();
+        final os = Platform.operatingSystem;
+
+        // Map from (os, Abi) to RID string.
+        String? ridFromAbi() {
+          if (os == 'linux') {
+            if (abi == Abi.linuxX64) return 'linux-x64';
+            if (abi == Abi.linuxArm64) return 'linux-arm64';
+          } else if (os == 'macos') {
+            if (abi == Abi.macosX64) return 'macos-x64';
+            if (abi == Abi.macosArm64) return 'macos-arm64';
+          } else if (os == 'windows') {
+            if (abi == Abi.windowsX64) return 'windows-x64';
+            if (abi == Abi.windowsArm64) return 'windows-arm64';
+          }
+          return null;
+        }
+
+        return ridFromAbi();
+      }
+
+      final rid = computeRid();
+      if (rid != null) {
+        final packageRoot =
+            await Isolate.resolvePackageUri(_DartCore.Uri.parse('package:kreuzberg/kreuzberg.dart'));
+        if (packageRoot != null) {
+          final ridDir = packageRoot.resolve('src/native/$rid/');
+          for (final candidate in candidates) {
+            final libPath = ridDir.resolve(candidate).toFilePath();
+            if (candidateExists(libPath)) {
+              final result = tryOpenAbsolute(libPath);
+              if (result != null) return result;
+            }
+          }
+        }
+      }
+
+      // Check legacy package-installed location as fallback.
+      final packageRoot =
+          await Isolate.resolvePackageUri(_DartCore.Uri.parse('package:kreuzberg/kreuzberg.dart'));
+      if (packageRoot != null) {
+        final libDir = packageRoot.resolve('src/kreuzberg_bridge_generated/');
+        for (final candidate in candidates) {
+          final libPath = libDir.resolve(candidate).toFilePath();
+          if (candidateExists(libPath)) {
+            final result = tryOpenAbsolute(libPath);
+            if (result != null) return result;
+          }
+        }
+      }
+
+      // As a last resort, resolve the running test/script's package root via
+      // `Platform.script` and search standard RID-relative locations there.
+      // Critical on macOS: `Directory.current` under hardened-runtime `dart` is
+      // the dart binary's own bin dir (relative-path dlopen rejected), whereas
+      // `Platform.script` resolves to the running .dart file's absolute URI,
+      // from which we can walk up to find the package root (the dir containing
+      // `pubspec.yaml`) and look for the bundled native library at standard
+      // paths. This handles the case where `Isolate.resolvePackageUri`
+      // resolution did not yield the actual staging location (e.g., a path
+      // dependency in local development, or a test_app whose host package
+      // contains the native lib directly rather than via the bridged package).
+      try {
+        final scriptPath = Platform.script.toFilePath();
+        var dir = File(scriptPath).absolute.parent;
+        while (dir.parent.path != dir.path
+            && !File('${dir.path}/pubspec.yaml').existsSync()) {
+          dir = dir.parent;
+        }
+        if (File('${dir.path}/pubspec.yaml').existsSync()) {
+          final rid = computeRid();
+          final absRootPath = dir.absolute.path;
+          final searchRoots = <String>[
+            if (rid != null) '$absRootPath/lib/src/native/$rid',
+            '$absRootPath/lib',
+            absRootPath,
+          ];
+          for (final root in searchRoots) {
+            final absRoot = Directory(root).absolute.path;
+            for (final candidate in candidates) {
+              final libPath = '$absRoot/$candidate';
+              if (candidateExists(libPath)) {
+                final result = tryOpenAbsolute(libPath);
+                if (result != null) return result;
+              }
+            }
+          }
+        }
+      } catch (_) {
+        // fall through to default loader
       }
     } catch (_) {
       // Fall through to the default loader on any resolution failure.
     }
     return null;
-  }
-
-  /// Map the host platform to the pub.dev native staging RID. Returns `null`
-  /// for unrecognized host triples so the FRB-dev fallback path runs instead.
-  static String? _alefHostRid() {
-    final abi = Abi.current();
-    if (abi == Abi.macosArm64) return 'macos-arm64';
-    if (abi == Abi.macosX64) return 'macos-x64';
-    if (abi == Abi.linuxArm64) return 'linux-arm64';
-    if (abi == Abi.linuxX64) return 'linux-x64';
-    if (abi == Abi.windowsArm64) return 'windows-arm64';
-    if (abi == Abi.windowsX64) return 'windows-x64';
-    return null;
-  }
-
-  static List<String> _alefHostLibNames() {
-    // The Dart-binding Rust crate is `{stem}-dart` (per the cargo manifest
-    // template), which produces a cdylib named `lib{stem}_dart.{ext}` on Unix
-    // and `{stem}_dart.dll` on Windows. On macOS, pub.dev-published packages
-    // may ship the binary as a Framework bundle (preferred modern packaging)
-    // — list that first so the loader finds it before the bare dylib.
-    if (Platform.isMacOS)
-      return const ['kreuzberg_dart.framework', 'libkreuzberg_dart.dylib'];
-    if (Platform.isWindows) return const ['kreuzberg_dart.dll'];
-    return const ['libkreuzberg_dart.so'];
   }
 
   /// Initialize flutter_rust_bridge
@@ -11713,6 +11812,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TranscriptionConfig dco_decode_box_autoadd_transcription_config(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_transcription_config(raw);
+  }
+
+  @protected
   Translation dco_decode_box_autoadd_translation(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_translation(raw);
@@ -12589,8 +12694,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ExtractionConfig dco_decode_extraction_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 39)
-      throw Exception('unexpected arr length: expect 39 but see ${arr.length}');
+    if (arr.length != 40)
+      throw Exception('unexpected arr length: expect 40 but see ${arr.length}');
     return ExtractionConfig(
       useCache: dco_decode_bool(arr[0]),
       enableQualityProcessing: dco_decode_bool(arr[1]),
@@ -12619,25 +12724,26 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       maxEmbeddedFileBytes: dco_decode_opt_box_autoadd_i_64(arr[20]),
       outputFormat: dco_decode_output_format(arr[21]),
       layout: dco_decode_opt_box_autoadd_layout_detection_config(arr[22]),
-      useLayoutForMarkdown: dco_decode_bool(arr[23]),
-      includeDocumentStructure: dco_decode_bool(arr[24]),
-      acceleration: dco_decode_opt_box_autoadd_acceleration_config(arr[25]),
-      cacheNamespace: dco_decode_opt_String(arr[26]),
-      cacheTtlSecs: dco_decode_opt_box_autoadd_i_64(arr[27]),
-      email: dco_decode_opt_box_autoadd_email_config(arr[28]),
-      maxArchiveDepth: dco_decode_i_64(arr[29]),
-      treeSitter: dco_decode_opt_box_autoadd_tree_sitter_config(arr[30]),
+      transcription: dco_decode_opt_box_autoadd_transcription_config(arr[23]),
+      useLayoutForMarkdown: dco_decode_bool(arr[24]),
+      includeDocumentStructure: dco_decode_bool(arr[25]),
+      acceleration: dco_decode_opt_box_autoadd_acceleration_config(arr[26]),
+      cacheNamespace: dco_decode_opt_String(arr[27]),
+      cacheTtlSecs: dco_decode_opt_box_autoadd_i_64(arr[28]),
+      email: dco_decode_opt_box_autoadd_email_config(arr[29]),
+      maxArchiveDepth: dco_decode_i_64(arr[30]),
+      treeSitter: dco_decode_opt_box_autoadd_tree_sitter_config(arr[31]),
       structuredExtraction:
-          dco_decode_opt_box_autoadd_structured_extraction_config(arr[31]),
-      ner: dco_decode_opt_box_autoadd_ner_config(arr[32]),
-      redaction: dco_decode_opt_box_autoadd_redaction_config(arr[33]),
-      summarization: dco_decode_opt_box_autoadd_summarization_config(arr[34]),
-      translation: dco_decode_opt_box_autoadd_translation_config(arr[35]),
+          dco_decode_opt_box_autoadd_structured_extraction_config(arr[32]),
+      ner: dco_decode_opt_box_autoadd_ner_config(arr[33]),
+      redaction: dco_decode_opt_box_autoadd_redaction_config(arr[34]),
+      summarization: dco_decode_opt_box_autoadd_summarization_config(arr[35]),
+      translation: dco_decode_opt_box_autoadd_translation_config(arr[36]),
       pageClassification: dco_decode_opt_box_autoadd_page_classification_config(
-        arr[36],
+        arr[37],
       ),
-      captioning: dco_decode_opt_box_autoadd_captioning_config(arr[37]),
-      qrCodes: dco_decode_opt_box_autoadd_bool(arr[38]),
+      captioning: dco_decode_opt_box_autoadd_captioning_config(arr[38]),
+      qrCodes: dco_decode_opt_box_autoadd_bool(arr[39]),
     );
   }
 
@@ -12725,8 +12831,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   FileExtractionConfig dco_decode_file_extraction_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 21)
-      throw Exception('unexpected arr length: expect 21 but see ${arr.length}');
+    if (arr.length != 22)
+      throw Exception('unexpected arr length: expect 22 but see ${arr.length}');
     return FileExtractionConfig(
       enableQualityProcessing: dco_decode_opt_box_autoadd_bool(arr[0]),
       ocr: dco_decode_opt_box_autoadd_ocr_config(arr[1]),
@@ -12750,10 +12856,11 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       outputFormat: dco_decode_opt_box_autoadd_output_format(arr[15]),
       includeDocumentStructure: dco_decode_opt_box_autoadd_bool(arr[16]),
       layout: dco_decode_opt_box_autoadd_layout_detection_config(arr[17]),
-      timeoutSecs: dco_decode_opt_box_autoadd_i_64(arr[18]),
-      treeSitter: dco_decode_opt_box_autoadd_tree_sitter_config(arr[19]),
+      transcription: dco_decode_opt_box_autoadd_transcription_config(arr[18]),
+      timeoutSecs: dco_decode_opt_box_autoadd_i_64(arr[19]),
+      treeSitter: dco_decode_opt_box_autoadd_tree_sitter_config(arr[20]),
       structuredExtraction:
-          dco_decode_opt_box_autoadd_structured_extraction_config(arr[20]),
+          dco_decode_opt_box_autoadd_structured_extraction_config(arr[21]),
     );
   }
 
@@ -13018,8 +13125,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ImageExtractionConfig dco_decode_image_extraction_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 14)
-      throw Exception('unexpected arr length: expect 14 but see ${arr.length}');
+    if (arr.length != 15)
+      throw Exception('unexpected arr length: expect 15 but see ${arr.length}');
     return ImageExtractionConfig(
       extractImages: dco_decode_bool(arr[0]),
       targetDpi: dco_decode_i_64(arr[1]),
@@ -13035,6 +13142,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       ocrTextOnly: dco_decode_bool(arr[11]),
       appendOcrText: dco_decode_bool(arr[12]),
       outputFormat: dco_decode_image_output_format(arr[13]),
+      svg: dco_decode_svg_options(arr[14]),
     );
   }
 
@@ -14655,6 +14763,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     return raw == null
         ? null
         : dco_decode_box_autoadd_token_reduction_options(raw);
+  }
+
+  @protected
+  TranscriptionConfig? dco_decode_opt_box_autoadd_transcription_config(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null
+        ? null
+        : dco_decode_box_autoadd_transcription_config(raw);
   }
 
   @protected
@@ -17459,6 +17577,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TranscriptionConfig sse_decode_box_autoadd_transcription_config(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_transcription_config(deserializer));
+  }
+
+  @protected
   Translation sse_decode_box_autoadd_translation(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_translation(deserializer));
@@ -18511,6 +18637,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_layout = sse_decode_opt_box_autoadd_layout_detection_config(
       deserializer,
     );
+    var var_transcription = sse_decode_opt_box_autoadd_transcription_config(
+      deserializer,
+    );
     var var_useLayoutForMarkdown = sse_decode_bool(deserializer);
     var var_includeDocumentStructure = sse_decode_bool(deserializer);
     var var_acceleration = sse_decode_opt_box_autoadd_acceleration_config(
@@ -18565,6 +18694,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       maxEmbeddedFileBytes: var_maxEmbeddedFileBytes,
       outputFormat: var_outputFormat,
       layout: var_layout,
+      transcription: var_transcription,
       useLayoutForMarkdown: var_useLayoutForMarkdown,
       includeDocumentStructure: var_includeDocumentStructure,
       acceleration: var_acceleration,
@@ -18748,6 +18878,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_layout = sse_decode_opt_box_autoadd_layout_detection_config(
       deserializer,
     );
+    var var_transcription = sse_decode_opt_box_autoadd_transcription_config(
+      deserializer,
+    );
     var var_timeoutSecs = sse_decode_opt_box_autoadd_i_64(deserializer);
     var var_treeSitter = sse_decode_opt_box_autoadd_tree_sitter_config(
       deserializer,
@@ -18773,6 +18906,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       outputFormat: var_outputFormat,
       includeDocumentStructure: var_includeDocumentStructure,
       layout: var_layout,
+      transcription: var_transcription,
       timeoutSecs: var_timeoutSecs,
       treeSitter: var_treeSitter,
       structuredExtraction: var_structuredExtraction,
@@ -19060,6 +19194,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_ocrTextOnly = sse_decode_bool(deserializer);
     var var_appendOcrText = sse_decode_bool(deserializer);
     var var_outputFormat = sse_decode_image_output_format(deserializer);
+    var var_svg = sse_decode_svg_options(deserializer);
     return ImageExtractionConfig(
       extractImages: var_extractImages,
       targetDpi: var_targetDpi,
@@ -19075,6 +19210,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       ocrTextOnly: var_ocrTextOnly,
       appendOcrText: var_appendOcrText,
       outputFormat: var_outputFormat,
+      svg: var_svg,
     );
   }
 
@@ -21709,6 +21845,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
     if (sse_decode_bool(deserializer)) {
       return (sse_decode_box_autoadd_token_reduction_options(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  TranscriptionConfig? sse_decode_opt_box_autoadd_transcription_config(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_transcription_config(deserializer));
     } else {
       return null;
     }
@@ -25235,6 +25384,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_transcription_config(
+    TranscriptionConfig self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_transcription_config(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_translation(
     Translation self,
     SseSerializer serializer,
@@ -26010,6 +26168,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_i_64(self.maxEmbeddedFileBytes, serializer);
     sse_encode_output_format(self.outputFormat, serializer);
     sse_encode_opt_box_autoadd_layout_detection_config(self.layout, serializer);
+    sse_encode_opt_box_autoadd_transcription_config(
+      self.transcription,
+      serializer,
+    );
     sse_encode_bool(self.useLayoutForMarkdown, serializer);
     sse_encode_bool(self.includeDocumentStructure, serializer);
     sse_encode_opt_box_autoadd_acceleration_config(
@@ -26162,6 +26324,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_output_format(self.outputFormat, serializer);
     sse_encode_opt_box_autoadd_bool(self.includeDocumentStructure, serializer);
     sse_encode_opt_box_autoadd_layout_detection_config(self.layout, serializer);
+    sse_encode_opt_box_autoadd_transcription_config(
+      self.transcription,
+      serializer,
+    );
     sse_encode_opt_box_autoadd_i_64(self.timeoutSecs, serializer);
     sse_encode_opt_box_autoadd_tree_sitter_config(self.treeSitter, serializer);
     sse_encode_opt_box_autoadd_structured_extraction_config(
@@ -26398,6 +26564,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_bool(self.ocrTextOnly, serializer);
     sse_encode_bool(self.appendOcrText, serializer);
     sse_encode_image_output_format(self.outputFormat, serializer);
+    sse_encode_svg_options(self.svg, serializer);
   }
 
   @protected
@@ -28703,6 +28870,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_bool(self != null, serializer);
     if (self != null) {
       sse_encode_box_autoadd_token_reduction_options(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_box_autoadd_transcription_config(
+    TranscriptionConfig? self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_transcription_config(self, serializer);
     }
   }
 

@@ -9,6 +9,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0-rc.18] - 2026-06-16
+
+### Fixed
+
+- **Bump alef pin to 0.25.19; regen the polyglot surface against the latest
+  generator.** Brings the dart hardened-runtime dlopen fix, swift app-harness
+  chunked-fixtures JSON, csharp e2e arm64 RID, ruby magnus cfg-feature
+  forwarding, and the rust 1.96 `needless_update` cleanups into the kreuzberg
+  binding tree. Hash-bumps every alef-emitted file in `crates/kreuzberg-*`,
+  `packages/`, `e2e/`, and `docs/reference/api-*.md`.
+
+- **Pin `heic` out of mobile and Windows cross-compile builds via per-binding
+  `target_dep_overrides`.** `libheif-sys` cannot cross-compile against the
+  Android NDK or iOS SDK and the `windows-latest` runner image does not ship
+  libheif on the pkg-config path. The C-FFI, Dart, and Swift binding crates
+  now activate the `android-target` / `windows-target` aggregates on the
+  respective `cfg(target_os)` so the `heic` feature only lands on desktop
+  builds. Restores `Build Swift artifact bundle`, both Kotlin Android natives,
+  both Dart Android natives, and `Build Dart iOS XCFramework` after the rc.17
+  Publish Release failed each of them on libheif-sys cross-compile.
+
+- **Workaround alef 0.25.19 polyglot regen gaps in `alef.toml`.**
+  - Re-declare every kreuzberg core cfg-feature on the FFI binding crate's
+    `[features]` table (svg, transcription, transcription-types, ner-onnx,
+    ner-llm, diff, redaction, api-types, classification, captioning) so
+    `cargo clippy -- -D warnings` no longer trips on `unexpected cfg
+    condition value` against arms emitted by the C-FFI codegen.
+  - Exclude `embed_texts_async` and `rerank_async` from both PHP and Swift
+    bindings. Both backends emit fallback-stub variants gated on
+    `not(feature = "embeddings"/"reranker")` whose host macro (ext-php-rs's
+    `#[php_impl]` and swift-bridge's `mod ffi`) expands references
+    unconditionally and fails with E0599 / E0425 under default features.
+  - Exclude `KeywordConfig`, `Keyword`, `YakeParams`, `RakeParams`, and
+    `KeywordAlgorithm` from the Swift bridge, plus the `keywords` /
+    `extracted_keywords` fields that reference them, until alef's swift
+    bridge type-collection no longer drops cfg-gated `type X;` declarations
+    while leaving the field references intact.
+
+- **Note: npm trusted publishing remains a per-package external config on
+  `npmjs.org` for `@kreuzberg/node`, the 8 platform sub-packages, and
+  `@kreuzberg/wasm`.** Until that binding is registered, the Publish Node
+  packages job will keep failing with `BadRequestError: token is invalid`.
+
 ## [5.0.0-rc.17] - 2026-06-16
 
 ### Added

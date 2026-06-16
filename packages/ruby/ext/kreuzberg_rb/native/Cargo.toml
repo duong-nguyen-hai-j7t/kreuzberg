@@ -1,6 +1,6 @@
 [package]
 name = "kreuzberg-rb"
-version = "5.0.0-rc.17"
+version = "5.0.0-rc.18"
 edition = "2024"
 license = "Elastic-2.0"
 description = "High-performance document intelligence library"
@@ -16,9 +16,43 @@ name = "kreuzberg_rb"
 path = "../src/lib.rs"
 crate-type = ["cdylib"]
 
+[features]
+default = ["api", "api-types", "auto-rotate-types", "captioning", "chunking-tokenizers", "classification", "diff", "embedding-presets", "embeddings", "heic", "html", "keywords-rake", "keywords-yake", "layout-types", "liter-llm", "ner-llm", "ner-onnx", "ocr", "ocr-wasm", "office", "paddle-ocr-types", "pdf", "quality", "redaction", "reranker", "reranker-presets", "svg", "tokio-runtime", "transcription-types", "tree-sitter", "xml"]
+api = ["kreuzberg/api"]
+api-types = ["kreuzberg/api-types"]
+auto-rotate-types = ["kreuzberg/auto-rotate-types"]
+captioning = ["kreuzberg/captioning"]
+chunking-tokenizers = ["kreuzberg/chunking-tokenizers"]
+classification = ["kreuzberg/classification"]
+diff = ["kreuzberg/diff"]
+embedding-presets = ["kreuzberg/embedding-presets"]
+embeddings = ["kreuzberg/embeddings"]
+heic = ["kreuzberg/heic"]
+html = ["kreuzberg/html"]
+keywords-rake = ["kreuzberg/keywords-rake"]
+keywords-yake = ["kreuzberg/keywords-yake"]
+layout-types = ["kreuzberg/layout-types"]
+liter-llm = ["kreuzberg/liter-llm"]
+ner-llm = ["kreuzberg/ner-llm"]
+ner-onnx = ["kreuzberg/ner-onnx"]
+ocr = ["kreuzberg/ocr"]
+ocr-wasm = ["kreuzberg/ocr-wasm"]
+office = ["kreuzberg/office"]
+paddle-ocr-types = ["kreuzberg/paddle-ocr-types"]
+pdf = ["kreuzberg/pdf"]
+quality = ["kreuzberg/quality"]
+redaction = ["kreuzberg/redaction"]
+reranker = ["kreuzberg/reranker"]
+reranker-presets = ["kreuzberg/reranker-presets"]
+svg = ["kreuzberg/svg"]
+tokio-runtime = ["kreuzberg/tokio-runtime"]
+transcription-types = ["kreuzberg/transcription-types"]
+tree-sitter = ["kreuzberg/tree-sitter"]
+xml = ["kreuzberg/xml"]
+
 [dependencies]
 async-trait = "0.1"
-kreuzberg = { version = "5.0.0-rc.17", path = "../../../../../crates/kreuzberg", features = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "reranker", "reranker-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "mcp", "liter-llm", "quality"] }
+kreuzberg = { version = "5.0.0-rc.18", path = "../../../../../crates/kreuzberg", features = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "reranker", "reranker-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "api-types", "mcp", "liter-llm", "quality", "svg", "transcription", "transcription-types", "classification", "captioning", "ner-onnx", "ner-llm", "diff", "redaction"] }
 magnus = "0.8"
 rb-sys = ">=0.9, <0.9.128"
 serde = { version = "1", features = ["derive"] }

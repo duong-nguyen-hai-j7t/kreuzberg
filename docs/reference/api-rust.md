@@ -2,7 +2,7 @@
 title: "Rust API Reference"
 ---
 
-## Rust API Reference <span class="version-badge">v5.0.0-rc.17</span>
+## Rust API Reference <span class="version-badge">v5.0.0-rc.18</span>
 
 ### Functions
 
@@ -24,8 +24,8 @@ An `ExtractionResult` containing the extracted content and metadata.
 
 **Errors:**
 
-Returns `KreuzbergError.Validation` if MIME type is invalid.
-Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
+Returns `KreuzbergError::Validation` if MIME type is invalid.
+Returns `KreuzbergError::UnsupportedFormat` if MIME type is not supported.
 
 **Signature:**
 
@@ -78,8 +78,8 @@ An `ExtractionResult` containing the extracted content and metadata.
 
 **Errors:**
 
-Returns `KreuzbergError.Io` if the file doesn't exist (NotFound) or for other file I/O errors.
-Returns `KreuzbergError.UnsupportedFormat` if MIME type is not supported.
+Returns `KreuzbergError::Io` if the file doesn't exist (NotFound) or for other file I/O errors.
+Returns `KreuzbergError::UnsupportedFormat` if MIME type is not supported.
 
 **Signature:**
 
@@ -293,7 +293,7 @@ Extract content from multiple files concurrently.
 
 This function processes multiple files in parallel, automatically managing
 concurrency to prevent resource exhaustion. The concurrency limit can be
-configured via `ExtractionConfig.max_concurrent_extractions` or defaults
+configured via `ExtractionConfig::max_concurrent_extractions` or defaults
 to `(num_cpus * 1.5).ceil()`.
 
 Each file can optionally specify a `FileExtractionConfig` that overrides specific
@@ -379,7 +379,7 @@ Extract content from multiple byte arrays concurrently.
 
 This function processes multiple byte arrays in parallel, automatically managing
 concurrency to prevent resource exhaustion. The concurrency limit can be
-configured via `ExtractionConfig.max_concurrent_extractions` or defaults
+configured via `ExtractionConfig::max_concurrent_extractions` or defaults
 to `(num_cpus * 1.5).ceil()`.
 
 Each item can optionally specify a `FileExtractionConfig` that overrides specific
@@ -468,7 +468,7 @@ The detected MIME type string.
 
 **Errors:**
 
-Returns `KreuzbergError.UnsupportedFormat` if MIME type cannot be determined.
+Returns `KreuzbergError::UnsupportedFormat` if MIME type cannot be determined.
 
 **Signature:**
 
@@ -934,7 +934,7 @@ Calls `shutdown()` on every registered backend, then empties the registry.
 - Any error returned by a backend's `shutdown()` method. The first error
   encountered stops processing of remaining backends.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -961,7 +961,7 @@ List the names of all registered reranker backends.
 Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
 bindings.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -1578,7 +1578,7 @@ A warning is logged when this happens.
 
 **Errors:**
 
-Returns `KreuzbergError.Parsing` if the PDF cannot be opened, authenticated,
+Returns `KreuzbergError::Parsing` if the PDF cannot be opened, authenticated,
 or rendered, or if `page_index` is out of range.
 
 **Signature:**
@@ -1612,7 +1612,7 @@ let result = render_pdf_page_to_png(b"data", 42, 42, "value")?;
 
 Caption a single image from bytes.
 
-  `RegionKind.Caption` prompt when `None`.
+  `RegionKind::Caption` prompt when `None`.
 
 **Returns:**
 
@@ -1663,7 +1663,7 @@ let caption = caption_image(&image_bytes, &config, None).await?;
 
 Caption a single image from a file path.
 
-  `RegionKind.Caption` prompt when `None`.
+  `RegionKind::Caption` prompt when `None`.
 
 **Returns:**
 
@@ -1860,11 +1860,11 @@ configured.
 
 **Errors:**
 
-- `KreuzbergError.Validation` if `query` is empty or blank.
-- `KreuzbergError.MissingDependency` if ONNX Runtime is not installed (ONNX path).
-- `KreuzbergError.Reranking` if the preset is unknown or model download fails.
+- `KreuzbergError::Validation` if `query` is empty or blank.
+- `KreuzbergError::MissingDependency` if ONNX Runtime is not installed (ONNX path).
+- `KreuzbergError::Reranking` if the preset is unknown or model download fails.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -1896,7 +1896,7 @@ let result = rerank("value", vec![], RerankerConfig::default())?;
 
 Stub for builds without the `reranker` feature.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -1931,7 +1931,7 @@ Get a reranker preset by name.
 Returns `None` if no preset with the given name exists. Returns an owned
 clone so the value is safe to pass across FFI boundaries.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -1961,7 +1961,7 @@ List the names of all available reranker presets.
 
 Returns owned `String`s so the values are safe to pass across FFI boundaries.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -2136,8 +2136,8 @@ Configuration for the VLM captioning post-processor.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `llm` | `LlmConfig` | — | LLM configuration used for the VLM call. |
-| `prompt` | `Option<String>` | `None` | Optional custom caption prompt. `None` uses the default `RegionKind.Caption` prompt that ships with `crate.llm.region_extractor`. |
-| `min_image_area` | `u32` | `/* serde(default) */` | Skip images whose `width * height` is below this threshold (in pixels). Default `1_000` filters out icons and decorations. |
+| `prompt` | `Option<String>` | `None` | Optional custom caption prompt. `None` uses the default `RegionKind::Caption` prompt that ships with `crate::llm::region_extractor`. |
+| `min_image_area` | `u32` | language default | Skip images whose `width * height` is below this threshold (in pixels). Default `1_000` filters out icons and decorations. |
 
 ---
 
@@ -2146,14 +2146,14 @@ Configuration for the VLM captioning post-processor.
 Captioning enrichment knob: which LLM to use for image captions.
 
 The enrichment stage calls `caption_image` for every
-image in `ExtractionResult.images` that has non-empty `data`. Images with
+image in `ExtractionResult::images` that has non-empty `data`. Images with
 empty byte data (e.g. reference-only images populated via `source_path`) are
 skipped rather than forwarded to the VLM.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `config` | `LlmConfig` | — | LLM / VLM configuration forwarded verbatim to each `caption_image` call. |
-| `custom_prompt` | `Option<String>` | `None` | Optional custom prompt override forwarded to every `caption_image` call. `None` uses the default `RegionKind.Caption` prompt. |
+| `custom_prompt` | `Option<String>` | `None` | Optional custom prompt override forwarded to every `caption_image` call. `None` uses the default `RegionKind::Caption` prompt. |
 
 ---
 
@@ -2161,9 +2161,9 @@ skipped rather than forwarded to the VLM.
 
 A single changed cell within a table.
 
-Defined here (rather than only in `crate.diff`) so `RevisionDelta` can
+Defined here (rather than only in `crate::diff`) so `RevisionDelta` can
 reference it unconditionally, without requiring the `diff` Cargo feature.
-`crate.diff` re-exports this type verbatim.
+`crate::diff` re-exports this type verbatim.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -2185,7 +2185,7 @@ is configured), and metadata about its position in the document.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `content` | `String` | — | The text content of this chunk. |
-| `chunk_type` | `ChunkType` | `/* serde(default) */` | Semantic structural classification of this chunk. Assigned by the heuristic classifier based on content patterns and heading context. Defaults to `ChunkType.Unknown` when no rule matches. |
+| `chunk_type` | `ChunkType` | language default | Semantic structural classification of this chunk. Assigned by the heuristic classifier based on content patterns and heading context. Defaults to `ChunkType::Unknown` when no rule matches. |
 | `embedding` | `Option<Vec<f32>>` | `None` | Optional embedding vector for this chunk. Only populated when `EmbeddingConfig` is provided in chunking configuration. The dimensionality depends on the chosen embedding model. |
 | `metadata` | `ChunkMetadata` | — | Metadata about this chunk's position and properties. |
 
@@ -2204,8 +2204,8 @@ Metadata about a chunk's position in the original document.
 | `total_chunks` | `usize` | — | Total number of chunks in the document. |
 | `first_page` | `Option<u32>` | `None` | First page number this chunk spans (1-indexed). Only populated when page tracking is enabled in extraction configuration. |
 | `last_page` | `Option<u32>` | `None` | Last page number this chunk spans (1-indexed, equal to first_page for single-page chunks). Only populated when page tracking is enabled in extraction configuration. |
-| `heading_context` | `Option<HeadingContext>` | `/* serde(default) */` | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType.Markdown` is used. |
-| `image_indices` | `Vec<u32>` | `/* serde(default) */` | Indices into `ExtractionResult.images` for images on pages covered by this chunk. Contains zero-based indices into the top-level `images` collection for every image whose `page_number` falls within `[first_page, last_page]`. Empty when image extraction is disabled or the chunk spans no pages with images. |
+| `heading_context` | `Option<HeadingContext>` | language default | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType::Markdown` is used. |
+| `image_indices` | `Vec<u32>` | language default | Indices into `ExtractionResult.images` for images on pages covered by this chunk. Contains zero-based indices into the top-level `images` collection for every image whose `page_number` falls within `[first_page, last_page]`. Empty when image extraction is disabled or the chunk spans no pages with images. |
 
 ---
 
@@ -2281,7 +2281,7 @@ A single label + confidence pair.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `label` | `String` | — | Label name as configured in `PageClassificationConfig.labels`. |
+| `label` | `String` | — | Label name as configured in `PageClassificationConfig::labels`. |
 | `confidence` | `Option<f32>` | `None` | Backend-reported confidence in `[0.0, 1.0]`. `None` when the backend (e.g. an LLM prompt without explicit confidence schema) did not report one. |
 
 ---
@@ -2491,7 +2491,7 @@ Available when the `djot` feature is enabled.
 | `images` | `Vec<DjotImage>` | — | Extracted images with metadata |
 | `links` | `Vec<DjotLink>` | — | Extracted links with URLs |
 | `footnotes` | `Vec<Footnote>` | — | Footnote definitions |
-| `attributes` | `Vec<String>` | `/* serde(default) */` | Attributes mapped by element identifier (if present) |
+| `attributes` | `Vec<String>` | language default | Attributes mapped by element identifier (if present) |
 
 ---
 
@@ -2564,10 +2564,10 @@ The pipeline will convert this into the public `ExtractionResult`.
 
 **Errors:**
 
-- `KreuzbergError.Parsing` - Document parsing failed
-- `KreuzbergError.Validation` - Invalid document structure
-- `KreuzbergError.Io` - I/O errors (these always bubble up)
-- `KreuzbergError.MissingDependency` - Required dependency not available
+- `KreuzbergError::Parsing` - Document parsing failed
+- `KreuzbergError::Validation` - Invalid document structure
+- `KreuzbergError::Io` - I/O errors (these always bubble up)
+- `KreuzbergError::MissingDependency` - Required dependency not available
 
 **Signature:**
 
@@ -2738,12 +2738,12 @@ for tree structure, and metadata like page number, bounding box, and content lay
 | `id` | `String` | — | Deterministic identifier (hash of content + position). |
 | `content` | `NodeContent` | — | Node content — tagged enum, type-specific data only. |
 | `parent` | `Option<u32>` | `None` | Parent node index (`None` = root-level node). |
-| `children` | `Vec<u32>` | `/* serde(default) */` | Child node indices in reading order. |
-| `content_layer` | `ContentLayer` | `/* serde(default) */` | Content layer classification. Always serialised — Kotlin-Android (and any other typed binding) treats the field as non-nullable, so omitting it from the JSON wire would break consumer deserialisation.  `#[serde(default)]` covers the missing-field case on inbound JSON. |
+| `children` | `Vec<u32>` | language default | Child node indices in reading order. |
+| `content_layer` | `ContentLayer` | language default | Content layer classification. Always serialised — Kotlin-Android (and any other typed binding) treats the field as non-nullable, so omitting it from the JSON wire would break consumer deserialisation.  `#[serde(default)]` covers the missing-field case on inbound JSON. |
 | `page` | `Option<u32>` | `None` | Page number where this node starts (1-indexed). |
 | `page_end` | `Option<u32>` | `None` | Page number where this node ends (for multi-page tables/sections). |
 | `bbox` | `Option<BoundingBox>` | `None` | Bounding box in document coordinates. |
-| `annotations` | `Vec<TextAnnotation>` | `/* serde(default) */` | Inline annotations (formatting, links) on this node's text content. Only meaningful for text-carrying nodes; empty for containers. |
+| `annotations` | `Vec<TextAnnotation>` | language default | Inline annotations (formatting, links) on this node's text content. Only meaningful for text-carrying nodes; empty for containers. |
 | `attributes` | `Option<HashMap<String, String>>` | `None` | Format-specific key-value attributes. Extensible bag for miscellaneous data without a dedicated typed field: CSS classes, LaTeX environment names, Excel cell formulas, slide layout names, etc. |
 
 ---
@@ -2798,7 +2798,7 @@ and parent-child relationships are bidirectionally consistent.
 | `nodes` | `Vec<DocumentNode>` | `vec![]` | All nodes in document/reading order. |
 | `source_format` | `Option<String>` | `Default::default()` | Origin format identifier (e.g. "docx", "pptx", "html", "pdf"). Allows renderers to apply format-aware heuristics when converting the document tree to output formats. |
 | `relationships` | `Vec<DocumentRelationship>` | `vec![]` | Resolved relationships between nodes (footnote refs, citations, anchor links, etc.). Populated during derivation from the internal document representation. Empty when no relationships are detected. |
-| `node_types` | `Vec<String>` | `vec![]` | Sorted, deduplicated list of node type names present in this document. Each value is the snake_case `node_type` tag of the corresponding `NodeContent` variant (e.g. `"paragraph"`, `"heading"`, `"table"`, …). Computed from `nodes` via `DocumentStructure.finalize_node_types`. Empty until that method is called (internal construction paths call it at the end of derivation). |
+| `node_types` | `Vec<String>` | `vec![]` | Sorted, deduplicated list of node type names present in this document. Each value is the snake_case `node_type` tag of the corresponding `NodeContent` variant (e.g. `"paragraph"`, `"heading"`, `"table"`, …). Computed from `nodes` via `DocumentStructure::finalize_node_types`. Empty until that method is called (internal construction paths call it at the end of derivation). |
 
 ##### Methods
 
@@ -2976,7 +2976,7 @@ Contains metadata and optionally the content of an email attachment.
 | `mime_type` | `Option<String>` | `None` | MIME type of the attachment |
 | `size` | `Option<usize>` | `None` | Size in bytes |
 | `is_image` | `bool` | — | Whether this attachment is an image |
-| `data` | `Option<Vec<u8>>` | `None` | Attachment data (if extracted). Uses `bytes.Bytes` for cheap cloning of large buffers. |
+| `data` | `Option<Vec<u8>>` | `None` | Attachment data (if extracted). Uses `bytes::Bytes` for cheap cloning of large buffers. |
 
 ---
 
@@ -3088,9 +3088,9 @@ itself must serialize access internally (e.g. via `Mutex<Inner>`).
 ### Contract
 
 - `embed(texts)` MUST return exactly `texts.len()` vectors, each of length
-  `self.dimensions()`. The dispatcher in `crate.embeddings.embed_texts`
+  `self.dimensions()`. The dispatcher in `crate::embeddings::embed_texts`
   validates this before returning to downstream consumers; a non-conforming
-  backend surfaces as a `KreuzbergError.Validation`, not a panic.
+  backend surfaces as a `KreuzbergError::Validation`, not a panic.
 
 - `embed` may be called from any thread. Its future must be `Send`
   (enforced by `async_trait` when `#[async_trait]` is used on non-WASM targets).
@@ -3112,10 +3112,10 @@ itself must serialize access internally (e.g. via `Mutex<Inner>`).
 ### Runtime
 
 The synchronous `embed_texts` entry uses
-`tokio.task.block_in_place` to await the trait's async `embed`, which
+`tokio::task::block_in_place` to await the trait's async `embed`, which
 requires a multi-thread tokio runtime. Callers running inside a
-`current_thread` runtime (e.g. `#[tokio.test]` without `flavor = "multi_thread"`,
-or `tokio.runtime.Builder.new_current_thread()`) must use
+`current_thread` runtime (e.g. `#[tokio::test]` without `flavor = "multi_thread"`,
+or `tokio::runtime::Builder::new_current_thread()`) must use
 `embed_texts_async` instead, which awaits directly without `block_in_place`.
 
 ##### Methods
@@ -3188,7 +3188,7 @@ Requires the `embeddings` feature to be enabled.
 | `show_download_progress` | `bool` | `false` | Show model download progress |
 | `cache_dir` | `Option<PathBuf>` | `None` | Custom cache directory for model files Defaults to `~/.cache/kreuzberg/embeddings/` if not specified. Allows full customization of model download location. |
 | `acceleration` | `Option<AccelerationConfig>` | `None` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `None` (auto-select per platform). |
-| `max_embed_duration_secs` | `Option<u64>` | `Default::default()` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `None` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
+| `max_embed_duration_secs` | `Option<u64>` | `Default::default()` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType::Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `None` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
 
 ##### Methods
 
@@ -3241,8 +3241,8 @@ A single named entity detected in the extracted text.
 |-------|------|---------|-------------|
 | `category` | `EntityCategory` | — | Canonical category the entity belongs to (PERSON, ORG, LOCATION, etc.). |
 | `text` | `String` | — | Raw mention text exactly as it appeared in the source. |
-| `start` | `u32` | — | Byte-offset span in `ExtractionResult.content` where the mention starts. |
-| `end` | `u32` | — | Byte-offset span in `ExtractionResult.content` where the mention ends (exclusive). |
+| `start` | `u32` | — | Byte-offset span in `ExtractionResult::content` where the mention starts. |
+| `end` | `u32` | — | Byte-offset span in `ExtractionResult::content` where the mention ends (exclusive). |
 | `confidence` | `Option<f32>` | `None` | Backend-reported confidence in `[0.0, 1.0]`. `None` when the backend does not expose confidence scores. |
 
 ---
@@ -3277,7 +3277,7 @@ Error metadata (for batch operations).
 
 Excel/spreadsheet format metadata.
 
-Identifies the document as a spreadsheet source via the `FormatMetadata.Excel`
+Identifies the document as a spreadsheet source via the `FormatMetadata::Excel`
 discriminant. Sheet count and sheet names are stored inside this struct.
 
 | Field | Type | Default | Description |
@@ -3316,7 +3316,7 @@ extracted content and metadata.
 |-------|------|---------|-------------|
 | `sheets` | `Vec<ExcelSheet>` | — | All sheets in the workbook |
 | `metadata` | `HashMap<String, String>` | — | Workbook-level metadata (author, creation date, etc.) |
-| `revisions` | `Option<Vec<DocumentRevision>>` | `/* serde(default) */` | Collaborative-edit revision headers from `xl/revisions/revisionHeaders.xml`. Populated for legacy shared-workbook `.xlsx` files that contain the `xl/revisions/` directory. Each `<header>` element maps to one `DocumentRevision { kind: FormatChange }` carrying the header's `guid` (→ `revision_id`), `userName` (→ `author`), and `dateTime` (→ `timestamp`). `anchor` and `delta` are `None`/empty for v1 (per-cell log parsing is a follow-up). `None` when `xl/revisions/revisionHeaders.xml` is absent. |
+| `revisions` | `Option<Vec<DocumentRevision>>` | language default | Collaborative-edit revision headers from `xl/revisions/revisionHeaders.xml`. Populated for legacy shared-workbook `.xlsx` files that contain the `xl/revisions/` directory. Each `<header>` element maps to one `DocumentRevision { kind: FormatChange }` carrying the header's `guid` (→ `revision_id`), `userName` (→ `author`), and `dateTime` (→ `timestamp`). `anchor` and `delta` are `None`/empty for v1 (per-cell log parsing is a follow-up). `None` when `xl/revisions/revisionHeaders.xml` is absent. |
 
 ---
 
@@ -3330,7 +3330,7 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `data` | `Vec<u8>` | — | Raw image data (PNG, JPEG, WebP, etc. bytes). Uses `bytes.Bytes` for cheap cloning of large buffers. |
+| `data` | `Vec<u8>` | — | Raw image data (PNG, JPEG, WebP, etc. bytes). Uses `bytes::Bytes` for cheap cloning of large buffers. |
 | `format` | `String` | — | Image format (e.g., "jpeg", "png", "webp") Uses Cow<'static, str> to avoid allocation for static literals. |
 | `image_index` | `u32` | — | Zero-indexed position of this image in the document/page |
 | `page_number` | `Option<u32>` | `Default::default()` | Page/slide number where image was found (1-indexed) |
@@ -3346,7 +3346,7 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `image_kind` | `Option<ImageKind>` | `Default::default()` | Heuristic classification of what this image likely depicts. `None` if classification was disabled or inconclusive. |
 | `kind_confidence` | `Option<f32>` | `Default::default()` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
 | `cluster_id` | `Option<u32>` | `Default::default()` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `None` for singletons. |
-| `caption` | `Option<String>` | `Default::default()` | VLM-generated caption describing the image, when captioning is configured. Populated by the captioning post-processor (`crates/kreuzberg/src/plugins/processor/builtin/captioning.rs`), which routes each image through `crate.llm.region_extractor.extract_region_with_vlm` in caption mode. `None` when captioning is disabled or the VLM declined to caption. |
+| `caption` | `Option<String>` | `Default::default()` | VLM-generated caption describing the image, when captioning is configured. Populated by the captioning post-processor (`crates/kreuzberg/src/plugins/processor/builtin/captioning.rs`), which routes each image through `crate::llm::region_extractor::extract_region_with_vlm` in caption mode. `None` when captioning is disabled or the VLM declined to caption. |
 | `qr_codes` | `Option<Vec<QrCode>>` | `vec![]` | QR codes decoded from this image, when QR detection is enabled. Populated by the QR post-processor (`crates/kreuzberg/src/extractors/qr.rs`) via the pure-Rust `rqrr` decoder. `None` when QR detection is disabled; an empty `Some(vec![])` when detection ran but found nothing. |
 
 ---
@@ -3393,14 +3393,15 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `keywords` | `Option<KeywordConfig>` | `None` | Keyword extraction configuration (None = no keyword extraction) |
 | `postprocessor` | `Option<PostProcessorConfig>` | `None` | Post-processor configuration (None = use defaults) |
 | `html_options` | `Option<String>` | `None` | HTML to Markdown conversion options (None = use defaults) Configure how HTML documents are converted to Markdown, including heading styles, list formatting, code block styles, and preprocessing options. |
-| `html_output` | `Option<HtmlOutputConfig>` | `None` | Styled HTML output configuration. When set alongside `output_format = OutputFormat.Html`, the extraction pipeline uses `StyledHtmlRenderer` which emits stable `kb-*` CSS class hooks on every structural element and optionally embeds theme CSS or user-supplied CSS in a `<style>` block. When `None`, the existing plain comrak-based HTML renderer is used. |
-| `extraction_timeout_secs` | `Option<u64>` | `Default::default()` | Default per-file timeout in seconds for batch extraction. When set, each file in a batch will be canceled after this duration unless overridden by `FileExtractionConfig.timeout_secs`. Defaults to `Some(60)` to prevent pathological files (e.g. deeply nested archives, documents with millions of cells) from running indefinitely and exhausting caller resources. Set to `None` to disable the timeout for trusted input or long-running workloads. |
+| `html_output` | `Option<HtmlOutputConfig>` | `None` | Styled HTML output configuration. When set alongside `output_format = OutputFormat::Html`, the extraction pipeline uses `StyledHtmlRenderer` which emits stable `kb-*` CSS class hooks on every structural element and optionally embeds theme CSS or user-supplied CSS in a `<style>` block. When `None`, the existing plain comrak-based HTML renderer is used. |
+| `extraction_timeout_secs` | `Option<u64>` | `Default::default()` | Default per-file timeout in seconds for batch extraction. When set, each file in a batch will be canceled after this duration unless overridden by `FileExtractionConfig::timeout_secs`. Defaults to `Some(60)` to prevent pathological files (e.g. deeply nested archives, documents with millions of cells) from running indefinitely and exhausting caller resources. Set to `None` to disable the timeout for trusted input or long-running workloads. |
 | `max_concurrent_extractions` | `Option<usize>` | `None` | Maximum concurrent extractions in batch operations (None = (num_cpus × 1.5).ceil()). Limits parallelism to prevent resource exhaustion when processing large batches. Defaults to (num_cpus × 1.5).ceil() when not set. |
 | `result_format` | `ResultFormat` | `ResultFormat::Unified` | Result structure format Controls whether results are returned in unified format (default) with all content in the `content` field, or element-based format with semantic elements (for Unstructured-compatible output). |
 | `security_limits` | `Option<SecurityLimits>` | `None` | Security limits for archive extraction. Controls maximum archive size, compression ratio, file count, and other security thresholds to prevent decompression bomb attacks. Also caps nesting depth, iteration count, entity / token length, total content size, and table cell count for every extraction path that ingests user-controlled bytes. When `None`, default limits are used. |
 | `max_embedded_file_bytes` | `Option<u64>` | `Default::default()` | Maximum uncompressed size in bytes for a single embedded file before recursive extraction is attempted (default: 50 MiB). Applies to embedded objects inside OOXML containers (DOCX, PPTX) and to email attachments processed via recursive extraction. Files that exceed this limit are skipped with a `ProcessingWarning` rather than passed to the extraction pipeline, preventing a single oversized embedded object from consuming unbounded memory or time. Set to `None` to disable the per-embedded-file cap (falls back to `security_limits.max_archive_size` as the only guard). |
 | `output_format` | `OutputFormat` | `OutputFormat::Plain` | Content text format (default: Plain). Controls the format of the extracted content: - `Plain`: Raw extracted text (default) - `Markdown`: Markdown formatted output - `Djot`: Djot markup format (requires djot feature) - `Html`: HTML formatted output When set to a structured format, extraction results will include formatted output. The `formatted_content` field may be populated when format conversion is applied. |
 | `layout` | `Option<LayoutDetectionConfig>` | `None` | Layout detection configuration (None = layout detection disabled). When set, PDF pages and images are analyzed for document structure (headings, code, formulas, tables, figures, etc.) using RT-DETR models via ONNX Runtime. For PDFs, layout hints override paragraph classification in the markdown pipeline. For images, per-region OCR is performed with markdown formatting based on detected layout classes. Requires the `layout-detection` feature to run inference; the field is present whenever the `layout-types` feature is active (which includes `layout-detection` as well as the no-ORT target groups). |
+| `transcription` | `Option<TranscriptionConfig>` | `None` | Transcription (speech-to-text) configuration for audio/video files. When set and `enabled`, files with audio/video MIME types (mp3, mp4, m4a, wav, webm, etc.) are routed to the Whisper-based transcription pipeline. The actual heavy dependencies are only active under the `transcription` feature; the field is visible under `transcription-types` (including on WASM and Android targets that use the no-ORT preset). Default: `None` (transcription disabled). This is an additive, non-breaking change. |
 | `use_layout_for_markdown` | `bool` | `false` | Run layout detection on the non-OCR PDF markdown path. When `true` and `layout` is `Some(_)`, layout regions inform heading, table, list, and figure detection in the structure pipeline that would otherwise rely on font-clustering heuristics alone. Significantly improves SF1 (structural F1) at the cost of inference latency (~150-300ms/page CPU, ~20-50ms/page GPU). Default: `false`. Requires the `layout-detection` feature. |
 | `include_document_structure` | `bool` | `false` | Enable structured document tree output. When true, populates the `document` field on `ExtractionResult` with a hierarchical `DocumentStructure` containing heading-driven section nesting, table grids, content layer classification, and inline annotations. Independent of `result_format` — can be combined with Unified or ElementBased. |
 | `acceleration` | `Option<AccelerationConfig>` | `None` | Hardware acceleration configuration for ONNX Runtime models. Controls execution provider selection for layout detection and embedding models. When `None`, uses platform defaults (CoreML on macOS, CUDA on Linux, CPU on Windows). |
@@ -3410,14 +3411,14 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `concurrency` | `Option<String>` | `None` | Concurrency limits for constrained environments (None = use defaults). Controls Rayon thread pool size, ONNX Runtime intra-op threads, and (when `max_concurrent_extractions` is unset) the batch concurrency semaphore. See `ConcurrencyConfig` for details. |
 | `max_archive_depth` | `usize` | — | Maximum recursion depth for archive extraction (default: 3). Set to 0 to disable recursive extraction (legacy behavior). |
 | `tree_sitter` | `Option<TreeSitterConfig>` | `None` | Tree-sitter language pack configuration (None = tree-sitter disabled). When set, enables code file extraction using tree-sitter parsers. Controls grammar download behavior and code analysis options. |
-| `structured_extraction` | `Option<StructuredExtractionConfig>` | `None` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult.structured_output`. |
-| `ner` | `Option<NerConfig>` | `None` | Named-entity recognition configuration. When set, the NER post-processor runs at the Middle stage and populates `ExtractionResult.entities`. |
-| `redaction` | `Option<RedactionConfig>` | `None` | Redaction / anonymisation configuration. When set, the redaction post-processor runs at the Late stage and rewrites every textual field in `ExtractionResult`, emitting an audit trail in `ExtractionResult.redaction_report`. |
-| `summarization` | `Option<SummarizationConfig>` | `None` | Summarisation configuration. When set, the summarisation post-processor runs at the Middle stage and populates `ExtractionResult.summary`. |
-| `translation` | `Option<TranslationConfig>` | `None` | Translation configuration. When set, the translation post-processor runs at the Middle stage and populates `ExtractionResult.translation`. |
-| `page_classification` | `Option<PageClassificationConfig>` | `None` | Per-page classification configuration. When set, the classification post-processor runs at the Middle stage and populates `ExtractionResult.page_classifications`. |
-| `captioning` | `Option<CaptioningConfig>` | `None` | VLM captioning configuration for extracted images. When set, the captioning post-processor runs at the Middle stage and writes a caption into each `ExtractedImage.caption`. |
-| `qr_codes` | `Option<bool>` | `None` | Enable QR-code detection in extracted images. When `true`, the QR post-processor runs at the Middle stage and populates `ExtractedImage.qr_codes`. |
+| `structured_extraction` | `Option<StructuredExtractionConfig>` | `None` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult::structured_output`. |
+| `ner` | `Option<NerConfig>` | `None` | Named-entity recognition configuration. When set, the NER post-processor runs at the Middle stage and populates `ExtractionResult::entities`. |
+| `redaction` | `Option<RedactionConfig>` | `None` | Redaction / anonymisation configuration. When set, the redaction post-processor runs at the Late stage and rewrites every textual field in `ExtractionResult`, emitting an audit trail in `ExtractionResult::redaction_report`. |
+| `summarization` | `Option<SummarizationConfig>` | `None` | Summarisation configuration. When set, the summarisation post-processor runs at the Middle stage and populates `ExtractionResult::summary`. |
+| `translation` | `Option<TranslationConfig>` | `None` | Translation configuration. When set, the translation post-processor runs at the Middle stage and populates `ExtractionResult::translation`. |
+| `page_classification` | `Option<PageClassificationConfig>` | `None` | Per-page classification configuration. When set, the classification post-processor runs at the Middle stage and populates `ExtractionResult::page_classifications`. |
+| `captioning` | `Option<CaptioningConfig>` | `None` | VLM captioning configuration for extracted images. When set, the captioning post-processor runs at the Middle stage and writes a caption into each `ExtractedImage::caption`. |
+| `qr_codes` | `Option<bool>` | `None` | Enable QR-code detection in extracted images. When `true`, the QR post-processor runs at the Middle stage and populates `ExtractedImage::qr_codes`. |
 | `cancel_token` | `Option<String>` | `None` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call its `cancel()` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
 
 ##### Methods
@@ -3536,12 +3537,12 @@ This is the main result type returned by all extraction functions.
 | `extracted_keywords` | `Option<Vec<Keyword>>` | `vec![]` | Extracted keywords when keyword extraction is enabled. When keyword extraction (RAKE or YAKE) is configured, this field contains the extracted keywords with scores, algorithm info, and position data. Previously stored in `metadata.additional["keywords"]`. |
 | `quality_score` | `Option<f64>` | `Default::default()` | Document quality score from quality analysis. A value between 0.0 and 1.0 indicating the overall text quality. Previously stored in `metadata.additional["quality_score"]`. |
 | `processing_warnings` | `Vec<ProcessingWarning>` | `vec![]` | Non-fatal warnings collected during processing pipeline stages. Captures errors from optional pipeline features (embedding, chunking, language detection, output formatting) that don't prevent extraction but may indicate degraded results. Previously stored as individual keys in `metadata.additional`. |
-| `annotations` | `Option<Vec<PdfAnnotation>>` | `vec![]` | PDF annotations extracted from the document. When annotation extraction is enabled via `PdfConfig.extract_annotations`, this field contains text notes, highlights, links, stamps, and other annotations found in PDF documents. |
+| `annotations` | `Option<Vec<PdfAnnotation>>` | `vec![]` | PDF annotations extracted from the document. When annotation extraction is enabled via `PdfConfig::extract_annotations`, this field contains text notes, highlights, links, stamps, and other annotations found in PDF documents. |
 | `children` | `Option<Vec<ArchiveEntry>>` | `vec![]` | Nested extraction results from archive contents. When extracting archives, each processable file inside produces its own full extraction result. Set to `None` for non-archive formats. Use `max_archive_depth` in config to control recursion depth. |
 | `uris` | `Option<Vec<ExtractedUri>>` | `vec![]` | URIs/links discovered during document extraction. Contains hyperlinks, image references, citations, email addresses, and other URI-like references found in the document. Always extracted when present in the source document. |
 | `revisions` | `Option<Vec<DocumentRevision>>` | `vec![]` | Tracked changes embedded in the source document. Populated by per-format extractors that understand change-tracking metadata (DOCX `w:ins`/`w:del`/`w:rPrChange`, ODT `text:change-*`, …). Every extractor defaults to `None` until its format-specific implementation is added. Extractors that do populate this field follow the "accepted-changes" convention: inserted text is present in `content`, deleted text is absent — the revision list is the separate audit trail. |
 | `structured_output` | `Option<serde_json::Value>` | `Default::default()` | Structured extraction output from LLM-based JSON schema extraction. When `structured_extraction` is configured in `ExtractionConfig`, the extracted document content is sent to a VLM with the provided JSON schema. The response is parsed and stored here as a JSON value matching the schema. |
-| `code_intelligence` | `Option<serde_json::Value>` | `Default::default()` | Code intelligence results from tree-sitter analysis. Populated when extracting source code files with the `tree-sitter` feature. Contains metrics, structural analysis, imports/exports, comments, docstrings, symbols, diagnostics, and optionally chunked code segments. Stored as an opaque JSON value so that all language bindings (Go, Java, C#, …) can deserialize it as a raw JSON object rather than a typed struct. The underlying type is `tree_sitter_language_pack.ProcessResult`. |
+| `code_intelligence` | `Option<serde_json::Value>` | `Default::default()` | Code intelligence results from tree-sitter analysis. Populated when extracting source code files with the `tree-sitter` feature. Contains metrics, structural analysis, imports/exports, comments, docstrings, symbols, diagnostics, and optionally chunked code segments. Stored as an opaque JSON value so that all language bindings (Go, Java, C#, …) can deserialize it as a raw JSON object rather than a typed struct. The underlying type is `tree_sitter_language_pack::ProcessResult`. |
 | `llm_usage` | `Option<Vec<LlmUsage>>` | `vec![]` | LLM token usage and cost data for all LLM calls made during this extraction. Contains one entry per LLM call. Multiple entries are produced when VLM OCR, structured extraction, or LLM embeddings run during the same extraction. `None` when no LLM was used. |
 | `entities` | `Option<Vec<Entity>>` | `vec![]` | Named entities detected in `content` by the NER post-processor. `None` when no NER backend is configured. Populated by the gline-rs ONNX backend or the LLM-driven backend (see `crates/kreuzberg/src/text/ner/`). |
 | `summary` | `Option<DocumentSummary>` | `Default::default()` | Summary of `content` produced by the summarisation post-processor. `None` when summarisation is not configured. Populated by the TextRank extractive backend (deterministic, no external service) or by the liter-llm-driven abstractive backend. |
@@ -3631,6 +3632,7 @@ cannot be overridden per file:
 | `output_format` | `Option<OutputFormat>` | `Default::default()` | Override output content format for this file. |
 | `include_document_structure` | `Option<bool>` | `Default::default()` | Override document structure output for this file. |
 | `layout` | `Option<LayoutDetectionConfig>` | `Default::default()` | Override layout detection for this file. |
+| `transcription` | `Option<TranscriptionConfig>` | `Default::default()` | Transcription configuration (see ExtractionConfig for docs). |
 | `timeout_secs` | `Option<u64>` | `Default::default()` | Override per-file extraction timeout in seconds. When set, the extraction for this file will be canceled after the specified duration. A timed-out file produces an error result without affecting other files in the batch. |
 | `tree_sitter` | `Option<TreeSitterConfig>` | `Default::default()` | Override tree-sitter configuration for this file. |
 | `structured_extraction` | `Option<StructuredExtractionConfig>` | `Default::default()` | Override structured extraction configuration for this file. When set, enables LLM-based structured extraction with a JSON schema for this specific file. The extracted content is sent to a VLM/LLM and the response is parsed according to the provided schema. |
@@ -3662,7 +3664,7 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 | `attributes` | `Option<String>` | `None` | Element attributes (classes, IDs, key-value pairs) |
 | `language` | `Option<String>` | `None` | Language identifier for code blocks |
 | `code` | `Option<String>` | `None` | Raw code content for code blocks |
-| `children` | `Vec<FormattedBlock>` | `/* serde(default) */` | Nested blocks for containers (blockquotes, list items, divs) |
+| `children` | `Vec<FormattedBlock>` | language default | Nested blocks for containers (blockquotes, list items, divs) |
 
 ---
 
@@ -3675,9 +3677,9 @@ Individual grid cell with position and span metadata.
 | `content` | `String` | — | Cell text content. |
 | `row` | `u32` | — | Zero-indexed row position. |
 | `col` | `u32` | — | Zero-indexed column position. |
-| `row_span` | `u32` | `/* serde(default) */` | Number of rows this cell spans. |
-| `col_span` | `u32` | `/* serde(default) */` | Number of columns this cell spans. |
-| `is_header` | `bool` | `/* serde(default) */` | Whether this is a header cell. |
+| `row_span` | `u32` | language default | Number of rows this cell spans. |
+| `col_span` | `u32` | language default | Number of columns this cell spans. |
+| `is_header` | `bool` | language default | Whether this is a header cell. |
 | `bbox` | `Option<BoundingBox>` | `None` | Bounding box for this cell (if available). |
 
 ---
@@ -3802,7 +3804,7 @@ and extracted structural elements (headers, links, images, structured data).
 Configuration for styled HTML output.
 
 When set on `html_output` alongside
-`output_format = OutputFormat.Html`, the pipeline builds a
+`output_format = OutputFormat::Html`, the pipeline builds a
 `StyledHtmlRenderer` instead of
 the plain comrak-based renderer.
 
@@ -3810,7 +3812,7 @@ the plain comrak-based renderer.
 |-------|------|---------|-------------|
 | `css` | `Option<String>` | `None` | Inline CSS string injected into the output after the theme stylesheet. Concatenated after `css_file` content when both are set. |
 | `css_file` | `Option<PathBuf>` | `None` | Path to a CSS file loaded once at renderer construction time. Concatenated before `css` when both are set. |
-| `theme` | `HtmlTheme` | `HtmlTheme::Unstyled` | Built-in colour/typography theme. Default: `HtmlTheme.Unstyled`. |
+| `theme` | `HtmlTheme` | `HtmlTheme::Unstyled` | Built-in colour/typography theme. Default: `HtmlTheme::Unstyled`. |
 | `class_prefix` | `String` | — | CSS class prefix applied to every emitted class name. Default: `"kb-"`. Change this if your host application already uses classes that start with `kb-`. |
 | `embed_css` | `bool` | `true` | When `true` (default), write the resolved CSS into a `<style>` block immediately after the opening `<div class="{prefix}doc">`. Set to `false` to emit only the structural markup and wire up your own stylesheet targeting the `kb-*` class names. |
 
@@ -3849,11 +3851,12 @@ Image extraction configuration.
 | `max_dpi` | `i32` | `600` | Maximum DPI threshold |
 | `max_images_per_page` | `Option<u32>` | `None` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via the PDF extractor. Setting this limit causes kreuzberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `None` (default) means no limit — all images are extracted. |
 | `classify` | `bool` | `true` | When `true` (default), extracted images are classified by kind and grouped into clusters where they appear to belong to one figure. |
-| `include_page_rasters` | `bool` | `false` | When `true`, full-page renders produced during OCR preprocessing are captured and returned as `ImageKind.PageRaster` entries in `ExtractionResult.images`. **PDF + OCR only.** No rasters are captured for non-PDF inputs or when the document-level OCR bypass is active (whole-document backend). When OCR is enabled and this flag is set but the active backend skips per-page rendering, a `ProcessingWarning` is emitted in `ExtractionResult.processing_warnings`. Defaults to `false`. Enable when downstream consumers need page thumbnails (e.g. citation previews, visual grounding). |
+| `include_page_rasters` | `bool` | `false` | When `true`, full-page renders produced during OCR preprocessing are captured and returned as `ImageKind::PageRaster` entries in `ExtractionResult.images`. **PDF + OCR only.** No rasters are captured for non-PDF inputs or when the document-level OCR bypass is active (whole-document backend). When OCR is enabled and this flag is set but the active backend skips per-page rendering, a `ProcessingWarning` is emitted in `ExtractionResult.processing_warnings`. Defaults to `false`. Enable when downstream consumers need page thumbnails (e.g. citation previews, visual grounding). |
 | `run_ocr_on_images` | `bool` | `true` | Run OCR on extracted images and include the recognized text in the document content. When `true` (default) and `ExtractionConfig.ocr` is configured, extracted images are processed with the configured OCR backend. Set to `false` to extract images without OCR processing, even when OCR is enabled. |
 | `ocr_text_only` | `bool` | `false` | When `true`, image OCR results are rendered as plain text without the `![...](...)` markdown placeholder. Only takes effect when `run_ocr_on_images` is also `true`. |
 | `append_ocr_text` | `bool` | `false` | When `true` and `ocr_text_only` is `false`, append the OCR text after the image placeholder in the rendered output. |
 | `output_format` | `ImageOutputFormat` | `ImageOutputFormat::Native` | Target format for re-encoding extracted images. When set to anything other than `Native`, each extracted image is re-encoded to the requested format before being returned. This lets callers receive uniform output without duplicating encode logic downstream. Defaults to `Native` — no re-encode pass is performed and `ExtractedImage.format` reflects the source extractor's output. |
+| `svg` | `SvgOptions` | — | SVG-specific knobs for the image-encode pipeline. Controls sanitization and rasterization DPI when the source or output format is SVG.  Only available when the `svg` feature is active. |
 
 ##### Methods
 
@@ -4096,7 +4099,7 @@ is enabled for PDF extraction.
 |-------|------|---------|-------------|
 | `confidence_threshold` | `Option<f32>` | `None` | Confidence threshold override (None = use model default). |
 | `apply_heuristics` | `bool` | `true` | Whether to apply postprocessing heuristics (default: true). |
-| `table_model` | `TableModel` | `TableModel::Tatr` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel.Tatr`. |
+| `table_model` | `TableModel` | `TableModel::Tatr` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel::Tatr`. |
 | `acceleration` | `Option<AccelerationConfig>` | `None` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `None` (auto-select per platform). |
 
 ##### Methods
@@ -4351,9 +4354,9 @@ Configuration for the NER post-processor.
 |-------|------|---------|-------------|
 | `backend` | `NerBackendKind` | `NerBackendKind::Onnx` | Backend that runs the entity detection. |
 | `categories` | `Vec<EntityCategory>` | `vec![]` | Entity categories to detect. Defaults to a sensible PERSON/ORG/LOCATION/EMAIL set when empty. |
-| `model` | `Option<String>` | `Default::default()` | Override the default model — only used by `NerBackendKind.Onnx`. `None` lets the backend pick its pinned default (`urchade/gliner_multi-v2.1` for gline-rs). |
-| `llm` | `Option<LlmConfig>` | `Default::default()` | Optional LLM configuration — only used by `NerBackendKind.Llm`. Token usage for LLM backends is recorded in `ExtractionResult.llm_usage`. |
-| `custom_labels` | `Vec<String>` | `vec![]` | Arbitrary user-supplied entity labels for zero-shot detection. gline-rs natively supports zero-shot inference over caller-supplied labels — this is the primary value of GLiNER. The LLM backend also honours these labels by including them in the structured-output schema. Custom labels surface as `EntityCategory.Custom` in the resulting `Entity` stream. Use this when you need domain-specific entity types (e.g. `"Treatment"`, `"Product"`, `"Vessel"`) without forking GLiNER's taxonomy. |
+| `model` | `Option<String>` | `Default::default()` | Override the default model — only used by `NerBackendKind::Onnx`. `None` lets the backend pick its pinned default (`urchade/gliner_multi-v2.1` for gline-rs). |
+| `llm` | `Option<LlmConfig>` | `Default::default()` | Optional LLM configuration — only used by `NerBackendKind::Llm`. Token usage for LLM backends is recorded in `ExtractionResult::llm_usage`. |
+| `custom_labels` | `Vec<String>` | `vec![]` | Arbitrary user-supplied entity labels for zero-shot detection. gline-rs natively supports zero-shot inference over caller-supplied labels — this is the primary value of GLiNER. The LLM backend also honours these labels by including them in the structured-output schema. Custom labels surface as `EntityCategory::Custom` in the resulting `Entity` stream. Use this when you need domain-specific entity types (e.g. `"Treatment"`, `"Product"`, `"Vessel"`) without forking GLiNER's taxonomy. |
 
 ---
 
@@ -4383,9 +4386,9 @@ An `ExtractionResult` containing the extracted text and metadata.
 
 **Errors:**
 
-- `KreuzbergError.Ocr` - OCR processing failed
-- `KreuzbergError.Validation` - Invalid image format or configuration
-- `KreuzbergError.Io` - I/O errors (these always bubble up)
+- `KreuzbergError::Ocr` - OCR processing failed
+- `KreuzbergError::Validation` - Invalid image format or configuration
+- `KreuzbergError::Io` - I/O errors (these always bubble up)
 
 ##### Reading `backend_options`
 
@@ -4626,10 +4629,10 @@ OCR configuration.
 | `quality_thresholds` | `Option<OcrQualityThresholds>` | `None` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
 | `pipeline` | `Option<OcrPipelineConfig>` | `None` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
 | `auto_rotate` | `bool` | `false` | Enable automatic page rotation based on orientation detection. When enabled, uses Tesseract's `DetectOrientationScript()` to detect page orientation (0/90/180/270 degrees) before OCR. If the page is rotated with high confidence, the image is corrected before recognition. This is critical for handling rotated scanned documents. |
-| `vlm_fallback` | `VlmFallbackPolicy` | `VlmFallbackPolicy::Disabled` | Ergonomic VLM fallback policy. When set to anything other than `VlmFallbackPolicy.Disabled` and `OcrConfig.pipeline` is `None`, a multi-stage pipeline is synthesised automatically: - `VlmFallbackPolicy.OnLowQuality` → `[classical_stage, vlm_stage]` with the `quality_threshold` mapped onto `OcrQualityThresholds.pipeline_min_quality`. - `VlmFallbackPolicy.Always` → `[vlm_stage]` only. Requires `OcrConfig.vlm_config` to be `Some` when not `Disabled`. When `OcrConfig.pipeline` is explicitly set, this field is ignored. |
-| `vlm_config` | `Option<LlmConfig>` | `None` | VLM (Vision Language Model) OCR configuration. Required when `backend` is `"vlm"` or when `vlm_fallback` is not `VlmFallbackPolicy.Disabled`. Uses liter-llm to send page images to a vision model for text extraction. |
+| `vlm_fallback` | `VlmFallbackPolicy` | `VlmFallbackPolicy::Disabled` | Ergonomic VLM fallback policy. When set to anything other than `VlmFallbackPolicy::Disabled` and `OcrConfig::pipeline` is `None`, a multi-stage pipeline is synthesised automatically: - `VlmFallbackPolicy::OnLowQuality` → `[classical_stage, vlm_stage]` with the `quality_threshold` mapped onto `OcrQualityThresholds::pipeline_min_quality`. - `VlmFallbackPolicy::Always` → `[vlm_stage]` only. Requires `OcrConfig::vlm_config` to be `Some` when not `Disabled`. When `OcrConfig::pipeline` is explicitly set, this field is ignored. |
+| `vlm_config` | `Option<LlmConfig>` | `None` | VLM (Vision Language Model) OCR configuration. Required when `backend` is `"vlm"` or when `vlm_fallback` is not `VlmFallbackPolicy::Disabled`. Uses liter-llm to send page images to a vision model for text extraction. |
 | `vlm_prompt` | `Option<String>` | `None` | Custom Jinja2 prompt template for VLM OCR. When `None`, uses the default template. Available variables: - `{{ language }}` — The document language code (e.g., "eng", "deu"). |
-| `acceleration` | `Option<AccelerationConfig>` | `None` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
+| `acceleration` | `Option<AccelerationConfig>` | `None` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig::acceleration` before each `process_image` call. |
 | `tessdata_bytes` | `Option<HashMap<String, Vec<u8>>>` | `None` | Caller-supplied Tesseract `traineddata` bytes per language code. Primary use case is the WASM build, which has no filesystem and cannot download tessdata at runtime. Native builds typically rely on `TessdataManager` and ignore this field. When present, the WASM Tesseract backend prefers these bytes over its compile-time-bundled English data. Skipped by serde to keep config files small — supply via the typed API at runtime. |
 
 ##### Methods
@@ -4700,7 +4703,7 @@ including recognized text and detected tables.
 | `mime_type` | `String` | — | Original MIME type of the processed image |
 | `metadata` | `HashMap<String, serde_json::Value>` | — | OCR processing metadata (confidence scores, language, etc.) |
 | `tables` | `Vec<OcrTable>` | — | Tables detected and extracted via OCR |
-| `ocr_elements` | `Option<Vec<OcrElement>>` | `/* serde(default) */` | Structured OCR elements with bounding boxes and confidence scores. Available when TSV output is requested or table detection is enabled. |
+| `ocr_elements` | `Option<Vec<OcrElement>>` | language default | Structured OCR elements with bounding boxes and confidence scores. Available when TSV output is requested or table detection is enabled. |
 | `internal_document` | `Option<String>` | `None` | Structured document produced from hOCR parsing. Carries paragraph structure, bounding boxes, and confidence scores that the flattened `content` string discards. |
 
 ---
@@ -4733,7 +4736,7 @@ the result is accepted. Otherwise the next backend is tried.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `stages` | `Vec<OcrPipelineStage>` | — | Ordered list of backends to try. Sorted by priority (descending) at runtime. |
-| `quality_thresholds` | `OcrQualityThresholds` | `/* serde(default) */` | Quality thresholds for deciding whether to accept a result or try the next backend. |
+| `quality_thresholds` | `OcrQualityThresholds` | language default | Quality thresholds for deciding whether to accept a result or try the next backend. |
 
 ---
 
@@ -4744,12 +4747,12 @@ A single backend stage in the OCR pipeline.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `backend` | `String` | — | Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name. |
-| `priority` | `u32` | `/* serde(default) */` | Priority weight (higher = tried first). Stages are sorted by priority descending. |
-| `language` | `Option<String>` | `/* serde(default) */` | Language override for this stage (None = use parent OcrConfig.language). |
-| `tesseract_config` | `Option<TesseractConfig>` | `/* serde(default) */` | Tesseract-specific config override for this stage. |
-| `paddle_ocr_config` | `Option<serde_json::Value>` | `/* serde(default) */` | PaddleOCR-specific config for this stage. |
-| `vlm_config` | `Option<LlmConfig>` | `/* serde(default) */` | VLM config override for this pipeline stage. |
-| `backend_options` | `Option<serde_json::Value>` | `/* serde(default) */` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
+| `priority` | `u32` | language default | Priority weight (higher = tried first). Stages are sorted by priority descending. |
+| `language` | `Option<String>` | language default | Language override for this stage (None = use parent OcrConfig.language). |
+| `tesseract_config` | `Option<TesseractConfig>` | language default | Tesseract-specific config override for this stage. |
+| `paddle_ocr_config` | `Option<serde_json::Value>` | language default | PaddleOCR-specific config for this stage. |
+| `vlm_config` | `Option<LlmConfig>` | language default | VLM config override for this pipeline stage. |
+| `backend_options` | `Option<serde_json::Value>` | language default | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
 
 ---
 
@@ -4758,7 +4761,7 @@ A single backend stage in the OCR pipeline.
 Quality thresholds for OCR fallback decisions and pipeline quality gating.
 
 All fields default to the values that match the previous hardcoded behavior,
-so `OcrQualityThresholds.default()` preserves existing semantics exactly.
+so `OcrQualityThresholds::default()` preserves existing semantics exactly.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4821,7 +4824,7 @@ Represents a table structure recognized during OCR processing.
 | `cells` | `Vec<Vec<String>>` | — | Table cells as a 2D vector (rows × columns) |
 | `markdown` | `String` | — | Markdown representation of the table |
 | `page_number` | `u32` | — | Page number where the table was found (1-indexed) |
-| `bounding_box` | `Option<OcrTableBoundingBox>` | `/* serde(default) */` | Bounding box of the table in pixel coordinates (from OCR word positions). |
+| `bounding_box` | `Option<OcrTableBoundingBox>` | language default | Bounding box of the table in pixel coordinates (from OCR word positions). |
 
 ---
 
@@ -5201,7 +5204,7 @@ Configuration for the page-classification post-processor.
 |-------|------|---------|-------------|
 | `prompt_template` | `Option<String>` | `None` | Minijinja prompt template. Receives `{{ labels }}` (joined list), `{{ page_text }}` and `{{ multi_label }}` variables. `None` lets the backend pick a sensible default. |
 | `labels` | `Vec<String>` | — | The set of labels the classifier may emit. Must contain at least one entry. |
-| `multi_label` | `bool` | `/* serde(default) */` | Allow multiple labels per page. Single-label mode returns at most one label. |
+| `multi_label` | `bool` | language default | Allow multiple labels per page. Single-label mode returns at most one label. |
 | `llm` | `LlmConfig` | — | LLM configuration used for classification. |
 
 ---
@@ -5264,8 +5267,8 @@ by avoiding redundant copies during serialization.
 |-------|------|---------|-------------|
 | `page_number` | `u32` | — | Page number (1-indexed) |
 | `content` | `String` | — | Text content for this page |
-| `tables` | `Vec<Table>` | `/* serde(default) */` | Tables found on this page (uses Arc for memory efficiency) Serializes as Vec<Table> for JSON compatibility while maintaining Arc semantics in-memory for zero-copy sharing. |
-| `image_indices` | `Vec<u32>` | `/* serde(default) */` | Indices into `ExtractionResult.images` for images found on this page. Each value is a zero-based index into the top-level `images` collection. Only populated when `extract_images = true` in the extraction config. |
+| `tables` | `Vec<Table>` | language default | Tables found on this page (uses Arc for memory efficiency) Serializes as Vec<Table> for JSON compatibility while maintaining Arc semantics in-memory for zero-copy sharing. |
+| `image_indices` | `Vec<u32>` | language default | Indices into `ExtractionResult.images` for images found on this page. Each value is a zero-based index into the top-level `images` collection. Only populated when `extract_images = true` in the extraction config. |
 | `hierarchy` | `Option<PageHierarchy>` | `None` | Hierarchy information for the page (when hierarchy extraction is enabled) Contains text hierarchy levels (H1-H6) extracted from the page content. |
 | `is_blank` | `Option<bool>` | `None` | Whether this page is blank (no meaningful text content) Determined during extraction based on text content analysis. A page is blank if it has fewer than 3 non-whitespace characters and contains no tables or images. |
 | `layout_regions` | `Option<Vec<LayoutRegion>>` | `None` | Layout detection regions for this page (when layout detection is enabled). Contains detected layout regions with class, confidence, bounding box, and area fraction. Only populated when layout detection is configured. |
@@ -5285,7 +5288,7 @@ blocks with heading levels (H1-H6) for semantic document structure.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `block_count` | `u32` | — | Number of hierarchy blocks on this page |
-| `blocks` | `Vec<HierarchicalBlock>` | `/* serde(default) */` | Hierarchical blocks with heading levels |
+| `blocks` | `Vec<HierarchicalBlock>` | language default | Hierarchical blocks with heading levels |
 
 ---
 
@@ -5305,7 +5308,7 @@ and visibility state (for presentations).
 | `table_count` | `Option<u32>` | `None` | Number of tables on this page |
 | `hidden` | `Option<bool>` | `None` | Whether this page is hidden (e.g., in presentations) |
 | `is_blank` | `Option<bool>` | `None` | Whether this page is blank (no meaningful text, no images, no tables) A page is considered blank if it has fewer than 3 non-whitespace characters and contains no tables or images. This is useful for filtering out empty pages in scanned documents or PDFs with blank separator pages. |
-| `has_vector_graphics` | `bool` | `/* serde(default) */` | Whether this page contains non-trivial vector graphics (paths, shapes, curves) Indicates the presence of vector-drawn content such as charts, diagrams, or geometric shapes (e.g., from Adobe InDesign, LaTeX TikZ). These are invisible to `ExtractionResult.images` since they are not embedded as raster XObjects. Set to `true` when path count exceeds a heuristic threshold, signaling that downstream consumers may want to rasterize the page to capture this content. Only populated for PDFs; `None` for other document types. |
+| `has_vector_graphics` | `bool` | language default | Whether this page contains non-trivial vector graphics (paths, shapes, curves) Indicates the presence of vector-drawn content such as charts, diagrams, or geometric shapes (e.g., from Adobe InDesign, LaTeX TikZ). These are invisible to `ExtractionResult.images` since they are not embedded as raster XObjects. Set to `true` when path count exceeds a heuristic threshold, signaling that downstream consumers may want to rasterize the page to capture this content. Only populated for PDFs; `None` for other document types. |
 
 ---
 
@@ -5358,7 +5361,7 @@ PDF-specific configuration.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `extract_images` | `bool` | `false` | Extract images from PDF |
-| `extract_tables` | `bool` | `true` | Extract tables from PDF. When `true` (default), runs pdf_oxide's native grid detector and, if it finds nothing, falls back to the heuristic text-layer reconstruction in `pdf.oxide.table.extract_tables_heuristic`. Set to `false` to skip both passes — `tables` will then be empty in the result. |
+| `extract_tables` | `bool` | `true` | Extract tables from PDF. When `true` (default), runs pdf_oxide's native grid detector and, if it finds nothing, falls back to the heuristic text-layer reconstruction in `pdf::oxide::table::extract_tables_heuristic`. Set to `false` to skip both passes — `tables` will then be empty in the result. |
 | `passwords` | `Option<Vec<String>>` | `None` | List of passwords to try when opening encrypted PDFs |
 | `extract_metadata` | `bool` | `true` | Extract PDF metadata |
 | `hierarchy` | `Option<HierarchyConfig>` | `None` | Hierarchy extraction configuration (None = hierarchy extraction disabled) |
@@ -5366,7 +5369,7 @@ PDF-specific configuration.
 | `top_margin_fraction` | `Option<f32>` | `None` | Top margin fraction (0.0–1.0) of page height to exclude headers/running heads. Default: 0.06 (6%) |
 | `bottom_margin_fraction` | `Option<f32>` | `None` | Bottom margin fraction (0.0–1.0) of page height to exclude footers/page numbers. Default: 0.05 (5%) |
 | `allow_single_column_tables` | `bool` | `false` | Allow single-column pseudo tables in extraction results. By default, tables with fewer than 2 columns (layout-guided) or 3 columns (heuristic) are rejected. When `true`, the minimum column count is relaxed to 1, allowing single-column structured data (glossaries, itemized lists) to be emitted as tables. Other quality filters (density, sparsity, prose detection) still apply. |
-| `ocr_inline_images` | `bool` | `false` | Perform OCR on inline images extracted from PDF pages and attach the recognized text to each `ExtractedImage.ocr_result`. Requires Tesseract to be available; if `ExtractionConfig.ocr` is `None` the extractor falls back to `TesseractConfig.default()`. Per-image failures degrade gracefully (the image is returned without OCR text rather than failing the whole extraction). Default: `false`. |
+| `ocr_inline_images` | `bool` | `false` | Perform OCR on inline images extracted from PDF pages and attach the recognized text to each `ExtractedImage.ocr_result`. Requires Tesseract to be available; if `ExtractionConfig.ocr` is `None` the extractor falls back to `TesseractConfig::default()`. Per-image failures degrade gracefully (the image is returned without OCR text rather than failing the whole extraction). Default: `false`. |
 
 ##### Methods
 
@@ -5676,20 +5679,6 @@ result in place.
 
 ##### Example - Text Cleaning
 
-```rust
-async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig)
-    -> Result<()> {
-    // Remove excessive whitespace
-    result.content = result
-        .content
-        .split_whitespace()
-        .collect::<Vec<_>>()
-        .join(" ");
-
-    Ok(())
-}
-```
-
 **Signature:**
 
 ```rust
@@ -5903,9 +5892,9 @@ Contains extracted slide content, metadata, and embedded images/tables.
 | `page_structure` | `Option<PageStructure>` | `None` | Slide structure with boundaries (when page tracking is enabled) |
 | `page_contents` | `Option<Vec<PageContent>>` | `None` | Per-slide content (when page tracking is enabled) |
 | `document` | `Option<DocumentStructure>` | `None` | Structured document representation |
-| `hyperlinks` | `Vec<String>` | `/* serde(default) */` | Hyperlinks discovered in slides as (url, optional_label) pairs. |
-| `office_metadata` | `HashMap<String, String>` | `/* serde(default) */` | Office metadata extracted from docProps/core.xml and docProps/app.xml. Contains keys like "title", "author", "created_by", "subject", "keywords", "modified_by", "created_at", "modified_at", etc. |
-| `revisions` | `Option<Vec<DocumentRevision>>` | `/* serde(default) */` | Slide comments as revisions. Each `<p:cm>` element in `ppt/comments/comment{N}.xml` becomes a `DocumentRevision { kind: Comment }` with author (resolved from `ppt/commentAuthors.xml`), ISO-8601 timestamp, and `RevisionAnchor.Slide { index }`. `None` when no comment XML parts exist. |
+| `hyperlinks` | `Vec<String>` | language default | Hyperlinks discovered in slides as (url, optional_label) pairs. |
+| `office_metadata` | `HashMap<String, String>` | language default | Office metadata extracted from docProps/core.xml and docProps/app.xml. Contains keys like "title", "author", "created_by", "subject", "keywords", "modified_by", "created_at", "modified_at", etc. |
+| `revisions` | `Option<Vec<DocumentRevision>>` | language default | Slide comments as revisions. Each `<p:cm>` element in `ppt/comments/comment{N}.xml` becomes a `DocumentRevision { kind: Comment }` with author (resolved from `ppt/commentAuthors.xml`), ISO-8601 timestamp, and `RevisionAnchor::Slide { index }`. `None` when no comment XML parts exist. |
 
 ---
 
@@ -6031,8 +6020,8 @@ Configuration for the redaction post-processor.
 | `strategy` | `RedactionStrategy` | `RedactionStrategy::Mask` | Strategy applied to every match. |
 | `ner` | `Option<NerConfig>` | `None` | Optional NER backend — required to redact PERSON / ORGANIZATION / LOCATION categories (the pure-Rust pattern engine only covers regex-detectable PII). |
 | `preserve_offsets` | `bool` | `true` | When `true`, chunk byte ranges are kept consistent with the rewritten content by adjusting `byte_start` / `byte_end` after replacement. When `false`, chunk byte ranges still refer to the *original* content offsets — useful when downstream consumers want to map findings back to the original document. |
-| `custom_terms` | `Vec<RedactionTerm>` | `vec![]` | Arbitrary user-supplied literal terms to redact. Each term is treated as a regex hit against the document, surfacing as `PiiCategory.Custom(label)` in `RedactionFinding` where `label` is the per-term label (defaulting to the literal value itself). Case-insensitive by default; set `RedactionTerm.case_sensitive` for exact match. Use this when you need to redact tenant-specific tokens (employee IDs, project codes, internal product names) without writing a custom plugin. |
-| `custom_patterns` | `Vec<RedactionPattern>` | `vec![]` | Arbitrary user-supplied regex patterns to redact. Same surfacing semantics as `custom_terms`: each hit becomes a `PiiCategory.Custom(label)` finding. Patterns are validated at config-construction time via `RedactionConfig.validate`. |
+| `custom_terms` | `Vec<RedactionTerm>` | `vec![]` | Arbitrary user-supplied literal terms to redact. Each term is treated as a regex hit against the document, surfacing as `PiiCategory::Custom(label)` in `RedactionFinding` where `label` is the per-term label (defaulting to the literal value itself). Case-insensitive by default; set `RedactionTerm::case_sensitive` for exact match. Use this when you need to redact tenant-specific tokens (employee IDs, project codes, internal product names) without writing a custom plugin. |
+| `custom_patterns` | `Vec<RedactionPattern>` | `vec![]` | Arbitrary user-supplied regex patterns to redact. Same surfacing semantics as `custom_terms`: each hit becomes a `PiiCategory::Custom(label)` finding. Patterns are validated at config-construction time via `RedactionConfig::validate`. |
 
 ##### Methods
 
@@ -6056,7 +6045,7 @@ let result = RedactionConfig::default();
 
 Validate user-supplied terms and patterns at config-construction time.
 
-Compiles every `RedactionPattern.pattern` (with the case-insensitive
+Compiles every `RedactionPattern::pattern` (with the case-insensitive
 inline flag where applicable) and returns the first compilation error so
 the caller can reject the config before the redaction pipeline runs.
 Pure terms (regex-escaped) cannot fail to compile, but the function
@@ -6086,8 +6075,8 @@ One redaction event: which span was rewritten, why, and with what.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `start` | `u32` | — | Byte-offset start in the original (pre-redaction) `ExtractionResult.content`. |
-| `end` | `u32` | — | Byte-offset end (exclusive) in the original `ExtractionResult.content`. |
+| `start` | `u32` | — | Byte-offset start in the original (pre-redaction) `ExtractionResult::content`. |
+| `end` | `u32` | — | Byte-offset end (exclusive) in the original `ExtractionResult::content`. |
 | `category` | `PiiCategory` | — | PII category that fired this redaction. |
 | `strategy` | `RedactionStrategy` | — | Strategy applied to this finding (mask, hash, token-replace, drop). |
 | `replacement_token` | `String` | — | String that replaced the original mention. Always present; for `Drop` the replacement is the empty string. |
@@ -6100,13 +6089,13 @@ One user-supplied regex pattern to redact.
 
 The pattern is compiled with the Rust `regex` crate (no look-around). Case
 sensitivity is encoded in the pattern via the `(?i)` inline flag when
-`Self.case_sensitive` is `false`.
+`Self::case_sensitive` is `false`.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `label` | `String` | — | Custom category label surfaced in `RedactionFinding.category`. |
+| `label` | `String` | — | Custom category label surfaced in `RedactionFinding::category`. |
 | `pattern` | `String` | — | Regex pattern (Rust `regex` crate dialect — no look-around). |
-| `case_sensitive` | `bool` | `/* serde(default) */` | When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex. |
+| `case_sensitive` | `bool` | language default | When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex. |
 
 ##### Methods
 
@@ -6159,13 +6148,13 @@ One user-supplied literal term to redact.
 
 Matched as a regex-escaped substring (so callers do not need to escape
 metacharacters themselves). Case-insensitive by default — set
-`Self.case_sensitive` to `true` for exact byte-match semantics.
+`Self::case_sensitive` to `true` for exact byte-match semantics.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `label` | `String` | — | Custom category label surfaced in `RedactionFinding.category`. |
+| `label` | `String` | — | Custom category label surfaced in `RedactionFinding::category`. |
 | `value` | `String` | — | Literal value to match. Regex metacharacters are escaped automatically. |
-| `case_sensitive` | `bool` | `/* serde(default) */` | When `true`, match the value as-is; otherwise match ASCII-case-insensitively. |
+| `case_sensitive` | `bool` | language default | When `true`, match the value as-is; otherwise match ASCII-case-insensitively. |
 
 ##### Methods
 
@@ -6230,7 +6219,7 @@ Djot, plain text, etc.). They participate in the standard `Plugin`
 lifecycle so custom renderers can be registered from any supported binding
 language.
 
-The format name is exposed via `Plugin.name`. For stateless renderers
+The format name is exposed via `Plugin::name`. For stateless renderers
 the `Plugin` lifecycle methods (`version`, `initialize`, `shutdown`) all
 take no-op defaults and need not be overridden.
 
@@ -6283,7 +6272,7 @@ A single document returned by the reranker, with its position in the input and s
 `index` maps back to the caller's original document list, so metadata arrays
 (e.g. IDs, paths) can be reordered without passing them through the reranker.
 
-Since v5.0.0.
+Since v5.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -6317,7 +6306,7 @@ backend itself must serialize access internally (e.g. via `Mutex<Inner>`).
 
 - `rerank(query, documents)` MUST return exactly `documents.len()` scores.
   The dispatcher validates this before sorting and returning to callers;
-  a non-conforming backend surfaces as a `KreuzbergError.Validation`, not
+  a non-conforming backend surfaces as a `KreuzbergError::Validation`, not
   a panic.
 
 - Scores are raw logits in any range — callers must NOT assume `[0, 1]`.
@@ -6335,11 +6324,11 @@ backend itself must serialize access internally (e.g. via `Mutex<Inner>`).
 ### Runtime
 
 The synchronous `rerank` entry uses
-`tokio.task.block_in_place` to await the trait's async `rerank`, which
+`tokio::task::block_in_place` to await the trait's async `rerank`, which
 requires a multi-thread tokio runtime. Callers running inside a
 `current_thread` runtime must use `rerank_async` instead.
 
-Since v5.0.0.
+Since v5.0.
 
 ##### Methods
 
@@ -6388,7 +6377,7 @@ Configuration for the reranking pipeline.
 Controls which model to use, how many results to return, and download/cache
 behavior for local ONNX models.
 
-Since v5.0.0.
+Since v5.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -6398,7 +6387,7 @@ Since v5.0.0.
 | `show_download_progress` | `bool` | `false` | Show model download progress (local ONNX path only). |
 | `cache_dir` | `Option<PathBuf>` | `None` | Custom cache directory for model files. Defaults to `~/.cache/kreuzberg/rerankers/` if not specified. |
 | `acceleration` | `Option<AccelerationConfig>` | `None` | Hardware acceleration for the reranker ONNX model. Controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for local inference. Defaults to `None` (auto-select per platform). |
-| `max_rerank_duration_secs` | `Option<u64>` | `Default::default()` | Maximum wall-clock duration (in seconds) for a single `rerank()` call when using `RerankerModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends. On timeout, the dispatcher returns `Plugin` instead of blocking forever. `None` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large document sets on slow hardware. |
+| `max_rerank_duration_secs` | `Option<u64>` | `Default::default()` | Maximum wall-clock duration (in seconds) for a single `rerank()` call when using `RerankerModelType::Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends. On timeout, the dispatcher returns `Plugin` instead of blocking forever. `None` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large document sets on slow hardware. |
 
 ##### Methods
 
@@ -6427,14 +6416,14 @@ Metadata for a bundled reranker preset.
 All string fields are owned `String` for FFI compatibility — instances are
 safe to clone and pass across language boundaries.
 
-Since v5.0.0.
+Since v5.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `name` | `String` | — | Short identifier (catalog name, e.g. `"bge-reranker-base"`). |
 | `model_repo` | `String` | — | HuggingFace repository name for the model. |
 | `model_file` | `String` | — | Path to the ONNX model file within the repo. |
-| `additional_files` | `Vec<String>` | `/* serde(default) */` | Sibling files that must be downloaded alongside `model_file`. Empty for most presets. Used by repos that split the weight blob — e.g. `rozgo/bge-reranker-v2-m3` ships the model in `model.onnx` plus a co-located `model.onnx.data` payload. |
+| `additional_files` | `Vec<String>` | language default | Sibling files that must be downloaded alongside `model_file`. Empty for most presets. Used by repos that split the weight blob — e.g. `rozgo/bge-reranker-v2-m3` ships the model in `model.onnx` plus a co-located `model.onnx.data` payload. |
 | `max_length` | `usize` | — | Maximum token sequence length the model supports. |
 | `description` | `String` | — | Human-readable description of the preset's intended use case. |
 
@@ -6445,7 +6434,7 @@ Since v5.0.0.
 The content changes that make up a single revision.
 
 For insertions and deletions the `content` field carries the added/removed
-lines as `DiffLine.Added` / `DiffLine.Removed` entries. For format
+lines as `DiffLine::Added` / `DiffLine::Removed` entries. For format
 changes, `content` is empty — the property diff is left as a TODO for a
 later enrichment pass.
 
@@ -6699,10 +6688,10 @@ returning structured data that conforms to the schema.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `schema` | `serde_json::Value` | — | JSON Schema defining the desired output structure. |
-| `schema_name` | `String` | `/* serde(default) */` | Schema name passed to the LLM's structured output mode. |
-| `schema_description` | `Option<String>` | `/* serde(default) */` | Optional schema description for the LLM. |
-| `strict` | `bool` | `/* serde(default) */` | Enable strict mode — output must exactly match the schema. |
-| `prompt` | `Option<String>` | `/* serde(default) */` | Custom Jinja2 extraction prompt template. When `None`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
+| `schema_name` | `String` | language default | Schema name passed to the LLM's structured output mode. |
+| `schema_description` | `Option<String>` | language default | Optional schema description for the LLM. |
+| `strict` | `bool` | language default | Enable strict mode — output must exactly match the schema. |
+| `prompt` | `Option<String>` | language default | Custom Jinja2 extraction prompt template. When `None`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
 | `llm` | `LlmConfig` | — | LLM configuration for the extraction. |
 
 ---
@@ -6739,9 +6728,9 @@ Represents a file extension and its corresponding MIME type that Kreuzberg can p
 SVG-specific configuration for the image-encode pipeline.
 
 Applies when the source image is SVG or when the output format is set to
-`ImageOutputFormat.Svg`.  Available when the `svg` feature is active.
+`ImageOutputFormat::Svg`.  Available when the `svg` feature is active.
 
-Used via `ImageExtractionConfig.svg`.
+Used via `ImageExtractionConfig::svg`.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -6931,7 +6920,7 @@ for Markdown, structural elements like headers and links.
 
 #### TokenCounter
 
-Per-category running counter for `RedactionStrategy.TokenReplace`.
+Per-category running counter for `RedactionStrategy::TokenReplace`.
 
 ##### Methods
 
@@ -7079,16 +7068,16 @@ let result = TranscriptionConfig::default();
 
 Translation of the extracted content.
 
-Holds the translated rendition of `ExtractionResult.content` and (when
+Holds the translated rendition of `ExtractionResult::content` and (when
 `preserve_markup` was requested) the translated `formatted_content`. Chunks
-are translated in place inside `ExtractionResult.chunks[*].content` rather
+are translated in place inside `ExtractionResult::chunks[*].content` rather
 than duplicated here.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `target_lang` | `String` | — | BCP-47 language tag the translation was produced into (e.g. `"de"`, `"fr-CA"`). |
 | `source_lang` | `Option<String>` | `None` | BCP-47 source language. `None` when the translation backend was asked to detect. |
-| `content` | `String` | — | Translated plain-text body. Matches the shape of `ExtractionResult.content`. |
+| `content` | `String` | — | Translated plain-text body. Matches the shape of `ExtractionResult::content`. |
 | `formatted_content` | `Option<String>` | `None` | Translated markup body (Markdown / HTML / etc.) when `preserve_markup` was enabled on the config. `None` otherwise. |
 
 ---
@@ -7103,7 +7092,7 @@ Configuration for the translation post-processor.
 |-------|------|---------|-------------|
 | `target_lang` | `String` | — | BCP-47 language tag for the target language (e.g. `"de"`, `"fr-CA"`). |
 | `source_lang` | `Option<String>` | `None` | Optional explicit source language. `None` asks the backend to auto-detect. |
-| `preserve_markup` | `bool` | `/* serde(default) */` | Translate the formatted (Markdown/HTML) rendition alongside plain text when `formatted_content` is present. |
+| `preserve_markup` | `bool` | language default | Translate the formatted (Markdown/HTML) rendition alongside plain text when `formatted_content` is present. |
 | `llm` | `LlmConfig` | — | LLM configuration used for translation. |
 
 ---
@@ -7236,75 +7225,14 @@ if validation fails.
 
 **Errors:**
 
-- `KreuzbergError.Validation` - Validation failed
+- `KreuzbergError::Validation` - Validation failed
 - Any other error type appropriate for the failure
 
 ##### Example - Content Length Validation
 
-```rust
-async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
-    -> Result<()> {
-    let length = result.content.len();
-
-    if length < self.min {
-        return Err(KreuzbergError::validation(format!(
-            "Content too short: {} < {} characters",
-            length, self.min
-        )));
-    }
-
-    if length > self.max {
-        return Err(KreuzbergError::validation(format!(
-            "Content too long: {} > {} characters",
-            length, self.max
-        )));
-    }
-
-    Ok(())
-}
-```
-
 ##### Example - Quality Score Validation
 
-```rust
-async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
-    -> Result<()> {
-    // Check if quality_score exists in metadata
-    let score = result.metadata
-        .additional
-        .get("quality_score")
-        .and_then(|v| v.as_f64())
-        .unwrap_or(0.0);
-
-    if score < self.min_score {
-        return Err(KreuzbergError::validation(format!(
-            "Quality score too low: {} < {}",
-            score, self.min_score
-        )));
-    }
-
-    Ok(())
-}
-```
-
 ##### Example - Security Validation
-
-```rust
-async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
-    -> Result<()> {
-    // Check for blocked patterns
-    for pattern in &self.blocked_patterns {
-        if result.content.contains(pattern) {
-            return Err(KreuzbergError::validation(format!(
-                "Content contains blocked pattern: {}",
-                pattern
-            )));
-        }
-    }
-
-    Ok(())
-}
-```
 
 **Signature:**
 
@@ -7480,7 +7408,7 @@ Year range for bibliographic metadata.
 |-------|------|---------|-------------|
 | `min` | `Option<u32>` | `None` | Earliest (minimum) year in the range. |
 | `max` | `Option<u32>` | `None` | Latest (maximum) year in the range. |
-| `years` | `Vec<u32>` | `/* serde(default) */` | All individual years present in the collection. |
+| `years` | `Vec<u32>` | language default | All individual years present in the collection. |
 
 ---
 
@@ -7528,7 +7456,7 @@ Uses a tagged enum: `{"type": "native"}`, `{"type": "png"}`,
 | `Jpeg` | Re-encode all extracted images as JPEG at the given quality level. `quality` must be in `1..=100`. Values outside this range are clamped and a warning is emitted. Higher values produce larger files with less artefacting; 85 is a reasonable default. — Fields: `quality`: `u8` |
 | `Webp` | Re-encode all extracted images as WebP at the given quality level. `quality` must be in `1..=100`. Values outside this range are clamped and a warning is emitted. 80 is a reasonable default. — Fields: `quality`: `u8` |
 | `Heif` | Re-encode all extracted images as HEIF/HEIC at the given quality level. Requires the `heic` feature. `quality` must be in `1..=100`. Values outside this range are clamped and a warning is emitted. 80 is a reasonable default. — Fields: `quality`: `u8` |
-| `Svg` | Output pure-vector SVG. Lossless. Raster sources are not re-encoded (a warning is emitted and the image bytes are left untouched). When the source is already SVG, the bytes are passed through the `usvg` sanitizer (strips external hrefs, JS event handlers, and `foreignObject` elements) when `SvgOptions.sanitize` is `true`. Requires the `svg` feature. |
+| `Svg` | Output pure-vector SVG. Lossless. Raster sources are not re-encoded (a warning is emitted and the image bytes are left untouched). When the source is already SVG, the bytes are passed through the `usvg` sanitizer (strips external hrefs, JS event handlers, and `foreignObject` elements) when `SvgOptions::sanitize` is `true`. Requires the `svg` feature. |
 
 ---
 
@@ -7593,7 +7521,7 @@ NER backend selector.
 
 | Value | Description |
 |-------|-------------|
-| `Onnx` | gline-rs ONNX inference. Requires `ner-onnx` feature. Models download lazily from HuggingFace via `model_download.hf_download`. |
+| `Onnx` | gline-rs ONNX inference. Requires `ner-onnx` feature. Models download lazily from HuggingFace via `model_download::hf_download`. |
 | `Llm` | liter-llm zero-shot NER via structured-output prompts. Requires `ner-llm` feature. Useful when domain-specific categories outstrip the ONNX taxonomy. |
 
 ---
@@ -7606,21 +7534,21 @@ This knob is syntactic sugar over the explicit `OcrPipelineConfig` stage
 ordering. When `vlm_fallback` is set and `pipeline` is `None`, an equivalent
 pipeline is synthesised at extraction time:
 
-- `VlmFallbackPolicy.Disabled` — no synthesis; single-backend mode (default).
-- `VlmFallbackPolicy.OnLowQuality` — tries the classical backend first; if the
+- `VlmFallbackPolicy::Disabled` — no synthesis; single-backend mode (default).
+- `VlmFallbackPolicy::OnLowQuality` — tries the classical backend first; if the
   result scores below `quality_threshold`, tries VLM.
 
-- `VlmFallbackPolicy.Always` — skips the classical backend and sends every page
+- `VlmFallbackPolicy::Always` — skips the classical backend and sends every page
   to the VLM.
 
-When `OcrConfig.pipeline` is explicitly set, `vlm_fallback` is ignored — the
+When `OcrConfig::pipeline` is explicitly set, `vlm_fallback` is ignored — the
 explicit pipeline takes precedence.
 
 **Errors:**
 
-Both `OnLowQuality` and `Always` require `OcrConfig.vlm_config` to be `Some`.
+Both `OnLowQuality` and `Always` require `OcrConfig::vlm_config` to be `Some`.
 Constructing an `OcrConfig` with one of these policies but no `vlm_config` is
-detected by `OcrConfig.validate` and will surface as a
+detected by `OcrConfig::validate` and will surface as a
 `Validation` error at extraction time, not a panic.
 
 | Value | Description |
@@ -7684,7 +7612,7 @@ Embedding model types supported by Kreuzberg.
 | `Preset` | Use a preset model configuration (recommended) — Fields: `name`: `String` |
 | `Custom` | Use a custom ONNX model from HuggingFace — Fields: `model_id`: `String`, `dimensions`: `usize` |
 | `Llm` | Provider-hosted embedding model via liter-llm. Uses the model specified in the nested `LlmConfig` (e.g., `"openai/text-embedding-3-small"`). — Fields: `llm`: `LlmConfig` |
-| `Plugin` | In-process embedding backend registered via the plugin system. The caller registers an `EmbeddingBackend` once (e.g. a wrapper around an already-loaded `llama-cpp-python`, `sentence-transformers`, or tuned ONNX model), then references it by name in config. Kreuzberg calls back into the registered backend during chunking and standalone embed requests — no HuggingFace download, no ONNX Runtime requirement, no HTTP sidecar. When this variant is selected, only the following `EmbeddingConfig` fields apply: `normalize` (post-call L2 normalization) and `max_embed_duration_secs` (dispatcher timeout). Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. Semantic chunking falls back to `ChunkingConfig.max_characters` when this variant is used, since there is no preset to look a chunk-size ceiling up against — size your context window via `max_characters` directly. See `register_embedding_backend`. — Fields: `name`: `String` |
+| `Plugin` | In-process embedding backend registered via the plugin system. The caller registers an `EmbeddingBackend` once (e.g. a wrapper around an already-loaded `llama-cpp-python`, `sentence-transformers`, or tuned ONNX model), then references it by name in config. Kreuzberg calls back into the registered backend during chunking and standalone embed requests — no HuggingFace download, no ONNX Runtime requirement, no HTTP sidecar. When this variant is selected, only the following `EmbeddingConfig` fields apply: `normalize` (post-call L2 normalization) and `max_embed_duration_secs` (dispatcher timeout). Model-loading fields (`batch_size`, `cache_dir`, `show_download_progress`, `acceleration`) are ignored — the host owns the model lifecycle. Semantic chunking falls back to `ChunkingConfig::max_characters` when this variant is used, since there is no preset to look a chunk-size ceiling up against — size your context window via `max_characters` directly. See `register_embedding_backend`. — Fields: `name`: `String` |
 
 ---
 
@@ -7692,7 +7620,7 @@ Embedding model types supported by Kreuzberg.
 
 Reranker model types supported by Kreuzberg.
 
-Since v5.0.0.
+Since v5.0.
 
 | Value | Description |
 |-------|-------------|
@@ -7814,7 +7742,7 @@ Types of block-level elements in Djot.
 | Value | Description |
 |-------|-------------|
 | `Paragraph` | Standard prose paragraph. |
-| `Heading` | Section heading (level stored in `FormattedBlock.level`). |
+| `Heading` | Section heading (level stored in `FormattedBlock::level`). |
 | `Blockquote` | Block quotation container. |
 | `CodeBlock` | Fenced or indented code block. |
 | `ListItem` | Individual item within a list. |
@@ -7980,7 +7908,7 @@ How the extracted text was produced.
 
 Semantic structural classification of a text chunk.
 
-Assigned by the heuristic classifier in `chunking.classifier`.
+Assigned by the heuristic classifier in `chunking::classifier`.
 Defaults to `Unknown` when no rule matches.
 Designed to be extended in future versions without breaking changes.
 
@@ -8090,7 +8018,7 @@ type-safe, clean metadata without nested optionals.
 | `Epub` | Metadata extracted from an EPUB e-book. — Fields: `0`: `EpubMetadata` |
 | `Pst` | Metadata extracted from an Outlook PST archive. — Fields: `0`: `PstMetadata` |
 | `Audio` | Metadata extracted from an audio or video file. — Fields: `0`: `AudioMetadata` |
-| `Code` | Code (tree-sitter analyzable source). The structured analysis result is exposed via `ExtractionResult.code_intelligence`; this variant only tags the format. |
+| `Code` | Code (tree-sitter analyzable source). The structured analysis result is exposed via `ExtractionResult::code_intelligence`; this variant only tags the format. |
 
 ---
 
@@ -8221,7 +8149,7 @@ PII categories the pattern engine recognises.
 | `Person` | Person name, surfaced by the optional NER backend. |
 | `Organization` | Organization name, surfaced by the optional NER backend. |
 | `Location` | Location, surfaced by the optional NER backend. |
-| `Custom` | Caller-supplied custom category (e.g. internal employee IDs). Surfaced by the redaction engine when a hit comes from `RedactionConfig.custom_terms` or `RedactionConfig.custom_patterns`. The string is the label passed alongside the term/pattern. Use those fields rather than constructing `Custom` directly via the `categories` filter — the pattern engine cannot detect arbitrary text from a category name alone. — Fields: `0`: `String` |
+| `Custom` | Caller-supplied custom category (e.g. internal employee IDs). Surfaced by the redaction engine when a hit comes from `RedactionConfig::custom_terms` or `RedactionConfig::custom_patterns`. The string is the label passed alongside the term/pattern. Use those fields rather than constructing `Custom` directly via the `categories` filter — the pattern engine cannot detect arbitrary text from a category name alone. — Fields: `0`: `String` |
 
 ---
 
@@ -8229,9 +8157,9 @@ PII categories the pattern engine recognises.
 
 A single line in a unified-diff hunk.
 
-Defined here (rather than only in `crate.diff`) so `RevisionDelta` can
+Defined here (rather than only in `crate::diff`) so `RevisionDelta` can
 reference it unconditionally, without requiring the `diff` Cargo feature.
-`crate.diff` re-exports this type verbatim.
+`crate::diff` re-exports this type verbatim.
 
 | Value | Description |
 |-------|-------------|
@@ -8275,7 +8203,7 @@ Summarisation strategy.
 | Value | Description |
 |-------|-------------|
 | `Extractive` | Pure-Rust extractive summary (TextRank over the chunk graph). Deterministic, fast, no external service required. |
-| `Abstractive` | Abstractive summary produced by liter-llm. Requires `liter-llm` feature and a configured `LlmConfig`. Token usage is captured in `ExtractionResult.llm_usage`. |
+| `Abstractive` | Abstractive summary produced by liter-llm. Requires `liter-llm` feature and a configured `LlmConfig`. Token usage is captured in `ExtractionResult::llm_usage`. |
 
 ---
 
@@ -8307,7 +8235,7 @@ extraction provides a clear quality benefit over classical suppression.
 | `Figure` | A figure, diagram, chart, or image region. VLM prompt: describe the diagram / chart, including axis labels, legend entries, and any embedded text. |
 | `DenseTable` | A densely formatted or complex table that classical extraction garbles. VLM prompt: extract the table as GitHub-Flavoured Markdown. |
 | `ComplexLayout` | A region whose layout the classical pipeline cannot handle (multi-column insets, heavily annotated forms, mixed text+diagram). VLM prompt: extract all text and structure as markdown, preserving reading order. |
-| `Caption` | A standalone image to be captioned (not extracted as figure markdown). VLM prompt: produce a single-sentence alt-text-style caption suitable for accessibility tooling and downstream indexing. Used by the captioning post-processor to populate `ExtractedImage.caption`. |
+| `Caption` | A standalone image to be captioned (not extracted as figure markdown). VLM prompt: produce a single-sentence alt-text-style caption suitable for accessibility tooling and downstream indexing. Used by the captioning post-processor to populate `ExtractedImage::caption`. |
 
 ---
 
@@ -8439,7 +8367,7 @@ and provides context for debugging.
 | `LockPoisoned` | An internal `Mutex` or `RwLock` was found in a poisoned state. |
 | `UnsupportedFormat` | The document's MIME type is not supported by any registered extractor. |
 | `Embedding` | The embedding model or embedding pipeline returned an error. |
-| `Reranking` | The reranker model or reranking pipeline returned an error. Since v5.0.0. |
+| `Reranking` | The reranker model or reranking pipeline returned an error. Since v5.0. |
 | `Transcription` | Audio/video transcription failed. |
 | `Timeout` | The extraction operation exceeded the configured time limit. |
 | `Cancelled` | The extraction was cancelled via a `CancellationToken`. |

@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.25.18"
+alef_version = "0.25.20"
 languages = [
   "python",
   "node",
@@ -196,9 +196,23 @@ features = [
   "auto-rotate-types",
   "tokio-runtime",
   "api",
+  "api-types",
   "mcp",
   "liter-llm",
   "quality",
+  # Newer kreuzberg core features that are activated via `full` in the desktop
+  # dep block but must be re-declared as binding-crate passthroughs so that
+  # alef-emitted `#[cfg(feature = "X")]` arms in binding lib.rs don't trip
+  # `unexpected cfg condition value` under `-D warnings`.
+  "svg",
+  "transcription",
+  "transcription-types",
+  "classification",
+  "captioning",
+  "ner-onnx",
+  "ner-llm",
+  "diff",
+  "redaction",
 ]
 
 [crates.python]
@@ -291,6 +305,15 @@ exclude_types = [
 exclude_functions = [
   "calculate_quality_score",
   "embed_texts",
+  # ext-php-rs's `#[php_impl]` macro reads function signatures unconditionally
+  # — even when cfg-gated to a fallback-stub branch — and generates a class
+  # impl that references them. Alef emits these two fallback stubs with
+  # `not(feature = "embeddings"/"reranker")` gates, but the macro lookup
+  # still fires under default features and fails with E0599. Excluding the
+  # async variants keeps PHP at the sync surface (rerank, embed_texts via
+  # presets) until alef's PHP backend can suppress cfg-gated stub fns.
+  "embed_texts_async",
+  "rerank_async",
 ]
 
 # Windows: libheif is not installed on the `windows-latest` runner image, so
@@ -524,7 +547,56 @@ default_features = false
 pubspec_name = "kreuzberg"
 lib_name = "kreuzberg"
 style = "frb"
-features = ["full"]
+# `heic` is intentionally excluded from this list: libheif-sys cannot cross-compile
+# to Android NDK or iOS SDK targets, so `heic` must not appear in the crate-level
+# `[features] default`. Desktop builds still get heic because the
+# `cfg(not(android/ios/windows))` target dep uses `features = ["full"]` which
+# includes heic directly on the kreuzberg dependency side.
+features = [
+  "pdf",
+  "excel",
+  "office",
+  "hwp",
+  "hwpx",
+  "iwork",
+  "email",
+  "html",
+  "xml",
+  "archives",
+  "mdx",
+  "svg",
+  "language-detection",
+  "chunking",
+  "chunking-tokenizers",
+  "quality",
+  "keywords",
+  "diff",
+  "api",
+  "api-types",
+  "mcp",
+  "ocr",
+  "paddle-ocr",
+  "paddle-ocr-types",
+  "layout-detection",
+  "layout-types",
+  "embeddings",
+  "embedding-presets",
+  "reranker",
+  "reranker-presets",
+  "transcription-types",
+  "tree-sitter",
+  "liter-llm",
+  "tokio-runtime",
+  "ner-llm",
+  "ner-onnx",
+  "redaction",
+  "summarization",
+  "classification",
+  "captioning",
+  "qr-codes",
+  "auto-rotate-types",
+  "stopwords",
+]
 exclude_functions = [
   "calculate_quality_score",
   "embed_texts",
@@ -602,12 +674,76 @@ default_features = false
 [crates.swift]
 module_name = "Kreuzberg"
 package_name = "Kreuzberg"
-features = ["full"]
+# `heic` is intentionally excluded: libheif-sys cannot cross-compile to iOS SDK
+# or Android NDK targets. Desktop builds still get heic because the
+# `cfg(not(ios/android/windows))` target dep uses `features = ["full"]` which
+# includes heic directly on the kreuzberg dependency side.
+features = [
+  "pdf",
+  "excel",
+  "office",
+  "hwp",
+  "hwpx",
+  "iwork",
+  "email",
+  "html",
+  "xml",
+  "archives",
+  "mdx",
+  "svg",
+  "language-detection",
+  "chunking",
+  "chunking-tokenizers",
+  "quality",
+  "keywords",
+  "diff",
+  "api",
+  "api-types",
+  "mcp",
+  "ocr",
+  "paddle-ocr",
+  "paddle-ocr-types",
+  "layout-detection",
+  "layout-types",
+  "embeddings",
+  "embedding-presets",
+  "reranker",
+  "reranker-presets",
+  "transcription-types",
+  "tree-sitter",
+  "liter-llm",
+  "tokio-runtime",
+  "ner-llm",
+  "ner-onnx",
+  "redaction",
+  "summarization",
+  "classification",
+  "captioning",
+  "qr-codes",
+  "auto-rotate-types",
+  "stopwords",
+]
 exclude_types = [
   # Internal DTO type used by plugin trait-bridges; marshalled as JSON strings at FFI boundary
   "InternalDocument",
+  # alef 0.25.19 drops the `#[cfg(any(feature = "keywords-yake", feature = "keywords-rake"))]`
+  # extern blocks that declared `KeywordConfig`, `Keyword`, `YakeParams`, and `RakeParams`,
+  # but leaves the references to them in fields/getters intact. swift-bridge then fails to
+  # parse the bridge module with `UndeclaredType`. Exclude the types and their fields until
+  # the alef swift bridge type-collection is fixed.
+  "KeywordConfig",
+  "Keyword",
+  "YakeParams",
+  "RakeParams",
+  "KeywordAlgorithm",
 ]
-exclude_fields = ["ExtractionResult.ocr_internal_document", "OcrExtractionResult.internal_document"]
+exclude_fields = [
+  "ExtractionResult.ocr_internal_document",
+  "OcrExtractionResult.internal_document",
+  "ExtractionConfig.keywords",
+  "FileExtractionConfig.keywords",
+  "ExtractionResult.extracted_keywords",
+]
 exclude_functions = [
   "calculate_quality_score",
   "embed_texts",
@@ -616,6 +752,13 @@ exclude_functions = [
   "scan_text",
   # FFI-wrapped function whose RustString return is not properly converted
   "download_model",
+  # alef emits cfg-gated fallback stubs (`not(feature = "embeddings"/"reranker")`)
+  # that reference the real `kreuzberg::*_async` functions via super::, but the
+  # swift_bridge module's extern blocks still expose the symbols unconditionally
+  # — same wrinkle as PHP's php_impl macro. Drop the async variants until the
+  # alef swift backend can suppress cfg-gated stub fns.
+  "embed_texts_async",
+  "rerank_async",
 ]
 
 # iOS: libheif-sys + ORT do not cross-compile to the iOS SDK, so the
@@ -3833,7 +3976,7 @@ path = "../../packages/zig"
 # Placeholder until v5.0.0-rc.4 ships and the tarball SHA is known.
 # Update post-release with the real Zig multihash for
 # https://github.com/kreuzberg-dev/kreuzberg/releases/download/v{version}/kreuzberg-zig-v{version}.tar.gz
-hash = "kreuzberg-5.0.0-rc.17-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+hash = "kreuzberg-5.0.0-rc.18-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 
 # Point WASM e2e at the wasm-pack `nodejs` target. The default `pkg/` is the
 # bundler target whose JS glue uses `import * as foo from "env"` statements

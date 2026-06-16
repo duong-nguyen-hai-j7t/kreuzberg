@@ -28,7 +28,7 @@ Configuration for the VLM captioning post-processor.
 |-------|------|---------|-------------|
 | `llm` | `LlmConfig` | — | LLM configuration used for the VLM call. |
 | `prompt` | `str \| None` | `None` | Optional custom caption prompt. `None` uses the default `RegionKind.Caption` prompt that ships with `crate.llm.region_extractor`. |
-| `min_image_area` | `int` | `/* serde(default) */` | Skip images whose `width * height` is below this threshold (in pixels). Default `1_000` filters out icons and decorations. |
+| `min_image_area` | `int` | language default | Skip images whose `width * height` is below this threshold (in pixels). Default `1_000` filters out icons and decorations. |
 
 ---
 
@@ -40,7 +40,7 @@ Configuration for the page-classification post-processor.
 |-------|------|---------|-------------|
 | `prompt_template` | `str \| None` | `None` | Minijinja prompt template. Receives `{{ labels }}` (joined list), `{{ page_text }}` and `{{ multi_label }}` variables. `None` lets the backend pick a sensible default. |
 | `labels` | `list[str]` | — | The set of labels the classifier may emit. Must contain at least one entry. |
-| `multi_label` | `bool` | `/* serde(default) */` | Allow multiple labels per page. Single-label mode returns at most one label. |
+| `multi_label` | `bool` | language default | Allow multiple labels per page. Single-label mode returns at most one label. |
 | `llm` | `LlmConfig` | — | LLM configuration used for classification. |
 
 ---
@@ -100,7 +100,6 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `pages` | `PageConfig \| None` | `None` | Page extraction configuration (None = no page tracking) |
 | `keywords` | `KeywordConfig \| None` | `None` | Keyword extraction configuration (None = no keyword extraction) |
 | `postprocessor` | `PostProcessorConfig \| None` | `None` | Post-processor configuration (None = use defaults) |
-| `html_options` | `str \| None` | `None` | HTML to Markdown conversion options (None = use defaults) Configure how HTML documents are converted to Markdown, including heading styles, list formatting, code block styles, and preprocessing options. |
 | `html_output` | `HtmlOutputConfig \| None` | `None` | Styled HTML output configuration. When set alongside `output_format = OutputFormat.Html`, the extraction pipeline uses `StyledHtmlRenderer` which emits stable `kb-*` CSS class hooks on every structural element and optionally embeds theme CSS or user-supplied CSS in a `<style>` block. When `None`, the existing plain comrak-based HTML renderer is used. |
 | `extraction_timeout_secs` | `int \| None` | `None` | Default per-file timeout in seconds for batch extraction. When set, each file in a batch will be canceled after this duration unless overridden by `FileExtractionConfig.timeout_secs`. Defaults to `Some(60)` to prevent pathological files (e.g. deeply nested archives, documents with millions of cells) from running indefinitely and exhausting caller resources. Set to `None` to disable the timeout for trusted input or long-running workloads. |
 | `max_concurrent_extractions` | `int \| None` | `None` | Maximum concurrent extractions in batch operations (None = (num_cpus × 1.5).ceil()). Limits parallelism to prevent resource exhaustion when processing large batches. Defaults to (num_cpus × 1.5).ceil() when not set. |
@@ -109,13 +108,13 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `max_embedded_file_bytes` | `int \| None` | `None` | Maximum uncompressed size in bytes for a single embedded file before recursive extraction is attempted (default: 50 MiB). Applies to embedded objects inside OOXML containers (DOCX, PPTX) and to email attachments processed via recursive extraction. Files that exceed this limit are skipped with a `ProcessingWarning` rather than passed to the extraction pipeline, preventing a single oversized embedded object from consuming unbounded memory or time. Set to `None` to disable the per-embedded-file cap (falls back to `security_limits.max_archive_size` as the only guard). |
 | `output_format` | `OutputFormat` | `OutputFormat.PLAIN` | Content text format (default: Plain). Controls the format of the extracted content: - `Plain`: Raw extracted text (default) - `Markdown`: Markdown formatted output - `Djot`: Djot markup format (requires djot feature) - `Html`: HTML formatted output When set to a structured format, extraction results will include formatted output. The `formatted_content` field may be populated when format conversion is applied. |
 | `layout` | `LayoutDetectionConfig \| None` | `None` | Layout detection configuration (None = layout detection disabled). When set, PDF pages and images are analyzed for document structure (headings, code, formulas, tables, figures, etc.) using RT-DETR models via ONNX Runtime. For PDFs, layout hints override paragraph classification in the markdown pipeline. For images, per-region OCR is performed with markdown formatting based on detected layout classes. Requires the `layout-detection` feature to run inference; the field is present whenever the `layout-types` feature is active (which includes `layout-detection` as well as the no-ORT target groups). |
+| `transcription` | `TranscriptionConfig \| None` | `None` | Transcription (speech-to-text) configuration for audio/video files. When set and `enabled`, files with audio/video MIME types (mp3, mp4, m4a, wav, webm, etc.) are routed to the Whisper-based transcription pipeline. The actual heavy dependencies are only active under the `transcription` feature; the field is visible under `transcription-types` (including on WASM and Android targets that use the no-ORT preset). Default: `None` (transcription disabled). This is an additive, non-breaking change. |
 | `use_layout_for_markdown` | `bool` | `False` | Run layout detection on the non-OCR PDF markdown path. When `True` and `layout` is `Some(_)`, layout regions inform heading, table, list, and figure detection in the structure pipeline that would otherwise rely on font-clustering heuristics alone. Significantly improves SF1 (structural F1) at the cost of inference latency (~150-300ms/page CPU, ~20-50ms/page GPU). Default: `False`. Requires the `layout-detection` feature. |
 | `include_document_structure` | `bool` | `False` | Enable structured document tree output. When true, populates the `document` field on `ExtractionResult` with a hierarchical `DocumentStructure` containing heading-driven section nesting, table grids, content layer classification, and inline annotations. Independent of `result_format` — can be combined with Unified or ElementBased. |
 | `acceleration` | `AccelerationConfig \| None` | `None` | Hardware acceleration configuration for ONNX Runtime models. Controls execution provider selection for layout detection and embedding models. When `None`, uses platform defaults (CoreML on macOS, CUDA on Linux, CPU on Windows). |
 | `cache_namespace` | `str \| None` | `None` | Cache namespace for tenant isolation. When set, cache entries are stored under `{cache_dir}/{namespace}/`. Must be alphanumeric, hyphens, or underscores only (max 64 chars). Different namespaces have isolated cache spaces on the same filesystem. |
 | `cache_ttl_secs` | `int \| None` | `None` | Per-request cache TTL in seconds. Overrides the global `max_age_days` for this specific extraction. When `0`, caching is completely skipped (no read or write). When `None`, the global TTL applies. |
 | `email` | `EmailConfig \| None` | `None` | Email extraction configuration (None = use defaults). Currently supports configuring the fallback codepage for MSG files that do not specify one. See `EmailConfig` for details. |
-| `concurrency` | `str \| None` | `None` | Concurrency limits for constrained environments (None = use defaults). Controls Rayon thread pool size, ONNX Runtime intra-op threads, and (when `max_concurrent_extractions` is unset) the batch concurrency semaphore. See `ConcurrencyConfig` for details. |
 | `max_archive_depth` | `int` | — | Maximum recursion depth for archive extraction (default: 3). Set to 0 to disable recursive extraction (legacy behavior). |
 | `tree_sitter` | `TreeSitterConfig \| None` | `None` | Tree-sitter language pack configuration (None = tree-sitter disabled). When set, enables code file extraction using tree-sitter parsers. Controls grammar download behavior and code analysis options. |
 | `structured_extraction` | `StructuredExtractionConfig \| None` | `None` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult.structured_output`. |
@@ -126,7 +125,6 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `page_classification` | `PageClassificationConfig \| None` | `None` | Per-page classification configuration. When set, the classification post-processor runs at the Middle stage and populates `ExtractionResult.page_classifications`. |
 | `captioning` | `CaptioningConfig \| None` | `None` | VLM captioning configuration for extracted images. When set, the captioning post-processor runs at the Middle stage and writes a caption into each `ExtractedImage.caption`. |
 | `qr_codes` | `bool \| None` | `None` | Enable QR-code detection in extracted images. When `True`, the QR post-processor runs at the Middle stage and populates `ExtractedImage.qr_codes`. |
-| `cancel_token` | `str \| None` | `None` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call its `cancel()` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
 
 ---
 
@@ -165,11 +163,11 @@ cannot be overridden per file:
 | `pages` | `PageConfig \| None` | `None` | Override page extraction for this file. |
 | `keywords` | `KeywordConfig \| None` | `None` | Override keyword extraction for this file. |
 | `postprocessor` | `PostProcessorConfig \| None` | `None` | Override post-processor for this file. |
-| `html_options` | `str \| None` | `None` | Override HTML conversion options for this file. |
 | `result_format` | `ResultFormat \| None` | `None` | Override result format for this file. |
 | `output_format` | `OutputFormat \| None` | `None` | Override output content format for this file. |
 | `include_document_structure` | `bool \| None` | `None` | Override document structure output for this file. |
 | `layout` | `LayoutDetectionConfig \| None` | `None` | Override layout detection for this file. |
+| `transcription` | `TranscriptionConfig \| None` | `None` | Transcription configuration (see ExtractionConfig for docs). |
 | `timeout_secs` | `int \| None` | `None` | Override per-file extraction timeout in seconds. When set, the extraction for this file will be canceled after the specified duration. A timed-out file produces an error result without affecting other files in the batch. |
 | `tree_sitter` | `TreeSitterConfig \| None` | `None` | Override tree-sitter configuration for this file. |
 | `structured_extraction` | `StructuredExtractionConfig \| None` | `None` | Override structured extraction configuration for this file. When set, enables LLM-based structured extraction with a JSON schema for this specific file. The extracted content is sent to a VLM/LLM and the response is parsed according to the provided schema. |
@@ -212,6 +210,7 @@ Image extraction configuration.
 | `ocr_text_only` | `bool` | `False` | When `True`, image OCR results are rendered as plain text without the `![...](...)` markdown placeholder. Only takes effect when `run_ocr_on_images` is also `True`. |
 | `append_ocr_text` | `bool` | `False` | When `True` and `ocr_text_only` is `False`, append the OCR text after the image placeholder in the rendered output. |
 | `output_format` | `ImageOutputFormat` | `ImageOutputFormat.NATIVE` | Target format for re-encoding extracted images. When set to anything other than `Native`, each extracted image is re-encoded to the requested format before being returned. This lets callers receive uniform output without duplicating encode logic downstream. Defaults to `Native` — no re-encode pass is performed and `ExtractedImage.format` reflects the source extractor's output. |
+| `svg` | `SvgOptions` | — | SVG-specific knobs for the image-encode pipeline. Controls sanitization and rasterization DPI when the source or output format is SVG.  Only available when the `svg` feature is active. |
 
 ---
 
@@ -303,10 +302,10 @@ returning structured data that conforms to the schema.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `schema` | `dict[str, Any]` | — | JSON Schema defining the desired output structure. |
-| `schema_name` | `str` | `/* serde(default) */` | Schema name passed to the LLM's structured output mode. |
-| `schema_description` | `str \| None` | `/* serde(default) */` | Optional schema description for the LLM. |
-| `strict` | `bool` | `/* serde(default) */` | Enable strict mode — output must exactly match the schema. |
-| `prompt` | `str \| None` | `/* serde(default) */` | Custom Jinja2 extraction prompt template. When `None`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
+| `schema_name` | `str` | language default | Schema name passed to the LLM's structured output mode. |
+| `schema_description` | `str \| None` | language default | Optional schema description for the LLM. |
+| `strict` | `bool` | language default | Enable strict mode — output must exactly match the schema. |
+| `prompt` | `str \| None` | language default | Custom Jinja2 extraction prompt template. When `None`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
 | `llm` | `LlmConfig` | — | LLM configuration for the extraction. |
 
 ---
@@ -364,7 +363,7 @@ the result is accepted. Otherwise the next backend is tried.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `stages` | `list[OcrPipelineStage]` | — | Ordered list of backends to try. Sorted by priority (descending) at runtime. |
-| `quality_thresholds` | `OcrQualityThresholds` | `/* serde(default) */` | Quality thresholds for deciding whether to accept a result or try the next backend. |
+| `quality_thresholds` | `OcrQualityThresholds` | language default | Quality thresholds for deciding whether to accept a result or try the next backend. |
 
 ---
 
@@ -525,7 +524,7 @@ Configuration for the reranking pipeline.
 Controls which model to use, how many results to return, and download/cache
 behavior for local ONNX models.
 
-Since v5.0.0.
+Since v5.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -594,7 +593,7 @@ Configuration for the translation post-processor.
 |-------|------|---------|-------------|
 | `target_lang` | `str` | — | BCP-47 language tag for the target language (e.g. `"de"`, `"fr-CA"`). |
 | `source_lang` | `str \| None` | `None` | Optional explicit source language. `None` asks the backend to auto-detect. |
-| `preserve_markup` | `bool` | `/* serde(default) */` | Translate the formatted (Markdown/HTML) rendition alongside plain text when `formatted_content` is present. |
+| `preserve_markup` | `bool` | language default | Translate the formatted (Markdown/HTML) rendition alongside plain text when `formatted_content` is present. |
 | `llm` | `LlmConfig` | — | LLM configuration used for translation. |
 
 ---
@@ -659,7 +658,7 @@ including host/port settings, CORS configuration, and upload limits.
 
 - `host`: "127.0.0.1" (localhost only)
 - `port`: 8000
-- `cors_origins`: empty vector (allows all origins)
+- `cors_origins`: empty listtor (allows all origins)
 - `max_request_body_bytes`: 104_857_600 (100 MB)
 - `max_multipart_field_bytes`: 104_857_600 (100 MB)
 
@@ -667,7 +666,7 @@ including host/port settings, CORS configuration, and upload limits.
 |-------|------|---------|-------------|
 | `host` | `str` | — | Server host address (e.g., "127.0.0.1", "0.0.0.0") |
 | `port` | `int` | — | Server port number |
-| `cors_origins` | `list[str]` | `[]` | CORS allowed origins. Empty vector means allow all origins. If this is an empty vector, the server will accept requests from any origin. If populated with specific origins (e.g., `"<https://example.com"`>), only those origins will be allowed. |
+| `cors_origins` | `list[str]` | `[]` | CORS allowed origins. Empty vector means allow all origins. If this is an empty listtor, the server will accept requests from any origin. If populated with specific origins (e.g., `"<https://example.com"`>), only those origins will be allowed. |
 | `max_request_body_bytes` | `int` | — | Maximum size of request body in bytes (default: 100 MB) |
 | `max_multipart_field_bytes` | `int` | — | Maximum size of multipart fields in bytes (default: 100 MB) |
 
@@ -887,7 +886,6 @@ This is the main result type returned by all extraction functions.
 | `page_classifications` | `list[PageClassification] \| None` | `[]` | Per-page classifications produced by the page-classification post-processor. `None` when classification is not configured. |
 | `redaction_report` | `RedactionReport \| None` | `None` | Audit report of redactions applied by the redaction post-processor. The redaction processor rewrites `content`, `formatted_content`, every chunk's text, and the textual fields of `entities` / `summary` / `translation` / `page_classifications` in place. This report describes what was found and how it was replaced. `None` when redaction is not configured. |
 | `formatted_content` | `str \| None` | `None` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
-| `ocr_internal_document` | `str \| None` | `None` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
 
 ---
 
@@ -938,7 +936,7 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `kind_confidence` | `float \| None` | `None` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
 | `cluster_id` | `int \| None` | `None` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `None` for singletons. |
 | `caption` | `str \| None` | `None` | VLM-generated caption describing the image, when captioning is configured. Populated by the captioning post-processor (`crates/kreuzberg/src/plugins/processor/builtin/captioning.rs`), which routes each image through `crate.llm.region_extractor.extract_region_with_vlm` in caption mode. `None` when captioning is disabled or the VLM declined to caption. |
-| `qr_codes` | `list[QrCode] \| None` | `[]` | QR codes decoded from this image, when QR detection is enabled. Populated by the QR post-processor (`crates/kreuzberg/src/extractors/qr.rs`) via the pure-Rust `rqrr` decoder. `None` when QR detection is disabled; an empty `Some(vec![])` when detection ran but found nothing. |
+| `qr_codes` | `list[QrCode] \| None` | `[]` | QR codes decoded from this image, when QR detection is enabled. Populated by the QR post-processor (`crates/kreuzberg/src/extractors/qr.rs`) via the pure-Rust `rqrr` decoder. `None` when QR detection is disabled; an empty `Some([])` when detection ran but found nothing. |
 
 ---
 
@@ -1132,8 +1130,6 @@ for Markdown, structural elements like headers and links.
 | `word_count` | `int` | — | Number of words |
 | `character_count` | `int` | — | Number of characters |
 | `headers` | `list[str] \| None` | `[]` | Markdown headers (headings text only, for Markdown files) |
-| `links` | `list[list[str]] \| None` | `[]` | Markdown links as (text, url) tuples (for Markdown files) |
-| `code_blocks` | `list[list[str]] \| None` | `[]` | Code blocks as (language, code) tuples (for Markdown files) |
 
 ---
 
@@ -1489,7 +1485,6 @@ Keyword extraction configuration.
 | `algorithm` | `KeywordAlgorithm` | `KeywordAlgorithm.YAKE` | Algorithm to use for extraction. |
 | `max_keywords` | `int` | `10` | Maximum number of keywords to extract (default: 10). |
 | `min_score` | `float` | `0` | Minimum score threshold (0.0-1.0, default: 0.0). Keywords with scores below this threshold are filtered out. Note: Score ranges differ between algorithms. |
-| `ngram_range` | `list[int]` | `[]` | N-gram range for keyword extraction (min, max). (1, 1) = unigrams only (1, 2) = unigrams and bigrams (1, 3) = unigrams, bigrams, and trigrams (default) |
 | `language` | `str \| None` | `None` | Language code for stopword filtering (e.g., "en", "de", "fr"). If None, no stopword filtering is applied. |
 | `yake_params` | `YakeParams \| None` | `None` | YAKE-specific tuning parameters. |
 | `rake_params` | `RakeParams \| None` | `None` | RAKE-specific tuning parameters. |
@@ -1800,7 +1795,7 @@ Uses a tagged enum: `{"type": "native"}`, `{"type": "png"}`,
 | `Jpeg` | `jpeg` | Re-encode all extracted images as JPEG at the given quality level. `quality` must be in `1..=100`. Values outside this range are clamped and a warning is emitted. Higher values produce larger files with less artefacting; 85 is a reasonable default. — Fields: `quality`: `u8` |
 | `Webp` | `webp` | Re-encode all extracted images as WebP at the given quality level. `quality` must be in `1..=100`. Values outside this range are clamped and a warning is emitted. 80 is a reasonable default. — Fields: `quality`: `u8` |
 | `Heif` | `heif` | Re-encode all extracted images as HEIF/HEIC at the given quality level. Requires the `heic` feature. `quality` must be in `1..=100`. Values outside this range are clamped and a warning is emitted. 80 is a reasonable default. — Fields: `quality`: `u8` |
-| `Svg` | `svg` | Output pure-vector SVG. Lossless. Raster sources are not re-encoded (a warning is emitted and the image bytes are left untouched). When the source is already SVG, the bytes are passed through the `usvg` sanitizer (strips external hrefs, JS event handlers, and `foreignObject` elements) when `SvgOptions.sanitize` is `true`. Requires the `svg` feature. |
+| `Svg` | `svg` | Output pure-vector SVG. Lossless. Raster sources are not re-encoded (a warning is emitted and the image bytes are left untouched). When the source is already SVG, the bytes are passed through the `usvg` sanitizer (strips external hrefs, JS event handlers, and `foreignObject` elements) when `SvgOptions.sanitize` is `True`. Requires the `svg` feature. |
 
 ---
 
@@ -1836,7 +1831,7 @@ Supports both axis-aligned rectangles (from Tesseract) and 4-point quadrilateral
 | Variant | Wire value | Description |
 |---------|------------|-------------|
 | `Rectangle` | `rectangle` | Axis-aligned bounding box (typical for Tesseract output). — Fields: `left`: `u32`, `top`: `u32`, `width`: `u32`, `height`: `u32` |
-| `Quadrilateral` | `quadrilateral` | 4-point quadrilateral for rotated/skewed text (PaddleOCR). Points are in clockwise order starting from top-left: `[top_left, top_right, bottom_right, bottom_left]` — Fields: `points`: `String` |
+| `Quadrilateral` | `quadrilateral` | 4-point quadrilateral for rotated/skewed text (PaddleOCR). Points are in clockwise order starting from top-left: `[top_left, top_right, bottom_right, bottom_left]` |
 
 ---
 
@@ -1931,7 +1926,7 @@ Intensity level for the token-reduction pipeline.
 
 Reranker model types supported by Kreuzberg.
 
-Since v5.0.0.
+Since v5.0.
 
 | Variant | Wire value | Description |
 |---------|------------|-------------|

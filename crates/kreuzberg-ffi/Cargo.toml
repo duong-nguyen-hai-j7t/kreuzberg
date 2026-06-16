@@ -1,6 +1,6 @@
 [package]
 name = "kreuzberg-ffi"
-version = "5.0.0-rc.17"
+version = "5.0.0-rc.18"
 edition = "2021"
 license = "Elastic-2.0"
 description = "High-performance document intelligence library"
@@ -24,7 +24,7 @@ ignored = ["ahash", "serde_json", "tokio", "async-trait"]
 crate-type = ["cdylib", "staticlib", "rlib"]
 
 [features]
-default = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "reranker", "reranker-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "mcp", "liter-llm", "quality"]
+default = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "reranker", "reranker-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "api-types", "mcp", "liter-llm", "quality", "svg", "transcription", "transcription-types", "classification", "captioning", "ner-onnx", "ner-llm", "diff", "redaction"]
 full = ["kreuzberg/full"]
 pdf = ["kreuzberg/pdf"]
 ocr = ["kreuzberg/ocr"]
@@ -50,6 +50,7 @@ auto-rotate = ["kreuzberg/auto-rotate"]
 auto-rotate-types = ["kreuzberg/auto-rotate-types"]
 tokio-runtime = ["kreuzberg/tokio-runtime"]
 api = ["kreuzberg/api"]
+api-types = ["kreuzberg/api-types"]
 mcp = ["kreuzberg/mcp"]
 liter-llm = ["kreuzberg/liter-llm"]
 quality = ["kreuzberg/quality"]
@@ -62,7 +63,6 @@ ner-onnx = ["kreuzberg/ner-onnx"]
 ner-llm = ["kreuzberg/ner-llm"]
 diff = ["kreuzberg/diff"]
 redaction = ["kreuzberg/redaction"]
-api-types = ["kreuzberg/api-types"]
 
 [dependencies]
 ahash = "0.8"
@@ -71,16 +71,16 @@ serde_json = "1"
 tokio = { version = "1", features = ["full"] }
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios", target_os = "windows")))'.dependencies]
-kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.17", features = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "reranker", "reranker-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "mcp", "liter-llm", "quality"] }
+kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.18", features = ["full", "pdf", "ocr", "paddle-ocr", "paddle-ocr-types", "layout-detection", "layout-types", "embeddings", "embedding-presets", "reranker", "reranker-presets", "chunking", "keywords-yake", "keywords-rake", "language-detection", "html", "tree-sitter", "office", "email", "archives", "stopwords", "auto-rotate", "auto-rotate-types", "tokio-runtime", "api", "api-types", "mcp", "liter-llm", "quality", "svg", "transcription", "transcription-types", "classification", "captioning", "ner-onnx", "ner-llm", "diff", "redaction"] }
 
 [target.'cfg(target_os = "android")'.dependencies]
-kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.17", features = ["android-target"] }
+kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.18", features = ["android-target"] }
 
 [target.'cfg(target_os = "ios")'.dependencies]
-kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.17", features = ["android-target"] }
+kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.18", features = ["android-target"] }
 
 [target.'cfg(target_os = "windows")'.dependencies]
-kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.17", features = ["windows-target"] }
+kreuzberg = { path = "../kreuzberg", version = "5.0.0-rc.18", features = ["windows-target"] }
 
 
 [build-dependencies]

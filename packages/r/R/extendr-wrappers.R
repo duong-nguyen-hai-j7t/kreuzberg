@@ -799,6 +799,7 @@ EmailConfig$from_json <- function(json) {
 #' @field max_embedded_file_bytes Maximum uncompressed size in bytes for a single embedded file before recursive
 #' @field output_format Content text format (default: Plain).
 #' @field layout Layout detection configuration (None = layout detection disabled).
+#' @field transcription Transcription (speech-to-text) configuration for audio/video files.
 #' @field use_layout_for_markdown Run layout detection on the non-OCR PDF markdown path.
 #' @field include_document_structure Enable structured document tree output.
 #' @field acceleration Hardware acceleration configuration for ONNX Runtime models.
@@ -871,6 +872,7 @@ needs_image_processing.ExtractionConfig <- function(x, ...) x$needs_image_proces
 #' @field output_format Override output content format for this file.
 #' @field include_document_structure Override document structure output for this file.
 #' @field layout Override layout detection for this file.
+#' @field transcription Transcription configuration (see ExtractionConfig for docs).
 #' @field timeout_secs Override per-file extraction timeout in seconds.
 #' @field tree_sitter Override tree-sitter configuration for this file.
 #' @field structured_extraction Override structured extraction configuration for this file.
@@ -969,6 +971,7 @@ BatchFileItem <- new.env(parent = emptyenv())
 #' @field ocr_text_only When `true`, image OCR results are rendered as plain text without the `![...](...)` markdown
 #' @field append_ocr_text When `true` and `ocr_text_only` is `false`, append the OCR text after the image placeholder
 #' @field output_format Target format for re-encoding extracted images.
+#' @field svg SVG-specific knobs for the image-encode pipeline.
 #' @export
 ImageExtractionConfig <- new.env(parent = emptyenv())
 ImageExtractionConfig$default <- function() .Call("wrap__ImageExtractionConfig__default", PACKAGE = "kreuzberg")

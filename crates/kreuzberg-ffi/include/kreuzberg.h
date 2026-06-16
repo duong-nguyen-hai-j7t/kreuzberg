@@ -3272,6 +3272,13 @@ KREUZBERGOutputFormat *kreuzberg_extraction_config_output_format(const KREUZBERG
 KREUZBERGLayoutDetectionConfig *kreuzberg_extraction_config_layout(const KREUZBERGExtractionConfig *ptr);
 
 /**
+ * Get the `transcription` field from a `ExtractionConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+KREUZBERGTranscriptionConfig *kreuzberg_extraction_config_transcription(const KREUZBERGExtractionConfig *ptr);
+
+/**
  * Get the `use_layout_for_markdown` field from a `ExtractionConfig`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
@@ -3574,6 +3581,13 @@ int32_t kreuzberg_file_extraction_config_include_document_structure(const KREUZB
 KREUZBERGLayoutDetectionConfig *kreuzberg_file_extraction_config_layout(const KREUZBERGFileExtractionConfig *ptr);
 
 /**
+ * Get the `transcription` field from a `FileExtractionConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+KREUZBERGTranscriptionConfig *kreuzberg_file_extraction_config_transcription(const KREUZBERGFileExtractionConfig *ptr);
+
+/**
  * Get the `timeout_secs` field from a `FileExtractionConfig`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
@@ -3839,6 +3853,13 @@ int32_t kreuzberg_image_extraction_config_append_ocr_text(const KREUZBERGImageEx
  * Pointer must be a valid handle returned by this library.
  */
 KREUZBERGImageOutputFormat *kreuzberg_image_extraction_config_output_format(const KREUZBERGImageExtractionConfig *ptr);
+
+/**
+ * Get the `svg` field from a `ImageExtractionConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+KREUZBERGSvgOptions *kreuzberg_image_extraction_config_svg(const KREUZBERGImageExtractionConfig *ptr);
 
 /**
  * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be

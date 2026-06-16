@@ -70,6 +70,63 @@ public func translateResult(_ result: ExtractionResult, _ config: TranslationCon
 public func detectMimeType<GenericIntoRustString: IntoRustString>(_ path: GenericIntoRustString, _ check_exists: Bool) throws -> RustString {
     try { let val = __swift_bridge__$detect_mime_type({ let rustString = path.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), check_exists); if val.is_ok { return RustString(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
+public func captionImage<GenericIntoRustString: IntoRustString>(_ image_bytes: RustVec<UInt8>, _ llm_config: LlmConfig, _ custom_prompt: Optional<GenericIntoRustString>) throws -> RustString {
+    try { let val = __swift_bridge__$caption_image({ let val = image_bytes; val.isOwned = false; return val.ptr }(), {llm_config.isOwned = false; return llm_config.ptr;}(), { if let rustString = optionalStringIntoRustString(custom_prompt) { rustString.isOwned = false; return rustString.ptr } else { return nil } }()); if val.is_ok { return RustString(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func captionImageFile<GenericIntoRustString: IntoRustString>(_ path: GenericIntoRustString, _ llm_config: LlmConfig, _ custom_prompt: Optional<GenericIntoRustString>) throws -> RustString {
+    try { let val = __swift_bridge__$caption_image_file({ let rustString = path.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), {llm_config.isOwned = false; return llm_config.ptr;}(), { if let rustString = optionalStringIntoRustString(custom_prompt) { rustString.isOwned = false; return rustString.ptr } else { return nil } }()); if val.is_ok { return RustString(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func extractRegionWithVlm<GenericIntoRustString: IntoRustString>(_ image_bytes: RustVec<UInt8>, _ image_mime: GenericIntoRustString, _ region_kind: GenericIntoRustString, _ llm_config: LlmConfig, _ custom_prompt: Optional<GenericIntoRustString>) throws -> RustString {
+    try { let val = __swift_bridge__$extract_region_with_vlm({ let val = image_bytes; val.isOwned = false; return val.ptr }(), { let rustString = image_mime.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { let rustString = region_kind.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), {llm_config.isOwned = false; return llm_config.ptr;}(), { if let rustString = optionalStringIntoRustString(custom_prompt) { rustString.isOwned = false; return rustString.ptr } else { return nil } }()); if val.is_ok { return RustString(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func classifyDocument<GenericIntoRustString: IntoRustString>(_ pages: RustVec<GenericIntoRustString>, _ config: PageClassificationConfig) throws -> RustVec<ClassificationLabel> {
+    try { let val = __swift_bridge__$classify_document({ let val = pages; val.isOwned = false; return val.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func compare(_ a: ExtractionResult, _ b: ExtractionResult, _ opts: DiffOptions) -> ExtractionDiff {
+    ExtractionDiff(ptr: __swift_bridge__$compare({a.isOwned = false; return a.ptr;}(), {b.isOwned = false; return b.ptr;}(), {opts.isOwned = false; return opts.ptr;}()))
+}
+public func getEmbeddingPreset<GenericIntoRustString: IntoRustString>(_ name: GenericIntoRustString) -> Optional<EmbeddingPreset> {
+    { let val = __swift_bridge__$get_embedding_preset({ let rustString = name.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val != nil { return EmbeddingPreset(ptr: val!) } else { return nil } }()
+}
+public func listEmbeddingPresets() -> RustVec<RustString> {
+    RustVec(ptr: __swift_bridge__$list_embedding_presets())
+}
+public func defaultModelName() -> RustString {
+    RustString(ptr: __swift_bridge__$default_model_name())
+}
+public func knownModels() -> RustVec<RustString> {
+    RustVec(ptr: __swift_bridge__$known_models())
+}
+public func renderPdfPageToPng<GenericIntoRustString: IntoRustString>(_ pdf_bytes: RustVec<UInt8>, _ page_index: UInt, _ dpi: Optional<Int32>, _ password: Optional<GenericIntoRustString>) throws -> RustVec<UInt8> {
+    try { let val = __swift_bridge__$render_pdf_page_to_png({ let val = pdf_bytes; val.isOwned = false; return val.ptr }(), page_index, dpi.intoFfiRepr(), { if let rustString = optionalStringIntoRustString(password) { rustString.isOwned = false; return rustString.ptr } else { return nil } }()); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func rerank<GenericIntoRustString: IntoRustString>(_ query: GenericIntoRustString, _ documents: RustVec<GenericIntoRustString>, _ config: RerankerConfig) throws -> RustVec<RerankedDocument> {
+    try { let val = __swift_bridge__$rerank({ let rustString = query.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { let val = documents; val.isOwned = false; return val.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func getRerankerPreset<GenericIntoRustString: IntoRustString>(_ name: GenericIntoRustString) -> Optional<RerankerPreset> {
+    { let val = __swift_bridge__$get_reranker_preset({ let rustString = name.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val != nil { return RerankerPreset(ptr: val!) } else { return nil } }()
+}
+public func listRerankerPresets() -> RustVec<RustString> {
+    RustVec(ptr: __swift_bridge__$list_reranker_presets())
+}
+public func extractFileSync<GenericIntoRustString: IntoRustString>(_ path: GenericIntoRustString, _ mime_type: Optional<GenericIntoRustString>, _ config: ExtractionConfig) throws -> ExtractionResult {
+    try { let val = __swift_bridge__$extract_file_sync({ let rustString = path.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { if let rustString = optionalStringIntoRustString(mime_type) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return ExtractionResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func extractBytesSync<GenericIntoRustString: IntoRustString>(_ content: RustVec<UInt8>, _ mime_type: GenericIntoRustString, _ config: ExtractionConfig) throws -> ExtractionResult {
+    try { let val = __swift_bridge__$extract_bytes_sync({ let val = content; val.isOwned = false; return val.ptr }(), { let rustString = mime_type.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return ExtractionResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func batchExtractFilesSync(_ items: RustVec<BatchFileItem>, _ config: ExtractionConfig) throws -> RustVec<ExtractionResult> {
+    try { let val = __swift_bridge__$batch_extract_files_sync({ let val = items; val.isOwned = false; return val.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func batchExtractBytesSync(_ items: RustVec<BatchBytesItem>, _ config: ExtractionConfig) throws -> RustVec<ExtractionResult> {
+    try { let val = __swift_bridge__$batch_extract_bytes_sync({ let val = items; val.isOwned = false; return val.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func batchExtractFiles(_ items: RustVec<BatchFileItem>, _ config: ExtractionConfig) throws -> RustVec<ExtractionResult> {
+    try { let val = __swift_bridge__$batch_extract_files({ let val = items; val.isOwned = false; return val.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func batchExtractBytes(_ items: RustVec<BatchBytesItem>, _ config: ExtractionConfig) throws -> RustVec<ExtractionResult> {
+    try { let val = __swift_bridge__$batch_extract_bytes({ let val = items; val.isOwned = false; return val.ptr }(), {config.isOwned = false; return config.ptr;}()); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
 public func alef_phantom_vec_ocr_backend() -> RustVec<OcrBackendBox> {
     RustVec(ptr: __swift_bridge__$alef_phantom_vec_ocr_backend())
 }
@@ -473,9 +530,6 @@ public func llmConfigFromJson<GenericIntoRustString: IntoRustString>(_ json: Gen
 public func ocrConfigFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> OcrConfig {
     try { let val = __swift_bridge__$ocr_config_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return OcrConfig(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
-public func embeddingConfigFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> EmbeddingConfig {
-    try { let val = __swift_bridge__$embedding_config_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return EmbeddingConfig(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
 public func redactionConfigFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> RedactionConfig {
     try { let val = __swift_bridge__$redaction_config_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return RedactionConfig(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
@@ -493,9 +547,6 @@ public func ocrExtractionResultFromJson<GenericIntoRustString: IntoRustString>(_
 }
 public func diffOptionsFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> DiffOptions {
     try { let val = __swift_bridge__$diff_options_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return DiffOptions(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
-public func keywordConfigFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> KeywordConfig {
-    try { let val = __swift_bridge__$keyword_config_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return KeywordConfig(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
 public func cacheStatsFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> CacheStats {
     try { let val = __swift_bridge__$cache_stats_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return CacheStats(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
@@ -562,6 +613,9 @@ public func postProcessorConfigFromJson<GenericIntoRustString: IntoRustString>(_
 }
 public func chunkingConfigFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> ChunkingConfig {
     try { let val = __swift_bridge__$chunking_config_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return ChunkingConfig(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func embeddingConfigFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> EmbeddingConfig {
+    try { let val = __swift_bridge__$embedding_config_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return EmbeddingConfig(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
 public func redactionTermFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> RedactionTerm {
     try { let val = __swift_bridge__$redaction_term_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return RedactionTerm(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
@@ -908,15 +962,6 @@ public func rerankedDocumentFromJson<GenericIntoRustString: IntoRustString>(_ js
 public func rerankerPresetFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> RerankerPreset {
     try { let val = __swift_bridge__$reranker_preset_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return RerankerPreset(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
-public func yakeParamsFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> YakeParams {
-    try { let val = __swift_bridge__$yake_params_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return YakeParams(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
-public func rakeParamsFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> RakeParams {
-    try { let val = __swift_bridge__$rake_params_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return RakeParams(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
-public func keywordFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> Keyword {
-    try { let val = __swift_bridge__$keyword_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return Keyword(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
 public func paddleOcrConfigFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> PaddleOcrConfig {
     try { let val = __swift_bridge__$paddle_ocr_config_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return PaddleOcrConfig(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
@@ -1079,9 +1124,6 @@ public func uriKindFromJson<GenericIntoRustString: IntoRustString>(_ json: Gener
 public func regionKindFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> RegionKind {
     try { let val = __swift_bridge__$region_kind_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return RegionKind(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
-public func keywordAlgorithmFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> KeywordAlgorithm {
-    try { let val = __swift_bridge__$keyword_algorithm_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return KeywordAlgorithm(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
-}
 public func psmModeFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> PSMMode {
     try { let val = __swift_bridge__$psm_mode_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return PSMMode(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
@@ -1115,9 +1157,6 @@ public func __alef_phantom_vec_extraction_config() -> RustVec<ExtractionConfig> 
 public func __alef_phantom_vec_file_extraction_config() -> RustVec<FileExtractionConfig> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_file_extraction_config())
 }
-public func __alef_phantom_vec_svg_options() -> RustVec<SvgOptions> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_svg_options())
-}
 public func __alef_phantom_vec_batch_bytes_item() -> RustVec<BatchBytesItem> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_batch_bytes_item())
 }
@@ -1132,12 +1171,6 @@ public func __alef_phantom_vec_token_reduction_options() -> RustVec<TokenReducti
 }
 public func __alef_phantom_vec_language_detection_config() -> RustVec<LanguageDetectionConfig> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_language_detection_config())
-}
-public func __alef_phantom_vec_html_output_config() -> RustVec<HtmlOutputConfig> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_html_output_config())
-}
-public func __alef_phantom_vec_layout_detection_config() -> RustVec<LayoutDetectionConfig> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_layout_detection_config())
 }
 public func __alef_phantom_vec_llm_config() -> RustVec<LlmConfig> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_llm_config())
@@ -1163,12 +1196,6 @@ public func __alef_phantom_vec_ocr_config() -> RustVec<OcrConfig> {
 public func __alef_phantom_vec_page_config() -> RustVec<PageConfig> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_page_config())
 }
-public func __alef_phantom_vec_pdf_config() -> RustVec<PdfConfig> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_pdf_config())
-}
-public func __alef_phantom_vec_hierarchy_config() -> RustVec<HierarchyConfig> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_hierarchy_config())
-}
 public func __alef_phantom_vec_post_processor_config() -> RustVec<PostProcessorConfig> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_post_processor_config())
 }
@@ -1193,29 +1220,14 @@ public func __alef_phantom_vec_reranker_config() -> RustVec<RerankerConfig> {
 public func __alef_phantom_vec_summarization_config() -> RustVec<SummarizationConfig> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_summarization_config())
 }
-public func __alef_phantom_vec_transcription_config() -> RustVec<TranscriptionConfig> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_transcription_config())
-}
 public func __alef_phantom_vec_translation_config() -> RustVec<TranslationConfig> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_translation_config())
-}
-public func __alef_phantom_vec_tree_sitter_config() -> RustVec<TreeSitterConfig> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_tree_sitter_config())
-}
-public func __alef_phantom_vec_tree_sitter_process_config() -> RustVec<TreeSitterProcessConfig> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_tree_sitter_process_config())
 }
 public func __alef_phantom_vec_supported_format() -> RustVec<SupportedFormat> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_supported_format())
 }
-public func __alef_phantom_vec_server_config() -> RustVec<ServerConfig> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_server_config())
-}
 public func __alef_phantom_vec_structured_data_result() -> RustVec<StructuredDataResult> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_structured_data_result())
-}
-public func __alef_phantom_vec_docx_app_properties() -> RustVec<DocxAppProperties> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_docx_app_properties())
 }
 public func __alef_phantom_vec_xlsx_app_properties() -> RustVec<XlsxAppProperties> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_xlsx_app_properties())
@@ -1223,23 +1235,11 @@ public func __alef_phantom_vec_xlsx_app_properties() -> RustVec<XlsxAppPropertie
 public func __alef_phantom_vec_pptx_app_properties() -> RustVec<PptxAppProperties> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_pptx_app_properties())
 }
-public func __alef_phantom_vec_core_properties() -> RustVec<CoreProperties> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_core_properties())
-}
 public func __alef_phantom_vec_security_limits() -> RustVec<SecurityLimits> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_security_limits())
 }
-public func __alef_phantom_vec_token_reduction_config() -> RustVec<TokenReductionConfig> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_token_reduction_config())
-}
-public func __alef_phantom_vec_llm_backend() -> RustVec<LlmBackend> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_llm_backend())
-}
 public func __alef_phantom_vec_pattern_match() -> RustVec<PatternMatch> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_pattern_match())
-}
-public func __alef_phantom_vec_token_counter() -> RustVec<TokenCounter> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_token_counter())
 }
 public func __alef_phantom_vec_pdf_annotation() -> RustVec<PdfAnnotation> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_pdf_annotation())
@@ -1409,9 +1409,6 @@ public func __alef_phantom_vec_error_metadata() -> RustVec<ErrorMetadata> {
 public func __alef_phantom_vec_pptx_metadata() -> RustVec<PptxMetadata> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_pptx_metadata())
 }
-public func __alef_phantom_vec_docx_metadata() -> RustVec<DocxMetadata> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_docx_metadata())
-}
 public func __alef_phantom_vec_csv_metadata() -> RustVec<CsvMetadata> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_csv_metadata())
 }
@@ -1444,9 +1441,6 @@ public func __alef_phantom_vec_epub_metadata() -> RustVec<EpubMetadata> {
 }
 public func __alef_phantom_vec_pst_metadata() -> RustVec<PstMetadata> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_pst_metadata())
-}
-public func __alef_phantom_vec_audio_metadata() -> RustVec<AudioMetadata> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_audio_metadata())
 }
 public func __alef_phantom_vec_ocr_confidence() -> RustVec<OcrConfidence> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_ocr_confidence())
@@ -1517,81 +1511,6 @@ public func __alef_phantom_vec_translation() -> RustVec<Translation> {
 public func __alef_phantom_vec_extracted_uri() -> RustVec<ExtractedUri> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_extracted_uri())
 }
-public func __alef_phantom_vec_detect_response() -> RustVec<DetectResponse> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_detect_response())
-}
-public func __alef_phantom_vec_diff_options() -> RustVec<DiffOptions> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_diff_options())
-}
-public func __alef_phantom_vec_extraction_diff() -> RustVec<ExtractionDiff> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_extraction_diff())
-}
-public func __alef_phantom_vec_diff_hunk() -> RustVec<DiffHunk> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_diff_hunk())
-}
-public func __alef_phantom_vec_table_diff() -> RustVec<TableDiff> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_table_diff())
-}
-public func __alef_phantom_vec_embedded_changes() -> RustVec<EmbeddedChanges> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_embedded_changes())
-}
-public func __alef_phantom_vec_embedded_diff() -> RustVec<EmbeddedDiff> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_embedded_diff())
-}
-public func __alef_phantom_vec_embedding_preset() -> RustVec<EmbeddingPreset> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_embedding_preset())
-}
-public func __alef_phantom_vec_reranked_document() -> RustVec<RerankedDocument> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_reranked_document())
-}
-public func __alef_phantom_vec_reranker_preset() -> RustVec<RerankerPreset> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_reranker_preset())
-}
-public func __alef_phantom_vec_yake_params() -> RustVec<YakeParams> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_yake_params())
-}
-public func __alef_phantom_vec_rake_params() -> RustVec<RakeParams> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_rake_params())
-}
-public func __alef_phantom_vec_keyword_config() -> RustVec<KeywordConfig> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_keyword_config())
-}
-public func __alef_phantom_vec_keyword() -> RustVec<Keyword> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_keyword())
-}
-public func __alef_phantom_vec_paddle_ocr_config() -> RustVec<PaddleOcrConfig> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_paddle_ocr_config())
-}
-public func __alef_phantom_vec_model_paths() -> RustVec<ModelPaths> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_model_paths())
-}
-public func __alef_phantom_vec_orientation_result() -> RustVec<OrientationResult> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_orientation_result())
-}
-public func __alef_phantom_vec_b_box() -> RustVec<BBox> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_b_box())
-}
-public func __alef_phantom_vec_layout_detection() -> RustVec<LayoutDetection> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_layout_detection())
-}
-public func __alef_phantom_vec_recognized_table() -> RustVec<RecognizedTable> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_recognized_table())
-}
-public func __alef_phantom_vec_detection_result() -> RustVec<DetectionResult> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_detection_result())
-}
-public func __alef_phantom_vec_embedded_file() -> RustVec<EmbeddedFile> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_embedded_file())
-}
-public func __alef_phantom_vec_pdf_metadata() -> RustVec<PdfMetadata> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_pdf_metadata())
-}
-public func __alef_phantom_vec_classification_enrichment_config() -> RustVec<ClassificationEnrichmentConfig> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_classification_enrichment_config())
-}
-public func __alef_phantom_vec_captioning_enrichment_config() -> RustVec<CaptioningEnrichmentConfig> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_captioning_enrichment_config())
-}
 public func __alef_phantom_vec_execution_provider_type() -> RustVec<ExecutionProviderType> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_execution_provider_type())
 }
@@ -1600,12 +1519,6 @@ public func __alef_phantom_vec_image_output_format() -> RustVec<ImageOutputForma
 }
 public func __alef_phantom_vec_output_format() -> RustVec<OutputFormat> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_output_format())
-}
-public func __alef_phantom_vec_html_theme() -> RustVec<HtmlTheme> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_html_theme())
-}
-public func __alef_phantom_vec_table_model() -> RustVec<TableModel> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_table_model())
 }
 public func __alef_phantom_vec_ner_backend_kind() -> RustVec<NerBackendKind> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_ner_backend_kind())
@@ -1625,12 +1538,6 @@ public func __alef_phantom_vec_embedding_model_type() -> RustVec<EmbeddingModelT
 public func __alef_phantom_vec_reranker_model_type() -> RustVec<RerankerModelType> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_reranker_model_type())
 }
-public func __alef_phantom_vec_whisper_model() -> RustVec<WhisperModel> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_whisper_model())
-}
-public func __alef_phantom_vec_code_content_mode() -> RustVec<CodeContentMode> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_code_content_mode())
-}
 public func __alef_phantom_vec_list_type() -> RustVec<ListType> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_list_type())
 }
@@ -1639,9 +1546,6 @@ public func __alef_phantom_vec_ocr_backend_type() -> RustVec<OcrBackendType> {
 }
 public func __alef_phantom_vec_processing_stage() -> RustVec<ProcessingStage> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_processing_stage())
-}
-public func __alef_phantom_vec_reduction_level() -> RustVec<ReductionLevel> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_reduction_level())
 }
 public func __alef_phantom_vec_pdf_annotation_type() -> RustVec<PdfAnnotationType> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_pdf_annotation_type())
@@ -1727,11 +1631,134 @@ public func __alef_phantom_vec_summary_strategy() -> RustVec<SummaryStrategy> {
 public func __alef_phantom_vec_uri_kind() -> RustVec<UriKind> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_uri_kind())
 }
+public func __alef_phantom_vec_svg_options() -> RustVec<SvgOptions> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_svg_options())
+}
+public func __alef_phantom_vec_html_output_config() -> RustVec<HtmlOutputConfig> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_html_output_config())
+}
+public func __alef_phantom_vec_layout_detection_config() -> RustVec<LayoutDetectionConfig> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_layout_detection_config())
+}
+public func __alef_phantom_vec_pdf_config() -> RustVec<PdfConfig> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_pdf_config())
+}
+public func __alef_phantom_vec_hierarchy_config() -> RustVec<HierarchyConfig> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_hierarchy_config())
+}
+public func __alef_phantom_vec_transcription_config() -> RustVec<TranscriptionConfig> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_transcription_config())
+}
+public func __alef_phantom_vec_tree_sitter_config() -> RustVec<TreeSitterConfig> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_tree_sitter_config())
+}
+public func __alef_phantom_vec_tree_sitter_process_config() -> RustVec<TreeSitterProcessConfig> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_tree_sitter_process_config())
+}
+public func __alef_phantom_vec_server_config() -> RustVec<ServerConfig> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_server_config())
+}
+public func __alef_phantom_vec_docx_app_properties() -> RustVec<DocxAppProperties> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_docx_app_properties())
+}
+public func __alef_phantom_vec_core_properties() -> RustVec<CoreProperties> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_core_properties())
+}
+public func __alef_phantom_vec_token_reduction_config() -> RustVec<TokenReductionConfig> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_token_reduction_config())
+}
+public func __alef_phantom_vec_llm_backend() -> RustVec<LlmBackend> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_llm_backend())
+}
+public func __alef_phantom_vec_token_counter() -> RustVec<TokenCounter> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_token_counter())
+}
+public func __alef_phantom_vec_docx_metadata() -> RustVec<DocxMetadata> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_docx_metadata())
+}
+public func __alef_phantom_vec_audio_metadata() -> RustVec<AudioMetadata> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_audio_metadata())
+}
+public func __alef_phantom_vec_detect_response() -> RustVec<DetectResponse> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_detect_response())
+}
+public func __alef_phantom_vec_diff_options() -> RustVec<DiffOptions> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_diff_options())
+}
+public func __alef_phantom_vec_extraction_diff() -> RustVec<ExtractionDiff> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_extraction_diff())
+}
+public func __alef_phantom_vec_diff_hunk() -> RustVec<DiffHunk> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_diff_hunk())
+}
+public func __alef_phantom_vec_table_diff() -> RustVec<TableDiff> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_table_diff())
+}
+public func __alef_phantom_vec_embedded_changes() -> RustVec<EmbeddedChanges> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_embedded_changes())
+}
+public func __alef_phantom_vec_embedded_diff() -> RustVec<EmbeddedDiff> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_embedded_diff())
+}
+public func __alef_phantom_vec_embedding_preset() -> RustVec<EmbeddingPreset> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_embedding_preset())
+}
+public func __alef_phantom_vec_reranked_document() -> RustVec<RerankedDocument> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_reranked_document())
+}
+public func __alef_phantom_vec_reranker_preset() -> RustVec<RerankerPreset> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_reranker_preset())
+}
+public func __alef_phantom_vec_paddle_ocr_config() -> RustVec<PaddleOcrConfig> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_paddle_ocr_config())
+}
+public func __alef_phantom_vec_model_paths() -> RustVec<ModelPaths> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_model_paths())
+}
+public func __alef_phantom_vec_orientation_result() -> RustVec<OrientationResult> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_orientation_result())
+}
+public func __alef_phantom_vec_b_box() -> RustVec<BBox> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_b_box())
+}
+public func __alef_phantom_vec_layout_detection() -> RustVec<LayoutDetection> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_layout_detection())
+}
+public func __alef_phantom_vec_recognized_table() -> RustVec<RecognizedTable> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_recognized_table())
+}
+public func __alef_phantom_vec_detection_result() -> RustVec<DetectionResult> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_detection_result())
+}
+public func __alef_phantom_vec_embedded_file() -> RustVec<EmbeddedFile> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_embedded_file())
+}
+public func __alef_phantom_vec_pdf_metadata() -> RustVec<PdfMetadata> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_pdf_metadata())
+}
+public func __alef_phantom_vec_classification_enrichment_config() -> RustVec<ClassificationEnrichmentConfig> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_classification_enrichment_config())
+}
+public func __alef_phantom_vec_captioning_enrichment_config() -> RustVec<CaptioningEnrichmentConfig> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_captioning_enrichment_config())
+}
+public func __alef_phantom_vec_html_theme() -> RustVec<HtmlTheme> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_html_theme())
+}
+public func __alef_phantom_vec_table_model() -> RustVec<TableModel> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_table_model())
+}
+public func __alef_phantom_vec_whisper_model() -> RustVec<WhisperModel> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_whisper_model())
+}
+public func __alef_phantom_vec_code_content_mode() -> RustVec<CodeContentMode> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_code_content_mode())
+}
+public func __alef_phantom_vec_reduction_level() -> RustVec<ReductionLevel> {
+    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_reduction_level())
+}
 public func __alef_phantom_vec_region_kind() -> RustVec<RegionKind> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_region_kind())
-}
-public func __alef_phantom_vec_keyword_algorithm() -> RustVec<KeywordAlgorithm> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_keyword_algorithm())
 }
 public func __alef_phantom_vec_psm_mode() -> RustVec<PSMMode> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_psm_mode())
@@ -2309,8 +2336,8 @@ public class ExtractionConfig: ExtractionConfigRefMut {
     }
 }
 extension ExtractionConfig {
-    public convenience init<GenericIntoRustString: IntoRustString>(_ use_cache: Bool, _ enable_quality_processing: Bool, _ ocr: Optional<OcrConfig>, _ force_ocr: Bool, _ force_ocr_pages: Optional<RustVec<UInt32>>, _ disable_ocr: Bool, _ chunking: Optional<ChunkingConfig>, _ content_filter: Optional<ContentFilterConfig>, _ images: Optional<ImageExtractionConfig>, _ pdf_options: Optional<PdfConfig>, _ token_reduction: Optional<TokenReductionOptions>, _ language_detection: Optional<LanguageDetectionConfig>, _ pages: Optional<PageConfig>, _ keywords: Optional<KeywordConfig>, _ postprocessor: Optional<PostProcessorConfig>, _ html_output: Optional<HtmlOutputConfig>, _ extraction_timeout_secs: Optional<UInt64>, _ max_concurrent_extractions: Optional<UInt>, _ result_format: ResultFormat, _ security_limits: Optional<SecurityLimits>, _ max_embedded_file_bytes: Optional<UInt64>, _ output_format: OutputFormat, _ layout: Optional<LayoutDetectionConfig>, _ use_layout_for_markdown: Bool, _ include_document_structure: Bool, _ acceleration: Optional<AccelerationConfig>, _ cache_namespace: Optional<GenericIntoRustString>, _ cache_ttl_secs: Optional<UInt64>, _ email: Optional<EmailConfig>, _ max_archive_depth: UInt, _ tree_sitter: Optional<TreeSitterConfig>, _ structured_extraction: Optional<StructuredExtractionConfig>, _ ner: Optional<NerConfig>, _ redaction: Optional<RedactionConfig>, _ summarization: Optional<SummarizationConfig>, _ translation: Optional<TranslationConfig>, _ page_classification: Optional<PageClassificationConfig>, _ captioning: Optional<CaptioningConfig>, _ qr_codes: Optional<Bool>) {
-        self.init(ptr: __swift_bridge__$ExtractionConfig$new(use_cache, enable_quality_processing, { if let val = ocr { val.isOwned = false; return val.ptr } else { return nil } }(), force_ocr, { if let val = force_ocr_pages { val.isOwned = false; return val.ptr } else { return nil } }(), disable_ocr, { if let val = chunking { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = content_filter { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = images { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = pdf_options { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = token_reduction { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = language_detection { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = pages { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = keywords { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = postprocessor { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = html_output { val.isOwned = false; return val.ptr } else { return nil } }(), extraction_timeout_secs.intoFfiRepr(), max_concurrent_extractions.intoFfiRepr(), {result_format.isOwned = false; return result_format.ptr;}(), { if let val = security_limits { val.isOwned = false; return val.ptr } else { return nil } }(), max_embedded_file_bytes.intoFfiRepr(), {output_format.isOwned = false; return output_format.ptr;}(), { if let val = layout { val.isOwned = false; return val.ptr } else { return nil } }(), use_layout_for_markdown, include_document_structure, { if let val = acceleration { val.isOwned = false; return val.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(cache_namespace) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), cache_ttl_secs.intoFfiRepr(), { if let val = email { val.isOwned = false; return val.ptr } else { return nil } }(), max_archive_depth, { if let val = tree_sitter { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = structured_extraction { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = ner { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = redaction { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = summarization { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = translation { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = page_classification { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = captioning { val.isOwned = false; return val.ptr } else { return nil } }(), qr_codes.intoFfiRepr()))
+    public convenience init<GenericIntoRustString: IntoRustString>(_ use_cache: Bool, _ enable_quality_processing: Bool, _ ocr: Optional<OcrConfig>, _ force_ocr: Bool, _ force_ocr_pages: Optional<RustVec<UInt32>>, _ disable_ocr: Bool, _ chunking: Optional<ChunkingConfig>, _ content_filter: Optional<ContentFilterConfig>, _ images: Optional<ImageExtractionConfig>, _ pdf_options: Optional<PdfConfig>, _ token_reduction: Optional<TokenReductionOptions>, _ language_detection: Optional<LanguageDetectionConfig>, _ pages: Optional<PageConfig>, _ postprocessor: Optional<PostProcessorConfig>, _ html_output: Optional<HtmlOutputConfig>, _ extraction_timeout_secs: Optional<UInt64>, _ max_concurrent_extractions: Optional<UInt>, _ result_format: ResultFormat, _ security_limits: Optional<SecurityLimits>, _ max_embedded_file_bytes: Optional<UInt64>, _ output_format: OutputFormat, _ layout: Optional<LayoutDetectionConfig>, _ transcription: Optional<TranscriptionConfig>, _ use_layout_for_markdown: Bool, _ include_document_structure: Bool, _ acceleration: Optional<AccelerationConfig>, _ cache_namespace: Optional<GenericIntoRustString>, _ cache_ttl_secs: Optional<UInt64>, _ email: Optional<EmailConfig>, _ max_archive_depth: UInt, _ tree_sitter: Optional<TreeSitterConfig>, _ structured_extraction: Optional<StructuredExtractionConfig>, _ ner: Optional<NerConfig>, _ redaction: Optional<RedactionConfig>, _ summarization: Optional<SummarizationConfig>, _ translation: Optional<TranslationConfig>, _ page_classification: Optional<PageClassificationConfig>, _ captioning: Optional<CaptioningConfig>, _ qr_codes: Optional<Bool>) {
+        self.init(ptr: __swift_bridge__$ExtractionConfig$new(use_cache, enable_quality_processing, { if let val = ocr { val.isOwned = false; return val.ptr } else { return nil } }(), force_ocr, { if let val = force_ocr_pages { val.isOwned = false; return val.ptr } else { return nil } }(), disable_ocr, { if let val = chunking { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = content_filter { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = images { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = pdf_options { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = token_reduction { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = language_detection { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = pages { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = postprocessor { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = html_output { val.isOwned = false; return val.ptr } else { return nil } }(), extraction_timeout_secs.intoFfiRepr(), max_concurrent_extractions.intoFfiRepr(), {result_format.isOwned = false; return result_format.ptr;}(), { if let val = security_limits { val.isOwned = false; return val.ptr } else { return nil } }(), max_embedded_file_bytes.intoFfiRepr(), {output_format.isOwned = false; return output_format.ptr;}(), { if let val = layout { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = transcription { val.isOwned = false; return val.ptr } else { return nil } }(), use_layout_for_markdown, include_document_structure, { if let val = acceleration { val.isOwned = false; return val.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(cache_namespace) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), cache_ttl_secs.intoFfiRepr(), { if let val = email { val.isOwned = false; return val.ptr } else { return nil } }(), max_archive_depth, { if let val = tree_sitter { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = structured_extraction { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = ner { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = redaction { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = summarization { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = translation { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = page_classification { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = captioning { val.isOwned = false; return val.ptr } else { return nil } }(), qr_codes.intoFfiRepr()))
     }
 }
 public class ExtractionConfigRefMut: ExtractionConfigRef {
@@ -2378,10 +2405,6 @@ extension ExtractionConfigRef {
         { let val = __swift_bridge__$ExtractionConfig$pages(ptr); if val != nil { return PageConfig(ptr: val!) } else { return nil } }()
     }
 
-    public func keywords() -> Optional<KeywordConfig> {
-        { let val = __swift_bridge__$ExtractionConfig$keywords(ptr); if val != nil { return KeywordConfig(ptr: val!) } else { return nil } }()
-    }
-
     public func postprocessor() -> Optional<PostProcessorConfig> {
         { let val = __swift_bridge__$ExtractionConfig$postprocessor(ptr); if val != nil { return PostProcessorConfig(ptr: val!) } else { return nil } }()
     }
@@ -2416,6 +2439,10 @@ extension ExtractionConfigRef {
 
     public func layout() -> Optional<LayoutDetectionConfig> {
         { let val = __swift_bridge__$ExtractionConfig$layout(ptr); if val != nil { return LayoutDetectionConfig(ptr: val!) } else { return nil } }()
+    }
+
+    public func transcription() -> Optional<TranscriptionConfig> {
+        { let val = __swift_bridge__$ExtractionConfig$transcription(ptr); if val != nil { return TranscriptionConfig(ptr: val!) } else { return nil } }()
     }
 
     public func useLayoutForMarkdown() -> Bool {
@@ -2546,8 +2573,8 @@ public class FileExtractionConfig: FileExtractionConfigRefMut {
     }
 }
 extension FileExtractionConfig {
-    public convenience init(_ enable_quality_processing: Optional<Bool>, _ ocr: Optional<OcrConfig>, _ force_ocr: Optional<Bool>, _ force_ocr_pages: Optional<RustVec<UInt32>>, _ disable_ocr: Optional<Bool>, _ chunking: Optional<ChunkingConfig>, _ content_filter: Optional<ContentFilterConfig>, _ images: Optional<ImageExtractionConfig>, _ pdf_options: Optional<PdfConfig>, _ token_reduction: Optional<TokenReductionOptions>, _ language_detection: Optional<LanguageDetectionConfig>, _ pages: Optional<PageConfig>, _ keywords: Optional<KeywordConfig>, _ postprocessor: Optional<PostProcessorConfig>, _ result_format: Optional<ResultFormat>, _ output_format: Optional<OutputFormat>, _ include_document_structure: Optional<Bool>, _ layout: Optional<LayoutDetectionConfig>, _ timeout_secs: Optional<UInt64>, _ tree_sitter: Optional<TreeSitterConfig>, _ structured_extraction: Optional<StructuredExtractionConfig>) {
-        self.init(ptr: __swift_bridge__$FileExtractionConfig$new(enable_quality_processing.intoFfiRepr(), { if let val = ocr { val.isOwned = false; return val.ptr } else { return nil } }(), force_ocr.intoFfiRepr(), { if let val = force_ocr_pages { val.isOwned = false; return val.ptr } else { return nil } }(), disable_ocr.intoFfiRepr(), { if let val = chunking { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = content_filter { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = images { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = pdf_options { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = token_reduction { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = language_detection { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = pages { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = keywords { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = postprocessor { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = result_format { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = output_format { val.isOwned = false; return val.ptr } else { return nil } }(), include_document_structure.intoFfiRepr(), { if let val = layout { val.isOwned = false; return val.ptr } else { return nil } }(), timeout_secs.intoFfiRepr(), { if let val = tree_sitter { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = structured_extraction { val.isOwned = false; return val.ptr } else { return nil } }()))
+    public convenience init(_ enable_quality_processing: Optional<Bool>, _ ocr: Optional<OcrConfig>, _ force_ocr: Optional<Bool>, _ force_ocr_pages: Optional<RustVec<UInt32>>, _ disable_ocr: Optional<Bool>, _ chunking: Optional<ChunkingConfig>, _ content_filter: Optional<ContentFilterConfig>, _ images: Optional<ImageExtractionConfig>, _ pdf_options: Optional<PdfConfig>, _ token_reduction: Optional<TokenReductionOptions>, _ language_detection: Optional<LanguageDetectionConfig>, _ pages: Optional<PageConfig>, _ postprocessor: Optional<PostProcessorConfig>, _ result_format: Optional<ResultFormat>, _ output_format: Optional<OutputFormat>, _ include_document_structure: Optional<Bool>, _ layout: Optional<LayoutDetectionConfig>, _ transcription: Optional<TranscriptionConfig>, _ timeout_secs: Optional<UInt64>, _ tree_sitter: Optional<TreeSitterConfig>, _ structured_extraction: Optional<StructuredExtractionConfig>) {
+        self.init(ptr: __swift_bridge__$FileExtractionConfig$new(enable_quality_processing.intoFfiRepr(), { if let val = ocr { val.isOwned = false; return val.ptr } else { return nil } }(), force_ocr.intoFfiRepr(), { if let val = force_ocr_pages { val.isOwned = false; return val.ptr } else { return nil } }(), disable_ocr.intoFfiRepr(), { if let val = chunking { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = content_filter { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = images { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = pdf_options { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = token_reduction { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = language_detection { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = pages { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = postprocessor { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = result_format { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = output_format { val.isOwned = false; return val.ptr } else { return nil } }(), include_document_structure.intoFfiRepr(), { if let val = layout { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = transcription { val.isOwned = false; return val.ptr } else { return nil } }(), timeout_secs.intoFfiRepr(), { if let val = tree_sitter { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = structured_extraction { val.isOwned = false; return val.ptr } else { return nil } }()))
     }
 }
 public class FileExtractionConfigRefMut: FileExtractionConfigRef {
@@ -2611,10 +2638,6 @@ extension FileExtractionConfigRef {
         { let val = __swift_bridge__$FileExtractionConfig$pages(ptr); if val != nil { return PageConfig(ptr: val!) } else { return nil } }()
     }
 
-    public func keywords() -> Optional<KeywordConfig> {
-        { let val = __swift_bridge__$FileExtractionConfig$keywords(ptr); if val != nil { return KeywordConfig(ptr: val!) } else { return nil } }()
-    }
-
     public func postprocessor() -> Optional<PostProcessorConfig> {
         { let val = __swift_bridge__$FileExtractionConfig$postprocessor(ptr); if val != nil { return PostProcessorConfig(ptr: val!) } else { return nil } }()
     }
@@ -2633,6 +2656,10 @@ extension FileExtractionConfigRef {
 
     public func layout() -> Optional<LayoutDetectionConfig> {
         { let val = __swift_bridge__$FileExtractionConfig$layout(ptr); if val != nil { return LayoutDetectionConfig(ptr: val!) } else { return nil } }()
+    }
+
+    public func transcription() -> Optional<TranscriptionConfig> {
+        { let val = __swift_bridge__$FileExtractionConfig$transcription(ptr); if val != nil { return TranscriptionConfig(ptr: val!) } else { return nil } }()
     }
 
     public func timeoutSecs() -> Optional<UInt64> {
@@ -2972,8 +2999,8 @@ public class ImageExtractionConfig: ImageExtractionConfigRefMut {
     }
 }
 extension ImageExtractionConfig {
-    public convenience init(_ extract_images: Bool, _ target_dpi: Int32, _ max_image_dimension: Int32, _ inject_placeholders: Bool, _ auto_adjust_dpi: Bool, _ min_dpi: Int32, _ max_dpi: Int32, _ max_images_per_page: Optional<UInt32>, _ classify: Bool, _ include_page_rasters: Bool, _ run_ocr_on_images: Bool, _ ocr_text_only: Bool, _ append_ocr_text: Bool, _ output_format: ImageOutputFormat) {
-        self.init(ptr: __swift_bridge__$ImageExtractionConfig$new(extract_images, target_dpi, max_image_dimension, inject_placeholders, auto_adjust_dpi, min_dpi, max_dpi, max_images_per_page.intoFfiRepr(), classify, include_page_rasters, run_ocr_on_images, ocr_text_only, append_ocr_text, {output_format.isOwned = false; return output_format.ptr;}()))
+    public convenience init(_ extract_images: Bool, _ target_dpi: Int32, _ max_image_dimension: Int32, _ inject_placeholders: Bool, _ auto_adjust_dpi: Bool, _ min_dpi: Int32, _ max_dpi: Int32, _ max_images_per_page: Optional<UInt32>, _ classify: Bool, _ include_page_rasters: Bool, _ run_ocr_on_images: Bool, _ ocr_text_only: Bool, _ append_ocr_text: Bool, _ output_format: ImageOutputFormat, _ svg: SvgOptions) {
+        self.init(ptr: __swift_bridge__$ImageExtractionConfig$new(extract_images, target_dpi, max_image_dimension, inject_placeholders, auto_adjust_dpi, min_dpi, max_dpi, max_images_per_page.intoFfiRepr(), classify, include_page_rasters, run_ocr_on_images, ocr_text_only, append_ocr_text, {output_format.isOwned = false; return output_format.ptr;}(), {svg.isOwned = false; return svg.ptr;}()))
     }
 }
 public class ImageExtractionConfigRefMut: ImageExtractionConfigRef {
@@ -3043,6 +3070,10 @@ extension ImageExtractionConfigRef {
 
     public func outputFormat() -> RustString {
         RustString(ptr: __swift_bridge__$ImageExtractionConfig$output_format(ptr))
+    }
+
+    public func svg() -> SvgOptions {
+        SvgOptions(ptr: __swift_bridge__$ImageExtractionConfig$svg(ptr))
     }
 }
 extension ImageExtractionConfig: Vectorizable {
@@ -8624,8 +8655,8 @@ public class ExtractionResult: ExtractionResultRefMut {
     }
 }
 extension ExtractionResult {
-    public convenience init<GenericIntoRustString: IntoRustString>(_ content: GenericIntoRustString, _ mime_type: GenericIntoRustString, _ metadata: Metadata, _ extraction_method: Optional<ExtractionMethod>, _ tables: RustVec<Table>, _ detected_languages: Optional<RustVec<GenericIntoRustString>>, _ chunks: Optional<RustVec<Chunk>>, _ images: Optional<RustVec<ExtractedImage>>, _ pages: Optional<RustVec<PageContent>>, _ elements: Optional<RustVec<Element>>, _ djot_content: Optional<DjotContent>, _ ocr_elements: Optional<RustVec<OcrElement>>, _ document: Optional<DocumentStructure>, _ extracted_keywords: Optional<RustVec<Keyword>>, _ quality_score: Optional<Double>, _ processing_warnings: RustVec<ProcessingWarning>, _ annotations: Optional<RustVec<PdfAnnotation>>, _ children: Optional<RustVec<ArchiveEntry>>, _ uris: Optional<RustVec<ExtractedUri>>, _ revisions: Optional<RustVec<DocumentRevision>>, _ structured_output: Optional<GenericIntoRustString>, _ code_intelligence: Optional<GenericIntoRustString>, _ llm_usage: Optional<RustVec<LlmUsage>>, _ entities: Optional<RustVec<Entity>>, _ summary: Optional<DocumentSummary>, _ translation: Optional<Translation>, _ page_classifications: Optional<RustVec<PageClassification>>, _ redaction_report: Optional<RedactionReport>, _ formatted_content: Optional<GenericIntoRustString>) {
-        self.init(ptr: __swift_bridge__$ExtractionResult$new({ let rustString = content.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { let rustString = mime_type.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), {metadata.isOwned = false; return metadata.ptr;}(), { if let val = extraction_method { val.isOwned = false; return val.ptr } else { return nil } }(), { let val = tables; val.isOwned = false; return val.ptr }(), { if let val = detected_languages { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = chunks { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = images { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = pages { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = elements { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = djot_content { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = ocr_elements { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = document { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = extracted_keywords { val.isOwned = false; return val.ptr } else { return nil } }(), quality_score.intoFfiRepr(), { let val = processing_warnings; val.isOwned = false; return val.ptr }(), { if let val = annotations { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = children { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = uris { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = revisions { val.isOwned = false; return val.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(structured_output) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(code_intelligence) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let val = llm_usage { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = entities { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = summary { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = translation { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = page_classifications { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = redaction_report { val.isOwned = false; return val.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(formatted_content) { rustString.isOwned = false; return rustString.ptr } else { return nil } }()))
+    public convenience init<GenericIntoRustString: IntoRustString>(_ content: GenericIntoRustString, _ mime_type: GenericIntoRustString, _ metadata: Metadata, _ extraction_method: Optional<ExtractionMethod>, _ tables: RustVec<Table>, _ detected_languages: Optional<RustVec<GenericIntoRustString>>, _ chunks: Optional<RustVec<Chunk>>, _ images: Optional<RustVec<ExtractedImage>>, _ pages: Optional<RustVec<PageContent>>, _ elements: Optional<RustVec<Element>>, _ djot_content: Optional<DjotContent>, _ ocr_elements: Optional<RustVec<OcrElement>>, _ document: Optional<DocumentStructure>, _ quality_score: Optional<Double>, _ processing_warnings: RustVec<ProcessingWarning>, _ annotations: Optional<RustVec<PdfAnnotation>>, _ children: Optional<RustVec<ArchiveEntry>>, _ uris: Optional<RustVec<ExtractedUri>>, _ revisions: Optional<RustVec<DocumentRevision>>, _ structured_output: Optional<GenericIntoRustString>, _ code_intelligence: Optional<GenericIntoRustString>, _ llm_usage: Optional<RustVec<LlmUsage>>, _ entities: Optional<RustVec<Entity>>, _ summary: Optional<DocumentSummary>, _ translation: Optional<Translation>, _ page_classifications: Optional<RustVec<PageClassification>>, _ redaction_report: Optional<RedactionReport>, _ formatted_content: Optional<GenericIntoRustString>) {
+        self.init(ptr: __swift_bridge__$ExtractionResult$new({ let rustString = content.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { let rustString = mime_type.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), {metadata.isOwned = false; return metadata.ptr;}(), { if let val = extraction_method { val.isOwned = false; return val.ptr } else { return nil } }(), { let val = tables; val.isOwned = false; return val.ptr }(), { if let val = detected_languages { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = chunks { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = images { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = pages { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = elements { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = djot_content { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = ocr_elements { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = document { val.isOwned = false; return val.ptr } else { return nil } }(), quality_score.intoFfiRepr(), { let val = processing_warnings; val.isOwned = false; return val.ptr }(), { if let val = annotations { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = children { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = uris { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = revisions { val.isOwned = false; return val.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(structured_output) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(code_intelligence) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let val = llm_usage { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = entities { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = summary { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = translation { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = page_classifications { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = redaction_report { val.isOwned = false; return val.ptr } else { return nil } }(), { if let rustString = optionalStringIntoRustString(formatted_content) { rustString.isOwned = false; return rustString.ptr } else { return nil } }()))
     }
 }
 public class ExtractionResultRefMut: ExtractionResultRef {
@@ -8691,10 +8722,6 @@ extension ExtractionResultRef {
 
     public func document() -> Optional<DocumentStructure> {
         { let val = __swift_bridge__$ExtractionResult$document(ptr); if val != nil { return DocumentStructure(ptr: val!) } else { return nil } }()
-    }
-
-    public func extractedKeywords() -> Optional<RustVec<Keyword>> {
-        { let val = __swift_bridge__$ExtractionResult$extracted_keywords(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
     }
 
     public func qualityScore() -> Optional<Double> {
@@ -17164,377 +17191,6 @@ extension RerankerPreset: Vectorizable {
 }
 
 
-public class YakeParams: YakeParamsRefMut {
-    public var isOwned: Bool = true
-
-    public override init(ptr: UnsafeMutableRawPointer) {
-        super.init(ptr: ptr)
-    }
-
-    deinit {
-        if isOwned {
-            __swift_bridge__$YakeParams$_free(ptr)
-        }
-    }
-}
-extension YakeParams {
-    public convenience init(_ window_size: UInt) {
-        self.init(ptr: __swift_bridge__$YakeParams$new(window_size))
-    }
-}
-public class YakeParamsRefMut: YakeParamsRef {
-    public override init(ptr: UnsafeMutableRawPointer) {
-        super.init(ptr: ptr)
-    }
-}
-public class YakeParamsRef {
-    public var ptr: UnsafeMutableRawPointer
-
-    public init(ptr: UnsafeMutableRawPointer) {
-        self.ptr = ptr
-    }
-}
-extension YakeParamsRef {
-    public func windowSize() -> UInt {
-        __swift_bridge__$YakeParams$window_size(ptr)
-    }
-}
-extension YakeParams: Vectorizable {
-    public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
-        __swift_bridge__$Vec_YakeParams$new()
-    }
-
-    public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
-        __swift_bridge__$Vec_YakeParams$drop(vecPtr)
-    }
-
-    public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: YakeParams) {
-        __swift_bridge__$Vec_YakeParams$push(vecPtr, {value.isOwned = false; return value.ptr;}())
-    }
-
-    public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Optional<Self> {
-        let pointer = __swift_bridge__$Vec_YakeParams$pop(vecPtr)
-        if pointer == nil {
-            return nil
-        } else {
-            return (YakeParams(ptr: pointer!) as! Self)
-        }
-    }
-
-    public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<YakeParamsRef> {
-        let pointer = __swift_bridge__$Vec_YakeParams$get(vecPtr, index)
-        if pointer == nil {
-            return nil
-        } else {
-            return YakeParamsRef(ptr: pointer!)
-        }
-    }
-
-    public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<YakeParamsRefMut> {
-        let pointer = __swift_bridge__$Vec_YakeParams$get_mut(vecPtr, index)
-        if pointer == nil {
-            return nil
-        } else {
-            return YakeParamsRefMut(ptr: pointer!)
-        }
-    }
-
-    public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<YakeParamsRef> {
-        UnsafePointer<YakeParamsRef>(OpaquePointer(__swift_bridge__$Vec_YakeParams$as_ptr(vecPtr)))
-    }
-
-    public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
-        __swift_bridge__$Vec_YakeParams$len(vecPtr)
-    }
-}
-
-
-public class RakeParams: RakeParamsRefMut {
-    public var isOwned: Bool = true
-
-    public override init(ptr: UnsafeMutableRawPointer) {
-        super.init(ptr: ptr)
-    }
-
-    deinit {
-        if isOwned {
-            __swift_bridge__$RakeParams$_free(ptr)
-        }
-    }
-}
-extension RakeParams {
-    public convenience init(_ min_word_length: UInt, _ max_words_per_phrase: UInt) {
-        self.init(ptr: __swift_bridge__$RakeParams$new(min_word_length, max_words_per_phrase))
-    }
-}
-public class RakeParamsRefMut: RakeParamsRef {
-    public override init(ptr: UnsafeMutableRawPointer) {
-        super.init(ptr: ptr)
-    }
-}
-public class RakeParamsRef {
-    public var ptr: UnsafeMutableRawPointer
-
-    public init(ptr: UnsafeMutableRawPointer) {
-        self.ptr = ptr
-    }
-}
-extension RakeParamsRef {
-    public func minWordLength() -> UInt {
-        __swift_bridge__$RakeParams$min_word_length(ptr)
-    }
-
-    public func maxWordsPerPhrase() -> UInt {
-        __swift_bridge__$RakeParams$max_words_per_phrase(ptr)
-    }
-}
-extension RakeParams: Vectorizable {
-    public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
-        __swift_bridge__$Vec_RakeParams$new()
-    }
-
-    public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
-        __swift_bridge__$Vec_RakeParams$drop(vecPtr)
-    }
-
-    public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: RakeParams) {
-        __swift_bridge__$Vec_RakeParams$push(vecPtr, {value.isOwned = false; return value.ptr;}())
-    }
-
-    public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Optional<Self> {
-        let pointer = __swift_bridge__$Vec_RakeParams$pop(vecPtr)
-        if pointer == nil {
-            return nil
-        } else {
-            return (RakeParams(ptr: pointer!) as! Self)
-        }
-    }
-
-    public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<RakeParamsRef> {
-        let pointer = __swift_bridge__$Vec_RakeParams$get(vecPtr, index)
-        if pointer == nil {
-            return nil
-        } else {
-            return RakeParamsRef(ptr: pointer!)
-        }
-    }
-
-    public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<RakeParamsRefMut> {
-        let pointer = __swift_bridge__$Vec_RakeParams$get_mut(vecPtr, index)
-        if pointer == nil {
-            return nil
-        } else {
-            return RakeParamsRefMut(ptr: pointer!)
-        }
-    }
-
-    public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<RakeParamsRef> {
-        UnsafePointer<RakeParamsRef>(OpaquePointer(__swift_bridge__$Vec_RakeParams$as_ptr(vecPtr)))
-    }
-
-    public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
-        __swift_bridge__$Vec_RakeParams$len(vecPtr)
-    }
-}
-
-
-public class KeywordConfig: KeywordConfigRefMut {
-    public var isOwned: Bool = true
-
-    public override init(ptr: UnsafeMutableRawPointer) {
-        super.init(ptr: ptr)
-    }
-
-    deinit {
-        if isOwned {
-            __swift_bridge__$KeywordConfig$_free(ptr)
-        }
-    }
-}
-extension KeywordConfig {
-    public convenience init<GenericIntoRustString: IntoRustString>(_ algorithm: KeywordAlgorithm, _ max_keywords: UInt, _ min_score: Float, _ language: Optional<GenericIntoRustString>, _ yake_params: Optional<YakeParams>, _ rake_params: Optional<RakeParams>) {
-        self.init(ptr: __swift_bridge__$KeywordConfig$new({algorithm.isOwned = false; return algorithm.ptr;}(), max_keywords, min_score, { if let rustString = optionalStringIntoRustString(language) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let val = yake_params { val.isOwned = false; return val.ptr } else { return nil } }(), { if let val = rake_params { val.isOwned = false; return val.ptr } else { return nil } }()))
-    }
-}
-public class KeywordConfigRefMut: KeywordConfigRef {
-    public override init(ptr: UnsafeMutableRawPointer) {
-        super.init(ptr: ptr)
-    }
-}
-public class KeywordConfigRef {
-    public var ptr: UnsafeMutableRawPointer
-
-    public init(ptr: UnsafeMutableRawPointer) {
-        self.ptr = ptr
-    }
-}
-extension KeywordConfigRef {
-    public func algorithm() -> RustString {
-        RustString(ptr: __swift_bridge__$KeywordConfig$algorithm(ptr))
-    }
-
-    public func maxKeywords() -> UInt {
-        __swift_bridge__$KeywordConfig$max_keywords(ptr)
-    }
-
-    public func minScore() -> Float {
-        __swift_bridge__$KeywordConfig$min_score(ptr)
-    }
-
-    public func language() -> Optional<RustString> {
-        { let val = __swift_bridge__$KeywordConfig$language(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
-    }
-
-    public func yakeParams() -> Optional<YakeParams> {
-        { let val = __swift_bridge__$KeywordConfig$yake_params(ptr); if val != nil { return YakeParams(ptr: val!) } else { return nil } }()
-    }
-
-    public func rakeParams() -> Optional<RakeParams> {
-        { let val = __swift_bridge__$KeywordConfig$rake_params(ptr); if val != nil { return RakeParams(ptr: val!) } else { return nil } }()
-    }
-}
-extension KeywordConfig: Vectorizable {
-    public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
-        __swift_bridge__$Vec_KeywordConfig$new()
-    }
-
-    public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
-        __swift_bridge__$Vec_KeywordConfig$drop(vecPtr)
-    }
-
-    public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: KeywordConfig) {
-        __swift_bridge__$Vec_KeywordConfig$push(vecPtr, {value.isOwned = false; return value.ptr;}())
-    }
-
-    public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Optional<Self> {
-        let pointer = __swift_bridge__$Vec_KeywordConfig$pop(vecPtr)
-        if pointer == nil {
-            return nil
-        } else {
-            return (KeywordConfig(ptr: pointer!) as! Self)
-        }
-    }
-
-    public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<KeywordConfigRef> {
-        let pointer = __swift_bridge__$Vec_KeywordConfig$get(vecPtr, index)
-        if pointer == nil {
-            return nil
-        } else {
-            return KeywordConfigRef(ptr: pointer!)
-        }
-    }
-
-    public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<KeywordConfigRefMut> {
-        let pointer = __swift_bridge__$Vec_KeywordConfig$get_mut(vecPtr, index)
-        if pointer == nil {
-            return nil
-        } else {
-            return KeywordConfigRefMut(ptr: pointer!)
-        }
-    }
-
-    public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<KeywordConfigRef> {
-        UnsafePointer<KeywordConfigRef>(OpaquePointer(__swift_bridge__$Vec_KeywordConfig$as_ptr(vecPtr)))
-    }
-
-    public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
-        __swift_bridge__$Vec_KeywordConfig$len(vecPtr)
-    }
-}
-
-
-public class Keyword: KeywordRefMut {
-    public var isOwned: Bool = true
-
-    public override init(ptr: UnsafeMutableRawPointer) {
-        super.init(ptr: ptr)
-    }
-
-    deinit {
-        if isOwned {
-            __swift_bridge__$Keyword$_free(ptr)
-        }
-    }
-}
-public class KeywordRefMut: KeywordRef {
-    public override init(ptr: UnsafeMutableRawPointer) {
-        super.init(ptr: ptr)
-    }
-}
-public class KeywordRef {
-    public var ptr: UnsafeMutableRawPointer
-
-    public init(ptr: UnsafeMutableRawPointer) {
-        self.ptr = ptr
-    }
-}
-extension KeywordRef {
-    public func text() -> RustString {
-        RustString(ptr: __swift_bridge__$Keyword$text(ptr))
-    }
-
-    public func score() -> Float {
-        __swift_bridge__$Keyword$score(ptr)
-    }
-
-    public func algorithm() -> RustString {
-        RustString(ptr: __swift_bridge__$Keyword$algorithm(ptr))
-    }
-
-    public func positions() -> Optional<RustVec<UInt>> {
-        { let val = __swift_bridge__$Keyword$positions(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
-    }
-}
-extension Keyword: Vectorizable {
-    public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
-        __swift_bridge__$Vec_Keyword$new()
-    }
-
-    public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
-        __swift_bridge__$Vec_Keyword$drop(vecPtr)
-    }
-
-    public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: Keyword) {
-        __swift_bridge__$Vec_Keyword$push(vecPtr, {value.isOwned = false; return value.ptr;}())
-    }
-
-    public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Optional<Self> {
-        let pointer = __swift_bridge__$Vec_Keyword$pop(vecPtr)
-        if pointer == nil {
-            return nil
-        } else {
-            return (Keyword(ptr: pointer!) as! Self)
-        }
-    }
-
-    public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<KeywordRef> {
-        let pointer = __swift_bridge__$Vec_Keyword$get(vecPtr, index)
-        if pointer == nil {
-            return nil
-        } else {
-            return KeywordRef(ptr: pointer!)
-        }
-    }
-
-    public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<KeywordRefMut> {
-        let pointer = __swift_bridge__$Vec_Keyword$get_mut(vecPtr, index)
-        if pointer == nil {
-            return nil
-        } else {
-            return KeywordRefMut(ptr: pointer!)
-        }
-    }
-
-    public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<KeywordRef> {
-        UnsafePointer<KeywordRef>(OpaquePointer(__swift_bridge__$Vec_Keyword$as_ptr(vecPtr)))
-    }
-
-    public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
-        __swift_bridge__$Vec_Keyword$len(vecPtr)
-    }
-}
-
-
 public class PaddleOcrConfig: PaddleOcrConfigRefMut {
     public var isOwned: Bool = true
 
@@ -22243,86 +21899,6 @@ extension RegionKind: Vectorizable {
 
     public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
         __swift_bridge__$Vec_RegionKind$len(vecPtr)
-    }
-}
-
-
-public class KeywordAlgorithm: KeywordAlgorithmRefMut {
-    public var isOwned: Bool = true
-
-    public override init(ptr: UnsafeMutableRawPointer) {
-        super.init(ptr: ptr)
-    }
-
-    deinit {
-        if isOwned {
-            __swift_bridge__$KeywordAlgorithm$_free(ptr)
-        }
-    }
-}
-public class KeywordAlgorithmRefMut: KeywordAlgorithmRef {
-    public override init(ptr: UnsafeMutableRawPointer) {
-        super.init(ptr: ptr)
-    }
-}
-public class KeywordAlgorithmRef {
-    public var ptr: UnsafeMutableRawPointer
-
-    public init(ptr: UnsafeMutableRawPointer) {
-        self.ptr = ptr
-    }
-}
-extension KeywordAlgorithmRef {
-    public func to_string() -> RustString {
-        RustString(ptr: __swift_bridge__$KeywordAlgorithm$to_string(ptr))
-    }
-}
-extension KeywordAlgorithm: Vectorizable {
-    public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
-        __swift_bridge__$Vec_KeywordAlgorithm$new()
-    }
-
-    public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
-        __swift_bridge__$Vec_KeywordAlgorithm$drop(vecPtr)
-    }
-
-    public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: KeywordAlgorithm) {
-        __swift_bridge__$Vec_KeywordAlgorithm$push(vecPtr, {value.isOwned = false; return value.ptr;}())
-    }
-
-    public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Optional<Self> {
-        let pointer = __swift_bridge__$Vec_KeywordAlgorithm$pop(vecPtr)
-        if pointer == nil {
-            return nil
-        } else {
-            return (KeywordAlgorithm(ptr: pointer!) as! Self)
-        }
-    }
-
-    public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<KeywordAlgorithmRef> {
-        let pointer = __swift_bridge__$Vec_KeywordAlgorithm$get(vecPtr, index)
-        if pointer == nil {
-            return nil
-        } else {
-            return KeywordAlgorithmRef(ptr: pointer!)
-        }
-    }
-
-    public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<KeywordAlgorithmRefMut> {
-        let pointer = __swift_bridge__$Vec_KeywordAlgorithm$get_mut(vecPtr, index)
-        if pointer == nil {
-            return nil
-        } else {
-            return KeywordAlgorithmRefMut(ptr: pointer!)
-        }
-    }
-
-    public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<KeywordAlgorithmRef> {
-        UnsafePointer<KeywordAlgorithmRef>(OpaquePointer(__swift_bridge__$Vec_KeywordAlgorithm$as_ptr(vecPtr)))
-    }
-
-    public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
-        __swift_bridge__$Vec_KeywordAlgorithm$len(vecPtr)
     }
 }
 

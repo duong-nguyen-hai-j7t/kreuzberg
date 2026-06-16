@@ -784,6 +784,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  TranscriptionConfig dco_decode_box_autoadd_transcription_config(dynamic raw);
+
+  @protected
   Translation dco_decode_box_autoadd_translation(dynamic raw);
 
   @protected
@@ -1612,6 +1615,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   TokenReductionOptions? dco_decode_opt_box_autoadd_token_reduction_options(
+    dynamic raw,
+  );
+
+  @protected
+  TranscriptionConfig? dco_decode_opt_box_autoadd_transcription_config(
     dynamic raw,
   );
 
@@ -2692,6 +2700,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  TranscriptionConfig sse_decode_box_autoadd_transcription_config(
+    SseDeserializer deserializer,
+  );
+
+  @protected
   Translation sse_decode_box_autoadd_translation(SseDeserializer deserializer);
 
   @protected
@@ -3736,6 +3749,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   TokenReductionOptions? sse_decode_opt_box_autoadd_token_reduction_options(
+    SseDeserializer deserializer,
+  );
+
+  @protected
+  TranscriptionConfig? sse_decode_opt_box_autoadd_transcription_config(
     SseDeserializer deserializer,
   );
 
@@ -5190,6 +5208,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_box_autoadd_transcription_config(
+    TranscriptionConfig self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_box_autoadd_translation(
     Translation self,
     SseSerializer serializer,
@@ -6515,6 +6539,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_token_reduction_options(
     TokenReductionOptions? self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_opt_box_autoadd_transcription_config(
+    TranscriptionConfig? self,
     SseSerializer serializer,
   );
 

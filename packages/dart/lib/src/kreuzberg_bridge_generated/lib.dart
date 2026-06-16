@@ -9,7 +9,7 @@ import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lib.freezed.dart';
 
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `CaptioningEnrichmentConfig`, `ClassificationEnrichmentConfig`, `DocumentExtractorDartCallbacks`, `EmbeddingBackendDartCallbacks`, `OcrBackendDartCallbacks`, `PostProcessorDartCallbacks`, `RendererDartCallbacks`, `RerankerBackendDartCallbacks`, `ValidatorDartCallbacks`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `dimensions`, `embed`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `rerank`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`, `version`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `clone`, `dimensions`, `embed`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `rerank`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`, `version`
 
 /// Extract content from a byte array.
 ///
@@ -243,7 +243,7 @@ Future<List<SupportedFormat>> listSupportedFormats() =>
 /// backends (e.g. a WebP-via-`webp-decoder` variant) can use it without an API
 /// break.
 ///
-/// Returns an empty vector on any of:
+/// Returns an empty listtor on any of:
 ///
 /// - Empty input.
 /// - Image-decode failure.
@@ -299,7 +299,7 @@ Future<void> registerBuiltin() => RustLib.instance.api.crateRegisterBuiltin();
 ///
 /// **Returns:**
 ///
-/// - `Ok(Vec<String>)` - Vector of post-processor names
+/// - `Ok(List<String>)` - Vector of post-processor names
 /// - `Err(...)` if the registry lock is poisoned
 Future<List<String>> listPostProcessors() =>
     RustLib.instance.api.crateListPostProcessors();
@@ -317,7 +317,7 @@ Future<List<String>> listRenderers() =>
 /// Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
 /// bindings.
 ///
-/// Since v5.0.0.
+/// Since v5.0.
 Future<List<String>> listRerankerBackends() =>
     RustLib.instance.api.crateListRerankerBackends();
 
@@ -612,7 +612,7 @@ Future<List<String>> listEmbeddingPresets() =>
 /// - `KreuzbergError.MissingDependency` if ONNX Runtime is not installed (ONNX path).
 /// - `KreuzbergError.Reranking` if the preset is unknown or model download fails.
 ///
-/// Since v5.0.0.
+/// Since v5.0.
 Future<List<RerankedDocument>> rerank({
   required String query,
   required List<String> documents,
@@ -625,7 +625,7 @@ Future<List<RerankedDocument>> rerank({
 
 /// Stub for builds without the `reranker` feature.
 ///
-/// Since v5.0.0.
+/// Since v5.0.
 Future<List<RerankedDocument>> rerankAsync({
   required String query,
   required List<String> documents,
@@ -641,7 +641,7 @@ Future<List<RerankedDocument>> rerankAsync({
 /// Returns `null` if no preset with the given name exists. Returns an owned
 /// clone so the value is safe to pass across FFI boundaries.
 ///
-/// Since v5.0.0.
+/// Since v5.0.
 Future<RerankerPreset?> getRerankerPreset({required String name}) =>
     RustLib.instance.api.crateGetRerankerPreset(name: name);
 
@@ -649,7 +649,7 @@ Future<RerankerPreset?> getRerankerPreset({required String name}) =>
 ///
 /// Returns owned `String`s so the values are safe to pass across FFI boundaries.
 ///
-/// Since v5.0.0.
+/// Since v5.0.
 Future<List<String>> listRerankerPresets() =>
     RustLib.instance.api.crateListRerankerPresets();
 
@@ -4910,6 +4910,18 @@ class ExtractionConfig {
   /// `layout-detection` as well as the no-ORT target groups).
   final LayoutDetectionConfig? layout;
 
+  /// Transcription (speech-to-text) configuration for audio/video files.
+  ///
+  /// When set and `enabled`, files with audio/video MIME types (mp3, mp4,
+  /// m4a, wav, webm, etc.) are routed to the Whisper-based transcription
+  /// pipeline. The actual heavy dependencies are only active under the
+  /// `transcription` feature; the field is visible under `transcription-types`
+  /// (including on WASM and Android targets that use the no-ORT preset).
+  ///
+  /// Default: `None` (transcription disabled). This is an additive,
+  /// non-breaking change.
+  final TranscriptionConfig? transcription;
+
   /// Run layout detection on the non-OCR PDF markdown path.
   ///
   /// When `true` and `layout` is `Some(_)`, layout regions inform heading,
@@ -5027,6 +5039,7 @@ class ExtractionConfig {
     this.maxEmbeddedFileBytes,
     required this.outputFormat,
     this.layout,
+    this.transcription,
     required this.useLayoutForMarkdown,
     required this.includeDocumentStructure,
     this.acceleration,
@@ -5070,6 +5083,7 @@ class ExtractionConfig {
       maxEmbeddedFileBytes.hashCode ^
       outputFormat.hashCode ^
       layout.hashCode ^
+      transcription.hashCode ^
       useLayoutForMarkdown.hashCode ^
       includeDocumentStructure.hashCode ^
       acceleration.hashCode ^
@@ -5115,6 +5129,7 @@ class ExtractionConfig {
           maxEmbeddedFileBytes == other.maxEmbeddedFileBytes &&
           outputFormat == other.outputFormat &&
           layout == other.layout &&
+          transcription == other.transcription &&
           useLayoutForMarkdown == other.useLayoutForMarkdown &&
           includeDocumentStructure == other.includeDocumentStructure &&
           acceleration == other.acceleration &&
@@ -5632,6 +5647,9 @@ class FileExtractionConfig {
   /// Override layout detection for this file.
   final LayoutDetectionConfig? layout;
 
+  /// Transcription configuration (see ExtractionConfig for docs).
+  final TranscriptionConfig? transcription;
+
   /// Override per-file extraction timeout in seconds.
   ///
   /// When set, the extraction for this file will be canceled after the
@@ -5668,6 +5686,7 @@ class FileExtractionConfig {
     this.outputFormat,
     this.includeDocumentStructure,
     this.layout,
+    this.transcription,
     this.timeoutSecs,
     this.treeSitter,
     this.structuredExtraction,
@@ -5693,6 +5712,7 @@ class FileExtractionConfig {
       outputFormat.hashCode ^
       includeDocumentStructure.hashCode ^
       layout.hashCode ^
+      transcription.hashCode ^
       timeoutSecs.hashCode ^
       treeSitter.hashCode ^
       structuredExtraction.hashCode;
@@ -5720,6 +5740,7 @@ class FileExtractionConfig {
           outputFormat == other.outputFormat &&
           includeDocumentStructure == other.includeDocumentStructure &&
           layout == other.layout &&
+          transcription == other.transcription &&
           timeoutSecs == other.timeoutSecs &&
           treeSitter == other.treeSitter &&
           structuredExtraction == other.structuredExtraction;
@@ -6410,6 +6431,12 @@ class ImageExtractionConfig {
   /// `ExtractedImage.format` reflects the source extractor's output.
   final ImageOutputFormat outputFormat;
 
+  /// SVG-specific knobs for the image-encode pipeline.
+  ///
+  /// Controls sanitization and rasterization DPI when the source or output
+  /// format is SVG.  Only available when the `svg` feature is active.
+  final SvgOptions svg;
+
   const ImageExtractionConfig({
     required this.extractImages,
     required this.targetDpi,
@@ -6425,6 +6452,7 @@ class ImageExtractionConfig {
     required this.ocrTextOnly,
     required this.appendOcrText,
     required this.outputFormat,
+    required this.svg,
   });
 
   @override
@@ -6442,7 +6470,8 @@ class ImageExtractionConfig {
       runOcrOnImages.hashCode ^
       ocrTextOnly.hashCode ^
       appendOcrText.hashCode ^
-      outputFormat.hashCode;
+      outputFormat.hashCode ^
+      svg.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -6462,7 +6491,8 @@ class ImageExtractionConfig {
           runOcrOnImages == other.runOcrOnImages &&
           ocrTextOnly == other.ocrTextOnly &&
           appendOcrText == other.appendOcrText &&
-          outputFormat == other.outputFormat;
+          outputFormat == other.outputFormat &&
+          svg == other.svg;
 }
 
 /// Heuristic classification of what an image likely depicts.

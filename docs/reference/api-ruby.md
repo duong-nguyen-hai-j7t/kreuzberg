@@ -2,7 +2,7 @@
 title: "Ruby API Reference"
 ---
 
-## Ruby API Reference <span class="version-badge">v5.0.0-rc.17</span>
+## Ruby API Reference <span class="version-badge">v5.0.0-rc.18</span>
 
 ### Functions
 
@@ -464,7 +464,7 @@ container format from magic bytes — but the parameter is retained so future
 backends (e.g. a WebP-via-`webp-decoder` variant) can use it without an API
 break.
 
-Returns an empty vector on any of:
+Returns an empty listtor on any of:
 
 - Empty input.
 - Image-decode failure.
@@ -698,7 +698,7 @@ global registry.
 
 **Returns:**
 
-- `Ok(Vec<String>)` - Vector of post-processor names
+- `Ok(Array<String>)` - Vector of post-processor names
 - `Err(...)` if the registry lock is poisoned
 
 **Signature:**
@@ -808,7 +808,7 @@ Calls `shutdown()` on every registered backend, then empties the registry.
 - Any error returned by a backend's `shutdown()` method. The first error
   encountered stops processing of remaining backends.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -835,7 +835,7 @@ List the names of all registered reranker backends.
 Used by `kreuzberg-cli`, the api/mcp endpoints, and generated language
 bindings.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -1640,7 +1640,7 @@ configured.
 - `KreuzbergError.MissingDependency` if ONNX Runtime is not installed (ONNX path).
 - `KreuzbergError.Reranking` if the preset is unknown or model download fails.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -1672,7 +1672,7 @@ result = rerank("value", [], RerankerConfig.new)
 
 Stub for builds without the `reranker` feature.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -1707,7 +1707,7 @@ Get a reranker preset by name.
 Returns `nil` if no preset with the given name exists. Returns an owned
 clone so the value is safe to pass across FFI boundaries.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -1737,7 +1737,7 @@ List the names of all available reranker presets.
 
 Returns owned `String`s so the values are safe to pass across FFI boundaries.
 
-Since v5.0.0.
+Since v5.0.
 
 **Signature:**
 
@@ -1913,7 +1913,7 @@ Configuration for the VLM captioning post-processor.
 |-------|------|---------|-------------|
 | `llm` | `LlmConfig` | — | LLM configuration used for the VLM call. |
 | `prompt` | `String?` | `nil` | Optional custom caption prompt. `nil` uses the default `RegionKind.Caption` prompt that ships with `crate.llm.region_extractor`. |
-| `min_image_area` | `Integer` | `/* serde(default) */` | Skip images whose `width * height` is below this threshold (in pixels). Default `1_000` filters out icons and decorations. |
+| `min_image_area` | `Integer` | language default | Skip images whose `width * height` is below this threshold (in pixels). Default `1_000` filters out icons and decorations. |
 
 ---
 
@@ -1961,7 +1961,7 @@ is configured), and metadata about its position in the document.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `content` | `String` | — | The text content of this chunk. |
-| `chunk_type` | `ChunkType` | `/* serde(default) */` | Semantic structural classification of this chunk. Assigned by the heuristic classifier based on content patterns and heading context. Defaults to `ChunkType.Unknown` when no rule matches. |
+| `chunk_type` | `ChunkType` | language default | Semantic structural classification of this chunk. Assigned by the heuristic classifier based on content patterns and heading context. Defaults to `ChunkType.Unknown` when no rule matches. |
 | `embedding` | `Array<Float>?` | `nil` | Optional embedding vector for this chunk. Only populated when `EmbeddingConfig` is provided in chunking configuration. The dimensionality depends on the chosen embedding model. |
 | `metadata` | `ChunkMetadata` | — | Metadata about this chunk's position and properties. |
 
@@ -1980,8 +1980,8 @@ Metadata about a chunk's position in the original document.
 | `total_chunks` | `Integer` | — | Total number of chunks in the document. |
 | `first_page` | `Integer?` | `nil` | First page number this chunk spans (1-indexed). Only populated when page tracking is enabled in extraction configuration. |
 | `last_page` | `Integer?` | `nil` | Last page number this chunk spans (1-indexed, equal to first_page for single-page chunks). Only populated when page tracking is enabled in extraction configuration. |
-| `heading_context` | `HeadingContext?` | `/* serde(default) */` | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType.Markdown` is used. |
-| `image_indices` | `Array<Integer>` | `/* serde(default) */` | Indices into `ExtractionResult.images` for images on pages covered by this chunk. Contains zero-based indices into the top-level `images` collection for every image whose `page_number` falls within `[first_page, last_page]`. Empty when image extraction is disabled or the chunk spans no pages with images. |
+| `heading_context` | `HeadingContext?` | language default | Heading context when using Markdown chunker. Contains the heading hierarchy this chunk falls under. Only populated when `ChunkerType.Markdown` is used. |
+| `image_indices` | `Array<Integer>` | language default | Indices into `ExtractionResult.images` for images on pages covered by this chunk. Contains zero-based indices into the top-level `images` collection for every image whose `page_number` falls within `[first_page, last_page]`. Empty when image extraction is disabled or the chunk spans no pages with images. |
 
 ---
 
@@ -2267,7 +2267,6 @@ Available when the `djot` feature is enabled.
 | `images` | `Array<DjotImage>` | — | Extracted images with metadata |
 | `links` | `Array<DjotLink>` | — | Extracted links with URLs |
 | `footnotes` | `Array<Footnote>` | — | Footnote definitions |
-| `attributes` | `Array<String>` | `/* serde(default) */` | Attributes mapped by element identifier (if present) |
 
 ---
 
@@ -2280,7 +2279,6 @@ Image element in Djot.
 | `src` | `String` | — | Image source URL or path |
 | `alt` | `String` | — | Alternative text |
 | `title` | `String?` | `nil` | Optional title |
-| `attributes` | `String?` | `nil` | Element attributes |
 
 ---
 
@@ -2293,7 +2291,6 @@ Link element in Djot.
 | `url` | `String` | — | Link URL |
 | `text` | `String` | — | Link text content |
 | `title` | `String?` | `nil` | Optional title |
-| `attributes` | `String?` | `nil` | Element attributes |
 
 ---
 
@@ -2511,15 +2508,14 @@ for tree structure, and metadata like page number, bounding box, and content lay
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `id` | `String` | — | Deterministic identifier (hash of content + position). |
 | `content` | `NodeContent` | — | Node content — tagged enum, type-specific data only. |
 | `parent` | `Integer?` | `nil` | Parent node index (`nil` = root-level node). |
-| `children` | `Array<Integer>` | `/* serde(default) */` | Child node indices in reading order. |
-| `content_layer` | `ContentLayer` | `/* serde(default) */` | Content layer classification. Always serialised — Kotlin-Android (and any other typed binding) treats the field as non-nullable, so omitting it from the JSON wire would break consumer deserialisation.  `#[serde(default)]` covers the missing-field case on inbound JSON. |
+| `children` | `Array<Integer>` | language default | Child node indices in reading order. |
+| `content_layer` | `ContentLayer` | language default | Content layer classification. Always serialised — Kotlin-Android (and any other typed binding) treats the field as non-nullable, so omitting it from the JSON wire would break consumer deserialisation.  `#[serde(default)]` covers the missing-field case on inbound JSON. |
 | `page` | `Integer?` | `nil` | Page number where this node starts (1-indexed). |
 | `page_end` | `Integer?` | `nil` | Page number where this node ends (for multi-page tables/sections). |
 | `bbox` | `BoundingBox?` | `nil` | Bounding box in document coordinates. |
-| `annotations` | `Array<TextAnnotation>` | `/* serde(default) */` | Inline annotations (formatting, links) on this node's text content. Only meaningful for text-carrying nodes; empty for containers. |
+| `annotations` | `Array<TextAnnotation>` | language default | Inline annotations (formatting, links) on this node's text content. Only meaningful for text-carrying nodes; empty for containers. |
 | `attributes` | `Hash{String=>String}?` | `nil` | Format-specific key-value attributes. Extensible bag for miscellaneous data without a dedicated typed field: CSS classes, LaTeX environment names, Excel cell formulas, slide layout names, etc. |
 
 ---
@@ -2698,7 +2694,6 @@ unique identifier, and metadata for tracking origin and position.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `element_id` | `String` | — | Unique element identifier |
 | `element_type` | `ElementType` | — | Semantic type of this element |
 | `text` | `String` | — | Text content of the element |
 | `metadata` | `ElementMetadata` | — | Metadata about the element |
@@ -3072,7 +3067,7 @@ extracted content and metadata.
 |-------|------|---------|-------------|
 | `sheets` | `Array<ExcelSheet>` | — | All sheets in the workbook |
 | `metadata` | `Hash{String=>String}` | — | Workbook-level metadata (author, creation date, etc.) |
-| `revisions` | `Array<DocumentRevision>?` | `/* serde(default) */` | Collaborative-edit revision headers from `xl/revisions/revisionHeaders.xml`. Populated for legacy shared-workbook `.xlsx` files that contain the `xl/revisions/` directory. Each `<header>` element maps to one `DocumentRevision { kind: FormatChange }` carrying the header's `guid` (→ `revision_id`), `userName` (→ `author`), and `dateTime` (→ `timestamp`). `anchor` and `delta` are `nil`/empty for v1 (per-cell log parsing is a follow-up). `nil` when `xl/revisions/revisionHeaders.xml` is absent. |
+| `revisions` | `Array<DocumentRevision>?` | language default | Collaborative-edit revision headers from `xl/revisions/revisionHeaders.xml`. Populated for legacy shared-workbook `.xlsx` files that contain the `xl/revisions/` directory. Each `<header>` element maps to one `DocumentRevision { kind: FormatChange }` carrying the header's `guid` (→ `revision_id`), `userName` (→ `author`), and `dateTime` (→ `timestamp`). `anchor` and `delta` are `nil`/empty for v1 (per-cell log parsing is a follow-up). `nil` when `xl/revisions/revisionHeaders.xml` is absent. |
 
 ---
 
@@ -3103,7 +3098,7 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `kind_confidence` | `Float?` | `nil` | Confidence score for `image_kind`, in the range 0.0 to 1.0. |
 | `cluster_id` | `Integer?` | `nil` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `nil` for singletons. |
 | `caption` | `String?` | `nil` | VLM-generated caption describing the image, when captioning is configured. Populated by the captioning post-processor (`crates/kreuzberg/src/plugins/processor/builtin/captioning.rs`), which routes each image through `crate.llm.region_extractor.extract_region_with_vlm` in caption mode. `nil` when captioning is disabled or the VLM declined to caption. |
-| `qr_codes` | `Array<QrCode>?` | `[]` | QR codes decoded from this image, when QR detection is enabled. Populated by the QR post-processor (`crates/kreuzberg/src/extractors/qr.rs`) via the pure-Rust `rqrr` decoder. `nil` when QR detection is disabled; an empty `Some(vec![])` when detection ran but found nothing. |
+| `qr_codes` | `Array<QrCode>?` | `[]` | QR codes decoded from this image, when QR detection is enabled. Populated by the QR post-processor (`crates/kreuzberg/src/extractors/qr.rs`) via the pure-Rust `rqrr` decoder. `nil` when QR detection is disabled; an empty `Some([])` when detection ran but found nothing. |
 
 ---
 
@@ -3148,7 +3143,6 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `pages` | `PageConfig?` | `nil` | Page extraction configuration (None = no page tracking) |
 | `keywords` | `KeywordConfig?` | `nil` | Keyword extraction configuration (None = no keyword extraction) |
 | `postprocessor` | `PostProcessorConfig?` | `nil` | Post-processor configuration (None = use defaults) |
-| `html_options` | `String?` | `nil` | HTML to Markdown conversion options (None = use defaults) Configure how HTML documents are converted to Markdown, including heading styles, list formatting, code block styles, and preprocessing options. |
 | `html_output` | `HtmlOutputConfig?` | `nil` | Styled HTML output configuration. When set alongside `output_format = OutputFormat.Html`, the extraction pipeline uses `StyledHtmlRenderer` which emits stable `kb-*` CSS class hooks on every structural element and optionally embeds theme CSS or user-supplied CSS in a `<style>` block. When `nil`, the existing plain comrak-based HTML renderer is used. |
 | `extraction_timeout_secs` | `Integer?` | `nil` | Default per-file timeout in seconds for batch extraction. When set, each file in a batch will be canceled after this duration unless overridden by `FileExtractionConfig.timeout_secs`. Defaults to `Some(60)` to prevent pathological files (e.g. deeply nested archives, documents with millions of cells) from running indefinitely and exhausting caller resources. Set to `nil` to disable the timeout for trusted input or long-running workloads. |
 | `max_concurrent_extractions` | `Integer?` | `nil` | Maximum concurrent extractions in batch operations (None = (num_cpus × 1.5).ceil()). Limits parallelism to prevent resource exhaustion when processing large batches. Defaults to (num_cpus × 1.5).ceil() when not set. |
@@ -3157,13 +3151,13 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `max_embedded_file_bytes` | `Integer?` | `nil` | Maximum uncompressed size in bytes for a single embedded file before recursive extraction is attempted (default: 50 MiB). Applies to embedded objects inside OOXML containers (DOCX, PPTX) and to email attachments processed via recursive extraction. Files that exceed this limit are skipped with a `ProcessingWarning` rather than passed to the extraction pipeline, preventing a single oversized embedded object from consuming unbounded memory or time. Set to `nil` to disable the per-embedded-file cap (falls back to `security_limits.max_archive_size` as the only guard). |
 | `output_format` | `OutputFormat` | `:plain` | Content text format (default: Plain). Controls the format of the extracted content: - `Plain`: Raw extracted text (default) - `Markdown`: Markdown formatted output - `Djot`: Djot markup format (requires djot feature) - `Html`: HTML formatted output When set to a structured format, extraction results will include formatted output. The `formatted_content` field may be populated when format conversion is applied. |
 | `layout` | `LayoutDetectionConfig?` | `nil` | Layout detection configuration (None = layout detection disabled). When set, PDF pages and images are analyzed for document structure (headings, code, formulas, tables, figures, etc.) using RT-DETR models via ONNX Runtime. For PDFs, layout hints override paragraph classification in the markdown pipeline. For images, per-region OCR is performed with markdown formatting based on detected layout classes. Requires the `layout-detection` feature to run inference; the field is present whenever the `layout-types` feature is active (which includes `layout-detection` as well as the no-ORT target groups). |
+| `transcription` | `TranscriptionConfig?` | `nil` | Transcription (speech-to-text) configuration for audio/video files. When set and `enabled`, files with audio/video MIME types (mp3, mp4, m4a, wav, webm, etc.) are routed to the Whisper-based transcription pipeline. The actual heavy dependencies are only active under the `transcription` feature; the field is visible under `transcription-types` (including on WASM and Android targets that use the no-ORT preset). Default: `nil` (transcription disabled). This is an additive, non-breaking change. |
 | `use_layout_for_markdown` | `Boolean` | `false` | Run layout detection on the non-OCR PDF markdown path. When `true` and `layout` is `Some(_)`, layout regions inform heading, table, list, and figure detection in the structure pipeline that would otherwise rely on font-clustering heuristics alone. Significantly improves SF1 (structural F1) at the cost of inference latency (~150-300ms/page CPU, ~20-50ms/page GPU). Default: `false`. Requires the `layout-detection` feature. |
 | `include_document_structure` | `Boolean` | `false` | Enable structured document tree output. When true, populates the `document` field on `ExtractionResult` with a hierarchical `DocumentStructure` containing heading-driven section nesting, table grids, content layer classification, and inline annotations. Independent of `result_format` — can be combined with Unified or ElementBased. |
 | `acceleration` | `AccelerationConfig?` | `nil` | Hardware acceleration configuration for ONNX Runtime models. Controls execution provider selection for layout detection and embedding models. When `nil`, uses platform defaults (CoreML on macOS, CUDA on Linux, CPU on Windows). |
 | `cache_namespace` | `String?` | `nil` | Cache namespace for tenant isolation. When set, cache entries are stored under `{cache_dir}/{namespace}/`. Must be alphanumeric, hyphens, or underscores only (max 64 chars). Different namespaces have isolated cache spaces on the same filesystem. |
 | `cache_ttl_secs` | `Integer?` | `nil` | Per-request cache TTL in seconds. Overrides the global `max_age_days` for this specific extraction. When `0`, caching is completely skipped (no read or write). When `nil`, the global TTL applies. |
 | `email` | `EmailConfig?` | `nil` | Email extraction configuration (None = use defaults). Currently supports configuring the fallback codepage for MSG files that do not specify one. See `EmailConfig` for details. |
-| `concurrency` | `String?` | `nil` | Concurrency limits for constrained environments (None = use defaults). Controls Rayon thread pool size, ONNX Runtime intra-op threads, and (when `max_concurrent_extractions` is unset) the batch concurrency semaphore. See `ConcurrencyConfig` for details. |
 | `max_archive_depth` | `Integer` | — | Maximum recursion depth for archive extraction (default: 3). Set to 0 to disable recursive extraction (legacy behavior). |
 | `tree_sitter` | `TreeSitterConfig?` | `nil` | Tree-sitter language pack configuration (None = tree-sitter disabled). When set, enables code file extraction using tree-sitter parsers. Controls grammar download behavior and code analysis options. |
 | `structured_extraction` | `StructuredExtractionConfig?` | `nil` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult.structured_output`. |
@@ -3174,7 +3168,6 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `page_classification` | `PageClassificationConfig?` | `nil` | Per-page classification configuration. When set, the classification post-processor runs at the Middle stage and populates `ExtractionResult.page_classifications`. |
 | `captioning` | `CaptioningConfig?` | `nil` | VLM captioning configuration for extracted images. When set, the captioning post-processor runs at the Middle stage and writes a caption into each `ExtractedImage.caption`. |
 | `qr_codes` | `Boolean?` | `nil` | Enable QR-code detection in extracted images. When `true`, the QR post-processor runs at the Middle stage and populates `ExtractedImage.qr_codes`. |
-| `cancel_token` | `String?` | `nil` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call its `cancel()` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
 
 ##### Methods
 
@@ -3305,7 +3298,6 @@ This is the main result type returned by all extraction functions.
 | `page_classifications` | `Array<PageClassification>?` | `[]` | Per-page classifications produced by the page-classification post-processor. `nil` when classification is not configured. |
 | `redaction_report` | `RedactionReport?` | `nil` | Audit report of redactions applied by the redaction post-processor. The redaction processor rewrites `content`, `formatted_content`, every chunk's text, and the textual fields of `entities` / `summary` / `translation` / `page_classifications` in place. This report describes what was found and how it was replaced. `nil` when redaction is not configured. |
 | `formatted_content` | `String?` | `nil` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
-| `ocr_internal_document` | `String?` | `nil` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
 
 ##### Methods
 
@@ -3382,11 +3374,11 @@ cannot be overridden per file:
 | `pages` | `PageConfig?` | `nil` | Override page extraction for this file. |
 | `keywords` | `KeywordConfig?` | `nil` | Override keyword extraction for this file. |
 | `postprocessor` | `PostProcessorConfig?` | `nil` | Override post-processor for this file. |
-| `html_options` | `String?` | `nil` | Override HTML conversion options for this file. |
 | `result_format` | `ResultFormat?` | `nil` | Override result format for this file. |
 | `output_format` | `OutputFormat?` | `nil` | Override output content format for this file. |
 | `include_document_structure` | `Boolean?` | `nil` | Override document structure output for this file. |
 | `layout` | `LayoutDetectionConfig?` | `nil` | Override layout detection for this file. |
+| `transcription` | `TranscriptionConfig?` | `nil` | Transcription configuration (see ExtractionConfig for docs). |
 | `timeout_secs` | `Integer?` | `nil` | Override per-file extraction timeout in seconds. When set, the extraction for this file will be canceled after the specified duration. A timed-out file produces an error result without affecting other files in the batch. |
 | `tree_sitter` | `TreeSitterConfig?` | `nil` | Override tree-sitter configuration for this file. |
 | `structured_extraction` | `StructuredExtractionConfig?` | `nil` | Override structured extraction configuration for this file. When set, enables LLM-based structured extraction with a JSON schema for this specific file. The extracted content is sent to a VLM/LLM and the response is parsed according to the provided schema. |
@@ -3415,10 +3407,9 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 | `block_type` | `BlockType` | — | Type of block element |
 | `level` | `Integer?` | `nil` | Heading level (1-6) for headings, or nesting level for lists |
 | `inline_content` | `Array<InlineElement>` | — | Inline content within the block |
-| `attributes` | `String?` | `nil` | Element attributes (classes, IDs, key-value pairs) |
 | `language` | `String?` | `nil` | Language identifier for code blocks |
 | `code` | `String?` | `nil` | Raw code content for code blocks |
-| `children` | `Array<FormattedBlock>` | `/* serde(default) */` | Nested blocks for containers (blockquotes, list items, divs) |
+| `children` | `Array<FormattedBlock>` | language default | Nested blocks for containers (blockquotes, list items, divs) |
 
 ---
 
@@ -3431,9 +3422,9 @@ Individual grid cell with position and span metadata.
 | `content` | `String` | — | Cell text content. |
 | `row` | `Integer` | — | Zero-indexed row position. |
 | `col` | `Integer` | — | Zero-indexed column position. |
-| `row_span` | `Integer` | `/* serde(default) */` | Number of rows this cell spans. |
-| `col_span` | `Integer` | `/* serde(default) */` | Number of columns this cell spans. |
-| `is_header` | `Boolean` | `/* serde(default) */` | Whether this is a header cell. |
+| `row_span` | `Integer` | language default | Number of rows this cell spans. |
+| `col_span` | `Integer` | language default | Number of columns this cell spans. |
+| `is_header` | `Boolean` | language default | Whether this is a header cell. |
 | `bbox` | `BoundingBox?` | `nil` | Bounding box for this cell (if available). |
 
 ---
@@ -3487,7 +3478,6 @@ font size clustering and hierarchical analysis.
 | `text` | `String` | — | The text content of this block |
 | `font_size` | `Float` | — | The font size of the text in this block |
 | `level` | `String` | — | The hierarchy level of this block (H1-H6 or Body) Levels correspond to HTML heading tags: - "h1": Top-level heading - "h2": Secondary heading - "h3": Tertiary heading - "h4": Quaternary heading - "h5": Quinary heading - "h6": Senary heading - "body": Body text (no heading level) |
-| `bbox` | `Array<Float>?` | `nil` | Bounding box information for the block Contains coordinates as (left, top, right, bottom) in PDF units. |
 
 ---
 
@@ -3610,6 +3600,7 @@ Image extraction configuration.
 | `ocr_text_only` | `Boolean` | `false` | When `true`, image OCR results are rendered as plain text without the `![...](...)` markdown placeholder. Only takes effect when `run_ocr_on_images` is also `true`. |
 | `append_ocr_text` | `Boolean` | `false` | When `true` and `ocr_text_only` is `false`, append the OCR text after the image placeholder in the rendered output. |
 | `output_format` | `ImageOutputFormat` | `:native` | Target format for re-encoding extracted images. When set to anything other than `Native`, each extracted image is re-encoded to the requested format before being returned. This lets callers receive uniform output without duplicating encode logic downstream. Defaults to `Native` — no re-encode pass is performed and `ExtractedImage.format` reflects the source extractor's output. |
+| `svg` | `SvgOptions` | — | SVG-specific knobs for the image-encode pipeline. Controls sanitization and rasterization DPI when the source or output format is SVG.  Only available when the `svg` feature is active. |
 
 ##### Methods
 
@@ -3655,9 +3646,7 @@ Image element metadata.
 | `src` | `String` | — | Image source (URL, data URI, or SVG content) |
 | `alt` | `String?` | `nil` | Alternative text from alt attribute |
 | `title` | `String?` | `nil` | Title attribute |
-| `dimensions` | `Array<Integer>?` | `nil` | Image dimensions as (width, height) if available |
 | `image_type` | `ImageType` | — | Image type classification |
-| `attributes` | `Array<Array<String>>` | — | Additional attributes as key-value pairs |
 
 ---
 
@@ -3708,13 +3697,10 @@ including DPI normalization, resizing, and resampling.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `original_dimensions` | `Array<Integer>` | — | Original image dimensions (width, height) in pixels |
-| `original_dpi` | `Array<Float>` | — | Original image DPI (horizontal, vertical) |
 | `target_dpi` | `Integer` | — | Target DPI from configuration |
 | `scale_factor` | `Float` | — | Scaling factor applied to the image |
 | `auto_adjusted` | `Boolean` | — | Whether DPI was auto-adjusted based on content |
 | `final_dpi` | `Integer` | — | Final DPI after processing |
-| `new_dimensions` | `Array<Integer>?` | `nil` | New dimensions after resizing (if resized) |
 | `resample_method` | `String` | — | Resampling algorithm used ("LANCZOS3", "CATMULLROM", etc.) |
 | `dimension_clamped` | `Boolean` | — | Whether dimensions were clamped to max_image_dimension |
 | `calculated_dpi` | `Integer?` | `nil` | Calculated optimal DPI (if auto_adjust_dpi enabled) |
@@ -3733,7 +3719,6 @@ Represents text with formatting, links, images, etc.
 |-------|------|---------|-------------|
 | `element_type` | `InlineType` | — | Type of inline element |
 | `content` | `String` | — | Text content |
-| `attributes` | `String?` | `nil` | Element attributes |
 | `metadata` | `Hash{String=>String}?` | `nil` | Additional metadata (e.g., href for links, src/alt for images) |
 
 ---
@@ -3773,7 +3758,6 @@ Keyword extraction configuration.
 | `algorithm` | `KeywordAlgorithm` | `:yake` | Algorithm to use for extraction. |
 | `max_keywords` | `Integer` | `10` | Maximum number of keywords to extract (default: 10). |
 | `min_score` | `Float` | `0` | Minimum score threshold (0.0-1.0, default: 0.0). Keywords with scores below this threshold are filtered out. Note: Score ranges differ between algorithms. |
-| `ngram_range` | `Array<Integer>` | `[]` | N-gram range for keyword extraction (min, max). (1, 1) = unigrams only (1, 2) = unigrams and bigrams (1, 3) = unigrams, bigrams, and trigrams (default) |
 | `language` | `String?` | `nil` | Language code for stopword filtering (e.g., "en", "de", "fr"). If None, no stopword filtering is applied. |
 | `yake_params` | `YakeParams?` | `nil` | YAKE-specific tuning parameters. |
 | `rake_params` | `RakeParams?` | `nil` | RAKE-specific tuning parameters. |
@@ -3903,7 +3887,6 @@ Link element metadata.
 | `title` | `String?` | `nil` | Optional title attribute |
 | `link_type` | `LinkType` | — | Link type classification |
 | `rel` | `Array<String>` | — | Rel attribute values |
-| `attributes` | `Array<Array<String>>` | — | Additional attributes as key-value pairs |
 
 ---
 
@@ -4452,8 +4435,7 @@ including recognized text and detected tables.
 | `mime_type` | `String` | — | Original MIME type of the processed image |
 | `metadata` | `Hash{String=>Object}` | — | OCR processing metadata (confidence scores, language, etc.) |
 | `tables` | `Array<OcrTable>` | — | Tables detected and extracted via OCR |
-| `ocr_elements` | `Array<OcrElement>?` | `/* serde(default) */` | Structured OCR elements with bounding boxes and confidence scores. Available when TSV output is requested or table detection is enabled. |
-| `internal_document` | `String?` | `nil` | Structured document produced from hOCR parsing. Carries paragraph structure, bounding boxes, and confidence scores that the flattened `content` string discards. |
+| `ocr_elements` | `Array<OcrElement>?` | language default | Structured OCR elements with bounding boxes and confidence scores. Available when TSV output is requested or table detection is enabled. |
 
 ---
 
@@ -4485,7 +4467,7 @@ the result is accepted. Otherwise the next backend is tried.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `stages` | `Array<OcrPipelineStage>` | — | Ordered list of backends to try. Sorted by priority (descending) at runtime. |
-| `quality_thresholds` | `OcrQualityThresholds` | `/* serde(default) */` | Quality thresholds for deciding whether to accept a result or try the next backend. |
+| `quality_thresholds` | `OcrQualityThresholds` | language default | Quality thresholds for deciding whether to accept a result or try the next backend. |
 
 ---
 
@@ -4496,12 +4478,12 @@ A single backend stage in the OCR pipeline.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `backend` | `String` | — | Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name. |
-| `priority` | `Integer` | `/* serde(default) */` | Priority weight (higher = tried first). Stages are sorted by priority descending. |
-| `language` | `String?` | `/* serde(default) */` | Language override for this stage (None = use parent OcrConfig.language). |
-| `tesseract_config` | `TesseractConfig?` | `/* serde(default) */` | Tesseract-specific config override for this stage. |
-| `paddle_ocr_config` | `Object?` | `/* serde(default) */` | PaddleOCR-specific config for this stage. |
-| `vlm_config` | `LlmConfig?` | `/* serde(default) */` | VLM config override for this pipeline stage. |
-| `backend_options` | `Object?` | `/* serde(default) */` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
+| `priority` | `Integer` | language default | Priority weight (higher = tried first). Stages are sorted by priority descending. |
+| `language` | `String?` | language default | Language override for this stage (None = use parent OcrConfig.language). |
+| `tesseract_config` | `TesseractConfig?` | language default | Tesseract-specific config override for this stage. |
+| `paddle_ocr_config` | `Object?` | language default | PaddleOCR-specific config for this stage. |
+| `vlm_config` | `LlmConfig?` | language default | VLM config override for this pipeline stage. |
+| `backend_options` | `Object?` | language default | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
 
 ---
 
@@ -4573,7 +4555,7 @@ Represents a table structure recognized during OCR processing.
 | `cells` | `Array<Array<String>>` | — | Table cells as a 2D vector (rows × columns) |
 | `markdown` | `String` | — | Markdown representation of the table |
 | `page_number` | `Integer` | — | Page number where the table was found (1-indexed) |
-| `bounding_box` | `OcrTableBoundingBox?` | `/* serde(default) */` | Bounding box of the table in pixel coordinates (from OCR word positions). |
+| `bounding_box` | `OcrTableBoundingBox?` | language default | Bounding box of the table in pixel coordinates (from OCR word positions). |
 
 ---
 
@@ -4946,7 +4928,7 @@ Configuration for the page-classification post-processor.
 |-------|------|---------|-------------|
 | `prompt_template` | `String?` | `nil` | Minijinja prompt template. Receives `{{ labels }}` (joined list), `{{ page_text }}` and `{{ multi_label }}` variables. `nil` lets the backend pick a sensible default. |
 | `labels` | `Array<String>` | — | The set of labels the classifier may emit. Must contain at least one entry. |
-| `multi_label` | `Boolean` | `/* serde(default) */` | Allow multiple labels per page. Single-label mode returns at most one label. |
+| `multi_label` | `Boolean` | language default | Allow multiple labels per page. Single-label mode returns at most one label. |
 | `llm` | `LlmConfig` | — | LLM configuration used for classification. |
 
 ---
@@ -4996,10 +4978,10 @@ with associated tables and images mapped to each page.
 
 ### Performance
 
-Uses Arc-wrapped tables and images for memory efficiency:
+Uses shared tables and images for memory efficiency:
 
-- `Vec<Arc<Table>>` enables zero-copy sharing of table data
-- `Vec<Arc<ExtractedImage>>` enables zero-copy sharing of image data
+- `Array<Table>` enables zero-copy sharing of table data
+- `Array<ExtractedImage>` enables zero-copy sharing of image data
 - Maintains exact JSON compatibility via custom Serialize/Deserialize
 
 This reduces memory overhead for documents with shared tables/images
@@ -5009,8 +4991,8 @@ by avoiding redundant copies during serialization.
 |-------|------|---------|-------------|
 | `page_number` | `Integer` | — | Page number (1-indexed) |
 | `content` | `String` | — | Text content for this page |
-| `tables` | `Array<Table>` | `/* serde(default) */` | Tables found on this page (uses Arc for memory efficiency) Serializes as Vec<Table> for JSON compatibility while maintaining Arc semantics in-memory for zero-copy sharing. |
-| `image_indices` | `Array<Integer>` | `/* serde(default) */` | Indices into `ExtractionResult.images` for images found on this page. Each value is a zero-based index into the top-level `images` collection. Only populated when `extract_images = true` in the extraction config. |
+| `tables` | `Array<Table>` | language default | Tables found on this page (uses Arc for memory efficiency) Serializes as Array<Table> for JSON compatibility while maintaining shared in-memory ownership for zero-copy sharing. |
+| `image_indices` | `Array<Integer>` | language default | Indices into `ExtractionResult.images` for images found on this page. Each value is a zero-based index into the top-level `images` collection. Only populated when `extract_images = true` in the extraction config. |
 | `hierarchy` | `PageHierarchy?` | `nil` | Hierarchy information for the page (when hierarchy extraction is enabled) Contains text hierarchy levels (H1-H6) extracted from the page content. |
 | `is_blank` | `Boolean?` | `nil` | Whether this page is blank (no meaningful text content) Determined during extraction based on text content analysis. A page is blank if it has fewer than 3 non-whitespace characters and contains no tables or images. |
 | `layout_regions` | `Array<LayoutRegion>?` | `nil` | Layout detection regions for this page (when layout detection is enabled). Contains detected layout regions with class, confidence, bounding box, and area fraction. Only populated when layout detection is configured. |
@@ -5030,7 +5012,7 @@ blocks with heading levels (H1-H6) for semantic document structure.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `block_count` | `Integer` | — | Number of hierarchy blocks on this page |
-| `blocks` | `Array<HierarchicalBlock>` | `/* serde(default) */` | Hierarchical blocks with heading levels |
+| `blocks` | `Array<HierarchicalBlock>` | language default | Hierarchical blocks with heading levels |
 
 ---
 
@@ -5045,12 +5027,11 @@ and visibility state (for presentations).
 |-------|------|---------|-------------|
 | `number` | `Integer` | — | Page number (1-indexed) |
 | `title` | `String?` | `nil` | Page title (usually for presentations) |
-| `dimensions` | `Array<Float>?` | `nil` | Dimensions in points (PDF) or pixels (images): (width, height) |
 | `image_count` | `Integer?` | `nil` | Number of images on this page |
 | `table_count` | `Integer?` | `nil` | Number of tables on this page |
 | `hidden` | `Boolean?` | `nil` | Whether this page is hidden (e.g., in presentations) |
 | `is_blank` | `Boolean?` | `nil` | Whether this page is blank (no meaningful text, no images, no tables) A page is considered blank if it has fewer than 3 non-whitespace characters and contains no tables or images. This is useful for filtering out empty pages in scanned documents or PDFs with blank separator pages. |
-| `has_vector_graphics` | `Boolean` | `/* serde(default) */` | Whether this page contains non-trivial vector graphics (paths, shapes, curves) Indicates the presence of vector-drawn content such as charts, diagrams, or geometric shapes (e.g., from Adobe InDesign, LaTeX TikZ). These are invisible to `ExtractionResult.images` since they are not embedded as raster XObjects. Set to `true` when path count exceeds a heuristic threshold, signaling that downstream consumers may want to rasterize the page to capture this content. Only populated for PDFs; `nil` for other document types. |
+| `has_vector_graphics` | `Boolean` | language default | Whether this page contains non-trivial vector graphics (paths, shapes, curves) Indicates the presence of vector-drawn content such as charts, diagrams, or geometric shapes (e.g., from Adobe InDesign, LaTeX TikZ). These are invisible to `ExtractionResult.images` since they are not embedded as raster XObjects. Set to `true` when path count exceeds a heuristic threshold, signaling that downstream consumers may want to rasterize the page to capture this content. Only populated for PDFs; `nil` for other document types. |
 
 ---
 
@@ -5394,20 +5375,6 @@ result in place.
 
 ##### Example - Text Cleaning
 
-```rust
-async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig)
-    -> Result<()> {
-    // Remove excessive whitespace
-    result.content = result
-        .content
-        .split_whitespace()
-        .collect::<Vec<_>>()
-        .join(" ");
-
-    Ok(())
-}
-```
-
 **Signature:**
 
 ```ruby
@@ -5616,9 +5583,8 @@ Contains extracted slide content, metadata, and embedded images/tables.
 | `page_structure` | `PageStructure?` | `nil` | Slide structure with boundaries (when page tracking is enabled) |
 | `page_contents` | `Array<PageContent>?` | `nil` | Per-slide content (when page tracking is enabled) |
 | `document` | `DocumentStructure?` | `nil` | Structured document representation |
-| `hyperlinks` | `Array<String>` | `/* serde(default) */` | Hyperlinks discovered in slides as (url, optional_label) pairs. |
-| `office_metadata` | `Hash{String=>String}` | `/* serde(default) */` | Office metadata extracted from docProps/core.xml and docProps/app.xml. Contains keys like "title", "author", "created_by", "subject", "keywords", "modified_by", "created_at", "modified_at", etc. |
-| `revisions` | `Array<DocumentRevision>?` | `/* serde(default) */` | Slide comments as revisions. Each `<p:cm>` element in `ppt/comments/comment{N}.xml` becomes a `DocumentRevision { kind: Comment }` with author (resolved from `ppt/commentAuthors.xml`), ISO-8601 timestamp, and `RevisionAnchor.Slide { index }`. `nil` when no comment XML parts exist. |
+| `office_metadata` | `Hash{String=>String}` | language default | Office metadata extracted from docProps/core.xml and docProps/app.xml. Contains keys like "title", "author", "created_by", "subject", "keywords", "modified_by", "created_at", "modified_at", etc. |
+| `revisions` | `Array<DocumentRevision>?` | language default | Slide comments as revisions. Each `<p:cm>` element in `ppt/comments/comment{N}.xml` becomes a `DocumentRevision { kind: Comment }` with author (resolved from `ppt/commentAuthors.xml`), ISO-8601 timestamp, and `RevisionAnchor.Slide { index }`. `nil` when no comment XML parts exist. |
 
 ---
 
@@ -5819,7 +5785,7 @@ sensitivity is encoded in the pattern via the `(?i)` inline flag when
 |-------|------|---------|-------------|
 | `label` | `String` | — | Custom category label surfaced in `RedactionFinding.category`. |
 | `pattern` | `String` | — | Regex pattern (Rust `regex` crate dialect — no look-around). |
-| `case_sensitive` | `Boolean` | `/* serde(default) */` | When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex. |
+| `case_sensitive` | `Boolean` | language default | When `true`, match case-sensitively; otherwise prepend `(?i)` to the regex. |
 
 ##### Methods
 
@@ -5878,7 +5844,7 @@ metacharacters themselves). Case-insensitive by default — set
 |-------|------|---------|-------------|
 | `label` | `String` | — | Custom category label surfaced in `RedactionFinding.category`. |
 | `value` | `String` | — | Literal value to match. Regex metacharacters are escaped automatically. |
-| `case_sensitive` | `Boolean` | `/* serde(default) */` | When `true`, match the value as-is; otherwise match ASCII-case-insensitively. |
+| `case_sensitive` | `Boolean` | language default | When `true`, match the value as-is; otherwise match ASCII-case-insensitively. |
 
 ##### Methods
 
@@ -5996,7 +5962,7 @@ A single document returned by the reranker, with its position in the input and s
 `index` maps back to the caller's original document list, so metadata arrays
 (e.g. IDs, paths) can be reordered without passing them through the reranker.
 
-Since v5.0.0.
+Since v5.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -6052,7 +6018,7 @@ The synchronous `rerank` entry uses
 requires a multi-thread tokio runtime. Callers running inside a
 `current_thread` runtime must use `rerank_async` instead.
 
-Since v5.0.0.
+Since v5.0.
 
 ##### Methods
 
@@ -6101,7 +6067,7 @@ Configuration for the reranking pipeline.
 Controls which model to use, how many results to return, and download/cache
 behavior for local ONNX models.
 
-Since v5.0.0.
+Since v5.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -6140,14 +6106,14 @@ Metadata for a bundled reranker preset.
 All string fields are owned `String` for FFI compatibility — instances are
 safe to clone and pass across language boundaries.
 
-Since v5.0.0.
+Since v5.0.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `name` | `String` | — | Short identifier (catalog name, e.g. `"bge-reranker-base"`). |
 | `model_repo` | `String` | — | HuggingFace repository name for the model. |
 | `model_file` | `String` | — | Path to the ONNX model file within the repo. |
-| `additional_files` | `Array<String>` | `/* serde(default) */` | Sibling files that must be downloaded alongside `model_file`. Empty for most presets. Used by repos that split the weight blob — e.g. `rozgo/bge-reranker-v2-m3` ships the model in `model.onnx` plus a co-located `model.onnx.data` payload. |
+| `additional_files` | `Array<String>` | language default | Sibling files that must be downloaded alongside `model_file`. Empty for most presets. Used by repos that split the weight blob — e.g. `rozgo/bge-reranker-v2-m3` ships the model in `model.onnx` plus a co-located `model.onnx.data` payload. |
 | `max_length` | `Integer` | — | Maximum token sequence length the model supports. |
 | `description` | `String` | — | Human-readable description of the preset's intended use case. |
 
@@ -6219,7 +6185,7 @@ including host/port settings, CORS configuration, and upload limits.
 
 - `host`: "127.0.0.1" (localhost only)
 - `port`: 8000
-- `cors_origins`: empty vector (allows all origins)
+- `cors_origins`: empty listtor (allows all origins)
 - `max_request_body_bytes`: 104_857_600 (100 MB)
 - `max_multipart_field_bytes`: 104_857_600 (100 MB)
 
@@ -6227,7 +6193,7 @@ including host/port settings, CORS configuration, and upload limits.
 |-------|------|---------|-------------|
 | `host` | `String` | — | Server host address (e.g., "127.0.0.1", "0.0.0.0") |
 | `port` | `Integer` | — | Server port number |
-| `cors_origins` | `Array<String>` | `[]` | CORS allowed origins. Empty vector means allow all origins. If this is an empty vector, the server will accept requests from any origin. If populated with specific origins (e.g., `"<https://example.com"`>), only those origins will be allowed. |
+| `cors_origins` | `Array<String>` | `[]` | CORS allowed origins. Empty vector means allow all origins. If this is an empty listtor, the server will accept requests from any origin. If populated with specific origins (e.g., `"<https://example.com"`>), only those origins will be allowed. |
 | `max_request_body_bytes` | `Integer` | — | Maximum size of request body in bytes (default: 100 MB) |
 | `max_multipart_field_bytes` | `Integer` | — | Maximum size of multipart fields in bytes (default: 100 MB) |
 
@@ -6390,10 +6356,10 @@ returning structured data that conforms to the schema.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `schema` | `Object` | — | JSON Schema defining the desired output structure. |
-| `schema_name` | `String` | `/* serde(default) */` | Schema name passed to the LLM's structured output mode. |
-| `schema_description` | `String?` | `/* serde(default) */` | Optional schema description for the LLM. |
-| `strict` | `Boolean` | `/* serde(default) */` | Enable strict mode — output must exactly match the schema. |
-| `prompt` | `String?` | `/* serde(default) */` | Custom Jinja2 extraction prompt template. When `nil`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
+| `schema_name` | `String` | language default | Schema name passed to the LLM's structured output mode. |
+| `schema_description` | `String?` | language default | Optional schema description for the LLM. |
+| `strict` | `Boolean` | language default | Enable strict mode — output must exactly match the schema. |
+| `prompt` | `String?` | language default | Custom Jinja2 extraction prompt template. When `nil`, a default template is used. Available template variables: - `{{ content }}` — The extracted document text. - `{{ schema }}` — The JSON schema as a formatted string. - `{{ schema_name }}` — The schema name. - `{{ schema_description }}` — The schema description (may be empty). |
 | `llm` | `LlmConfig` | — | LLM configuration for the extraction. |
 
 ---
@@ -6597,8 +6563,6 @@ for Markdown files, structural elements like headers and links.
 | `word_count` | `Integer` | — | Number of words |
 | `character_count` | `Integer` | — | Number of characters |
 | `headers` | `Array<String>?` | `nil` | Markdown headers (text only, Markdown files only) |
-| `links` | `Array<Array<String>>?` | `nil` | Markdown links as (text, URL) tuples (Markdown files only) |
-| `code_blocks` | `Array<Array<String>>?` | `nil` | Code blocks as (language, code) tuples (Markdown files only) |
 
 ---
 
@@ -6615,8 +6579,6 @@ for Markdown, structural elements like headers and links.
 | `word_count` | `Integer` | — | Number of words |
 | `character_count` | `Integer` | — | Number of characters |
 | `headers` | `Array<String>?` | `[]` | Markdown headers (headings text only, for Markdown files) |
-| `links` | `Array<Array<String>>?` | `[]` | Markdown links as (text, url) tuples (for Markdown files) |
-| `code_blocks` | `Array<Array<String>>?` | `[]` | Code blocks as (language, code) tuples (for Markdown files) |
 
 ---
 
@@ -6794,7 +6756,7 @@ Configuration for the translation post-processor.
 |-------|------|---------|-------------|
 | `target_lang` | `String` | — | BCP-47 language tag for the target language (e.g. `"de"`, `"fr-CA"`). |
 | `source_lang` | `String?` | `nil` | Optional explicit source language. `nil` asks the backend to auto-detect. |
-| `preserve_markup` | `Boolean` | `/* serde(default) */` | Translate the formatted (Markdown/HTML) rendition alongside plain text when `formatted_content` is present. |
+| `preserve_markup` | `Boolean` | language default | Translate the formatted (Markdown/HTML) rendition alongside plain text when `formatted_content` is present. |
 | `llm` | `LlmConfig` | — | LLM configuration used for translation. |
 
 ---
@@ -6932,70 +6894,9 @@ if validation fails.
 
 ##### Example - Content Length Validation
 
-```rust
-async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
-    -> Result<()> {
-    let length = result.content.len();
-
-    if length < self.min {
-        return Err(KreuzbergError::validation(format!(
-            "Content too short: {} < {} characters",
-            length, self.min
-        )));
-    }
-
-    if length > self.max {
-        return Err(KreuzbergError::validation(format!(
-            "Content too long: {} > {} characters",
-            length, self.max
-        )));
-    }
-
-    Ok(())
-}
-```
-
 ##### Example - Quality Score Validation
 
-```rust
-async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
-    -> Result<()> {
-    // Check if quality_score exists in metadata
-    let score = result.metadata
-        .additional
-        .get("quality_score")
-        .and_then(|v| v.as_f64())
-        .unwrap_or(0.0);
-
-    if score < self.min_score {
-        return Err(KreuzbergError::validation(format!(
-            "Quality score too low: {} < {}",
-            score, self.min_score
-        )));
-    }
-
-    Ok(())
-}
-```
-
 ##### Example - Security Validation
-
-```rust
-async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
-    -> Result<()> {
-    // Check for blocked patterns
-    for pattern in &self.blocked_patterns {
-        if result.content.contains(pattern) {
-            return Err(KreuzbergError::validation(format!(
-                "Content contains blocked pattern: {}",
-                pattern
-            )));
-        }
-    }
-
-    Ok(())
-}
-```
 
 **Signature:**
 
@@ -7165,7 +7066,7 @@ Year range for bibliographic metadata.
 |-------|------|---------|-------------|
 | `min` | `Integer?` | `nil` | Earliest (minimum) year in the range. |
 | `max` | `Integer?` | `nil` | Latest (maximum) year in the range. |
-| `years` | `Array<Integer>` | `/* serde(default) */` | All individual years present in the collection. |
+| `years` | `Array<Integer>` | language default | All individual years present in the collection. |
 
 ---
 
@@ -7377,7 +7278,7 @@ Embedding model types supported by Kreuzberg.
 
 Reranker model types supported by Kreuzberg.
 
-Since v5.0.0.
+Since v5.0.
 
 | Value | Description |
 |-------|-------------|
@@ -7601,7 +7502,7 @@ Go/Java/TypeScript bindings.
 | `citation` | Citation or bibliographic reference. — Fields: `key`: `String`, `text`: `String` |
 | `admonition` | Admonition / callout container (note, warning, tip, etc.). Children carry the admonition body content. — Fields: `kind`: `String`, `title`: `String` |
 | `raw_block` | Raw block preserved verbatim from the source format. Used for content that cannot be mapped to a semantic node type (e.g. JSX in MDX, raw LaTeX in markdown, embedded HTML). — Fields: `format`: `String`, `content`: `String` |
-| `metadata_block` | Structured metadata block (email headers, YAML frontmatter, etc.). — Fields: `entries`: `Array<Array<String>>` |
+| `metadata_block` | Structured metadata block (email headers, YAML frontmatter, etc.). |
 
 ---
 
@@ -7841,7 +7742,7 @@ Supports both axis-aligned rectangles (from Tesseract) and 4-point quadrilateral
 | Value | Description |
 |-------|-------------|
 | `rectangle` | Axis-aligned bounding box (typical for Tesseract output). — Fields: `left`: `Integer`, `top`: `Integer`, `width`: `Integer`, `height`: `Integer` |
-| `quadrilateral` | 4-point quadrilateral for rotated/skewed text (PaddleOCR). Points are in clockwise order starting from top-left: `[top_left, top_right, bottom_right, bottom_left]` — Fields: `points`: `String` |
+| `quadrilateral` | 4-point quadrilateral for rotated/skewed text (PaddleOCR). Points are in clockwise order starting from top-left: `[top_left, top_right, bottom_right, bottom_left]` |
 
 ---
 
@@ -8124,7 +8025,7 @@ and provides context for debugging.
 | `lock_poisoned` | An internal `Mutex` or `RwLock` was found in a poisoned state. |
 | `unsupported_format` | The document's MIME type is not supported by any registered extractor. |
 | `embedding` | The embedding model or embedding pipeline returned an error. |
-| `reranking` | The reranker model or reranking pipeline returned an error. Since v5.0.0. |
+| `reranking` | The reranker model or reranking pipeline returned an error. Since v5.0. |
 | `transcription` | Audio/video transcription failed. |
 | `timeout` | The extraction operation exceeded the configured time limit. |
 | `cancelled` | The extraction was cancelled via a `CancellationToken`. |
