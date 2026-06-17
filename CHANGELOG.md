@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `scripts/publish/update-homebrew-formula.sh` now ensures `depends_on "libheif"` is present in the tap formula at publish time. Homebrew bottle builds were failing during rc.18/rc.19 because `libheif-sys` could not locate `libheif.pc` via `PKG_CONFIG_PATH` in the brew sandbox (the formula declared only `cmake`/`pkg-config`/`rust` as build deps). The injection is idempotent and self-healing for any future formula drift.
+
 ## [5.0.0-rc.20] - 2026-06-17
 
 ### Fixed

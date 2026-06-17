@@ -59,6 +59,17 @@ else:
 head = re.sub(r'^(\s*url\s+)"[^"]*"', rf'\1"{new_url}"', head, count=1, flags=re.MULTILINE)
 head = re.sub(r'^(\s*sha256\s+)"[^"]*"', rf'\1"{new_sha}"', head, count=1, flags=re.MULTILINE)
 
+required_deps = ['"libheif"']
+for dep in required_deps:
+    if f"depends_on {dep}" not in head:
+        head = re.sub(
+            r'(^(\s*)depends_on\s+"rust"\s+=>\s+:build)([ \t]*$)',
+            rf'\1\3\n\2depends_on {dep}',
+            head,
+            count=1,
+            flags=re.MULTILINE,
+        )
+
 with open(formula_path, "w") as f:
     f.write(head + tail)
 PY
