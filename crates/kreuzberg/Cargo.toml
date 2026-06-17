@@ -323,6 +323,12 @@ ner-onnx = [
 
 presets = ["dep:include_dir", "dep:jsonschema", "dep:sha2"] # Preset format + registry + loader + resolver; pure-Rust.
 
+# LLM vision structured-extraction orchestrator: rasterize → token-aware batch → vision call →
+# schema-validate+merge → citation-fuse. Needs native http (liter-llm) + pdf rendering, so it is
+# excluded from no-ort-target/wasm-target and joins full/android-target/windows-target instead.
+# The module is additionally gated `#[cfg(not(target_arch = "wasm32"))]` in source.
+structured = ["liter-llm", "presets", "heuristics", "pdf", "ocr-pipeline", "dep:moka"]
+
 redaction = ["dep:sha2"] # Pattern-based PII engine; pure-Rust.
 redaction-ml = ["redaction", "ner"] # Couple in NER for PERSON/ORG/LOC redaction.
 
@@ -414,6 +420,7 @@ android-target = [
     "api",
     "mcp",
     "liter-llm",
+    "structured",
     "hwpx",
     "diff",
 ]
@@ -455,6 +462,7 @@ windows-target = [
     "api",
     "mcp",
     "liter-llm",
+    "structured",
     "quality",
 ]
 # Mobile deployment preset — formats + analysis + Tesseract OCR + code intelligence + API types.
@@ -508,6 +516,7 @@ full = [
     "ner-llm",
     "ner-onnx",
     "presets",
+    "structured",
     "redaction",
     "redaction-ml",
     "summarization",
@@ -757,6 +766,7 @@ tempfile = { workspace = true }
 tokio = { workspace = true, features = ["macros", "time"] }
 tokio-test = "0.4"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+wiremock = "0.6"
 zip = { version = ">=7.0.0, <8.7.0", default-features = false, features = ["deflate-flate2"] }
 
 [[bench]]

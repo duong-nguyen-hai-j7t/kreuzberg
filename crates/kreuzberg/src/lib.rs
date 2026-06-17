@@ -108,6 +108,12 @@ pub mod heuristics;
 #[cfg(feature = "presets")]
 pub mod presets;
 
+// Native HTTP (liter-llm) + PDF rendering are required, so the structured orchestrator is excluded
+// on wasm32. Public entry points (`extract_structured`/`split_and_extract`) are re-exported here in
+// the orchestrator wave.
+#[cfg(all(feature = "structured", not(target_arch = "wasm32")))]
+pub mod structured;
+
 #[cfg(any(feature = "ocr", feature = "ocr-wasm"))]
 pub mod ocr;
 
