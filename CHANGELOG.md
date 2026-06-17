@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Orphan `docs/reference/api-gleam.md` left behind by `dc268c1c0e chore: drop Gleam binding entirely`. CI Docs `task docs:build:strict` aborted on 8 `unresolved link reference` warnings from this file (e.g. `[\`BatchFileItem\`]`, `[0.0, 1.0]`, `["<https://example.com">]` patterns the strict link checker reads as broken markdown references). The Gleam binding itself was removed earlier; this is just nav cleanup.
+- **java**: removed stale hand-authored trait-bridge overlay in `packages/java/src/main/java/dev/kreuzberg/` (9 files: `IPostProcessor`, `IOcrBackend`, `IValidator`, `IEmbeddingBackend`, `OcrBackendBridge`, `PostProcessorBridge`, `ValidatorBridge`, `EmbeddingBackendBridge`, `package-info`). Alef's trait-bridge code generation now produces these files correctly in the canonical `packages/java/dev/kreuzberg/` location; the overlay was leftover from before alef handled trait bridges and carried only stale unused imports and formatting differences. Both trees were being compiled by Maven's `sourceDirectory=basedir` config, triggering duplicate-class errors and checkstyle violations. The canonical generated copies are now the sole source.
 
 ### Fixed
 

@@ -7221,14 +7221,14 @@ fn wire__crate__rerank_async_impl(
                 flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
             };
             let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api__query = <String>::sse_decode(&mut deserializer);
-            let api__documents = <Vec<String>>::sse_decode(&mut deserializer);
-            let api__config = <crate::RerankerConfig>::sse_decode(&mut deserializer);
+            let api_query = <String>::sse_decode(&mut deserializer);
+            let api_documents = <Vec<String>>::sse_decode(&mut deserializer);
+            let api_config = <crate::RerankerConfig>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| async move {
                 transform_result_sse::<_, String>(
                     (move || async move {
-                        let output_ok = crate::rerank_async(api__query, api__documents, api__config).await?;
+                        let output_ok = crate::rerank_async(api_query, api_documents, api_config).await?;
                         Ok(output_ok)
                     })()
                     .await,

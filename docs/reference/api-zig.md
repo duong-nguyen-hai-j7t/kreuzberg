@@ -176,6 +176,39 @@ const result = try extractBytesSync("data", "value", .{});
 
 ---
 
+#### extractBytesSync()
+
+Synchronous wrapper for `extract_bytes` (WASM-compatible version).
+
+This is a truly synchronous implementation without tokio runtime dependency.
+It calls `extract_bytes_sync_impl()` to perform the extraction.
+
+**Signature:**
+
+```zig
+pub fn extract_bytes_sync(content: []const u8, mime_type: [:0]const u8, config: ExtractionConfig) Error!ExtractionResult
+```
+
+**Example:**
+
+```zig
+const result = try extractBytesSync("data", "value", .{});
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `content` | `\[\]const u8` | Yes | The content to process |
+| `mimeType` | `\[:0\]const u8` | Yes | The mime type |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Throws `Error`.
+
+---
+
 #### batchExtractFilesSync()
 
 Synchronous wrapper for `batch_extract_files`.
@@ -216,6 +249,37 @@ Uses the global Tokio runtime for optimal performance.
 With the `tokio-runtime` feature, this blocks the current thread using the global
 Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
 that iterates through items and calls `extract_bytes_sync()`.
+
+**Signature:**
+
+```zig
+pub fn batch_extract_bytes_sync(items: []const BatchBytesItem, config: ExtractionConfig) Error![]const ExtractionResult
+```
+
+**Example:**
+
+```zig
+const result = try batchExtractBytesSync(&[_]u8{}, .{});
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `items` | `\[\]const BatchBytesItem` | Yes | The items |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `[]const ExtractionResult`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### batchExtractBytesSync()
+
+Synchronous wrapper for `batch_extract_bytes` (WASM-compatible version).
+
+Iterates through items sequentially, applying per-file config overrides.
 
 **Signature:**
 
@@ -1051,6 +1115,33 @@ const result = try downloadModel("value", "value");
 
 ---
 
+#### downloadModel()
+
+**Signature:**
+
+```zig
+pub fn download_model(name: [:0]const u8, cache_dir: ?[:0]const u8) Error![:0]const u8
+```
+
+**Example:**
+
+```zig
+const result = try downloadModel("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `\[:0\]const u8` | Yes | The  name |
+| `cacheDir` | `\[:0\]const u8?` | No | The  cache dir |
+
+**Returns:** `[:0]const u8`
+
+**Errors:** Throws `Error`.
+
+---
+
 #### defaultModelName()
 
 Pinned default NER model identifier.
@@ -1071,9 +1162,114 @@ const result = defaultModelName();
 
 ---
 
+#### defaultModelName()
+
+**Signature:**
+
+```zig
+pub fn default_model_name() [:0]const u8
+```
+
+**Example:**
+
+```zig
+const result = defaultModelName();
+```
+
+**Returns:** `[:0]const u8`
+
+---
+
 #### knownModels()
 
 All NER models kreuzberg knows about (used by `--all-ner-models`).
+
+**Signature:**
+
+```zig
+pub fn known_models() []const [:0]const u8
+```
+
+**Example:**
+
+```zig
+const result = knownModels();
+```
+
+**Returns:** `[]const [:0]const u8`
+
+---
+
+#### knownModels()
+
+**Signature:**
+
+```zig
+pub fn known_models() []const [:0]const u8
+```
+
+**Example:**
+
+```zig
+const result = knownModels();
+```
+
+**Returns:** `[]const [:0]const u8`
+
+---
+
+#### downloadModel()
+
+Download a NER model into the kreuzberg cache.
+
+**Signature:**
+
+```zig
+pub fn download_model(name: [:0]const u8, cache_dir: ?[:0]const u8) Error![:0]const u8
+```
+
+**Example:**
+
+```zig
+const result = try downloadModel("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `\[:0\]const u8` | Yes | The  name |
+| `cacheDir` | `\[:0\]const u8?` | No | The  cache dir |
+
+**Returns:** `[:0]const u8`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### defaultModelName()
+
+Default NER model identifier.
+
+**Signature:**
+
+```zig
+pub fn default_model_name() [:0]const u8
+```
+
+**Example:**
+
+```zig
+const result = defaultModelName();
+```
+
+**Returns:** `[:0]const u8`
+
+---
+
+#### knownModels()
+
+All NER models kreuzberg knows about.
 
 **Signature:**
 
@@ -1345,6 +1541,42 @@ const result = try extractRegionWithVlm("data", "value", .{}, .{}, "value");
 | `customPrompt` | `\[:0\]const u8?` | No | The custom prompt |
 
 **Returns:** `[:0]const u8`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### rerankAsync()
+
+Rerank documents asynchronously.
+
+Async counterpart to `rerank`. Offloads blocking ONNX inference to a
+dedicated blocking thread pool via Tokio's `spawn_blocking`, keeping the
+async executor free.
+
+Since v5.0.
+
+**Signature:**
+
+```zig
+pub fn rerank_async(query: [:0]const u8, documents: []const [:0]const u8, config: RerankerConfig) Error![]const RerankedDocument
+```
+
+**Example:**
+
+```zig
+const result = try rerankAsync("value", &[_]u8{}, .{});
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `\[:0\]const u8` | Yes | The query |
+| `documents` | `\[\]const \[:0\]const u8` | Yes | The documents |
+| `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `[]const RerankedDocument`
 
 **Errors:** Throws `Error`.
 
@@ -1627,6 +1859,52 @@ const result = listEmbeddingPresets();
 
 ---
 
+#### getEmbeddingPreset()
+
+Returns `null` for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```zig
+pub fn get_embedding_preset(name: [:0]const u8) ?EmbeddingPreset
+```
+
+**Example:**
+
+```zig
+const result = getEmbeddingPreset("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `\[:0\]const u8` | Yes | The  name |
+
+**Returns:** `?EmbeddingPreset`
+
+---
+
+#### listEmbeddingPresets()
+
+Returns an empty list for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```zig
+pub fn list_embedding_presets() []const [:0]const u8
+```
+
+**Example:**
+
+```zig
+const result = listEmbeddingPresets();
+```
+
+**Returns:** `[]const [:0]const u8`
+
+---
+
 #### rerank()
 
 Rerank a list of documents by relevance to a query.
@@ -1661,6 +1939,39 @@ const result = try rerank("value", &[_]u8{}, .{});
 | `query` | `\[:0\]const u8` | Yes | The query |
 | `documents` | `\[\]const \[:0\]const u8` | Yes | The documents |
 | `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `[]const RerankedDocument`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### rerank()
+
+Stub for builds without the `reranker` feature — keeps the symbol available
+on no-ORT targets (Android x86_64 emulator, WASM) so language bindings compile.
+
+Since v5.0.
+
+**Signature:**
+
+```zig
+pub fn rerank(query: [:0]const u8, documents: []const [:0]const u8, config: RerankerConfig) Error![]const RerankedDocument
+```
+
+**Example:**
+
+```zig
+const result = try rerank("value", &[_]u8{}, .{});
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `\[:0\]const u8` | Yes | The  query |
+| `documents` | `\[\]const \[:0\]const u8` | Yes | The  documents |
+| `config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `[]const RerankedDocument`
 
@@ -1752,6 +2063,83 @@ const result = listRerankerPresets();
 ```
 
 **Returns:** `[]const [:0]const u8`
+
+---
+
+#### getRerankerPreset()
+
+Returns `null` for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```zig
+pub fn get_reranker_preset(name: [:0]const u8) ?RerankerPreset
+```
+
+**Example:**
+
+```zig
+const result = getRerankerPreset("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `\[:0\]const u8` | Yes | The  name |
+
+**Returns:** `?RerankerPreset`
+
+---
+
+#### listRerankerPresets()
+
+Returns an empty list for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```zig
+pub fn list_reranker_presets() []const [:0]const u8
+```
+
+**Example:**
+
+```zig
+const result = listRerankerPresets();
+```
+
+**Returns:** `[]const [:0]const u8`
+
+---
+
+#### embedTextsAsync()
+
+**Signature:**
+
+```zig
+pub fn embed_texts_async(texts: []const [:0]const u8, config: EmbeddingConfig) Error![]const []const f32
+```
+
+**Example:**
+
+```zig
+const result = try embedTextsAsync(&[_]u8{}, .{});
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `texts` | `\[\]const \[:0\]const u8` | Yes | The  texts |
+| `config` | `EmbeddingConfig` | Yes | The embedding config |
+
+**Returns:** `[]const []const f32`
+
+**Errors:** Throws `Error`.
 
 ---
 

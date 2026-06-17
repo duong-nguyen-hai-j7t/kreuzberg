@@ -180,6 +180,40 @@ def extract_bytes_sync(content, mime_type, config)
 
 ---
 
+#### extract_bytes_sync()
+
+Synchronous wrapper for `extract_bytes` (WASM-compatible version).
+
+This is a truly synchronous implementation without tokio runtime dependency.
+It calls `extract_bytes_sync_impl()` to perform the extraction.
+
+**Signature:**
+
+```elixir
+@spec extract_bytes_sync(content, mime_type, config) :: {:ok, term()} | {:error, term()}
+def extract_bytes_sync(content, mime_type, config)
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = extract_bytes_sync(<<100, 97, 116, 97>>, "value", %{{}})
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `content` | `binary()` | Yes | The content to process |
+| `mime_type` | `String.t()` | Yes | The mime type |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Returns `{:error, reason}`
+
+---
+
 #### batch_extract_files_sync()
 
 Synchronous wrapper for `batch_extract_files`.
@@ -221,6 +255,38 @@ Uses the global Tokio runtime for optimal performance.
 With the `tokio-runtime` feature, this blocks the current thread using the global
 Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
 that iterates through items and calls `extract_bytes_sync()`.
+
+**Signature:**
+
+```elixir
+@spec batch_extract_bytes_sync(items, config) :: {:ok, term()} | {:error, term()}
+def batch_extract_bytes_sync(items, config)
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = batch_extract_bytes_sync([], %{{}})
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `items` | `list(BatchBytesItem)` | Yes | The items |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `list(ExtractionResult)`
+
+**Errors:** Returns `{:error, reason}`
+
+---
+
+#### batch_extract_bytes_sync()
+
+Synchronous wrapper for `batch_extract_bytes` (WASM-compatible version).
+
+Iterates through items sequentially, applying per-file config overrides.
 
 **Signature:**
 
@@ -1082,6 +1148,34 @@ def download_model(name, cache_dir)
 
 ---
 
+#### download_model()
+
+**Signature:**
+
+```elixir
+@spec download_model(name, cache_dir) :: {:ok, term()} | {:error, term()}
+def download_model(name, cache_dir)
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = download_model("value", "value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String.t()` | Yes | The  name |
+| `cache_dir` | `String.t() \| nil` | No | The  cache dir |
+
+**Returns:** `String.t()`
+
+**Errors:** Returns `{:error, reason}`
+
+---
+
 #### default_model_name()
 
 Pinned default NER model identifier.
@@ -1103,9 +1197,119 @@ def default_model_name()
 
 ---
 
+#### default_model_name()
+
+**Signature:**
+
+```elixir
+@spec default_model_name() :: {:ok, term()} | {:error, term()}
+def default_model_name()
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = default_model_name()
+```
+
+**Returns:** `String.t()`
+
+---
+
 #### known_models()
 
 All NER models kreuzberg knows about (used by `--all-ner-models`).
+
+**Signature:**
+
+```elixir
+@spec known_models() :: {:ok, term()} | {:error, term()}
+def known_models()
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = known_models()
+```
+
+**Returns:** `list(String.t())`
+
+---
+
+#### known_models()
+
+**Signature:**
+
+```elixir
+@spec known_models() :: {:ok, term()} | {:error, term()}
+def known_models()
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = known_models()
+```
+
+**Returns:** `list(String.t())`
+
+---
+
+#### download_model()
+
+Download a NER model into the kreuzberg cache.
+
+**Signature:**
+
+```elixir
+@spec download_model(name, cache_dir) :: {:ok, term()} | {:error, term()}
+def download_model(name, cache_dir)
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = download_model("value", "value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String.t()` | Yes | The  name |
+| `cache_dir` | `String.t() \| nil` | No | The  cache dir |
+
+**Returns:** `String.t()`
+
+**Errors:** Returns `{:error, reason}`
+
+---
+
+#### default_model_name()
+
+Default NER model identifier.
+
+**Signature:**
+
+```elixir
+@spec default_model_name() :: {:ok, term()} | {:error, term()}
+def default_model_name()
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = default_model_name()
+```
+
+**Returns:** `String.t()`
+
+---
+
+#### known_models()
+
+All NER models kreuzberg knows about.
 
 **Signature:**
 
@@ -1386,6 +1590,43 @@ def extract_region_with_vlm(image_bytes, image_mime, region_kind, llm_config, cu
 | `custom_prompt` | `String.t() \| nil` | No | The custom prompt |
 
 **Returns:** `String.t()`
+
+**Errors:** Returns `{:error, reason}`
+
+---
+
+#### rerank_async()
+
+Rerank documents asynchronously.
+
+Async counterpart to `rerank`. Offloads blocking ONNX inference to a
+dedicated blocking thread pool via Tokio's `spawn_blocking`, keeping the
+async executor free.
+
+Since v5.0.
+
+**Signature:**
+
+```elixir
+@spec rerank_async(query, documents, config) :: {:ok, term()} | {:error, term()}
+def rerank_async(query, documents, config)
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = rerank_async("value", [], %{{}})
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `String.t()` | Yes | The query |
+| `documents` | `list(String.t())` | Yes | The documents |
+| `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `list(RerankedDocument)`
 
 **Errors:** Returns `{:error, reason}`
 
@@ -1676,6 +1917,54 @@ def list_embedding_presets()
 
 ---
 
+#### get_embedding_preset()
+
+Returns `nil` for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```elixir
+@spec get_embedding_preset(name) :: {:ok, term()} | {:error, term()}
+def get_embedding_preset(name)
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = get_embedding_preset("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String.t()` | Yes | The  name |
+
+**Returns:** `EmbeddingPreset | nil`
+
+---
+
+#### list_embedding_presets()
+
+Returns an empty list for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```elixir
+@spec list_embedding_presets() :: {:ok, term()} | {:error, term()}
+def list_embedding_presets()
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = list_embedding_presets()
+```
+
+**Returns:** `list(String.t())`
+
+---
+
 #### rerank()
 
 Rerank a list of documents by relevance to a query.
@@ -1711,6 +2000,40 @@ def rerank(query, documents, config)
 | `query` | `String.t()` | Yes | The query |
 | `documents` | `list(String.t())` | Yes | The documents |
 | `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `list(RerankedDocument)`
+
+**Errors:** Returns `{:error, reason}`
+
+---
+
+#### rerank()
+
+Stub for builds without the `reranker` feature — keeps the symbol available
+on no-ORT targets (Android x86_64 emulator, WASM) so language bindings compile.
+
+Since v5.0.
+
+**Signature:**
+
+```elixir
+@spec rerank(query, documents, config) :: {:ok, term()} | {:error, term()}
+def rerank(query, documents, config)
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = rerank("value", [], %{{}})
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `String.t()` | Yes | The  query |
+| `documents` | `list(String.t())` | Yes | The  documents |
+| `config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `list(RerankedDocument)`
 
@@ -1805,6 +2128,86 @@ def list_reranker_presets()
 ```
 
 **Returns:** `list(String.t())`
+
+---
+
+#### get_reranker_preset()
+
+Returns `nil` for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```elixir
+@spec get_reranker_preset(name) :: {:ok, term()} | {:error, term()}
+def get_reranker_preset(name)
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = get_reranker_preset("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String.t()` | Yes | The  name |
+
+**Returns:** `RerankerPreset | nil`
+
+---
+
+#### list_reranker_presets()
+
+Returns an empty list for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```elixir
+@spec list_reranker_presets() :: {:ok, term()} | {:error, term()}
+def list_reranker_presets()
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = list_reranker_presets()
+```
+
+**Returns:** `list(String.t())`
+
+---
+
+#### embed_texts_async()
+
+**Signature:**
+
+```elixir
+@spec embed_texts_async(texts, config) :: {:ok, term()} | {:error, term()}
+def embed_texts_async(texts, config)
+```
+
+**Example:**
+
+```elixir
+{:ok, result} = embed_texts_async([], %{{}})
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `texts` | `list(String.t())` | Yes | The  texts |
+| `config` | `EmbeddingConfig` | Yes | The embedding config |
+
+**Returns:** `list(list(float()))`
+
+**Errors:** Returns `{:error, reason}`
 
 ---
 

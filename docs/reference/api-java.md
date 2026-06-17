@@ -176,6 +176,39 @@ var result = extractBytesSync("data".getBytes(), "value", new ExtractionConfig()
 
 ---
 
+#### extractBytesSync()
+
+Synchronous wrapper for `extract_bytes` (WASM-compatible version).
+
+This is a truly synchronous implementation without tokio runtime dependency.
+It calls `extract_bytes_sync_impl()` to perform the extraction.
+
+**Signature:**
+
+```java
+public static ExtractionResult extractBytesSync(byte[] content, String mimeType, ExtractionConfig config) throws Error
+```
+
+**Example:**
+
+```java
+var result = extractBytesSync("data".getBytes(), "value", new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `content` | `byte\[\]` | Yes | The content to process |
+| `mimeType` | `String` | Yes | The mime type |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Throws `ErrorException`.
+
+---
+
 #### batchExtractFilesSync()
 
 Synchronous wrapper for `batch_extract_files`.
@@ -216,6 +249,37 @@ Uses the global Tokio runtime for optimal performance.
 With the `tokio-runtime` feature, this blocks the current thread using the global
 Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
 that iterates through items and calls `extract_bytes_sync()`.
+
+**Signature:**
+
+```java
+public static List<ExtractionResult> batchExtractBytesSync(List<BatchBytesItem> items, ExtractionConfig config) throws Error
+```
+
+**Example:**
+
+```java
+var result = batchExtractBytesSync(List.of(), new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `items` | `List<BatchBytesItem>` | Yes | The items |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `List<ExtractionResult>`
+
+**Errors:** Throws `ErrorException`.
+
+---
+
+#### batchExtractBytesSync()
+
+Synchronous wrapper for `batch_extract_bytes` (WASM-compatible version).
+
+Iterates through items sequentially, applying per-file config overrides.
 
 **Signature:**
 
@@ -1051,6 +1115,33 @@ var result = downloadModel("value", "value");
 
 ---
 
+#### downloadModel()
+
+**Signature:**
+
+```java
+public static String downloadModel(String name, String cacheDir) throws Error
+```
+
+**Example:**
+
+```java
+var result = downloadModel("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+| `cacheDir` | `Optional<String>` | No | The  cache dir |
+
+**Returns:** `String`
+
+**Errors:** Throws `ErrorException`.
+
+---
+
 #### defaultModelName()
 
 Pinned default NER model identifier.
@@ -1071,9 +1162,114 @@ var result = defaultModelName();
 
 ---
 
+#### defaultModelName()
+
+**Signature:**
+
+```java
+public static String defaultModelName()
+```
+
+**Example:**
+
+```java
+var result = defaultModelName();
+```
+
+**Returns:** `String`
+
+---
+
 #### knownModels()
 
 All NER models kreuzberg knows about (used by `--all-ner-models`).
+
+**Signature:**
+
+```java
+public static List<String> knownModels()
+```
+
+**Example:**
+
+```java
+var result = knownModels();
+```
+
+**Returns:** `List<String>`
+
+---
+
+#### knownModels()
+
+**Signature:**
+
+```java
+public static List<String> knownModels()
+```
+
+**Example:**
+
+```java
+var result = knownModels();
+```
+
+**Returns:** `List<String>`
+
+---
+
+#### downloadModel()
+
+Download a NER model into the kreuzberg cache.
+
+**Signature:**
+
+```java
+public static String downloadModel(String name, String cacheDir) throws Error
+```
+
+**Example:**
+
+```java
+var result = downloadModel("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+| `cacheDir` | `Optional<String>` | No | The  cache dir |
+
+**Returns:** `String`
+
+**Errors:** Throws `ErrorException`.
+
+---
+
+#### defaultModelName()
+
+Default NER model identifier.
+
+**Signature:**
+
+```java
+public static String defaultModelName()
+```
+
+**Example:**
+
+```java
+var result = defaultModelName();
+```
+
+**Returns:** `String`
+
+---
+
+#### knownModels()
+
+All NER models kreuzberg knows about.
 
 **Signature:**
 
@@ -1287,6 +1483,42 @@ var result = extractRegionWithVlm("data".getBytes(), "value", new RegionKind(), 
 | `customPrompt` | `Optional<String>` | No | The custom prompt |
 
 **Returns:** `String`
+
+**Errors:** Throws `ErrorException`.
+
+---
+
+#### rerankAsync()
+
+Rerank documents asynchronously.
+
+Async counterpart to `rerank`. Offloads blocking ONNX inference to a
+dedicated blocking thread pool via Tokio's `spawn_blocking`, keeping the
+async executor free.
+
+Since v5.0.
+
+**Signature:**
+
+```java
+public static List<RerankedDocument> rerankAsync(String query, List<String> documents, RerankerConfig config) throws Error
+```
+
+**Example:**
+
+```java
+var result = rerankAsync("value", List.of(), new RerankerConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `String` | Yes | The query |
+| `documents` | `List<String>` | Yes | The documents |
+| `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `List<RerankedDocument>`
 
 **Errors:** Throws `ErrorException`.
 
@@ -1569,6 +1801,52 @@ var result = listEmbeddingPresets();
 
 ---
 
+#### getEmbeddingPreset()
+
+Returns `null` for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```java
+public static Optional<EmbeddingPreset> getEmbeddingPreset(String name)
+```
+
+**Example:**
+
+```java
+var result = getEmbeddingPreset("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+
+**Returns:** `Optional<EmbeddingPreset>`
+
+---
+
+#### listEmbeddingPresets()
+
+Returns an empty list for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```java
+public static List<String> listEmbeddingPresets()
+```
+
+**Example:**
+
+```java
+var result = listEmbeddingPresets();
+```
+
+**Returns:** `List<String>`
+
+---
+
 #### rerank()
 
 Rerank a list of documents by relevance to a query.
@@ -1603,6 +1881,39 @@ var result = rerank("value", List.of(), new RerankerConfig());
 | `query` | `String` | Yes | The query |
 | `documents` | `List<String>` | Yes | The documents |
 | `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `List<RerankedDocument>`
+
+**Errors:** Throws `ErrorException`.
+
+---
+
+#### rerank()
+
+Stub for builds without the `reranker` feature — keeps the symbol available
+on no-ORT targets (Android x86_64 emulator, WASM) so language bindings compile.
+
+Since v5.0.
+
+**Signature:**
+
+```java
+public static List<RerankedDocument> rerank(String query, List<String> documents, RerankerConfig config) throws Error
+```
+
+**Example:**
+
+```java
+var result = rerank("value", List.of(), new RerankerConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `String` | Yes | The  query |
+| `documents` | `List<String>` | Yes | The  documents |
+| `config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `List<RerankedDocument>`
 
@@ -1694,6 +2005,83 @@ var result = listRerankerPresets();
 ```
 
 **Returns:** `List<String>`
+
+---
+
+#### getRerankerPreset()
+
+Returns `null` for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```java
+public static Optional<RerankerPreset> getRerankerPreset(String name)
+```
+
+**Example:**
+
+```java
+var result = getRerankerPreset("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+
+**Returns:** `Optional<RerankerPreset>`
+
+---
+
+#### listRerankerPresets()
+
+Returns an empty list for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```java
+public static List<String> listRerankerPresets()
+```
+
+**Example:**
+
+```java
+var result = listRerankerPresets();
+```
+
+**Returns:** `List<String>`
+
+---
+
+#### embedTextsAsync()
+
+**Signature:**
+
+```java
+public static List<List<Float>> embedTextsAsync(List<String> texts, EmbeddingConfig config) throws Error
+```
+
+**Example:**
+
+```java
+var result = embedTextsAsync(List.of(), new EmbeddingConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `texts` | `List<String>` | Yes | The  texts |
+| `config` | `EmbeddingConfig` | Yes | The embedding config |
+
+**Returns:** `List<List<Float>>`
+
+**Errors:** Throws `ErrorException`.
 
 ---
 

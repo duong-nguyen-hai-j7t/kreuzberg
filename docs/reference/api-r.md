@@ -176,6 +176,39 @@ result <- extract_bytes_sync(charToRaw("data"), "value", %{{}})
 
 ---
 
+#### extract_bytes_sync()
+
+Synchronous wrapper for `extract_bytes` (WASM-compatible version).
+
+This is a truly synchronous implementation without tokio runtime dependency.
+It calls `extract_bytes_sync_impl()` to perform the extraction.
+
+**Signature:**
+
+```r
+extract_bytes_sync(content, mime_type, config)
+```
+
+**Example:**
+
+```r
+result <- extract_bytes_sync(charToRaw("data"), "value", %{{}})
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `content` | `raw` | Yes | The content to process |
+| `mime_type` | `character` | Yes | The mime type |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Stops with error message.
+
+---
+
 #### batch_extract_files_sync()
 
 Synchronous wrapper for `batch_extract_files`.
@@ -216,6 +249,37 @@ Uses the global Tokio runtime for optimal performance.
 With the `tokio-runtime` feature, this blocks the current thread using the global
 Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
 that iterates through items and calls `extract_bytes_sync()`.
+
+**Signature:**
+
+```r
+batch_extract_bytes_sync(items, config)
+```
+
+**Example:**
+
+```r
+result <- batch_extract_bytes_sync([], %{{}})
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `items` | `list` | Yes | The items |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `list`
+
+**Errors:** Stops with error message.
+
+---
+
+#### batch_extract_bytes_sync()
+
+Synchronous wrapper for `batch_extract_bytes` (WASM-compatible version).
+
+Iterates through items sequentially, applying per-file config overrides.
 
 **Signature:**
 
@@ -1051,6 +1115,33 @@ result <- download_model("value", "value")
 
 ---
 
+#### download_model()
+
+**Signature:**
+
+```r
+download_model(name, cache_dir = NULL)
+```
+
+**Example:**
+
+```r
+result <- download_model("value", "value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `character` | Yes | The  name |
+| `cache_dir` | `character or NULL` | No | The  cache dir |
+
+**Returns:** `character`
+
+**Errors:** Stops with error message.
+
+---
+
 #### default_model_name()
 
 Pinned default NER model identifier.
@@ -1071,9 +1162,114 @@ result <- default_model_name()
 
 ---
 
+#### default_model_name()
+
+**Signature:**
+
+```r
+default_model_name()
+```
+
+**Example:**
+
+```r
+result <- default_model_name()
+```
+
+**Returns:** `character`
+
+---
+
 #### known_models()
 
 All NER models kreuzberg knows about (used by `--all-ner-models`).
+
+**Signature:**
+
+```r
+known_models()
+```
+
+**Example:**
+
+```r
+result <- known_models()
+```
+
+**Returns:** `list`
+
+---
+
+#### known_models()
+
+**Signature:**
+
+```r
+known_models()
+```
+
+**Example:**
+
+```r
+result <- known_models()
+```
+
+**Returns:** `list`
+
+---
+
+#### download_model()
+
+Download a NER model into the kreuzberg cache.
+
+**Signature:**
+
+```r
+download_model(name, cache_dir = NULL)
+```
+
+**Example:**
+
+```r
+result <- download_model("value", "value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `character` | Yes | The  name |
+| `cache_dir` | `character or NULL` | No | The  cache dir |
+
+**Returns:** `character`
+
+**Errors:** Stops with error message.
+
+---
+
+#### default_model_name()
+
+Default NER model identifier.
+
+**Signature:**
+
+```r
+default_model_name()
+```
+
+**Example:**
+
+```r
+result <- default_model_name()
+```
+
+**Returns:** `character`
+
+---
+
+#### known_models()
+
+All NER models kreuzberg knows about.
 
 **Signature:**
 
@@ -1350,6 +1546,42 @@ result <- extract_region_with_vlm(charToRaw("data"), "value", %{{}}, %{{}}, "val
 
 ---
 
+#### rerank_async()
+
+Rerank documents asynchronously.
+
+Async counterpart to `rerank`. Offloads blocking ONNX inference to a
+dedicated blocking thread pool via Tokio's `spawn_blocking`, keeping the
+async executor free.
+
+Since v5.0.
+
+**Signature:**
+
+```r
+rerank_async(query, documents, config)
+```
+
+**Example:**
+
+```r
+result <- rerank_async("value", [], %{{}})
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `character` | Yes | The query |
+| `documents` | `list` | Yes | The documents |
+| `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `list`
+
+**Errors:** Stops with error message.
+
+---
+
 #### extract_keywords()
 
 Extract keywords from text using the specified algorithm.
@@ -1580,6 +1812,37 @@ result <- embed_texts([], %{{}})
 
 ---
 
+#### embed_texts()
+
+Stub for builds without the `embeddings` feature — keeps the symbol available
+on no-ORT targets (Android x86_64 emulator, WASM) so language bindings that
+mirror the public API compile; the runtime call returns an unsupported error.
+
+**Signature:**
+
+```r
+embed_texts(texts, config)
+```
+
+**Example:**
+
+```r
+result <- embed_texts([], %{{}})
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `texts` | `list` | Yes | The  texts |
+| `config` | `EmbeddingConfig` | Yes | The embedding config |
+
+**Returns:** `list`
+
+**Errors:** Stops with error message.
+
+---
+
 #### embed_texts_async()
 
 **Signature:**
@@ -1658,6 +1921,52 @@ result <- list_embedding_presets()
 
 ---
 
+#### get_embedding_preset()
+
+Returns `NULL` for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```r
+get_embedding_preset(name)
+```
+
+**Example:**
+
+```r
+result <- get_embedding_preset("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `character` | Yes | The  name |
+
+**Returns:** `EmbeddingPreset or NULL`
+
+---
+
+#### list_embedding_presets()
+
+Returns an empty list for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```r
+list_embedding_presets()
+```
+
+**Example:**
+
+```r
+result <- list_embedding_presets()
+```
+
+**Returns:** `list`
+
+---
+
 #### rerank()
 
 Rerank a list of documents by relevance to a query.
@@ -1692,6 +2001,39 @@ result <- rerank("value", [], %{{}})
 | `query` | `character` | Yes | The query |
 | `documents` | `list` | Yes | The documents |
 | `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `list`
+
+**Errors:** Stops with error message.
+
+---
+
+#### rerank()
+
+Stub for builds without the `reranker` feature — keeps the symbol available
+on no-ORT targets (Android x86_64 emulator, WASM) so language bindings compile.
+
+Since v5.0.
+
+**Signature:**
+
+```r
+rerank(query, documents, config)
+```
+
+**Example:**
+
+```r
+result <- rerank("value", [], %{{}})
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `character` | Yes | The  query |
+| `documents` | `list` | Yes | The  documents |
+| `config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `list`
 
@@ -1783,6 +2125,83 @@ result <- list_reranker_presets()
 ```
 
 **Returns:** `list`
+
+---
+
+#### get_reranker_preset()
+
+Returns `NULL` for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```r
+get_reranker_preset(name)
+```
+
+**Example:**
+
+```r
+result <- get_reranker_preset("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `character` | Yes | The  name |
+
+**Returns:** `RerankerPreset or NULL`
+
+---
+
+#### list_reranker_presets()
+
+Returns an empty list for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```r
+list_reranker_presets()
+```
+
+**Example:**
+
+```r
+result <- list_reranker_presets()
+```
+
+**Returns:** `list`
+
+---
+
+#### embed_texts_async()
+
+**Signature:**
+
+```r
+embed_texts_async(texts, config)
+```
+
+**Example:**
+
+```r
+result <- embed_texts_async([], %{{}})
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `texts` | `list` | Yes | The  texts |
+| `config` | `EmbeddingConfig` | Yes | The embedding config |
+
+**Returns:** `list`
+
+**Errors:** Stops with error message.
 
 ---
 

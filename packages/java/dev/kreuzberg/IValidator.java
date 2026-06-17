@@ -1,5 +1,6 @@
 package dev.kreuzberg;
 
+
 /**
  * Bridge interface for the Validator plugin system.
  *

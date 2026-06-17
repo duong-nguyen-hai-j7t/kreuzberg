@@ -176,6 +176,39 @@ result = extract_bytes_sync("data", "value", ExtractionConfig.new)
 
 ---
 
+#### extract_bytes_sync()
+
+Synchronous wrapper for `extract_bytes` (WASM-compatible version).
+
+This is a truly synchronous implementation without tokio runtime dependency.
+It calls `extract_bytes_sync_impl()` to perform the extraction.
+
+**Signature:**
+
+```ruby
+def self.extract_bytes_sync(content, mime_type, config)
+```
+
+**Example:**
+
+```ruby
+result = extract_bytes_sync("data", "value", ExtractionConfig.new)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `content` | `String` | Yes | The content to process |
+| `mime_type` | `String` | Yes | The mime type |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Raises `Error`.
+
+---
+
 #### batch_extract_files_sync()
 
 Synchronous wrapper for `batch_extract_files`.
@@ -216,6 +249,37 @@ Uses the global Tokio runtime for optimal performance.
 With the `tokio-runtime` feature, this blocks the current thread using the global
 Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
 that iterates through items and calls `extract_bytes_sync()`.
+
+**Signature:**
+
+```ruby
+def self.batch_extract_bytes_sync(items, config)
+```
+
+**Example:**
+
+```ruby
+result = batch_extract_bytes_sync([], ExtractionConfig.new)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `items` | `Array<BatchBytesItem>` | Yes | The items |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `Array<ExtractionResult>`
+
+**Errors:** Raises `Error`.
+
+---
+
+#### batch_extract_bytes_sync()
+
+Synchronous wrapper for `batch_extract_bytes` (WASM-compatible version).
+
+Iterates through items sequentially, applying per-file config overrides.
 
 **Signature:**
 
@@ -1051,6 +1115,33 @@ result = download_model("value", cache_dir: "value")
 
 ---
 
+#### download_model()
+
+**Signature:**
+
+```ruby
+def self.download_model(name, cache_dir: nil)
+```
+
+**Example:**
+
+```ruby
+result = download_model("value", cache_dir: "value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+| `cache_dir` | `String?` | No | The  cache dir |
+
+**Returns:** `String`
+
+**Errors:** Raises `Error`.
+
+---
+
 #### default_model_name()
 
 Pinned default NER model identifier.
@@ -1071,9 +1162,114 @@ result = default_model_name()
 
 ---
 
+#### default_model_name()
+
+**Signature:**
+
+```ruby
+def self.default_model_name()
+```
+
+**Example:**
+
+```ruby
+result = default_model_name()
+```
+
+**Returns:** `String`
+
+---
+
 #### known_models()
 
 All NER models kreuzberg knows about (used by `--all-ner-models`).
+
+**Signature:**
+
+```ruby
+def self.known_models()
+```
+
+**Example:**
+
+```ruby
+result = known_models()
+```
+
+**Returns:** `Array<String>`
+
+---
+
+#### known_models()
+
+**Signature:**
+
+```ruby
+def self.known_models()
+```
+
+**Example:**
+
+```ruby
+result = known_models()
+```
+
+**Returns:** `Array<String>`
+
+---
+
+#### download_model()
+
+Download a NER model into the kreuzberg cache.
+
+**Signature:**
+
+```ruby
+def self.download_model(name, cache_dir: nil)
+```
+
+**Example:**
+
+```ruby
+result = download_model("value", cache_dir: "value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+| `cache_dir` | `String?` | No | The  cache dir |
+
+**Returns:** `String`
+
+**Errors:** Raises `Error`.
+
+---
+
+#### default_model_name()
+
+Default NER model identifier.
+
+**Signature:**
+
+```ruby
+def self.default_model_name()
+```
+
+**Example:**
+
+```ruby
+result = default_model_name()
+```
+
+**Returns:** `String`
+
+---
+
+#### known_models()
+
+All NER models kreuzberg knows about.
 
 **Signature:**
 
@@ -1345,6 +1541,42 @@ result = extract_region_with_vlm("data", "value", RegionKind.new, LlmConfig.new,
 | `custom_prompt` | `String?` | No | The custom prompt |
 
 **Returns:** `String`
+
+**Errors:** Raises `Error`.
+
+---
+
+#### rerank_async()
+
+Rerank documents asynchronously.
+
+Async counterpart to `rerank`. Offloads blocking ONNX inference to a
+dedicated blocking thread pool via Tokio's `spawn_blocking`, keeping the
+async executor free.
+
+Since v5.0.
+
+**Signature:**
+
+```ruby
+def self.rerank_async(query, documents, config)
+```
+
+**Example:**
+
+```ruby
+result = rerank_async("value", [], RerankerConfig.new)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `String` | Yes | The query |
+| `documents` | `Array<String>` | Yes | The documents |
+| `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `Array<RerankedDocument>`
 
 **Errors:** Raises `Error`.
 
@@ -1627,6 +1859,52 @@ result = list_embedding_presets()
 
 ---
 
+#### get_embedding_preset()
+
+Returns `nil` for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```ruby
+def self.get_embedding_preset(name)
+```
+
+**Example:**
+
+```ruby
+result = get_embedding_preset("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+
+**Returns:** `EmbeddingPreset?`
+
+---
+
+#### list_embedding_presets()
+
+Returns an empty list for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```ruby
+def self.list_embedding_presets()
+```
+
+**Example:**
+
+```ruby
+result = list_embedding_presets()
+```
+
+**Returns:** `Array<String>`
+
+---
+
 #### rerank()
 
 Rerank a list of documents by relevance to a query.
@@ -1661,6 +1939,39 @@ result = rerank("value", [], RerankerConfig.new)
 | `query` | `String` | Yes | The query |
 | `documents` | `Array<String>` | Yes | The documents |
 | `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `Array<RerankedDocument>`
+
+**Errors:** Raises `Error`.
+
+---
+
+#### rerank()
+
+Stub for builds without the `reranker` feature — keeps the symbol available
+on no-ORT targets (Android x86_64 emulator, WASM) so language bindings compile.
+
+Since v5.0.
+
+**Signature:**
+
+```ruby
+def self.rerank(query, documents, config)
+```
+
+**Example:**
+
+```ruby
+result = rerank("value", [], RerankerConfig.new)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `String` | Yes | The  query |
+| `documents` | `Array<String>` | Yes | The  documents |
+| `config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `Array<RerankedDocument>`
 
@@ -1752,6 +2063,83 @@ result = list_reranker_presets()
 ```
 
 **Returns:** `Array<String>`
+
+---
+
+#### get_reranker_preset()
+
+Returns `nil` for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```ruby
+def self.get_reranker_preset(name)
+```
+
+**Example:**
+
+```ruby
+result = get_reranker_preset("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+
+**Returns:** `RerankerPreset?`
+
+---
+
+#### list_reranker_presets()
+
+Returns an empty list for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```ruby
+def self.list_reranker_presets()
+```
+
+**Example:**
+
+```ruby
+result = list_reranker_presets()
+```
+
+**Returns:** `Array<String>`
+
+---
+
+#### embed_texts_async()
+
+**Signature:**
+
+```ruby
+def self.embed_texts_async(texts, config)
+```
+
+**Example:**
+
+```ruby
+result = embed_texts_async([], EmbeddingConfig.new)
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `texts` | `Array<String>` | Yes | The  texts |
+| `config` | `EmbeddingConfig` | Yes | The embedding config |
+
+**Returns:** `Array<Array<Float>>`
+
+**Errors:** Raises `Error`.
 
 ---
 

@@ -176,6 +176,39 @@ KreuzbergExtractionResult *result = kreuzberg_extract_bytes_sync((const uint8_t 
 
 ---
 
+#### kreuzberg_extract_bytes_sync()
+
+Synchronous wrapper for `extract_bytes` (WASM-compatible version).
+
+This is a truly synchronous implementation without tokio runtime dependency.
+It calls `extract_bytes_sync_impl()` to perform the extraction.
+
+**Signature:**
+
+```c
+KreuzbergExtractionResult* kreuzberg_extract_bytes_sync(const uint8_t* content, const char* mime_type, KreuzbergExtractionConfig config);
+```
+
+**Example:**
+
+```c
+KreuzbergExtractionResult *result = kreuzberg_extract_bytes_sync((const uint8_t *)"data", "value", NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `content` | `const uint8_t*` | Yes | The content to process |
+| `mime_type` | `const char*` | Yes | The mime type |
+| `config` | `KreuzbergExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `KreuzbergExtractionResult`
+
+**Errors:** Returns `NULL` on error.
+
+---
+
 #### kreuzberg_batch_extract_files_sync()
 
 Synchronous wrapper for `batch_extract_files`.
@@ -216,6 +249,37 @@ Uses the global Tokio runtime for optimal performance.
 With the `tokio-runtime` feature, this blocks the current thread using the global
 Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
 that iterates through items and calls `extract_bytes_sync()`.
+
+**Signature:**
+
+```c
+KreuzbergExtractionResult* kreuzberg_batch_extract_bytes_sync(KreuzbergBatchBytesItem* items, KreuzbergExtractionConfig config);
+```
+
+**Example:**
+
+```c
+KreuzbergExtractionResult* result = kreuzberg_batch_extract_bytes_sync(NULL, NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `items` | `KreuzbergBatchBytesItem*` | Yes | The items |
+| `config` | `KreuzbergExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `KreuzbergExtractionResult*`
+
+**Errors:** Returns `NULL` on error.
+
+---
+
+#### kreuzberg_batch_extract_bytes_sync()
+
+Synchronous wrapper for `batch_extract_bytes` (WASM-compatible version).
+
+Iterates through items sequentially, applying per-file config overrides.
 
 **Signature:**
 
@@ -1051,6 +1115,33 @@ const char* result = kreuzberg_download_model("value", "value");
 
 ---
 
+#### kreuzberg_download_model()
+
+**Signature:**
+
+```c
+const char* kreuzberg_download_model(const char* name, const char* cache_dir);
+```
+
+**Example:**
+
+```c
+const char* result = kreuzberg_download_model("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `const char*` | Yes | The  name |
+| `cache_dir` | `const char**` | No | The  cache dir |
+
+**Returns:** `const char*`
+
+**Errors:** Returns `NULL` on error.
+
+---
+
 #### kreuzberg_default_model_name()
 
 Pinned default NER model identifier.
@@ -1071,9 +1162,114 @@ const char *result = kreuzberg_default_model_name();
 
 ---
 
+#### kreuzberg_default_model_name()
+
+**Signature:**
+
+```c
+const char* kreuzberg_default_model_name();
+```
+
+**Example:**
+
+```c
+const char *result = kreuzberg_default_model_name();
+```
+
+**Returns:** `const char*`
+
+---
+
 #### kreuzberg_known_models()
 
 All NER models kreuzberg knows about (used by `--all-ner-models`).
+
+**Signature:**
+
+```c
+const char** kreuzberg_known_models();
+```
+
+**Example:**
+
+```c
+const char** result = kreuzberg_known_models();
+```
+
+**Returns:** `const char**`
+
+---
+
+#### kreuzberg_known_models()
+
+**Signature:**
+
+```c
+const char** kreuzberg_known_models();
+```
+
+**Example:**
+
+```c
+const char** result = kreuzberg_known_models();
+```
+
+**Returns:** `const char**`
+
+---
+
+#### kreuzberg_download_model()
+
+Download a NER model into the kreuzberg cache.
+
+**Signature:**
+
+```c
+const char* kreuzberg_download_model(const char* name, const char* cache_dir);
+```
+
+**Example:**
+
+```c
+const char* result = kreuzberg_download_model("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `const char*` | Yes | The  name |
+| `cache_dir` | `const char**` | No | The  cache dir |
+
+**Returns:** `const char*`
+
+**Errors:** Returns `NULL` on error.
+
+---
+
+#### kreuzberg_default_model_name()
+
+Default NER model identifier.
+
+**Signature:**
+
+```c
+const char* kreuzberg_default_model_name();
+```
+
+**Example:**
+
+```c
+const char *result = kreuzberg_default_model_name();
+```
+
+**Returns:** `const char*`
+
+---
+
+#### kreuzberg_known_models()
+
+All NER models kreuzberg knows about.
 
 **Signature:**
 
@@ -1287,6 +1483,42 @@ const char *result = kreuzberg_extract_region_with_vlm((const uint8_t *)"data", 
 | `custom_prompt` | `const char**` | No | The custom prompt |
 
 **Returns:** `const char*`
+
+**Errors:** Returns `NULL` on error.
+
+---
+
+#### kreuzberg_rerank_async()
+
+Rerank documents asynchronously.
+
+Async counterpart to `rerank`. Offloads blocking ONNX inference to a
+dedicated blocking thread pool via Tokio's `spawn_blocking`, keeping the
+async executor free.
+
+Since v5.0.
+
+**Signature:**
+
+```c
+KreuzbergRerankedDocument* kreuzberg_rerank_async(const char* query, const char** documents, KreuzbergRerankerConfig config);
+```
+
+**Example:**
+
+```c
+KreuzbergRerankedDocument* result = kreuzberg_rerank_async("value", NULL, NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `const char*` | Yes | The query |
+| `documents` | `const char**` | Yes | The documents |
+| `config` | `KreuzbergRerankerConfig` | Yes | The configuration options |
+
+**Returns:** `KreuzbergRerankedDocument*`
 
 **Errors:** Returns `NULL` on error.
 
@@ -1569,6 +1801,52 @@ const char** result = kreuzberg_list_embedding_presets();
 
 ---
 
+#### kreuzberg_get_embedding_preset()
+
+Returns `NULL` for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```c
+KreuzbergEmbeddingPreset* kreuzberg_get_embedding_preset(const char* name);
+```
+
+**Example:**
+
+```c
+KreuzbergEmbeddingPreset* result = kreuzberg_get_embedding_preset("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `const char*` | Yes | The  name |
+
+**Returns:** `KreuzbergEmbeddingPreset*`
+
+---
+
+#### kreuzberg_list_embedding_presets()
+
+Returns an empty list for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```c
+const char** kreuzberg_list_embedding_presets();
+```
+
+**Example:**
+
+```c
+const char** result = kreuzberg_list_embedding_presets();
+```
+
+**Returns:** `const char**`
+
+---
+
 #### kreuzberg_rerank()
 
 Rerank a list of documents by relevance to a query.
@@ -1603,6 +1881,39 @@ KreuzbergRerankedDocument* result = kreuzberg_rerank("value", NULL, NULL);
 | `query` | `const char*` | Yes | The query |
 | `documents` | `const char**` | Yes | The documents |
 | `config` | `KreuzbergRerankerConfig` | Yes | The configuration options |
+
+**Returns:** `KreuzbergRerankedDocument*`
+
+**Errors:** Returns `NULL` on error.
+
+---
+
+#### kreuzberg_rerank()
+
+Stub for builds without the `reranker` feature — keeps the symbol available
+on no-ORT targets (Android x86_64 emulator, WASM) so language bindings compile.
+
+Since v5.0.
+
+**Signature:**
+
+```c
+KreuzbergRerankedDocument* kreuzberg_rerank(const char* query, const char** documents, KreuzbergRerankerConfig config);
+```
+
+**Example:**
+
+```c
+KreuzbergRerankedDocument* result = kreuzberg_rerank("value", NULL, NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `const char*` | Yes | The  query |
+| `documents` | `const char**` | Yes | The  documents |
+| `config` | `KreuzbergRerankerConfig` | Yes | The reranker config |
 
 **Returns:** `KreuzbergRerankedDocument*`
 
@@ -1694,6 +2005,83 @@ const char** result = kreuzberg_list_reranker_presets();
 ```
 
 **Returns:** `const char**`
+
+---
+
+#### kreuzberg_get_reranker_preset()
+
+Returns `NULL` for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```c
+KreuzbergRerankerPreset* kreuzberg_get_reranker_preset(const char* name);
+```
+
+**Example:**
+
+```c
+KreuzbergRerankerPreset* result = kreuzberg_get_reranker_preset("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `const char*` | Yes | The  name |
+
+**Returns:** `KreuzbergRerankerPreset*`
+
+---
+
+#### kreuzberg_list_reranker_presets()
+
+Returns an empty list for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```c
+const char** kreuzberg_list_reranker_presets();
+```
+
+**Example:**
+
+```c
+const char** result = kreuzberg_list_reranker_presets();
+```
+
+**Returns:** `const char**`
+
+---
+
+#### kreuzberg_embed_texts_async()
+
+**Signature:**
+
+```c
+float** kreuzberg_embed_texts_async(const char** texts, KreuzbergEmbeddingConfig config);
+```
+
+**Example:**
+
+```c
+float** result = kreuzberg_embed_texts_async(NULL, NULL);
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `texts` | `const char**` | Yes | The  texts |
+| `config` | `KreuzbergEmbeddingConfig` | Yes | The embedding config |
+
+**Returns:** `float**`
+
+**Errors:** Returns `NULL` on error.
 
 ---
 

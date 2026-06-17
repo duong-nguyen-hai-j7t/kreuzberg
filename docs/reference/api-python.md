@@ -176,6 +176,39 @@ result = extract_bytes_sync(b"data", "value", ExtractionConfig())
 
 ---
 
+#### extract_bytes_sync()
+
+Synchronous wrapper for `extract_bytes` (WASM-compatible version).
+
+This is a truly synchronous implementation without tokio runtime dependency.
+It calls `extract_bytes_sync_impl()` to perform the extraction.
+
+**Signature:**
+
+```python
+def extract_bytes_sync(content: bytes, mime_type: str, config: ExtractionConfig) -> ExtractionResult
+```
+
+**Example:**
+
+```python
+result = extract_bytes_sync(b"data", "value", ExtractionConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `content` | `bytes` | Yes | The content to process |
+| `mime_type` | `str` | Yes | The mime type |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Raises `Error`.
+
+---
+
 #### batch_extract_files_sync()
 
 Synchronous wrapper for `batch_extract_files`.
@@ -216,6 +249,37 @@ Uses the global Tokio runtime for optimal performance.
 With the `tokio-runtime` feature, this blocks the current thread using the global
 Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
 that iterates through items and calls `extract_bytes_sync()`.
+
+**Signature:**
+
+```python
+def batch_extract_bytes_sync(items: list[BatchBytesItem], config: ExtractionConfig) -> list[ExtractionResult]
+```
+
+**Example:**
+
+```python
+result = batch_extract_bytes_sync([], ExtractionConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `items` | `list\[BatchBytesItem\]` | Yes | The items |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `list[ExtractionResult]`
+
+**Errors:** Raises `Error`.
+
+---
+
+#### batch_extract_bytes_sync()
+
+Synchronous wrapper for `batch_extract_bytes` (WASM-compatible version).
+
+Iterates through items sequentially, applying per-file config overrides.
 
 **Signature:**
 
@@ -1051,6 +1115,33 @@ result = download_model("value", cache_dir="value")
 
 ---
 
+#### download_model()
+
+**Signature:**
+
+```python
+def download_model(name: str, cache_dir: str = None) -> str
+```
+
+**Example:**
+
+```python
+result = download_model("value", cache_dir="value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `str` | Yes | The  name |
+| `cache_dir` | `str \| None` | No | The  cache dir |
+
+**Returns:** `str`
+
+**Errors:** Raises `Error`.
+
+---
+
 #### default_model_name()
 
 Pinned default NER model identifier.
@@ -1071,9 +1162,114 @@ result = default_model_name()
 
 ---
 
+#### default_model_name()
+
+**Signature:**
+
+```python
+def default_model_name() -> str
+```
+
+**Example:**
+
+```python
+result = default_model_name()
+```
+
+**Returns:** `str`
+
+---
+
 #### known_models()
 
 All NER models kreuzberg knows about (used by `--all-ner-models`).
+
+**Signature:**
+
+```python
+def known_models() -> list[str]
+```
+
+**Example:**
+
+```python
+result = known_models()
+```
+
+**Returns:** `list[str]`
+
+---
+
+#### known_models()
+
+**Signature:**
+
+```python
+def known_models() -> list[str]
+```
+
+**Example:**
+
+```python
+result = known_models()
+```
+
+**Returns:** `list[str]`
+
+---
+
+#### download_model()
+
+Download a NER model into the kreuzberg cache.
+
+**Signature:**
+
+```python
+def download_model(name: str, cache_dir: str = None) -> str
+```
+
+**Example:**
+
+```python
+result = download_model("value", cache_dir="value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `str` | Yes | The  name |
+| `cache_dir` | `str \| None` | No | The  cache dir |
+
+**Returns:** `str`
+
+**Errors:** Raises `Error`.
+
+---
+
+#### default_model_name()
+
+Default NER model identifier.
+
+**Signature:**
+
+```python
+def default_model_name() -> str
+```
+
+**Example:**
+
+```python
+result = default_model_name()
+```
+
+**Returns:** `str`
+
+---
+
+#### known_models()
+
+All NER models kreuzberg knows about.
 
 **Signature:**
 
@@ -1345,6 +1541,42 @@ result = extract_region_with_vlm(b"data", "value", RegionKind(), LlmConfig(), cu
 | `custom_prompt` | `str \| None` | No | The custom prompt |
 
 **Returns:** `str`
+
+**Errors:** Raises `Error`.
+
+---
+
+#### rerank_async()
+
+Rerank documents asynchronously.
+
+Async counterpart to `rerank`. Offloads blocking ONNX inference to a
+dedicated blocking thread pool via Tokio's `spawn_blocking`, keeping the
+async executor free.
+
+Since v5.0.
+
+**Signature:**
+
+```python
+def rerank_async(query: str, documents: list[str], config: RerankerConfig) -> list[RerankedDocument]
+```
+
+**Example:**
+
+```python
+result = rerank_async("value", [], RerankerConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `str` | Yes | The query |
+| `documents` | `list\[str\]` | Yes | The documents |
+| `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `list[RerankedDocument]`
 
 **Errors:** Raises `Error`.
 
@@ -1627,6 +1859,52 @@ result = list_embedding_presets()
 
 ---
 
+#### get_embedding_preset()
+
+Returns `None` for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```python
+def get_embedding_preset(name: str) -> EmbeddingPreset | None
+```
+
+**Example:**
+
+```python
+result = get_embedding_preset("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `str` | Yes | The  name |
+
+**Returns:** `EmbeddingPreset | None`
+
+---
+
+#### list_embedding_presets()
+
+Returns an empty list for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```python
+def list_embedding_presets() -> list[str]
+```
+
+**Example:**
+
+```python
+result = list_embedding_presets()
+```
+
+**Returns:** `list[str]`
+
+---
+
 #### rerank()
 
 Rerank a list of documents by relevance to a query.
@@ -1661,6 +1939,39 @@ result = rerank("value", [], RerankerConfig())
 | `query` | `str` | Yes | The query |
 | `documents` | `list\[str\]` | Yes | The documents |
 | `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `list[RerankedDocument]`
+
+**Errors:** Raises `Error`.
+
+---
+
+#### rerank()
+
+Stub for builds without the `reranker` feature — keeps the symbol available
+on no-ORT targets (Android x86_64 emulator, WASM) so language bindings compile.
+
+Since v5.0.
+
+**Signature:**
+
+```python
+def rerank(query: str, documents: list[str], config: RerankerConfig) -> list[RerankedDocument]
+```
+
+**Example:**
+
+```python
+result = rerank("value", [], RerankerConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `str` | Yes | The  query |
+| `documents` | `list\[str\]` | Yes | The  documents |
+| `config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `list[RerankedDocument]`
 
@@ -1752,6 +2063,83 @@ result = list_reranker_presets()
 ```
 
 **Returns:** `list[str]`
+
+---
+
+#### get_reranker_preset()
+
+Returns `None` for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```python
+def get_reranker_preset(name: str) -> RerankerPreset | None
+```
+
+**Example:**
+
+```python
+result = get_reranker_preset("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `str` | Yes | The  name |
+
+**Returns:** `RerankerPreset | None`
+
+---
+
+#### list_reranker_presets()
+
+Returns an empty list for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```python
+def list_reranker_presets() -> list[str]
+```
+
+**Example:**
+
+```python
+result = list_reranker_presets()
+```
+
+**Returns:** `list[str]`
+
+---
+
+#### embed_texts_async()
+
+**Signature:**
+
+```python
+def embed_texts_async(texts: list[str], config: EmbeddingConfig) -> list[list[float]]
+```
+
+**Example:**
+
+```python
+result = embed_texts_async([], EmbeddingConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `texts` | `list\[str\]` | Yes | The  texts |
+| `config` | `EmbeddingConfig` | Yes | The embedding config |
+
+**Returns:** `list[list[float]]`
+
+**Errors:** Raises `Error`.
 
 ---
 

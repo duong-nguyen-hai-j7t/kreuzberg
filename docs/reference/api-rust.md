@@ -198,6 +198,39 @@ println!("Content: {}", result.content);
 
 ---
 
+#### extract_bytes_sync()
+
+Synchronous wrapper for `extract_bytes` (WASM-compatible version).
+
+This is a truly synchronous implementation without tokio runtime dependency.
+It calls `extract_bytes_sync_impl()` to perform the extraction.
+
+**Signature:**
+
+```rust
+pub fn extract_bytes_sync(content: &[u8], mime_type: &str, config: ExtractionConfig) -> Result<ExtractionResult, Error>
+```
+
+**Example:**
+
+```rust
+let result = extract_bytes_sync(b"data", "value", ExtractionConfig::default())?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `content` | `Vec<u8>` | Yes | The content to process |
+| `mime_type` | `String` | Yes | The mime type |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Returns `Err(Error)`.
+
+---
+
 #### batch_extract_files_sync()
 
 Synchronous wrapper for `batch_extract_files`.
@@ -273,6 +306,37 @@ let items = vec![
 ];
 let results = batch_extract_bytes_sync(items, &config)?;
 ```rust
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `items` | `Vec<BatchBytesItem>` | Yes | The items |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `Vec<ExtractionResult>`
+
+**Errors:** Returns `Err(Error)`.
+
+---
+
+#### batch_extract_bytes_sync()
+
+Synchronous wrapper for `batch_extract_bytes` (WASM-compatible version).
+
+Iterates through items sequentially, applying per-file config overrides.
+
+**Signature:**
+
+```rust
+pub fn batch_extract_bytes_sync(items: Vec<BatchBytesItem>, config: ExtractionConfig) -> Result<Vec<ExtractionResult>, Error>
+```
+
+**Example:**
+
+```rust
+let result = batch_extract_bytes_sync(vec![], ExtractionConfig::default())?;
+```
 
 **Parameters:**
 
@@ -1189,6 +1253,33 @@ let result = download_model("value", "value")?;
 
 ---
 
+#### download_model()
+
+**Signature:**
+
+```rust
+pub fn download_model(name: &str, cache_dir: Option<PathBuf>) -> Result<PathBuf, Error>
+```
+
+**Example:**
+
+```rust
+let result = download_model("value", "value")?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+| `cache_dir` | `Option<PathBuf>` | No | The  cache dir |
+
+**Returns:** `PathBuf`
+
+**Errors:** Returns `Err(Error)`.
+
+---
+
 #### default_model_name()
 
 Pinned default NER model identifier.
@@ -1209,9 +1300,114 @@ let result = default_model_name();
 
 ---
 
+#### default_model_name()
+
+**Signature:**
+
+```rust
+pub fn default_model_name() -> String
+```
+
+**Example:**
+
+```rust
+let result = default_model_name();
+```
+
+**Returns:** `String`
+
+---
+
 #### known_models()
 
 All NER models kreuzberg knows about (used by `--all-ner-models`).
+
+**Signature:**
+
+```rust
+pub fn known_models() -> Vec<String>
+```
+
+**Example:**
+
+```rust
+let result = known_models();
+```
+
+**Returns:** `Vec<String>`
+
+---
+
+#### known_models()
+
+**Signature:**
+
+```rust
+pub fn known_models() -> Vec<String>
+```
+
+**Example:**
+
+```rust
+let result = known_models();
+```
+
+**Returns:** `Vec<String>`
+
+---
+
+#### download_model()
+
+Download a NER model into the kreuzberg cache.
+
+**Signature:**
+
+```rust
+pub fn download_model(name: &str, cache_dir: Option<PathBuf>) -> Result<PathBuf, Error>
+```
+
+**Example:**
+
+```rust
+let result = download_model("value", "value")?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+| `cache_dir` | `Option<PathBuf>` | No | The  cache dir |
+
+**Returns:** `PathBuf`
+
+**Errors:** Returns `Err(Error)`.
+
+---
+
+#### default_model_name()
+
+Default NER model identifier.
+
+**Signature:**
+
+```rust
+pub fn default_model_name() -> String
+```
+
+**Example:**
+
+```rust
+let result = default_model_name();
+```
+
+**Returns:** `String`
+
+---
+
+#### known_models()
+
+All NER models kreuzberg knows about.
 
 **Signature:**
 
@@ -1513,6 +1709,42 @@ println!("Extracted: {markdown}");
 
 ---
 
+#### rerank_async()
+
+Rerank documents asynchronously.
+
+Async counterpart to `rerank`. Offloads blocking ONNX inference to a
+dedicated blocking thread pool via Tokio's `spawn_blocking`, keeping the
+async executor free.
+
+Since v5.0.
+
+**Signature:**
+
+```rust
+pub async fn rerank_async(query: &str, documents: Vec<String>, config: RerankerConfig) -> Result<Vec<RerankedDocument>, Error>
+```
+
+**Example:**
+
+```rust
+let result = rerank_async("value", vec![], RerankerConfig::default()).await?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `String` | Yes | The query |
+| `documents` | `Vec<String>` | Yes | The documents |
+| `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `Vec<RerankedDocument>`
+
+**Errors:** Returns `Err(Error)`.
+
+---
+
 #### extract_keywords()
 
 Extract keywords from text using the specified algorithm.
@@ -1773,6 +2005,37 @@ let result = embed_texts(vec![], EmbeddingConfig::default())?;
 
 ---
 
+#### embed_texts()
+
+Stub for builds without the `embeddings` feature — keeps the symbol available
+on no-ORT targets (Android x86_64 emulator, WASM) so language bindings that
+mirror the public API compile; the runtime call returns an unsupported error.
+
+**Signature:**
+
+```rust
+pub fn embed_texts(texts: Vec<String>, config: EmbeddingConfig) -> Result<Vec<Vec<f32>>, Error>
+```
+
+**Example:**
+
+```rust
+let result = embed_texts(vec![], EmbeddingConfig::default())?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `texts` | `Vec<String>` | Yes | The  texts |
+| `config` | `EmbeddingConfig` | Yes | The embedding config |
+
+**Returns:** `Vec<Vec<f32>>`
+
+**Errors:** Returns `Err(Error)`.
+
+---
+
 #### embed_texts_async()
 
 **Signature:**
@@ -1851,6 +2114,52 @@ let result = list_embedding_presets();
 
 ---
 
+#### get_embedding_preset()
+
+Returns `None` for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```rust
+pub fn get_embedding_preset(name: &str) -> Option<EmbeddingPreset>
+```
+
+**Example:**
+
+```rust
+let result = get_embedding_preset("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+
+**Returns:** `Option<EmbeddingPreset>`
+
+---
+
+#### list_embedding_presets()
+
+Returns an empty list for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```rust
+pub fn list_embedding_presets() -> Vec<String>
+```
+
+**Example:**
+
+```rust
+let result = list_embedding_presets();
+```
+
+**Returns:** `Vec<String>`
+
+---
+
 #### rerank()
 
 Rerank a list of documents by relevance to a query.
@@ -1885,6 +2194,39 @@ let result = rerank("value", vec![], RerankerConfig::default())?;
 | `query` | `String` | Yes | The query |
 | `documents` | `Vec<String>` | Yes | The documents |
 | `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `Vec<RerankedDocument>`
+
+**Errors:** Returns `Err(Error)`.
+
+---
+
+#### rerank()
+
+Stub for builds without the `reranker` feature — keeps the symbol available
+on no-ORT targets (Android x86_64 emulator, WASM) so language bindings compile.
+
+Since v5.0.
+
+**Signature:**
+
+```rust
+pub fn rerank(query: &str, documents: Vec<String>, config: RerankerConfig) -> Result<Vec<RerankedDocument>, Error>
+```
+
+**Example:**
+
+```rust
+let result = rerank("value", vec![], RerankerConfig::default())?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `String` | Yes | The  query |
+| `documents` | `Vec<String>` | Yes | The  documents |
+| `config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `Vec<RerankedDocument>`
 
@@ -1976,6 +2318,83 @@ let result = list_reranker_presets();
 ```
 
 **Returns:** `Vec<String>`
+
+---
+
+#### get_reranker_preset()
+
+Returns `None` for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```rust
+pub fn get_reranker_preset(name: &str) -> Option<RerankerPreset>
+```
+
+**Example:**
+
+```rust
+let result = get_reranker_preset("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+
+**Returns:** `Option<RerankerPreset>`
+
+---
+
+#### list_reranker_presets()
+
+Returns an empty list for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```rust
+pub fn list_reranker_presets() -> Vec<String>
+```
+
+**Example:**
+
+```rust
+let result = list_reranker_presets();
+```
+
+**Returns:** `Vec<String>`
+
+---
+
+#### embed_texts_async()
+
+**Signature:**
+
+```rust
+pub async fn embed_texts_async(texts: Vec<String>, config: EmbeddingConfig) -> Result<Vec<Vec<f32>>, Error>
+```
+
+**Example:**
+
+```rust
+let result = embed_texts_async(vec![], EmbeddingConfig::default()).await?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `texts` | `Vec<String>` | Yes | The  texts |
+| `config` | `EmbeddingConfig` | Yes | The embedding config |
+
+**Returns:** `Vec<Vec<f32>>`
+
+**Errors:** Returns `Err(Error)`.
 
 ---
 

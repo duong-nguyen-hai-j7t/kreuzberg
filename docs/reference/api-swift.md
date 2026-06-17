@@ -176,6 +176,39 @@ let result = try extractBytesSync(Data("data".utf8), "value", ExtractionConfig()
 
 ---
 
+#### extractBytesSync()
+
+Synchronous wrapper for `extract_bytes` (WASM-compatible version).
+
+This is a truly synchronous implementation without tokio runtime dependency.
+It calls `extract_bytes_sync_impl()` to perform the extraction.
+
+**Signature:**
+
+```swift
+public static func extractBytesSync(content: Data, mimeType: String, config: ExtractionConfig) throws -> ExtractionResult
+```
+
+**Example:**
+
+```swift
+let result = try extractBytesSync(Data("data".utf8), "value", ExtractionConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `content` | `Data` | Yes | The content to process |
+| `mimeType` | `String` | Yes | The mime type |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Throws `Error`.
+
+---
+
 #### batchExtractFilesSync()
 
 Synchronous wrapper for `batch_extract_files`.
@@ -216,6 +249,37 @@ Uses the global Tokio runtime for optimal performance.
 With the `tokio-runtime` feature, this blocks the current thread using the global
 Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
 that iterates through items and calls `extract_bytes_sync()`.
+
+**Signature:**
+
+```swift
+public static func batchExtractBytesSync(items: [BatchBytesItem], config: ExtractionConfig) throws -> [ExtractionResult]
+```
+
+**Example:**
+
+```swift
+let result = try batchExtractBytesSync([], ExtractionConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `items` | `\[BatchBytesItem\]` | Yes | The items |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `[ExtractionResult]`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### batchExtractBytesSync()
+
+Synchronous wrapper for `batch_extract_bytes` (WASM-compatible version).
+
+Iterates through items sequentially, applying per-file config overrides.
 
 **Signature:**
 
@@ -1039,9 +1103,85 @@ let result = defaultModelName()
 
 ---
 
+#### defaultModelName()
+
+**Signature:**
+
+```swift
+public static func defaultModelName() -> String
+```
+
+**Example:**
+
+```swift
+let result = defaultModelName()
+```
+
+**Returns:** `String`
+
+---
+
 #### knownModels()
 
 All NER models kreuzberg knows about (used by `--all-ner-models`).
+
+**Signature:**
+
+```swift
+public static func knownModels() -> [String]
+```
+
+**Example:**
+
+```swift
+let result = knownModels()
+```
+
+**Returns:** `[String]`
+
+---
+
+#### knownModels()
+
+**Signature:**
+
+```swift
+public static func knownModels() -> [String]
+```
+
+**Example:**
+
+```swift
+let result = knownModels()
+```
+
+**Returns:** `[String]`
+
+---
+
+#### defaultModelName()
+
+Default NER model identifier.
+
+**Signature:**
+
+```swift
+public static func defaultModelName() -> String
+```
+
+**Example:**
+
+```swift
+let result = defaultModelName()
+```
+
+**Returns:** `String`
+
+---
+
+#### knownModels()
+
+All NER models kreuzberg knows about.
 
 **Signature:**
 
@@ -1510,6 +1650,52 @@ let result = listEmbeddingPresets()
 
 ---
 
+#### getEmbeddingPreset()
+
+Returns `null` for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```swift
+public static func getEmbeddingPreset(name: String) -> EmbeddingPreset?
+```
+
+**Example:**
+
+```swift
+let result = getEmbeddingPreset("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+
+**Returns:** `EmbeddingPreset?`
+
+---
+
+#### listEmbeddingPresets()
+
+Returns an empty list for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```swift
+public static func listEmbeddingPresets() -> [String]
+```
+
+**Example:**
+
+```swift
+let result = listEmbeddingPresets()
+```
+
+**Returns:** `[String]`
+
+---
+
 #### rerank()
 
 Rerank a list of documents by relevance to a query.
@@ -1544,6 +1730,39 @@ let result = try rerank("value", [], RerankerConfig())
 | `query` | `String` | Yes | The query |
 | `documents` | `\[String\]` | Yes | The documents |
 | `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `[RerankedDocument]`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### rerank()
+
+Stub for builds without the `reranker` feature — keeps the symbol available
+on no-ORT targets (Android x86_64 emulator, WASM) so language bindings compile.
+
+Since v5.0.
+
+**Signature:**
+
+```swift
+public static func rerank(query: String, documents: [String], config: RerankerConfig) throws -> [RerankedDocument]
+```
+
+**Example:**
+
+```swift
+let result = try rerank("value", [], RerankerConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `String` | Yes | The  query |
+| `documents` | `\[String\]` | Yes | The  documents |
+| `config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `[RerankedDocument]`
 
@@ -1587,6 +1806,56 @@ let result = getRerankerPreset("value")
 List the names of all available reranker presets.
 
 Returns owned `String`s so the values are safe to pass across FFI boundaries.
+
+Since v5.0.
+
+**Signature:**
+
+```swift
+public static func listRerankerPresets() -> [String]
+```
+
+**Example:**
+
+```swift
+let result = listRerankerPresets()
+```
+
+**Returns:** `[String]`
+
+---
+
+#### getRerankerPreset()
+
+Returns `null` for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```swift
+public static func getRerankerPreset(name: String) -> RerankerPreset?
+```
+
+**Example:**
+
+```swift
+let result = getRerankerPreset("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+
+**Returns:** `RerankerPreset?`
+
+---
+
+#### listRerankerPresets()
+
+Returns an empty list for builds without the `reranker-presets` feature.
 
 Since v5.0.
 

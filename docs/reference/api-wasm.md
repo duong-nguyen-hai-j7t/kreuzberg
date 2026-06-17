@@ -176,6 +176,39 @@ const result = extractBytesSync(new Uint8Array([100, 97, 116, 97]), "value", new
 
 ---
 
+#### extractBytesSync()
+
+Synchronous wrapper for `extract_bytes` (WASM-compatible version).
+
+This is a truly synchronous implementation without tokio runtime dependency.
+It calls `extract_bytes_sync_impl()` to perform the extraction.
+
+**Signature:**
+
+```typescript
+function extractBytesSync(content: Buffer, mimeType: string, config: ExtractionConfig): ExtractionResult
+```
+
+**Example:**
+
+```typescript
+const result = extractBytesSync(new Uint8Array([100, 97, 116, 97]), "value", new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `content` | `Buffer` | Yes | The content to process |
+| `mimeType` | `string` | Yes | The mime type |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Throws `Error` with a descriptive message.
+
+---
+
 #### batchExtractFilesSync()
 
 Synchronous wrapper for `batch_extract_files`.
@@ -216,6 +249,37 @@ Uses the global Tokio runtime for optimal performance.
 With the `tokio-runtime` feature, this blocks the current thread using the global
 Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
 that iterates through items and calls `extract_bytes_sync()`.
+
+**Signature:**
+
+```typescript
+function batchExtractBytesSync(items: Array<BatchBytesItem>, config: ExtractionConfig): Array<ExtractionResult>
+```
+
+**Example:**
+
+```typescript
+const result = batchExtractBytesSync([], new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `items` | `Array<BatchBytesItem>` | Yes | The items |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `Array<ExtractionResult>`
+
+**Errors:** Throws `Error` with a descriptive message.
+
+---
+
+#### batchExtractBytesSync()
+
+Synchronous wrapper for `batch_extract_bytes` (WASM-compatible version).
+
+Iterates through items sequentially, applying per-file config overrides.
 
 **Signature:**
 
@@ -1051,6 +1115,33 @@ const result = downloadModel("value", "value");
 
 ---
 
+#### downloadModel()
+
+**Signature:**
+
+```typescript
+function downloadModel(name: string, cacheDir?: string): string
+```
+
+**Example:**
+
+```typescript
+const result = downloadModel("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `string` | Yes | The  name |
+| `cacheDir` | `string \| null` | No | The  cache dir |
+
+**Returns:** `string`
+
+**Errors:** Throws `Error` with a descriptive message.
+
+---
+
 #### defaultModelName()
 
 Pinned default NER model identifier.
@@ -1071,9 +1162,114 @@ const result = defaultModelName();
 
 ---
 
+#### defaultModelName()
+
+**Signature:**
+
+```typescript
+function defaultModelName(): string
+```
+
+**Example:**
+
+```typescript
+const result = defaultModelName();
+```
+
+**Returns:** `string`
+
+---
+
 #### knownModels()
 
 All NER models kreuzberg knows about (used by `--all-ner-models`).
+
+**Signature:**
+
+```typescript
+function knownModels(): Array<string>
+```
+
+**Example:**
+
+```typescript
+const result = knownModels();
+```
+
+**Returns:** `Array<string>`
+
+---
+
+#### knownModels()
+
+**Signature:**
+
+```typescript
+function knownModels(): Array<string>
+```
+
+**Example:**
+
+```typescript
+const result = knownModels();
+```
+
+**Returns:** `Array<string>`
+
+---
+
+#### downloadModel()
+
+Download a NER model into the kreuzberg cache.
+
+**Signature:**
+
+```typescript
+function downloadModel(name: string, cacheDir?: string): string
+```
+
+**Example:**
+
+```typescript
+const result = downloadModel("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `string` | Yes | The  name |
+| `cacheDir` | `string \| null` | No | The  cache dir |
+
+**Returns:** `string`
+
+**Errors:** Throws `Error` with a descriptive message.
+
+---
+
+#### defaultModelName()
+
+Default NER model identifier.
+
+**Signature:**
+
+```typescript
+function defaultModelName(): string
+```
+
+**Example:**
+
+```typescript
+const result = defaultModelName();
+```
+
+**Returns:** `string`
+
+---
+
+#### knownModels()
+
+All NER models kreuzberg knows about.
 
 **Signature:**
 
@@ -1345,6 +1541,42 @@ const result = await extractRegionWithVlm(new Uint8Array([100, 97, 116, 97]), "v
 | `customPrompt` | `string \| null` | No | The custom prompt |
 
 **Returns:** `string`
+
+**Errors:** Throws `Error` with a descriptive message.
+
+---
+
+#### rerankAsync()
+
+Rerank documents asynchronously.
+
+Async counterpart to `rerank`. Offloads blocking ONNX inference to a
+dedicated blocking thread pool via Tokio's `spawn_blocking`, keeping the
+async executor free.
+
+Since v5.0.
+
+**Signature:**
+
+```typescript
+function rerankAsync(query: string, documents: Array<string>, config: RerankerConfig): Promise<Array<RerankedDocument>>
+```
+
+**Example:**
+
+```typescript
+const result = await rerankAsync("value", [], new RerankerConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `string` | Yes | The query |
+| `documents` | `Array<string>` | Yes | The documents |
+| `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `Array<RerankedDocument>`
 
 **Errors:** Throws `Error` with a descriptive message.
 
@@ -1627,6 +1859,52 @@ const result = listEmbeddingPresets();
 
 ---
 
+#### getEmbeddingPreset()
+
+Returns `null` for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```typescript
+function getEmbeddingPreset(name: string): EmbeddingPreset | null
+```
+
+**Example:**
+
+```typescript
+const result = getEmbeddingPreset("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `string` | Yes | The  name |
+
+**Returns:** `EmbeddingPreset | null`
+
+---
+
+#### listEmbeddingPresets()
+
+Returns an empty list for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```typescript
+function listEmbeddingPresets(): Array<string>
+```
+
+**Example:**
+
+```typescript
+const result = listEmbeddingPresets();
+```
+
+**Returns:** `Array<string>`
+
+---
+
 #### rerank()
 
 Rerank a list of documents by relevance to a query.
@@ -1661,6 +1939,39 @@ const result = rerank("value", [], new RerankerConfig());
 | `query` | `string` | Yes | The query |
 | `documents` | `Array<string>` | Yes | The documents |
 | `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `Array<RerankedDocument>`
+
+**Errors:** Throws `Error` with a descriptive message.
+
+---
+
+#### rerank()
+
+Stub for builds without the `reranker` feature — keeps the symbol available
+on no-ORT targets (Android x86_64 emulator, WASM) so language bindings compile.
+
+Since v5.0.
+
+**Signature:**
+
+```typescript
+function rerank(query: string, documents: Array<string>, config: RerankerConfig): Array<RerankedDocument>
+```
+
+**Example:**
+
+```typescript
+const result = rerank("value", [], new RerankerConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `string` | Yes | The  query |
+| `documents` | `Array<string>` | Yes | The  documents |
+| `config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `Array<RerankedDocument>`
 
@@ -1752,6 +2063,83 @@ const result = listRerankerPresets();
 ```
 
 **Returns:** `Array<string>`
+
+---
+
+#### getRerankerPreset()
+
+Returns `null` for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```typescript
+function getRerankerPreset(name: string): RerankerPreset | null
+```
+
+**Example:**
+
+```typescript
+const result = getRerankerPreset("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `string` | Yes | The  name |
+
+**Returns:** `RerankerPreset | null`
+
+---
+
+#### listRerankerPresets()
+
+Returns an empty list for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```typescript
+function listRerankerPresets(): Array<string>
+```
+
+**Example:**
+
+```typescript
+const result = listRerankerPresets();
+```
+
+**Returns:** `Array<string>`
+
+---
+
+#### embedTextsAsync()
+
+**Signature:**
+
+```typescript
+function embedTextsAsync(texts: Array<string>, config: EmbeddingConfig): Promise<Array<Array<number>>>
+```
+
+**Example:**
+
+```typescript
+const result = await embedTextsAsync([], new EmbeddingConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `texts` | `Array<string>` | Yes | The  texts |
+| `config` | `EmbeddingConfig` | Yes | The embedding config |
+
+**Returns:** `Array<Array<number>>`
+
+**Errors:** Throws `Error` with a descriptive message.
 
 ---
 

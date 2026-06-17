@@ -180,6 +180,40 @@ val result = extractBytesSync("data".toByteArray(), "value", ExtractionConfig())
 
 ---
 
+#### extractBytesSync()
+
+Synchronous wrapper for `extract_bytes` (WASM-compatible version).
+
+This is a truly synchronous implementation without tokio runtime dependency.
+It calls `extract_bytes_sync_impl()` to perform the extraction.
+
+**Signature:**
+
+```kotlin
+@Throws(Error::class)
+fun extractBytesSync(content: ByteArray, mimeType: String, config: ExtractionConfig): ExtractionResult
+```
+
+**Example:**
+
+```kotlin
+val result = extractBytesSync("data".toByteArray(), "value", ExtractionConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `content` | `ByteArray` | Yes | The content to process |
+| `mimeType` | `String` | Yes | The mime type |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Throws `Error`.
+
+---
+
 #### batchExtractFilesSync()
 
 Synchronous wrapper for `batch_extract_files`.
@@ -221,6 +255,38 @@ Uses the global Tokio runtime for optimal performance.
 With the `tokio-runtime` feature, this blocks the current thread using the global
 Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
 that iterates through items and calls `extract_bytes_sync()`.
+
+**Signature:**
+
+```kotlin
+@Throws(Error::class)
+fun batchExtractBytesSync(items: List<BatchBytesItem>, config: ExtractionConfig): List<ExtractionResult>
+```
+
+**Example:**
+
+```kotlin
+val result = batchExtractBytesSync([], ExtractionConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `items` | `List<BatchBytesItem>` | Yes | The items |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `List<ExtractionResult>`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### batchExtractBytesSync()
+
+Synchronous wrapper for `batch_extract_bytes` (WASM-compatible version).
+
+Iterates through items sequentially, applying per-file config overrides.
 
 **Signature:**
 
@@ -1080,6 +1146,34 @@ val result = downloadModel("value", "value")
 
 ---
 
+#### downloadModel()
+
+**Signature:**
+
+```kotlin
+@Throws(Error::class)
+fun downloadModel(name: String, cacheDir: Path? = null): Path
+```
+
+**Example:**
+
+```kotlin
+val result = downloadModel("value", "value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+| `cacheDir` | `Path?` | No | The  cache dir |
+
+**Returns:** `Path`
+
+**Errors:** Throws `Error`.
+
+---
+
 #### defaultModelName()
 
 Pinned default NER model identifier.
@@ -1100,9 +1194,115 @@ val result = defaultModelName()
 
 ---
 
+#### defaultModelName()
+
+**Signature:**
+
+```kotlin
+fun defaultModelName(): String
+```
+
+**Example:**
+
+```kotlin
+val result = defaultModelName()
+```
+
+**Returns:** `String`
+
+---
+
 #### knownModels()
 
 All NER models kreuzberg knows about (used by `--all-ner-models`).
+
+**Signature:**
+
+```kotlin
+fun knownModels(): List<String>
+```
+
+**Example:**
+
+```kotlin
+val result = knownModels()
+```
+
+**Returns:** `List<String>`
+
+---
+
+#### knownModels()
+
+**Signature:**
+
+```kotlin
+fun knownModels(): List<String>
+```
+
+**Example:**
+
+```kotlin
+val result = knownModels()
+```
+
+**Returns:** `List<String>`
+
+---
+
+#### downloadModel()
+
+Download a NER model into the kreuzberg cache.
+
+**Signature:**
+
+```kotlin
+@Throws(Error::class)
+fun downloadModel(name: String, cacheDir: Path? = null): Path
+```
+
+**Example:**
+
+```kotlin
+val result = downloadModel("value", "value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+| `cacheDir` | `Path?` | No | The  cache dir |
+
+**Returns:** `Path`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### defaultModelName()
+
+Default NER model identifier.
+
+**Signature:**
+
+```kotlin
+fun defaultModelName(): String
+```
+
+**Example:**
+
+```kotlin
+val result = defaultModelName()
+```
+
+**Returns:** `String`
+
+---
+
+#### knownModels()
+
+All NER models kreuzberg knows about.
 
 **Signature:**
 
@@ -1319,6 +1519,43 @@ val result = extractRegionWithVlm("data".toByteArray(), "value", RegionKind(), L
 | `customPrompt` | `String?` | No | The custom prompt |
 
 **Returns:** `String`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### rerankAsync()
+
+Rerank documents asynchronously.
+
+Async counterpart to `rerank`. Offloads blocking ONNX inference to a
+dedicated blocking thread pool via Tokio's `spawn_blocking`, keeping the
+async executor free.
+
+Since v5.0.
+
+**Signature:**
+
+```kotlin
+@Throws(Error::class)
+fun rerankAsync(query: String, documents: List<String>, config: RerankerConfig): List<RerankedDocument>
+```
+
+**Example:**
+
+```kotlin
+val result = rerankAsync("value", [], RerankerConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `String` | Yes | The query |
+| `documents` | `List<String>` | Yes | The documents |
+| `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `List<RerankedDocument>`
 
 **Errors:** Throws `Error`.
 
@@ -1579,6 +1816,52 @@ val result = listEmbeddingPresets()
 
 ---
 
+#### getEmbeddingPreset()
+
+Returns `null` for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```kotlin
+fun getEmbeddingPreset(name: String): EmbeddingPreset?
+```
+
+**Example:**
+
+```kotlin
+val result = getEmbeddingPreset("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+
+**Returns:** `EmbeddingPreset?`
+
+---
+
+#### listEmbeddingPresets()
+
+Returns an empty list for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```kotlin
+fun listEmbeddingPresets(): List<String>
+```
+
+**Example:**
+
+```kotlin
+val result = listEmbeddingPresets()
+```
+
+**Returns:** `List<String>`
+
+---
+
 #### rerank()
 
 Rerank a list of documents by relevance to a query.
@@ -1614,6 +1897,40 @@ val result = rerank("value", [], RerankerConfig())
 | `query` | `String` | Yes | The query |
 | `documents` | `List<String>` | Yes | The documents |
 | `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `List<RerankedDocument>`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### rerank()
+
+Stub for builds without the `reranker` feature — keeps the symbol available
+on no-ORT targets (Android x86_64 emulator, WASM) so language bindings compile.
+
+Since v5.0.
+
+**Signature:**
+
+```kotlin
+@Throws(Error::class)
+fun rerank(query: String, documents: List<String>, config: RerankerConfig): List<RerankedDocument>
+```
+
+**Example:**
+
+```kotlin
+val result = rerank("value", [], RerankerConfig())
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `String` | Yes | The  query |
+| `documents` | `List<String>` | Yes | The  documents |
+| `config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `List<RerankedDocument>`
 
@@ -1690,6 +2007,56 @@ val result = getRerankerPreset("value")
 List the names of all available reranker presets.
 
 Returns owned `String`s so the values are safe to pass across FFI boundaries.
+
+Since v5.0.
+
+**Signature:**
+
+```kotlin
+fun listRerankerPresets(): List<String>
+```
+
+**Example:**
+
+```kotlin
+val result = listRerankerPresets()
+```
+
+**Returns:** `List<String>`
+
+---
+
+#### getRerankerPreset()
+
+Returns `null` for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```kotlin
+fun getRerankerPreset(name: String): RerankerPreset?
+```
+
+**Example:**
+
+```kotlin
+val result = getRerankerPreset("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+
+**Returns:** `RerankerPreset?`
+
+---
+
+#### listRerankerPresets()
+
+Returns an empty list for builds without the `reranker-presets` feature.
 
 Since v5.0.
 

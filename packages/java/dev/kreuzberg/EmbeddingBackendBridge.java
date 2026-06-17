@@ -58,65 +58,83 @@ public final class EmbeddingBackendBridge implements AutoCloseable {
     }
 
     private void initializeStubs() throws ReflectiveOperationException {
-        long offset = 0L;
+        // Each stub is allocated by its own helper to keep this dispatcher and each
+        // helper well under checkstyle's MethodLength cap, even for traits with
+        // many methods (e.g. OcrBackend has ~15 stubs).
+        initStubName(0L * ValueLayout.ADDRESS.byteSize());
+        initStubVersion(1L * ValueLayout.ADDRESS.byteSize());
+        initStubInitialize(2L * ValueLayout.ADDRESS.byteSize());
+        initStubShutdown(3L * ValueLayout.ADDRESS.byteSize());
+        initStubDimensions(4L * ValueLayout.ADDRESS.byteSize());
+        initStubEmbed(5L * ValueLayout.ADDRESS.byteSize());
+        initStubFreeString(6L * ValueLayout.ADDRESS.byteSize());
+        initStubFreeUserData(7L * ValueLayout.ADDRESS.byteSize());
+    }
 
+    private void initStubName(long offset) throws ReflectiveOperationException {
         var stubName = LINKER.upcallStub(LOOKUP.bind(this, "handleName",
             MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
             FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubName);
-        offset += ValueLayout.ADDRESS.byteSize();
+    }
 
+    private void initStubVersion(long offset) throws ReflectiveOperationException {
         var stubVersion = LINKER.upcallStub(LOOKUP.bind(this, "handleVersion",
             MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
             FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubVersion);
-        offset += ValueLayout.ADDRESS.byteSize();
+    }
 
+    private void initStubInitialize(long offset) throws ReflectiveOperationException {
         var stubInitialize = LINKER.upcallStub(LOOKUP.bind(this, "handleInitialize",
             MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class)),
             FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubInitialize);
-        offset += ValueLayout.ADDRESS.byteSize();
+    }
 
+    private void initStubShutdown(long offset) throws ReflectiveOperationException {
         var stubShutdown = LINKER.upcallStub(LOOKUP.bind(this, "handleShutdown",
             MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class)),
             FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubShutdown);
-        offset += ValueLayout.ADDRESS.byteSize();
+    }
 
+    private void initStubDimensions(long offset) throws ReflectiveOperationException {
         var stubDimensions = LINKER.upcallStub(LOOKUP.bind(this, "handleDimensions",
             MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
             FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubDimensions);
-        offset += ValueLayout.ADDRESS.byteSize();
+    }
 
+    private void initStubEmbed(long offset) throws ReflectiveOperationException {
         var stubEmbed = LINKER.upcallStub(LOOKUP.bind(this, "handleEmbed",
             MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
             FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubEmbed);
-        offset += ValueLayout.ADDRESS.byteSize();
+    }
 
+    private void initStubFreeString(long offset) throws ReflectiveOperationException {
         var stubFreeString = LINKER.upcallStub(LOOKUP.bind(this, "freeString",
             MethodType.methodType(void.class, MemorySegment.class)),
             FunctionDescriptor.ofVoid(ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubFreeString);
-        offset += ValueLayout.ADDRESS.byteSize();
+    }
 
+    private void initStubFreeUserData(long offset) throws ReflectiveOperationException {
         var stubFreeUserData = LINKER.upcallStub(LOOKUP.bind(this, "freeUserData",
             MethodType.methodType(void.class, MemorySegment.class)),
             FunctionDescriptor.ofVoid(ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubFreeUserData);
-        offset += ValueLayout.ADDRESS.byteSize();
-
     }
+
 
     MemorySegment vtableSegment() { return vtable; }
 

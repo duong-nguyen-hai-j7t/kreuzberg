@@ -176,6 +176,39 @@ var result = ExtractBytesSync(System.Text.Encoding.UTF8.GetBytes("data"), "value
 
 ---
 
+#### ExtractBytesSync()
+
+Synchronous wrapper for `extract_bytes` (WASM-compatible version).
+
+This is a truly synchronous implementation without tokio runtime dependency.
+It calls `extract_bytes_sync_impl()` to perform the extraction.
+
+**Signature:**
+
+```csharp
+public static ExtractionResult ExtractBytesSync(byte[] content, string mimeType, ExtractionConfig config)
+```
+
+**Example:**
+
+```csharp
+var result = ExtractBytesSync(System.Text.Encoding.UTF8.GetBytes("data"), "value", new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Content` | `byte\[\]` | Yes | The content to process |
+| `MimeType` | `string` | Yes | The mime type |
+| `Config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Throws `Error`.
+
+---
+
 #### BatchExtractFilesSync()
 
 Synchronous wrapper for `batch_extract_files`.
@@ -216,6 +249,37 @@ Uses the global Tokio runtime for optimal performance.
 With the `tokio-runtime` feature, this blocks the current thread using the global
 Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
 that iterates through items and calls `extract_bytes_sync()`.
+
+**Signature:**
+
+```csharp
+public static List<ExtractionResult> BatchExtractBytesSync(List<BatchBytesItem> items, ExtractionConfig config)
+```
+
+**Example:**
+
+```csharp
+var result = BatchExtractBytesSync(new List<object>(), new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Items` | `List<BatchBytesItem>` | Yes | The items |
+| `Config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `List<ExtractionResult>`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### BatchExtractBytesSync()
+
+Synchronous wrapper for `batch_extract_bytes` (WASM-compatible version).
+
+Iterates through items sequentially, applying per-file config overrides.
 
 **Signature:**
 
@@ -1051,6 +1115,33 @@ var result = DownloadModel("value", "value");
 
 ---
 
+#### DownloadModel()
+
+**Signature:**
+
+```csharp
+public static string DownloadModel(string name, string? cacheDir = null)
+```
+
+**Example:**
+
+```csharp
+var result = DownloadModel("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Name` | `string` | Yes | The  name |
+| `CacheDir` | `string?` | No | The  cache dir |
+
+**Returns:** `string`
+
+**Errors:** Throws `Error`.
+
+---
+
 #### DefaultModelName()
 
 Pinned default NER model identifier.
@@ -1071,9 +1162,114 @@ var result = DefaultModelName();
 
 ---
 
+#### DefaultModelName()
+
+**Signature:**
+
+```csharp
+public static string DefaultModelName()
+```
+
+**Example:**
+
+```csharp
+var result = DefaultModelName();
+```
+
+**Returns:** `string`
+
+---
+
 #### KnownModels()
 
 All NER models kreuzberg knows about (used by `--all-ner-models`).
+
+**Signature:**
+
+```csharp
+public static List<string> KnownModels()
+```
+
+**Example:**
+
+```csharp
+var result = KnownModels();
+```
+
+**Returns:** `List<string>`
+
+---
+
+#### KnownModels()
+
+**Signature:**
+
+```csharp
+public static List<string> KnownModels()
+```
+
+**Example:**
+
+```csharp
+var result = KnownModels();
+```
+
+**Returns:** `List<string>`
+
+---
+
+#### DownloadModel()
+
+Download a NER model into the kreuzberg cache.
+
+**Signature:**
+
+```csharp
+public static string DownloadModel(string name, string? cacheDir = null)
+```
+
+**Example:**
+
+```csharp
+var result = DownloadModel("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Name` | `string` | Yes | The  name |
+| `CacheDir` | `string?` | No | The  cache dir |
+
+**Returns:** `string`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### DefaultModelName()
+
+Default NER model identifier.
+
+**Signature:**
+
+```csharp
+public static string DefaultModelName()
+```
+
+**Example:**
+
+```csharp
+var result = DefaultModelName();
+```
+
+**Returns:** `string`
+
+---
+
+#### KnownModels()
+
+All NER models kreuzberg knows about.
 
 **Signature:**
 
@@ -1287,6 +1483,42 @@ var result = await ExtractRegionWithVlm(System.Text.Encoding.UTF8.GetBytes("data
 | `CustomPrompt` | `string?` | No | The custom prompt |
 
 **Returns:** `string`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### RerankAsync()
+
+Rerank documents asynchronously.
+
+Async counterpart to `rerank`. Offloads blocking ONNX inference to a
+dedicated blocking thread pool via Tokio's `spawn_blocking`, keeping the
+async executor free.
+
+Since v5.0.
+
+**Signature:**
+
+```csharp
+public static async Task<List<RerankedDocument>> RerankAsync(string query, List<string> documents, RerankerConfig config)
+```
+
+**Example:**
+
+```csharp
+var result = await RerankAsync("value", new List<object>(), new RerankerConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Query` | `string` | Yes | The query |
+| `Documents` | `List<string>` | Yes | The documents |
+| `Config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `List<RerankedDocument>`
 
 **Errors:** Throws `Error`.
 
@@ -1569,6 +1801,52 @@ var result = ListEmbeddingPresets();
 
 ---
 
+#### GetEmbeddingPreset()
+
+Returns `null` for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```csharp
+public static EmbeddingPreset? GetEmbeddingPreset(string name)
+```
+
+**Example:**
+
+```csharp
+var result = GetEmbeddingPreset("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Name` | `string` | Yes | The  name |
+
+**Returns:** `EmbeddingPreset?`
+
+---
+
+#### ListEmbeddingPresets()
+
+Returns an empty list for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```csharp
+public static List<string> ListEmbeddingPresets()
+```
+
+**Example:**
+
+```csharp
+var result = ListEmbeddingPresets();
+```
+
+**Returns:** `List<string>`
+
+---
+
 #### Rerank()
 
 Rerank a list of documents by relevance to a query.
@@ -1603,6 +1881,39 @@ var result = Rerank("value", new List<object>(), new RerankerConfig());
 | `Query` | `string` | Yes | The query |
 | `Documents` | `List<string>` | Yes | The documents |
 | `Config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `List<RerankedDocument>`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### Rerank()
+
+Stub for builds without the `reranker` feature — keeps the symbol available
+on no-ORT targets (Android x86_64 emulator, WASM) so language bindings compile.
+
+Since v5.0.
+
+**Signature:**
+
+```csharp
+public static List<RerankedDocument> Rerank(string query, List<string> documents, RerankerConfig config)
+```
+
+**Example:**
+
+```csharp
+var result = Rerank("value", new List<object>(), new RerankerConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Query` | `string` | Yes | The  query |
+| `Documents` | `List<string>` | Yes | The  documents |
+| `Config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `List<RerankedDocument>`
 
@@ -1694,6 +2005,83 @@ var result = ListRerankerPresets();
 ```
 
 **Returns:** `List<string>`
+
+---
+
+#### GetRerankerPreset()
+
+Returns `null` for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```csharp
+public static RerankerPreset? GetRerankerPreset(string name)
+```
+
+**Example:**
+
+```csharp
+var result = GetRerankerPreset("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Name` | `string` | Yes | The  name |
+
+**Returns:** `RerankerPreset?`
+
+---
+
+#### ListRerankerPresets()
+
+Returns an empty list for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```csharp
+public static List<string> ListRerankerPresets()
+```
+
+**Example:**
+
+```csharp
+var result = ListRerankerPresets();
+```
+
+**Returns:** `List<string>`
+
+---
+
+#### EmbedTextsAsync()
+
+**Signature:**
+
+```csharp
+public static async Task<List<List<float>>> EmbedTextsAsync(List<string> texts, EmbeddingConfig config)
+```
+
+**Example:**
+
+```csharp
+var result = await EmbedTextsAsync(new List<object>(), new EmbeddingConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Texts` | `List<string>` | Yes | The  texts |
+| `Config` | `EmbeddingConfig` | Yes | The embedding config |
+
+**Returns:** `List<List<float>>`
+
+**Errors:** Throws `Error`.
 
 ---
 

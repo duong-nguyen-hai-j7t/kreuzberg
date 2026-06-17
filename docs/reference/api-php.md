@@ -176,6 +176,39 @@ $result = extractBytesSync("data", "value", new ExtractionConfig());
 
 ---
 
+#### extractBytesSync()
+
+Synchronous wrapper for `extract_bytes` (WASM-compatible version).
+
+This is a truly synchronous implementation without tokio runtime dependency.
+It calls `extract_bytes_sync_impl()` to perform the extraction.
+
+**Signature:**
+
+```php
+public static function extractBytesSync(string $content, string $mimeType, ExtractionConfig $config): ExtractionResult
+```
+
+**Example:**
+
+```php
+$result = extractBytesSync("data", "value", new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `content` | `string` | Yes | The content to process |
+| `mimeType` | `string` | Yes | The mime type |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Throws `Error`.
+
+---
+
 #### batchExtractFilesSync()
 
 Synchronous wrapper for `batch_extract_files`.
@@ -216,6 +249,37 @@ Uses the global Tokio runtime for optimal performance.
 With the `tokio-runtime` feature, this blocks the current thread using the global
 Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
 that iterates through items and calls `extract_bytes_sync()`.
+
+**Signature:**
+
+```php
+public static function batchExtractBytesSync(array<BatchBytesItem> $items, ExtractionConfig $config): array<ExtractionResult>
+```
+
+**Example:**
+
+```php
+$result = batchExtractBytesSync([], new ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `items` | `array<BatchBytesItem>` | Yes | The items |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `array<ExtractionResult>`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### batchExtractBytesSync()
+
+Synchronous wrapper for `batch_extract_bytes` (WASM-compatible version).
+
+Iterates through items sequentially, applying per-file config overrides.
 
 **Signature:**
 
@@ -1051,6 +1115,33 @@ $result = downloadModel("value", "value");
 
 ---
 
+#### downloadModel()
+
+**Signature:**
+
+```php
+public static function downloadModel(string $name, ?string $cacheDir = null): string
+```
+
+**Example:**
+
+```php
+$result = downloadModel("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `string` | Yes | The  name |
+| `cacheDir` | `?string` | No | The  cache dir |
+
+**Returns:** `string`
+
+**Errors:** Throws `Error`.
+
+---
+
 #### defaultModelName()
 
 Pinned default NER model identifier.
@@ -1071,9 +1162,114 @@ $result = defaultModelName();
 
 ---
 
+#### defaultModelName()
+
+**Signature:**
+
+```php
+public static function defaultModelName(): string
+```
+
+**Example:**
+
+```php
+$result = defaultModelName();
+```
+
+**Returns:** `string`
+
+---
+
 #### knownModels()
 
 All NER models kreuzberg knows about (used by `--all-ner-models`).
+
+**Signature:**
+
+```php
+public static function knownModels(): array<string>
+```
+
+**Example:**
+
+```php
+$result = knownModels();
+```
+
+**Returns:** `array<string>`
+
+---
+
+#### knownModels()
+
+**Signature:**
+
+```php
+public static function knownModels(): array<string>
+```
+
+**Example:**
+
+```php
+$result = knownModels();
+```
+
+**Returns:** `array<string>`
+
+---
+
+#### downloadModel()
+
+Download a NER model into the kreuzberg cache.
+
+**Signature:**
+
+```php
+public static function downloadModel(string $name, ?string $cacheDir = null): string
+```
+
+**Example:**
+
+```php
+$result = downloadModel("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `string` | Yes | The  name |
+| `cacheDir` | `?string` | No | The  cache dir |
+
+**Returns:** `string`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### defaultModelName()
+
+Default NER model identifier.
+
+**Signature:**
+
+```php
+public static function defaultModelName(): string
+```
+
+**Example:**
+
+```php
+$result = defaultModelName();
+```
+
+**Returns:** `string`
+
+---
+
+#### knownModels()
+
+All NER models kreuzberg knows about.
 
 **Signature:**
 
@@ -1600,6 +1796,52 @@ $result = listEmbeddingPresets();
 
 ---
 
+#### getEmbeddingPreset()
+
+Returns `null` for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```php
+public static function getEmbeddingPreset(string $name): ?EmbeddingPreset
+```
+
+**Example:**
+
+```php
+$result = getEmbeddingPreset("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `string` | Yes | The  name |
+
+**Returns:** `?EmbeddingPreset`
+
+---
+
+#### listEmbeddingPresets()
+
+Returns an empty list for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```php
+public static function listEmbeddingPresets(): array<string>
+```
+
+**Example:**
+
+```php
+$result = listEmbeddingPresets();
+```
+
+**Returns:** `array<string>`
+
+---
+
 #### rerank()
 
 Rerank a list of documents by relevance to a query.
@@ -1634,6 +1876,39 @@ $result = rerank("value", [], new RerankerConfig());
 | `query` | `string` | Yes | The query |
 | `documents` | `array<string>` | Yes | The documents |
 | `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `array<RerankedDocument>`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### rerank()
+
+Stub for builds without the `reranker` feature — keeps the symbol available
+on no-ORT targets (Android x86_64 emulator, WASM) so language bindings compile.
+
+Since v5.0.
+
+**Signature:**
+
+```php
+public static function rerank(string $query, array<string> $documents, RerankerConfig $config): array<RerankedDocument>
+```
+
+**Example:**
+
+```php
+$result = rerank("value", [], new RerankerConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `string` | Yes | The  query |
+| `documents` | `array<string>` | Yes | The  documents |
+| `config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `array<RerankedDocument>`
 
@@ -1677,6 +1952,56 @@ $result = getRerankerPreset("value");
 List the names of all available reranker presets.
 
 Returns owned `String`s so the values are safe to pass across FFI boundaries.
+
+Since v5.0.
+
+**Signature:**
+
+```php
+public static function listRerankerPresets(): array<string>
+```
+
+**Example:**
+
+```php
+$result = listRerankerPresets();
+```
+
+**Returns:** `array<string>`
+
+---
+
+#### getRerankerPreset()
+
+Returns `null` for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```php
+public static function getRerankerPreset(string $name): ?RerankerPreset
+```
+
+**Example:**
+
+```php
+$result = getRerankerPreset("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `string` | Yes | The  name |
+
+**Returns:** `?RerankerPreset`
+
+---
+
+#### listRerankerPresets()
+
+Returns an empty list for builds without the `reranker-presets` feature.
 
 Since v5.0.
 

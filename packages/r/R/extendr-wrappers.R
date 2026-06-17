@@ -74,6 +74,16 @@ extract_file_sync <- function(path, mime_type = NULL, config = ExtractionConfig$
 #' @return ExtractionResult object (list with class attribute).
 #' @export
 extract_bytes_sync <- function(content, mime_type, config = ExtractionConfig$default()) .Call("wrap__extract_bytes_sync", content, mime_type, config, PACKAGE = "kreuzberg")
+#' Synchronous wrapper for `extract_bytes` (WASM-compatible version)
+#'
+#' This is a truly synchronous implementation without tokio runtime dependency.
+#' It calls `extract_bytes_sync_impl()` to perform the extraction.
+#' @param content Raw vector of bytes.
+#' @param mime_type Character string.
+#' @param config ExtractionConfig object (list with class attribute).
+#' @return ExtractionResult object (list with class attribute).
+#' @export
+extract_bytes_sync <- function(content, mime_type, config = ExtractionConfig$default()) .Call("wrap__extract_bytes_sync", content, mime_type, config, PACKAGE = "kreuzberg")
 #' Synchronous wrapper for `batch_extract_files`
 #'
 #' Uses the global Tokio runtime for optimal performance.
@@ -89,6 +99,14 @@ batch_extract_files_sync <- function(items, config = ExtractionConfig$default())
 #' With the `tokio-runtime` feature, this blocks the current thread using the global
 #' Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
 #' that iterates through items and calls `extract_bytes_sync()`.
+#' @param items List of batchbytesitem object (list with class attribute).
+#' @param config ExtractionConfig object (list with class attribute).
+#' @return List of extractionresult object (list with class attribute).
+#' @export
+batch_extract_bytes_sync <- function(items, config = ExtractionConfig$default()) .Call("wrap__batch_extract_bytes_sync", items, config, PACKAGE = "kreuzberg")
+#' Synchronous wrapper for `batch_extract_bytes` (WASM-compatible version)
+#'
+#' Iterates through items sequentially, applying per-file config overrides.
 #' @param items List of batchbytesitem object (list with class attribute).
 #' @param config ExtractionConfig object (list with class attribute).
 #' @return List of extractionresult object (list with class attribute).
@@ -265,11 +283,39 @@ classify_document <- function(pages, config) .Call("wrap__classify_document", pa
 #' @return File path as character string.
 #' @export
 download_model <- function(name, cache_dir = NULL) .Call("wrap__download_model", name, cache_dir, PACKAGE = "kreuzberg")
+#' download_model
+#' @param _name Character string.
+#' @param _cache_dir File path as character string.
+#' @return File path as character string.
+#' @export
+download_model <- function(name, cache_dir = NULL) .Call("wrap__download_model", name, cache_dir, PACKAGE = "kreuzberg")
 #' Pinned default NER model identifier
 #' @return Character string.
 #' @export
 default_model_name <- function() .Call("wrap__default_model_name", PACKAGE = "kreuzberg")
+#' default_model_name
+#' @return Character string.
+#' @export
+default_model_name <- function() .Call("wrap__default_model_name", PACKAGE = "kreuzberg")
 #' All NER models kreuzberg knows about (used by `--all-ner-models`)
+#' @return List of character string.
+#' @export
+known_models <- function() .Call("wrap__known_models", PACKAGE = "kreuzberg")
+#' known_models
+#' @return List of character string.
+#' @export
+known_models <- function() .Call("wrap__known_models", PACKAGE = "kreuzberg")
+#' Download a NER model into the kreuzberg cache
+#' @param _name Character string.
+#' @param _cache_dir File path as character string.
+#' @return File path as character string.
+#' @export
+download_model <- function(name, cache_dir = NULL) .Call("wrap__download_model", name, cache_dir, PACKAGE = "kreuzberg")
+#' Default NER model identifier
+#' @return Character string.
+#' @export
+default_model_name <- function() .Call("wrap__default_model_name", PACKAGE = "kreuzberg")
+#' All NER models kreuzberg knows about
 #' @return List of character string.
 #' @export
 known_models <- function() .Call("wrap__known_models", PACKAGE = "kreuzberg")
@@ -339,6 +385,19 @@ compare <- function(a = ExtractionResult$default(), b = ExtractionResult$default
 #'   be initialised.
 #' @export
 extract_region_with_vlm <- function(image_bytes, image_mime, region_kind, llm_config = LlmConfig$default(), custom_prompt = NULL) .Call("wrap__extract_region_with_vlm", image_bytes, image_mime, region_kind, llm_config, custom_prompt, PACKAGE = "kreuzberg")
+#' Rerank documents asynchronously
+#'
+#' Async counterpart to [`rerank`]. Offloads blocking ONNX inference to a
+#' dedicated blocking thread pool via Tokio's `spawn_blocking`, keeping the
+#' async executor free.
+#'
+#' Since v5.0.0.
+#' @param query Character string.
+#' @param documents List of character string.
+#' @param config RerankerConfig object (list with class attribute).
+#' @return List of rerankeddocument object (list with class attribute).
+#' @export
+rerank_async <- function(query, documents, config = RerankerConfig$default()) .Call("wrap__rerank_async", query, documents, config, PACKAGE = "kreuzberg")
 #' Extract keywords from text using the specified algorithm
 #'
 #' This is the unified entry point for keyword extraction. The algorithm
@@ -422,6 +481,15 @@ get_embedding_preset <- function(name) .Call("wrap__get_embedding_preset", name,
 #' @return List of character string.
 #' @export
 list_embedding_presets <- function() .Call("wrap__list_embedding_presets", PACKAGE = "kreuzberg")
+#' Returns `None` for builds without the `embedding-presets` feature
+#' @param _name Character string.
+#' @return Optional EmbeddingPreset object (list with class attribute). Defaults to NULL.
+#' @export
+get_embedding_preset <- function(name) .Call("wrap__get_embedding_preset", name, PACKAGE = "kreuzberg")
+#' Returns an empty list for builds without the `embedding-presets` feature
+#' @return List of character string.
+#' @export
+list_embedding_presets <- function() .Call("wrap__list_embedding_presets", PACKAGE = "kreuzberg")
 #' Rerank a list of documents by relevance to a query
 #'
 #' Returns documents sorted descending by score. Applies `top_k` truncation if
@@ -437,6 +505,17 @@ list_embedding_presets <- function() .Call("wrap__list_embedding_presets", PACKA
 #' - [`KreuzbergError::Reranking`] if the preset is unknown or model download fails.
 #'
 #' Since v5.0.0.
+#' @export
+rerank <- function(query, documents, config = RerankerConfig$default()) .Call("wrap__rerank", query, documents, config, PACKAGE = "kreuzberg")
+#' Stub for builds without the `reranker` feature — keeps the symbol available
+#'
+#' on no-ORT targets (Android x86_64 emulator, WASM) so language bindings compile.
+#'
+#' Since v5.0.0.
+#' @param _query Character string.
+#' @param _documents List of character string.
+#' @param _config RerankerConfig object (list with class attribute).
+#' @return List of rerankeddocument object (list with class attribute).
 #' @export
 rerank <- function(query, documents, config = RerankerConfig$default()) .Call("wrap__rerank", query, documents, config, PACKAGE = "kreuzberg")
 #' Stub for builds without the `reranker` feature
@@ -466,6 +545,25 @@ get_reranker_preset <- function(name) .Call("wrap__get_reranker_preset", name, P
 #' @return List of character string.
 #' @export
 list_reranker_presets <- function() .Call("wrap__list_reranker_presets", PACKAGE = "kreuzberg")
+#' Returns `None` for builds without the `reranker-presets` feature
+#'
+#' Since v5.0.0.
+#' @param _name Character string.
+#' @return Optional RerankerPreset object (list with class attribute). Defaults to NULL.
+#' @export
+get_reranker_preset <- function(name) .Call("wrap__get_reranker_preset", name, PACKAGE = "kreuzberg")
+#' Returns an empty list for builds without the `reranker-presets` feature
+#'
+#' Since v5.0.0.
+#' @return List of character string.
+#' @export
+list_reranker_presets <- function() .Call("wrap__list_reranker_presets", PACKAGE = "kreuzberg")
+#' embed_texts_async
+#' @param _texts List of character string.
+#' @param _config EmbeddingConfig object (list with class attribute).
+#' @return List of list of numeric.
+#' @export
+embed_texts_async <- function(texts, config = EmbeddingConfig$default()) .Call("wrap__embed_texts_async", texts, config, PACKAGE = "kreuzberg")
 #' register_ocr_backend
 #'
 #' Register an R-side plugin implementation. Pass a named list whose entries

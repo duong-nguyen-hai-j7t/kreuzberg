@@ -61,36 +61,55 @@ public final class DocumentExtractorBridge implements AutoCloseable {
     }
 
     private void initializeStubs() throws ReflectiveOperationException {
-        long offset = 0L;
+        // Each stub is allocated by its own helper to keep this dispatcher and each
+        // helper well under checkstyle's MethodLength cap, even for traits with
+        // many methods (e.g. OcrBackend has ~15 stubs).
+        initStubName(0L * ValueLayout.ADDRESS.byteSize());
+        initStubVersion(1L * ValueLayout.ADDRESS.byteSize());
+        initStubInitialize(2L * ValueLayout.ADDRESS.byteSize());
+        initStubShutdown(3L * ValueLayout.ADDRESS.byteSize());
+        initStubExtractBytes(4L * ValueLayout.ADDRESS.byteSize());
+        initStubExtractFile(5L * ValueLayout.ADDRESS.byteSize());
+        initStubSupportedMimeTypes(6L * ValueLayout.ADDRESS.byteSize());
+        initStubPriority(7L * ValueLayout.ADDRESS.byteSize());
+        initStubCanHandle(8L * ValueLayout.ADDRESS.byteSize());
+        initStubFreeString(9L * ValueLayout.ADDRESS.byteSize());
+        initStubFreeUserData(10L * ValueLayout.ADDRESS.byteSize());
+    }
 
+    private void initStubName(long offset) throws ReflectiveOperationException {
         var stubName = LINKER.upcallStub(LOOKUP.bind(this, "handleName",
             MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
             FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubName);
-        offset += ValueLayout.ADDRESS.byteSize();
+    }
 
+    private void initStubVersion(long offset) throws ReflectiveOperationException {
         var stubVersion = LINKER.upcallStub(LOOKUP.bind(this, "handleVersion",
             MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
             FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubVersion);
-        offset += ValueLayout.ADDRESS.byteSize();
+    }
 
+    private void initStubInitialize(long offset) throws ReflectiveOperationException {
         var stubInitialize = LINKER.upcallStub(LOOKUP.bind(this, "handleInitialize",
             MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class)),
             FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubInitialize);
-        offset += ValueLayout.ADDRESS.byteSize();
+    }
 
+    private void initStubShutdown(long offset) throws ReflectiveOperationException {
         var stubShutdown = LINKER.upcallStub(LOOKUP.bind(this, "handleShutdown",
             MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class)),
             FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubShutdown);
-        offset += ValueLayout.ADDRESS.byteSize();
+    }
 
+    private void initStubExtractBytes(long offset) throws ReflectiveOperationException {
         var stubExtractBytes = LINKER.upcallStub(LOOKUP.bind(this, "handleExtractBytes",
             MethodType.methodType(
                 int.class,
@@ -114,8 +133,9 @@ public final class DocumentExtractorBridge implements AutoCloseable {
             ),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubExtractBytes);
-        offset += ValueLayout.ADDRESS.byteSize();
+    }
 
+    private void initStubExtractFile(long offset) throws ReflectiveOperationException {
         var stubExtractFile = LINKER.upcallStub(LOOKUP.bind(this, "handleExtractFile",
             MethodType.methodType(
                 int.class,
@@ -137,22 +157,25 @@ public final class DocumentExtractorBridge implements AutoCloseable {
             ),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubExtractFile);
-        offset += ValueLayout.ADDRESS.byteSize();
+    }
 
+    private void initStubSupportedMimeTypes(long offset) throws ReflectiveOperationException {
         var stubSupportedMimeTypes = LINKER.upcallStub(LOOKUP.bind(this, "handleSupportedMimeTypes",
             MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
             FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubSupportedMimeTypes);
-        offset += ValueLayout.ADDRESS.byteSize();
+    }
 
+    private void initStubPriority(long offset) throws ReflectiveOperationException {
         var stubPriority = LINKER.upcallStub(LOOKUP.bind(this, "handlePriority",
             MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
             FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubPriority);
-        offset += ValueLayout.ADDRESS.byteSize();
+    }
 
+    private void initStubCanHandle(long offset) throws ReflectiveOperationException {
         var stubCanHandle = LINKER.upcallStub(LOOKUP.bind(this, "handleCanHandle",
             MethodType.methodType(
                 int.class,
@@ -172,23 +195,24 @@ public final class DocumentExtractorBridge implements AutoCloseable {
             ),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubCanHandle);
-        offset += ValueLayout.ADDRESS.byteSize();
+    }
 
+    private void initStubFreeString(long offset) throws ReflectiveOperationException {
         var stubFreeString = LINKER.upcallStub(LOOKUP.bind(this, "freeString",
             MethodType.methodType(void.class, MemorySegment.class)),
             FunctionDescriptor.ofVoid(ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubFreeString);
-        offset += ValueLayout.ADDRESS.byteSize();
+    }
 
+    private void initStubFreeUserData(long offset) throws ReflectiveOperationException {
         var stubFreeUserData = LINKER.upcallStub(LOOKUP.bind(this, "freeUserData",
             MethodType.methodType(void.class, MemorySegment.class)),
             FunctionDescriptor.ofVoid(ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubFreeUserData);
-        offset += ValueLayout.ADDRESS.byteSize();
-
     }
+
 
     MemorySegment vtableSegment() { return vtable; }
 

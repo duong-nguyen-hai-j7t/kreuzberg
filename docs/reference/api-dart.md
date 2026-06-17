@@ -176,6 +176,39 @@ final result = extractBytesSync(Uint8List.fromList([100, 97, 116, 97]), "value",
 
 ---
 
+#### extractBytesSync()
+
+Synchronous wrapper for `extract_bytes` (WASM-compatible version).
+
+This is a truly synchronous implementation without tokio runtime dependency.
+It calls `extract_bytes_sync_impl()` to perform the extraction.
+
+**Signature:**
+
+```dart
+ExtractionResult extractBytesSync(Uint8List content, String mimeType, ExtractionConfig config)
+```
+
+**Example:**
+
+```dart
+final result = extractBytesSync(Uint8List.fromList([100, 97, 116, 97]), "value", ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `content` | `Uint8List` | Yes | The content to process |
+| `mimeType` | `String` | Yes | The mime type |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Throws `Error`.
+
+---
+
 #### batchExtractFilesSync()
 
 Synchronous wrapper for `batch_extract_files`.
@@ -216,6 +249,37 @@ Uses the global Tokio runtime for optimal performance.
 With the `tokio-runtime` feature, this blocks the current thread using the global
 Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
 that iterates through items and calls `extract_bytes_sync()`.
+
+**Signature:**
+
+```dart
+List<ExtractionResult> batchExtractBytesSync(List<BatchBytesItem> items, ExtractionConfig config)
+```
+
+**Example:**
+
+```dart
+final result = batchExtractBytesSync([], ExtractionConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `items` | `List<BatchBytesItem>` | Yes | The items |
+| `config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `List<ExtractionResult>`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### batchExtractBytesSync()
+
+Synchronous wrapper for `batch_extract_bytes` (WASM-compatible version).
+
+Iterates through items sequentially, applying per-file config overrides.
 
 **Signature:**
 
@@ -1051,6 +1115,33 @@ final result = downloadModel("value", "value");
 
 ---
 
+#### downloadModel()
+
+**Signature:**
+
+```dart
+String downloadModel(String name, [String? cacheDir])
+```
+
+**Example:**
+
+```dart
+final result = downloadModel("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+| `cacheDir` | `String?` | No | The  cache dir |
+
+**Returns:** `String`
+
+**Errors:** Throws `Error`.
+
+---
+
 #### defaultModelName()
 
 Pinned default NER model identifier.
@@ -1071,9 +1162,114 @@ final result = defaultModelName();
 
 ---
 
+#### defaultModelName()
+
+**Signature:**
+
+```dart
+String defaultModelName()
+```
+
+**Example:**
+
+```dart
+final result = defaultModelName();
+```
+
+**Returns:** `String`
+
+---
+
 #### knownModels()
 
 All NER models kreuzberg knows about (used by `--all-ner-models`).
+
+**Signature:**
+
+```dart
+List<String> knownModels()
+```
+
+**Example:**
+
+```dart
+final result = knownModels();
+```
+
+**Returns:** `List<String>`
+
+---
+
+#### knownModels()
+
+**Signature:**
+
+```dart
+List<String> knownModels()
+```
+
+**Example:**
+
+```dart
+final result = knownModels();
+```
+
+**Returns:** `List<String>`
+
+---
+
+#### downloadModel()
+
+Download a NER model into the kreuzberg cache.
+
+**Signature:**
+
+```dart
+String downloadModel(String name, [String? cacheDir])
+```
+
+**Example:**
+
+```dart
+final result = downloadModel("value", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+| `cacheDir` | `String?` | No | The  cache dir |
+
+**Returns:** `String`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### defaultModelName()
+
+Default NER model identifier.
+
+**Signature:**
+
+```dart
+String defaultModelName()
+```
+
+**Example:**
+
+```dart
+final result = defaultModelName();
+```
+
+**Returns:** `String`
+
+---
+
+#### knownModels()
+
+All NER models kreuzberg knows about.
 
 **Signature:**
 
@@ -1345,6 +1541,42 @@ final result = await extractRegionWithVlm(Uint8List.fromList([100, 97, 116, 97])
 | `customPrompt` | `String?` | No | The custom prompt |
 
 **Returns:** `String`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### rerankAsync()
+
+Rerank documents asynchronously.
+
+Async counterpart to `rerank`. Offloads blocking ONNX inference to a
+dedicated blocking thread pool via Tokio's `spawn_blocking`, keeping the
+async executor free.
+
+Since v5.0.
+
+**Signature:**
+
+```dart
+List<RerankedDocument> rerankAsync(String query, List<String> documents, RerankerConfig config)
+```
+
+**Example:**
+
+```dart
+final result = await rerankAsync("value", [], RerankerConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `String` | Yes | The query |
+| `documents` | `List<String>` | Yes | The documents |
+| `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `List<RerankedDocument>`
 
 **Errors:** Throws `Error`.
 
@@ -1627,6 +1859,52 @@ final result = listEmbeddingPresets();
 
 ---
 
+#### getEmbeddingPreset()
+
+Returns `null` for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```dart
+EmbeddingPreset? getEmbeddingPreset(String name)
+```
+
+**Example:**
+
+```dart
+final result = getEmbeddingPreset("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+
+**Returns:** `EmbeddingPreset?`
+
+---
+
+#### listEmbeddingPresets()
+
+Returns an empty list for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```dart
+List<String> listEmbeddingPresets()
+```
+
+**Example:**
+
+```dart
+final result = listEmbeddingPresets();
+```
+
+**Returns:** `List<String>`
+
+---
+
 #### rerank()
 
 Rerank a list of documents by relevance to a query.
@@ -1661,6 +1939,39 @@ final result = rerank("value", [], RerankerConfig());
 | `query` | `String` | Yes | The query |
 | `documents` | `List<String>` | Yes | The documents |
 | `config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `List<RerankedDocument>`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### rerank()
+
+Stub for builds without the `reranker` feature — keeps the symbol available
+on no-ORT targets (Android x86_64 emulator, WASM) so language bindings compile.
+
+Since v5.0.
+
+**Signature:**
+
+```dart
+List<RerankedDocument> rerank(String query, List<String> documents, RerankerConfig config)
+```
+
+**Example:**
+
+```dart
+final result = rerank("value", [], RerankerConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | `String` | Yes | The  query |
+| `documents` | `List<String>` | Yes | The  documents |
+| `config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `List<RerankedDocument>`
 
@@ -1752,6 +2063,83 @@ final result = listRerankerPresets();
 ```
 
 **Returns:** `List<String>`
+
+---
+
+#### getRerankerPreset()
+
+Returns `null` for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```dart
+RerankerPreset? getRerankerPreset(String name)
+```
+
+**Example:**
+
+```dart
+final result = getRerankerPreset("value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `String` | Yes | The  name |
+
+**Returns:** `RerankerPreset?`
+
+---
+
+#### listRerankerPresets()
+
+Returns an empty list for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```dart
+List<String> listRerankerPresets()
+```
+
+**Example:**
+
+```dart
+final result = listRerankerPresets();
+```
+
+**Returns:** `List<String>`
+
+---
+
+#### embedTextsAsync()
+
+**Signature:**
+
+```dart
+List<List<double>> embedTextsAsync(List<String> texts, EmbeddingConfig config)
+```
+
+**Example:**
+
+```dart
+final result = await embedTextsAsync([], EmbeddingConfig());
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `texts` | `List<String>` | Yes | The  texts |
+| `config` | `EmbeddingConfig` | Yes | The embedding config |
+
+**Returns:** `List<List<double>>`
+
+**Errors:** Throws `Error`.
 
 ---
 

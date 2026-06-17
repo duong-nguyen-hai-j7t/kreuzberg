@@ -188,6 +188,42 @@ if err != nil {
 
 ---
 
+#### ExtractBytesSync()
+
+Synchronous wrapper for `extract_bytes` (WASM-compatible version).
+
+This is a truly synchronous implementation without tokio runtime dependency.
+It calls `extract_bytes_sync_impl()` to perform the extraction.
+
+**Signature:**
+
+```go
+func ExtractBytesSync(content []byte, mimeType string, config ExtractionConfig) (ExtractionResult, error)
+```
+
+**Example:**
+
+```go
+result, err := ExtractBytesSync([]byte("data"), "value", ExtractionConfig{})
+if err != nil {
+    return err
+}
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Content` | `\[\]byte` | Yes | The content to process |
+| `MimeType` | `string` | Yes | The mime type |
+| `Config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `ExtractionResult`
+
+**Errors:** Returns `error`.
+
+---
+
 #### BatchExtractFilesSync()
 
 Synchronous wrapper for `batch_extract_files`.
@@ -231,6 +267,40 @@ Uses the global Tokio runtime for optimal performance.
 With the `tokio-runtime` feature, this blocks the current thread using the global
 Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
 that iterates through items and calls `extract_bytes_sync()`.
+
+**Signature:**
+
+```go
+func BatchExtractBytesSync(items []BatchBytesItem, config ExtractionConfig) ([]ExtractionResult, error)
+```
+
+**Example:**
+
+```go
+result, err := BatchExtractBytesSync(nil, ExtractionConfig{})
+if err != nil {
+    return err
+}
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Items` | `\[\]BatchBytesItem` | Yes | The items |
+| `Config` | `ExtractionConfig` | Yes | The configuration options |
+
+**Returns:** `[]ExtractionResult`
+
+**Errors:** Returns `error`.
+
+---
+
+#### BatchExtractBytesSync()
+
+Synchronous wrapper for `batch_extract_bytes` (WASM-compatible version).
+
+Iterates through items sequentially, applying per-file config overrides.
 
 **Signature:**
 
@@ -1129,6 +1199,36 @@ if err != nil {
 
 ---
 
+#### DownloadModel()
+
+**Signature:**
+
+```go
+func DownloadModel(name string, cacheDir string) (string, error)
+```
+
+**Example:**
+
+```go
+result, err := DownloadModel("value", "value")
+if err != nil {
+    return err
+}
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Name` | `string` | Yes | The  name |
+| `CacheDir` | `*string` | No | The  cache dir |
+
+**Returns:** `string`
+
+**Errors:** Returns `error`.
+
+---
+
 #### DefaultModelName()
 
 Pinned default NER model identifier.
@@ -1149,9 +1249,117 @@ result := DefaultModelName()
 
 ---
 
+#### DefaultModelName()
+
+**Signature:**
+
+```go
+func DefaultModelName() string
+```
+
+**Example:**
+
+```go
+result := DefaultModelName()
+```
+
+**Returns:** `string`
+
+---
+
 #### KnownModels()
 
 All NER models kreuzberg knows about (used by `--all-ner-models`).
+
+**Signature:**
+
+```go
+func KnownModels() []string
+```
+
+**Example:**
+
+```go
+result := KnownModels()
+```
+
+**Returns:** `[]string`
+
+---
+
+#### KnownModels()
+
+**Signature:**
+
+```go
+func KnownModels() []string
+```
+
+**Example:**
+
+```go
+result := KnownModels()
+```
+
+**Returns:** `[]string`
+
+---
+
+#### DownloadModel()
+
+Download a NER model into the kreuzberg cache.
+
+**Signature:**
+
+```go
+func DownloadModel(name string, cacheDir string) (string, error)
+```
+
+**Example:**
+
+```go
+result, err := DownloadModel("value", "value")
+if err != nil {
+    return err
+}
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Name` | `string` | Yes | The  name |
+| `CacheDir` | `*string` | No | The  cache dir |
+
+**Returns:** `string`
+
+**Errors:** Returns `error`.
+
+---
+
+#### DefaultModelName()
+
+Default NER model identifier.
+
+**Signature:**
+
+```go
+func DefaultModelName() string
+```
+
+**Example:**
+
+```go
+result := DefaultModelName()
+```
+
+**Returns:** `string`
+
+---
+
+#### KnownModels()
+
+All NER models kreuzberg knows about.
 
 **Signature:**
 
@@ -1372,6 +1580,45 @@ if err != nil {
 | `CustomPrompt` | `*string` | No | The custom prompt |
 
 **Returns:** `string`
+
+**Errors:** Returns `error`.
+
+---
+
+#### RerankAsync()
+
+Rerank documents asynchronously.
+
+Async counterpart to `rerank`. Offloads blocking ONNX inference to a
+dedicated blocking thread pool via Tokio's `spawn_blocking`, keeping the
+async executor free.
+
+Since v5.0.
+
+**Signature:**
+
+```go
+func RerankAsync(query string, documents []string, config RerankerConfig) ([]RerankedDocument, error)
+```
+
+**Example:**
+
+```go
+result, err := RerankAsync("value", nil, RerankerConfig{})
+if err != nil {
+    return err
+}
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Query` | `string` | Yes | The query |
+| `Documents` | `\[\]string` | Yes | The documents |
+| `Config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `[]RerankedDocument`
 
 **Errors:** Returns `error`.
 
@@ -1672,6 +1919,52 @@ result := ListEmbeddingPresets()
 
 ---
 
+#### GetEmbeddingPreset()
+
+Returns `nil` for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```go
+func GetEmbeddingPreset(name string) *EmbeddingPreset
+```
+
+**Example:**
+
+```go
+result := GetEmbeddingPreset("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Name` | `string` | Yes | The  name |
+
+**Returns:** `*EmbeddingPreset`
+
+---
+
+#### ListEmbeddingPresets()
+
+Returns an empty list for builds without the `embedding-presets` feature.
+
+**Signature:**
+
+```go
+func ListEmbeddingPresets() []string
+```
+
+**Example:**
+
+```go
+result := ListEmbeddingPresets()
+```
+
+**Returns:** `[]string`
+
+---
+
 #### Rerank()
 
 Rerank a list of documents by relevance to a query.
@@ -1709,6 +2002,42 @@ if err != nil {
 | `Query` | `string` | Yes | The query |
 | `Documents` | `\[\]string` | Yes | The documents |
 | `Config` | `RerankerConfig` | Yes | The configuration options |
+
+**Returns:** `[]RerankedDocument`
+
+**Errors:** Returns `error`.
+
+---
+
+#### Rerank()
+
+Stub for builds without the `reranker` feature — keeps the symbol available
+on no-ORT targets (Android x86_64 emulator, WASM) so language bindings compile.
+
+Since v5.0.
+
+**Signature:**
+
+```go
+func Rerank(query string, documents []string, config RerankerConfig) ([]RerankedDocument, error)
+```
+
+**Example:**
+
+```go
+result, err := Rerank("value", nil, RerankerConfig{})
+if err != nil {
+    return err
+}
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Query` | `string` | Yes | The  query |
+| `Documents` | `\[\]string` | Yes | The  documents |
+| `Config` | `RerankerConfig` | Yes | The reranker config |
 
 **Returns:** `[]RerankedDocument`
 
@@ -1803,6 +2132,86 @@ result := ListRerankerPresets()
 ```
 
 **Returns:** `[]string`
+
+---
+
+#### GetRerankerPreset()
+
+Returns `nil` for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```go
+func GetRerankerPreset(name string) *RerankerPreset
+```
+
+**Example:**
+
+```go
+result := GetRerankerPreset("value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Name` | `string` | Yes | The  name |
+
+**Returns:** `*RerankerPreset`
+
+---
+
+#### ListRerankerPresets()
+
+Returns an empty list for builds without the `reranker-presets` feature.
+
+Since v5.0.
+
+**Signature:**
+
+```go
+func ListRerankerPresets() []string
+```
+
+**Example:**
+
+```go
+result := ListRerankerPresets()
+```
+
+**Returns:** `[]string`
+
+---
+
+#### EmbedTextsAsync()
+
+**Signature:**
+
+```go
+func EmbedTextsAsync(texts []string, config EmbeddingConfig) ([][]float32, error)
+```
+
+**Example:**
+
+```go
+result, err := EmbedTextsAsync(nil, EmbeddingConfig{})
+if err != nil {
+    return err
+}
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `Texts` | `\[\]string` | Yes | The  texts |
+| `Config` | `EmbeddingConfig` | Yes | The embedding config |
+
+**Returns:** `[][]float32`
+
+**Errors:** Returns `error`.
 
 ---
 

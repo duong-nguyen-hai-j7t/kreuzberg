@@ -483,6 +483,23 @@ Future<String> extractRegionWithVlm({
   customPrompt: customPrompt,
 );
 
+/// Rerank documents asynchronously.
+///
+/// Async counterpart to `rerank`. Offloads blocking ONNX inference to a
+/// dedicated blocking thread pool via Tokio's `spawn_blocking`, keeping the
+/// async executor free.
+///
+/// Since v5.0.
+Future<List<RerankedDocument>> rerankAsync({
+  required String query,
+  required List<String> documents,
+  required RerankerConfig config,
+}) => RustLib.instance.api.crateRerankAsync(
+  query: query,
+  documents: documents,
+  config: config,
+);
+
 /// Extract keywords from text using the specified algorithm.
 ///
 /// This is the unified entry point for keyword extraction. The algorithm
@@ -618,19 +635,6 @@ Future<List<RerankedDocument>> rerank({
   required List<String> documents,
   required RerankerConfig config,
 }) => RustLib.instance.api.crateRerank(
-  query: query,
-  documents: documents,
-  config: config,
-);
-
-/// Stub for builds without the `reranker` feature.
-///
-/// Since v5.0.
-Future<List<RerankedDocument>> rerankAsync({
-  required String query,
-  required List<String> documents,
-  required RerankerConfig config,
-}) => RustLib.instance.api.crateRerankAsync(
   query: query,
   documents: documents,
   config: config,
