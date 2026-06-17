@@ -122,6 +122,7 @@ impl Module for GateUpDownMLP {
 ///
 /// Used inside `NaiveAttnTwoLinearMLPBlock` vision-encoder blocks (Hunyuan
 /// vision encoder, PaddleOCR-VL SigLIP encoder, DeepSeek ViT).
+#[derive(Debug)]
 pub struct TwoLinearMLP {
     linear1: Linear,
     linear2: Linear,

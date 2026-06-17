@@ -30,6 +30,7 @@ trocr = []
 paddleocr-vl = []
 glm-ocr = []
 hunyuan-ocr = []
+deepseek-ocr = []
 
 # Device acceleration pass-throughs to candle.
 cuda = ["candle-core/cuda", "candle-nn/cuda", "candle-transformers/cuda"]

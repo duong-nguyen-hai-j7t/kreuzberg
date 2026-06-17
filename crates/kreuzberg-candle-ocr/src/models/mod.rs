@@ -25,3 +25,9 @@ pub mod hunyuan_ocr;
 
 #[cfg(feature = "hunyuan-ocr")]
 pub use hunyuan_ocr::{HunyuanOCREngine, HunyuanOCRGenerationConfig};
+
+#[cfg(feature = "deepseek-ocr")]
+pub mod deepseek_ocr;
+
+#[cfg(feature = "deepseek-ocr")]
+pub use deepseek_ocr::{DeepseekOCRConfig, DeepseekOCREngine, DeepseekOCRModel};
