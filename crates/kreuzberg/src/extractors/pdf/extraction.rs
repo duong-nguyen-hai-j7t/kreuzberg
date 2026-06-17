@@ -318,11 +318,6 @@ fn apply_reading_order_reordering(
     let mut reordered_pages = Vec::with_capacity(page_count);
 
     for (page_idx, hints) in layout_hints_per_page.iter().enumerate().take(page_count) {
-        // Skip pages with no layout hints
-        if hints.is_empty() {
-            continue;
-        }
-
         // Extract spans for this page
         let spans = crate::pdf::oxide::text::extract_spans_from_page(&mut doc.doc, page_idx).map_err(|e| {
             crate::error::KreuzbergError::Parsing {
@@ -331,14 +326,17 @@ fn apply_reading_order_reordering(
             }
         })?;
 
-        if spans.is_empty() {
-            continue;
-        }
+        // Determine span emission order: reorder by layout when hints exist,
+        // otherwise keep the original extraction order. Every page must contribute
+        // text — skipping hint-free or span-empty pages would silently drop their
+        // content from the joined output.
+        let span_order: Vec<usize> = if hints.is_empty() {
+            (0..spans.len()).collect()
+        } else {
+            reading_order::reorder_spans_by_layout(&spans, hints)
+        };
 
-        // Get reading order of span indices
-        let span_order = reading_order::reorder_spans_by_layout(&spans, hints);
-
-        // Rebuild page text in reading order
+        // Rebuild page text in (possibly reordered) order.
         let mut page_text = String::new();
         for &span_idx in &span_order {
             if span_idx < spans.len() {
@@ -346,9 +344,7 @@ fn apply_reading_order_reordering(
             }
         }
 
-        if !page_text.is_empty() {
-            reordered_pages.push(page_text);
-        }
+        reordered_pages.push(page_text);
     }
 
     if reordered_pages.is_empty() {

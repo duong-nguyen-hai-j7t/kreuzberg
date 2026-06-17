@@ -36,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **image**: Formulas recognized by paired-mode GLM-OCR are now surfaced on `ExtractionResult.formulas` for image inputs. Both image OCR paths previously dropped them — the whole-image path destructured the backend result without reading `.formulas`, and the layout-OCR path pushed a Formula text element but never populated the typed carrier.
+- **pdf**: Layout-guided reading-order reconstruction no longer drops the text of pages that lack layout hints. Pages with no hints (or no projected spans) were silently skipped, so a multi-page PDF with `reading_order = true` lost those pages entirely; every page now contributes text (reordered when hints exist, original order otherwise).
 - **deps**: Pin `alloc-stdlib` to `0.2.2` to unify the `alloc-no-stdlib` v2/v3 split that broke `brotli-decompressor` compilation under `cargo check --workspace`. Drop brotli HTTP encoding from `tower-http` (`compression-full` → `compression-gzip,compression-deflate,compression-zstd`); clients negotiating brotli will fall back to gzip. Unblocks the prek `cargo-clippy` hook.
 - **benchmark-harness**: Handle the new `KreuzbergPipeline::CandleGlmOcr` variant in the kreuzberg adapter pipeline-args match — non-exhaustive arm left over from Phase 5 wiring.
 - **candle-ocr**: `TrocrBackend::process_image` now actually invokes the real `TrocrEngine` instead of returning a placeholder string. The engine code in `kreuzberg_candle_ocr::models::trocr` was already real, but the backend wrapper exposed to the OCR registry was the original Phase 3a stub. Runtime `backend_options.variant` now overrides the constructor-time default.
