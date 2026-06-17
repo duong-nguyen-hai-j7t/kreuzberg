@@ -17,7 +17,7 @@ use std::path::Path;
 use std::sync::{Arc, LazyLock};
 
 use ahash::AHashMap;
-use parking_lot::RwLock;
+use parking_lot::{Mutex, RwLock};
 
 use crate::Result;
 use crate::core::config::OcrConfig;
@@ -72,48 +72,135 @@ impl Default for LayoutMode {
 static ENGINE_POOL: LazyLock<RwLock<AHashMap<(DevicePreference, DType), Arc<GlmOcrEngine>>>> =
     LazyLock::new(|| RwLock::new(AHashMap::new()));
 
-/// Return a cached engine for `(preference, dtype)`, initialising one on first use.
+/// Process-wide layout model pool keyed by `(model_path, device_preference)`.
+///
+/// Caches loaded `PpDocLayoutV3Model` instances by their file path and device preference
+/// to avoid reloading the expensive ONNX model on each `process_paired` invocation.
+/// Two callers requesting the same model path with the same device will share one instance.
+/// Different devices get separate model instances due to device-specific optimizations.
+/// The model is wrapped in Mutex (not RwLock) since `detect` takes `&mut self`.
+///
+/// Only available when `layout-detection` is enabled.
+#[cfg(feature = "layout-detection")]
+static LAYOUT_POOL: LazyLock<
+    RwLock<
+        AHashMap<(String, DevicePreference), Arc<Mutex<crate::layout::models::pp_doclayout_v3::PpDocLayoutV3Model>>>,
+    >,
+> = LazyLock::new(|| RwLock::new(AHashMap::new()));
+
+/// Generic double-checked-lock pool: get or initialize a value from cache.
 ///
 /// Uses a read → miss → write → double-check pattern so two racing callers do
-/// not both pay the initialisation cost.
-fn get_or_init_engine(preference: DevicePreference, dtype: DType) -> crate::Result<Arc<GlmOcrEngine>> {
-    let key = (preference, dtype);
-
-    // Fast path: engine already in pool.
+/// not both pay the initialization cost. Returns an Arc to the cached value,
+/// with pointer equality guarantees: two callers with the same key will receive
+/// Arc instances with `Arc::ptr_eq(a, b) == true`.
+///
+/// # Parameters
+/// - `pool`: The RwLock-wrapped pool
+/// - `key`: The cache key
+/// - `init`: A closure that constructs the value on cache miss
+///
+/// # Errors
+/// Propagates errors from the `init` closure.
+#[inline]
+fn pool_get_or_init<K, V, E>(
+    pool: &RwLock<AHashMap<K, Arc<V>>>,
+    key: K,
+    init: impl FnOnce() -> std::result::Result<V, E>,
+) -> std::result::Result<Arc<V>, E>
+where
+    K: std::hash::Hash + Eq + Clone,
+    V: Send + 'static,
+{
+    // Fast path: value already in pool.
     {
-        let pool = ENGINE_POOL.read();
-        if let Some(engine) = pool.get(&key) {
-            return Ok(Arc::clone(engine));
+        let pool_guard = pool.read();
+        if let Some(value) = pool_guard.get(&key) {
+            return Ok(Arc::clone(value));
         }
     }
 
-    // Slow path: select the device and build the engine, then insert under write lock.
-    let device = preference.select().map_err(|e| crate::KreuzbergError::Ocr {
-        message: format!("Failed to select compute device: {e}"),
-        source: Some(Box::new(e)),
-    })?;
+    // Slow path: initialize and insert under write lock.
+    let new_value = Arc::new(init()?);
 
-    tracing::info!(
-        preference = ?preference,
-        ?dtype,
-        "Initialising GLM-OCR engine (cold start)"
-    );
-    // Default task passed here is irrelevant to weight loading; the backend
-    // always calls `process_image_with_task` with the per-call task.
-    let new_engine =
+    let mut pool_guard = pool.write();
+    // Double-check: another thread may have inserted while we were initializing.
+    if let Some(existing) = pool_guard.get(&key) {
+        return Ok(Arc::clone(existing));
+    }
+    pool_guard.insert(key, Arc::clone(&new_value));
+    Ok(new_value)
+}
+
+/// Return a cached engine for `(preference, dtype)`, initialising one on first use.
+///
+/// Uses the generic [`pool_get_or_init`] helper to ensure two callers with the same
+/// `(preference, dtype)` receive the same Arc instance.
+fn get_or_init_engine(preference: DevicePreference, dtype: DType) -> crate::Result<Arc<GlmOcrEngine>> {
+    let key = (preference, dtype);
+
+    pool_get_or_init::<(DevicePreference, DType), GlmOcrEngine, crate::KreuzbergError>(&ENGINE_POOL, key, || {
+        let device = preference.select().map_err(|e| crate::KreuzbergError::Ocr {
+            message: format!("Failed to select compute device: {e}"),
+            source: Some(Box::new(e)),
+        })?;
+
+        tracing::info!(
+            preference = ?preference,
+            ?dtype,
+            "Initialising GLM-OCR engine (cold start)"
+        );
+        // Default task passed here is irrelevant to weight loading; the backend
+        // always calls `process_image_with_task` with the per-call task.
         GlmOcrEngine::new(GlmOcrTask::default(), device, dtype).map_err(|e| crate::KreuzbergError::Ocr {
             message: format!("GLM-OCR engine initialisation failed: {e}"),
             source: Some(Box::new(e)),
-        })?;
-    let new_engine = Arc::new(new_engine);
+        })
+    })
+}
 
-    let mut pool = ENGINE_POOL.write();
-    // Double-check: another thread may have inserted while we were building.
-    if let Some(existing) = pool.get(&key) {
-        return Ok(Arc::clone(existing));
-    }
-    pool.insert(key, Arc::clone(&new_engine));
-    Ok(new_engine)
+/// Return a cached layout model for the given path and device, initialising one on first use.
+///
+/// Uses the generic [`pool_get_or_init`] helper to ensure two callers with the same
+/// path and device preference receive the same Arc instance. The model is wrapped in Mutex
+/// (not RwLock) since `detect` takes `&mut self` and requires exclusive access.
+///
+/// Only available when `layout-detection` is enabled.
+#[cfg(feature = "layout-detection")]
+fn get_or_init_layout_model(
+    model_path: &Path,
+    device: DevicePreference,
+) -> crate::Result<Arc<Mutex<crate::layout::models::pp_doclayout_v3::PpDocLayoutV3Model>>> {
+    use crate::layout::models::pp_doclayout_v3::PpDocLayoutV3Model;
+
+    // Convert path to string, validating UTF-8
+    let model_path_str = model_path
+        .to_str()
+        .ok_or_else(|| crate::KreuzbergError::Ocr {
+            message: format!("Model path contains invalid UTF-8: {}", model_path.display()),
+            source: None,
+        })?
+        .to_string();
+
+    let key = (model_path_str.clone(), device);
+
+    pool_get_or_init::<(String, DevicePreference), Mutex<PpDocLayoutV3Model>, crate::KreuzbergError>(
+        &LAYOUT_POOL,
+        key,
+        || {
+            tracing::info!(
+                path = model_path_str.as_str(),
+                ?device,
+                "Initialising PP-DocLayout-V3 model (cold start)"
+            );
+            PpDocLayoutV3Model::from_file(&model_path_str, None)
+                .map_err(|e| crate::KreuzbergError::Ocr {
+                    message: format!("PP-DocLayout-V3 model initialisation failed: {e}"),
+                    source: Some(Box::new(e)),
+                })
+                .map(Mutex::new)
+        },
+    )
 }
 
 /// Map a layout detection class to the GLM-OCR task best suited for that region.
@@ -369,7 +456,6 @@ impl OcrBackend for GlmOcrBackend {
 async fn process_paired(image_bytes: Vec<u8>, device: DevicePreference, dtype: DType) -> crate::Result<String> {
     use crate::layout::LayoutModelManager;
     use crate::layout::models::LayoutModel;
-    use crate::layout::models::pp_doclayout_v3::PpDocLayoutV3Model;
 
     tokio::task::spawn_blocking(move || {
         // Decode image once; all region crops reuse the same decoded pixels.
@@ -389,17 +475,18 @@ async fn process_paired(image_bytes: Vec<u8>, device: DevicePreference, dtype: D
                 source: Some(Box::new(e)),
             })?;
 
-        let mut layout_model = PpDocLayoutV3Model::from_file(&model_path.to_string_lossy(), None).map_err(|e| {
-            crate::KreuzbergError::Ocr {
-                message: format!("GLM-OCR paired: layout detection init failed: {e}"),
-                source: Some(Box::new(e)),
-            }
-        })?;
-
-        let detections = layout_model.detect(&img).map_err(|e| crate::KreuzbergError::Ocr {
-            message: format!("GLM-OCR paired: layout detection failed: {e}"),
+        let layout_model = get_or_init_layout_model(&model_path, device).map_err(|e| crate::KreuzbergError::Ocr {
+            message: format!("GLM-OCR paired: layout detection init failed: {e}"),
             source: Some(Box::new(e)),
         })?;
+
+        let detections = layout_model
+            .lock()
+            .detect(&img)
+            .map_err(|e| crate::KreuzbergError::Ocr {
+                message: format!("GLM-OCR paired: layout detection failed: {e}"),
+                source: Some(Box::new(e)),
+            })?;
 
         // Sort detections in reading order (top-to-bottom, left-to-right).
         let mut sorted = detections;
@@ -570,5 +657,90 @@ mod tests {
         let table = "| A | B |\n|---|---|\n| 1 | 2 |";
         let wrapped = wrap_output(GlmOcrTask::Table, table);
         assert_eq!(wrapped, table);
+    }
+
+    #[test]
+    fn test_pool_get_or_init_caches_on_first_miss() {
+        use std::sync::Arc as StdArc;
+        use std::sync::atomic::{AtomicUsize, Ordering};
+
+        // Test the generic pool helper with a cheap value type.
+        // This verifies the double-checked-lock logic without loading any models.
+        let pool = RwLock::new(AHashMap::new());
+        let init_count = StdArc::new(AtomicUsize::new(0));
+
+        let init_count_clone = StdArc::clone(&init_count);
+        let result1 = pool_get_or_init(&pool, "test_key", || {
+            init_count_clone.fetch_add(1, Ordering::SeqCst);
+            Ok::<u32, String>(42)
+        });
+
+        assert!(result1.is_ok());
+        assert_eq!(init_count.load(Ordering::SeqCst), 1, "Initializer should run once");
+
+        // Second call with same key: should return cached value without re-initializing
+        let init_count_clone = StdArc::clone(&init_count);
+        let result2 = pool_get_or_init(&pool, "test_key", || {
+            init_count_clone.fetch_add(1, Ordering::SeqCst);
+            Ok::<u32, String>(99)
+        });
+
+        assert!(result2.is_ok());
+        assert_eq!(
+            init_count.load(Ordering::SeqCst),
+            1,
+            "Initializer should still have run exactly once"
+        );
+
+        // Verify pointer equality: both results should be the same Arc instance
+        let v1 = result1.unwrap();
+        let v2 = result2.unwrap();
+        assert!(Arc::ptr_eq(&v1, &v2), "Cached values should be the same Arc instance");
+        assert_eq!(*v1, 42, "First initializer's value should be stored");
+    }
+
+    #[test]
+    fn test_pool_get_or_init_concurrent_access() {
+        use std::sync::Arc as StdArc;
+        use std::sync::atomic::{AtomicUsize, Ordering};
+        use std::thread;
+
+        // Test concurrent racing initialization: multiple threads accessing the same pool
+        // key should all receive the same Arc instance, even if they race during initialization.
+        let pool = StdArc::new(RwLock::new(AHashMap::new()));
+        let init_count = StdArc::new(AtomicUsize::new(0));
+        let mut handles = vec![];
+
+        for _ in 0..5 {
+            let pool_clone = StdArc::clone(&pool);
+            let init_count_clone = StdArc::clone(&init_count);
+
+            let handle = thread::spawn(move || {
+                let result = pool_get_or_init(&pool_clone, "concurrent_key", || {
+                    init_count_clone.fetch_add(1, Ordering::SeqCst);
+                    std::thread::sleep(std::time::Duration::from_millis(1));
+                    Ok::<u32, String>(42)
+                });
+                result.unwrap()
+            });
+            handles.push(handle);
+        }
+
+        let results: Vec<_> = handles.into_iter().map(|h| h.join().unwrap()).collect();
+
+        // All results should be the same Arc instance (pointer-equal).
+        for i in 1..results.len() {
+            assert!(
+                Arc::ptr_eq(&results[0], &results[i]),
+                "All concurrent callers should receive the same Arc instance"
+            );
+        }
+
+        // The initializer may run multiple times due to RwLock contention, but all
+        // threads should get the same cached Arc (the first one that completed initialization).
+        // Document that some redundant initialization is acceptable as a tradeoff for
+        // lock-free fast path.
+        let final_count = init_count.load(Ordering::SeqCst);
+        assert!(final_count >= 1, "Initializer must run at least once");
     }
 }

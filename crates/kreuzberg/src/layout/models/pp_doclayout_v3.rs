@@ -229,7 +229,10 @@ impl PpDocLayoutV3Model {
 
         for img in images {
             let (tensor, scale, pad_x, pad_y) = preprocessing::preprocess_imagenet_letterbox(img, INPUT_SIZE);
-            all_pixel_data.extend_from_slice(tensor.as_slice().expect("tensor not contiguous"));
+            let tensor_slice = tensor
+                .as_slice()
+                .ok_or_else(|| LayoutError::InvalidOutput("Preprocessed image tensor is not contiguous".into()))?;
+            all_pixel_data.extend_from_slice(tensor_slice);
             metas.push((img.width(), img.height(), scale, pad_x, pad_y));
         }
 
@@ -355,6 +358,16 @@ impl PpDocLayoutV3Model {
     }
 }
 
+/// Empty-batch short-circuit for [`LayoutModel::detect_batch`].
+///
+/// Returns `Some(Vec::new())` for an empty input (the contract: an empty batch yields an
+/// empty result without any ONNX session access), and `None` when inference must run.
+/// Extracted as a pure function so the short-circuit contract is unit-testable without
+/// constructing a model (which would require loading weights).
+fn empty_batch_short_circuit(images: &[&RgbImage]) -> Option<Vec<Vec<LayoutDetection>>> {
+    if images.is_empty() { Some(Vec::new()) } else { None }
+}
+
 impl LayoutModel for PpDocLayoutV3Model {
     fn detect(&mut self, img: &RgbImage) -> Result<Vec<LayoutDetection>, LayoutError> {
         self.run_inference(img, DEFAULT_THRESHOLD)
@@ -369,8 +382,8 @@ impl LayoutModel for PpDocLayoutV3Model {
         images: &[&RgbImage],
         threshold: Option<f32>,
     ) -> Result<Vec<Vec<LayoutDetection>>, LayoutError> {
-        if images.is_empty() {
-            return Ok(Vec::new());
+        if let Some(empty) = empty_batch_short_circuit(images) {
+            return Ok(empty);
         }
         let t = threshold.unwrap_or(DEFAULT_THRESHOLD);
         // Single-image case: use the regular inference path (no tensor stacking overhead).
@@ -445,20 +458,27 @@ mod tests {
         assert_eq!(INPUT_SIZE, 960);
     }
 
-    /// Verify that `detect_batch` returns an empty Vec without hitting the ONNX
-    /// session when called with an empty slice.
-    ///
-    /// `run_batch_inference` itself also returns `Ok(Vec::new())` early on an
-    /// empty slice, but constructing a `PpDocLayoutV3Model` requires a real ONNX
-    /// session (weights on disk), so we exercise the guard via the public
-    /// `LayoutModel::detect_batch` short-circuit path, which returns before
-    /// calling `run_batch_inference`. The `detect_batch` method is defined on
-    /// the trait impl but delegates to `run_batch_inference` only when
-    /// `images.len() > 1`, so an empty input returns before any session access.
-    ///
-    /// The test is omitted here because it cannot be run without a real model
-    /// file. The correctness of the empty-slice path is guaranteed by the
-    /// `if images.is_empty() { return Ok(Vec::new()); }` guard added at line 210.
-    #[allow(dead_code)]
-    fn _doc_empty_batch_contract() {}
+    #[test]
+    fn empty_batch_short_circuits_to_empty_result() {
+        // The empty-batch contract: an empty input yields an empty result via the
+        // short-circuit, before any ONNX session access. detect_batch delegates the
+        // decision to empty_batch_short_circuit, which we exercise directly here (the
+        // full detect_batch call would require model weights to construct the model).
+        let empty: Vec<&RgbImage> = vec![];
+        match empty_batch_short_circuit(&empty) {
+            Some(result) => assert!(result.is_empty(), "empty batch must yield an empty result set"),
+            None => panic!("empty batch must short-circuit, not proceed to inference"),
+        }
+    }
+
+    #[test]
+    fn non_empty_batch_does_not_short_circuit() {
+        // A non-empty batch must NOT short-circuit — it has to proceed to inference.
+        let img = RgbImage::new(1, 1);
+        let images = [&img];
+        assert!(
+            empty_batch_short_circuit(&images).is_none(),
+            "non-empty batch must proceed to inference, not short-circuit"
+        );
+    }
 }
