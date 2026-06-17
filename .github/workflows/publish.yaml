@@ -486,6 +486,14 @@ jobs:
             export CC="gcc ${CFLAGS}"
             export CXX="g++ ${CXXFLAGS}"
           cibw-environment: 'MATURIN_BUILD_ARGS="--compatibility manylinux_2_28" CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=gcc CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=gcc CC_x86_64_unknown_linux_gnu=gcc CC_aarch64_unknown_linux_gnu=gcc CXX_x86_64_unknown_linux_gnu=g++ CXX_aarch64_unknown_linux_gnu=g++'
+          # macos-latest is now macOS 15 (Sequoia), and the Homebrew HEIF/AV1
+          # dylibs libheif pulls in (libx265, libheif, libaom, libvmaf,
+          # libsharpyuv, libde265) are built with LC_BUILD_VERSION minos 15.0.
+          # Pin MACOSX_DEPLOYMENT_TARGET=15.0 so the arm64 wheel is tagged
+          # macosx_15_0_arm64 and delocate's min-version check passes (an 11.0
+          # tag fails: "Library dependencies do not satisfy target MacOS version
+          # 11.0"). Only arm64 macOS is built (Intel dropped in rc.20+).
+          cibw-environment-macos: 'MATURIN_BUILD_ARGS="" CARGO_BUILD_LOCKED=true MACOSX_DEPLOYMENT_TARGET=15.0'
           # cibw's bundled rustup-init on Windows defaults host triple to gnu, and
           # rust-toolchain.toml channel="1.95" resolves against that gnu host. Install
           # 1.95-x86_64-pc-windows-msvc explicitly AND set RUSTUP_TOOLCHAIN env var so
