@@ -72,6 +72,7 @@ packages/ruby/vendor/
 
 # PHP
 vendor/
+!crates/kreuzberg-candle-ocr/src/vendor/
 php-kreuzberg.ini
 packages/php/php-kreuzberg.ini
 packages/php/tests.xml

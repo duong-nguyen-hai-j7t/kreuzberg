@@ -24,6 +24,7 @@
 pub mod device;
 pub mod error;
 pub mod models;
+pub(crate) mod vendor;
 
 pub use device::DevicePreference;
 pub use error::{CandleOcrError, Result};

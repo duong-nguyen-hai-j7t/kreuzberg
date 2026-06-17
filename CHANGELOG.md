@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `candle-deepseek-ocr backend (vendored from jhqxxx/aha)`
+- `candle-hunyuan-ocr backend (vendored from jhqxxx/aha)`
+- `candle-paddleocr-vl 1.5 upgrade (vendored from jhqxxx/aha)`
 - **ocr**: `candle-trocr` feature enabling real BEiT+RoBERTa TrOCR inference (transformer-based printed/handwritten text recognition) via candle. Wires TrOCR encoder-decoder model behind the `candle-trocr` aggregate feature; backend selectable via `--ocr-backend candle-trocr`. Supports all four model variants (base/large × printed/handwritten) on CPU/CUDA/Metal. Sub-features on `kreuzberg-candle-ocr` for future VLM backends (GOT-OCR 2.0, GLM-OCR, PaddleOCR-VL).
 - **ocr**: `candle-paddleocr-vl` feature enabling PaddleOCR-VL 0.9B vision-language model (multi-task: OCR, tables, formulas, charts) via candle. Emits markdown directly from the VLM; extraction pipeline skips layout-reconstruction stages for VLM output. Supports 109+ languages. Selectable via `--ocr-backend candle-paddleocr-vl` with task selection via backend options (`{"task": "table"}`).
 - **cli**: `candle-ocr`, `candle-trocr`, `candle-paddleocr-vl` pass-through Cargo features on `kreuzberg-cli`. The `--ocr-backend` allowlist now accepts `candle-trocr` and `candle-paddleocr-vl`, and the CLI overrides route those names to the actual candle backend in the registry instead of silently falling back to tesseract.
