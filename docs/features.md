@@ -268,7 +268,7 @@ Pure-Rust VLM OCR via the `candle-hunyuan-ocr` feature. Tencent Hunyuan-OCR visi
 
 Configure via `--ocr-backend candle-hunyuan-ocr` or `ocr.backend = "candle-hunyuan-ocr"` in config. Set device via `backend_options`: `{"device":"metal"}`, `{"device":"cuda"}`.
 
-**Attribution:** Model vendored from [jhqxxx/aha](https://github.com/jhqxxx/aha) (Apache-2.0). See [ATTRIBUTIONS.md](../ATTRIBUTIONS.md).
+**Attribution:** Model vendored from [jhqxxx/aha](https://github.com/jhqxxx/aha) (Apache-2.0). See [ATTRIBUTIONS.md](https://github.com/kreuzberg-dev/kreuzberg/blob/main/ATTRIBUTIONS.md).
 
 ### Candle DeepSeek-OCR
 
@@ -295,7 +295,7 @@ Pure-Rust VLM OCR via the `candle-deepseek-ocr` feature. DeepSeek-OCR vision-lan
 
 Configure via `--ocr-backend candle-deepseek-ocr` or `ocr.backend = "candle-deepseek-ocr"` in config. Set device via `backend_options`: `{"device":"metal"}`, `{"device":"cuda"}`.
 
-**Attribution:** Model vendored from [jhqxxx/aha](https://github.com/jhqxxx/aha) (Apache-2.0). See [ATTRIBUTIONS.md](../ATTRIBUTIONS.md).
+**Attribution:** Model vendored from [jhqxxx/aha](https://github.com/jhqxxx/aha) (Apache-2.0). See [ATTRIBUTIONS.md](https://github.com/kreuzberg-dev/kreuzberg/blob/main/ATTRIBUTIONS.md).
 
 ### Candle PaddleOCR-VL 1.5
 
@@ -322,7 +322,7 @@ Pure-Rust VLM OCR via the `candle-paddleocr-vl-15` feature. PaddleOCR-VL 1.5 vis
 
 Configure via `--ocr-backend candle-paddleocr-vl-15` or `ocr.backend = "candle-paddleocr-vl-15"` in config. Set device via `backend_options`: `{"device":"metal"}`, `{"device":"cuda"}`.
 
-**Attribution:** Model vendored from [jhqxxx/aha](https://github.com/jhqxxx/aha) (Apache-2.0). See [ATTRIBUTIONS.md](../ATTRIBUTIONS.md).
+**Attribution:** Model vendored from [jhqxxx/aha](https://github.com/jhqxxx/aha) (Apache-2.0). See [ATTRIBUTIONS.md](https://github.com/kreuzberg-dev/kreuzberg/blob/main/ATTRIBUTIONS.md).
 
 ### Candle VLM-OCR Umbrella
 
