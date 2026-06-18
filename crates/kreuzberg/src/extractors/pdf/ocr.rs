@@ -446,7 +446,13 @@ pub(crate) async fn extract_mixed_ocr_native(
         .collect();
 
     if ocr_set.is_empty() {
-        return Ok((native_text.to_string(), ahash::AHashMap::new(), Vec::new(), None, Vec::new()));
+        return Ok((
+            native_text.to_string(),
+            ahash::AHashMap::new(),
+            Vec::new(),
+            None,
+            Vec::new(),
+        ));
     }
 
     // Convert 1-indexed page numbers to 0-indexed for rendering (sorted + deduplicated)
@@ -455,7 +461,13 @@ pub(crate) async fn extract_mixed_ocr_native(
     let page_images = render_selected_pages_for_ocr(content, &page_indices)?;
 
     if page_images.is_empty() {
-        return Ok((native_text.to_string(), ahash::AHashMap::new(), Vec::new(), None, Vec::new()));
+        return Ok((
+            native_text.to_string(),
+            ahash::AHashMap::new(),
+            Vec::new(),
+            None,
+            Vec::new(),
+        ));
     }
 
     // OCR all selected pages concurrently using the same batched pipeline pattern
@@ -1535,7 +1547,16 @@ pub(crate) async fn run_ocr_pipeline(
                 threshold = pipeline.quality_thresholds.pipeline_min_quality,
                 "All OCR pipeline backends produced suboptimal quality, using best result"
             );
-            Ok((text, tables, elements, doc, accumulated_usage, page_texts, rasters, formulas))
+            Ok((
+                text,
+                tables,
+                elements,
+                doc,
+                accumulated_usage,
+                page_texts,
+                rasters,
+                formulas,
+            ))
         }
         None => Err(crate::KreuzbergError::Parsing {
             message: "All OCR pipeline backends failed".to_string(),
@@ -2680,7 +2701,11 @@ Buffers:           50000 kB
         // Page numbers must be 1-indexed document pages, NOT the backend's placeholder 0.
         let mut pages: Vec<u32> = formulas.iter().map(|f| f.page).collect();
         pages.sort_unstable();
-        assert_eq!(pages, vec![1, 2], "formula pages must be renumbered to 1-indexed doc pages");
+        assert_eq!(
+            pages,
+            vec![1, 2],
+            "formula pages must be renumbered to 1-indexed doc pages"
+        );
 
         // LaTeX content must be preserved.
         assert!(

@@ -248,8 +248,7 @@ mod tests {
 
     #[test]
     fn docx_dense_text_chooses_text_only() {
-        let mut i =
-            input("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        let mut i = input("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
         i.avg_chars_per_page = 800.0;
         assert_eq!(choose_call_mode(&i, &t()), StructuredCallMode::TextOnly);
     }
@@ -323,10 +322,7 @@ mod tests {
         let mut i = input("application/pdf");
         i.text_coverage = 0.95;
         i.user_force_vision = true;
-        assert_eq!(
-            choose_call_mode(&i, &t()),
-            StructuredCallMode::TextPlusVision
-        );
+        assert_eq!(choose_call_mode(&i, &t()), StructuredCallMode::TextPlusVision);
     }
 
     #[test]
@@ -368,10 +364,7 @@ mod tests {
             enable_vision_fallback: true,
             ..StructuredThresholds::default()
         };
-        assert_eq!(
-            choose_call_mode(&i, &thresholds),
-            StructuredCallMode::TextPlusVision
-        );
+        assert_eq!(choose_call_mode(&i, &thresholds), StructuredCallMode::TextPlusVision);
     }
 
     #[test]
@@ -392,10 +385,7 @@ mod tests {
 
     #[test]
     fn serde_uses_snake_case_names() {
-        assert_eq!(
-            serde_json::to_string(&StructuredCallMode::Skip).unwrap(),
-            r#""skip""#
-        );
+        assert_eq!(serde_json::to_string(&StructuredCallMode::Skip).unwrap(), r#""skip""#);
         assert_eq!(
             serde_json::to_string(&StructuredCallMode::TextOnly).unwrap(),
             r#""text_only""#

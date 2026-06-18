@@ -477,7 +477,10 @@ mod tests {
         let w = ConfidenceWeights::default();
         assert_eq!(w.text_coverage, 0.30, "default text_coverage weight should be 0.30");
         assert_eq!(w.ocr_aggregate, 0.30, "default ocr_aggregate weight should be 0.30");
-        assert_eq!(w.schema_compliance, 0.40, "default schema_compliance weight should be 0.40");
+        assert_eq!(
+            w.schema_compliance, 0.40,
+            "default schema_compliance weight should be 0.40"
+        );
     }
 
     #[test]

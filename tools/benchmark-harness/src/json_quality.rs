@@ -295,8 +295,10 @@ fn values_match_normalized(pred: &Value, gt: &Value, tol: &NumericTolerance) -> 
             }
             // Both parse as f64? Fall back to numeric tolerance.
             if let (Ok(pf), Ok(gf)) = (pn.parse::<f64>(), gn.parse::<f64>()) {
-                let pred_num = Value::Number(serde_json::Number::from_f64(pf).unwrap_or_else(|| serde_json::Number::from(0)));
-                let gt_num = Value::Number(serde_json::Number::from_f64(gf).unwrap_or_else(|| serde_json::Number::from(0)));
+                let pred_num =
+                    Value::Number(serde_json::Number::from_f64(pf).unwrap_or_else(|| serde_json::Number::from(0)));
+                let gt_num =
+                    Value::Number(serde_json::Number::from_f64(gf).unwrap_or_else(|| serde_json::Number::from(0)));
                 return numeric_match(&pred_num, &gt_num, tol);
             }
             false
@@ -446,10 +448,18 @@ pub fn latex_token_f1(extracted: &[String], gt: &[String]) -> Metrics {
     let gt_tokens: Vec<String> = gt.iter().flat_map(|s| tokenize_latex(s)).collect();
 
     if pred_tokens.is_empty() && gt_tokens.is_empty() {
-        return Metrics { precision: 1.0, recall: 1.0, f1: 1.0 };
+        return Metrics {
+            precision: 1.0,
+            recall: 1.0,
+            f1: 1.0,
+        };
     }
     if pred_tokens.is_empty() || gt_tokens.is_empty() {
-        return Metrics { precision: 0.0, recall: 0.0, f1: 0.0 };
+        return Metrics {
+            precision: 0.0,
+            recall: 0.0,
+            f1: 0.0,
+        };
     }
 
     // Build multiset counts

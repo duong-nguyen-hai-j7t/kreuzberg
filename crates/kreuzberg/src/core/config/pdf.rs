@@ -235,10 +235,7 @@ mod tests {
         // reading_order uses `#[serde(default)]` (bool default = false).
         let json = r#"{"extract_tables": true, "extract_metadata": true}"#;
         let config: PdfConfig = serde_json::from_str(json).unwrap();
-        assert!(
-            !config.reading_order,
-            "omitted reading_order must default to false"
-        );
+        assert!(!config.reading_order, "omitted reading_order must default to false");
     }
 
     #[test]

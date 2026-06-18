@@ -907,10 +907,7 @@ mod tests {
             "tables": []
         }"#;
         let result: ExtractionResult = serde_json::from_str(json).unwrap();
-        assert!(
-            result.formulas.is_empty(),
-            "omitted formulas must default to empty vec"
-        );
+        assert!(result.formulas.is_empty(), "omitted formulas must default to empty vec");
         assert!(
             result.form_fields.is_empty(),
             "omitted form_fields must default to empty vec"

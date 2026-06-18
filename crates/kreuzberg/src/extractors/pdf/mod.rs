@@ -80,16 +80,26 @@ async fn run_ocr_with_layout(
         ));
     }
 
-    let (text, _mean_conf, ocr_tables, ocr_elements, ocr_doc, llm_usage, ocr_pts, ocr_rasters, formulas) = extract_with_ocr(
-        Some(content),
-        None,
-        #[cfg(feature = "layout-detection")]
-        layout_detections.as_deref(),
-        config,
-        path,
-    )
-    .await?;
-    Ok((text, ocr_tables, ocr_elements, ocr_doc, llm_usage, ocr_pts, ocr_rasters, formulas))
+    let (text, _mean_conf, ocr_tables, ocr_elements, ocr_doc, llm_usage, ocr_pts, ocr_rasters, formulas) =
+        extract_with_ocr(
+            Some(content),
+            None,
+            #[cfg(feature = "layout-detection")]
+            layout_detections.as_deref(),
+            config,
+            path,
+        )
+        .await?;
+    Ok((
+        text,
+        ocr_tables,
+        ocr_elements,
+        ocr_doc,
+        llm_usage,
+        ocr_pts,
+        ocr_rasters,
+        formulas,
+    ))
 }
 
 /// PDF document extractor using pdf_oxide.
@@ -2493,11 +2503,8 @@ mod tests {
         );
 
         // Convert to ExtractionResult through the pipeline to verify the carrier works
-        let result = crate::extraction::derive::derive_extraction_result(
-            doc,
-            false,
-            crate::core::config::OutputFormat::Plain,
-        );
+        let result =
+            crate::extraction::derive::derive_extraction_result(doc, false, crate::core::config::OutputFormat::Plain);
 
         // Verify form_fields were transferred via std::mem::take
         assert_eq!(result.form_fields.len(), 1);
@@ -2519,11 +2526,8 @@ mod tests {
         assert!(doc.metadata.additional.get("_pdf_form_fields").is_none());
 
         // Convert to ExtractionResult and verify form_fields is empty
-        let result = crate::extraction::derive::derive_extraction_result(
-            doc,
-            false,
-            crate::core::config::OutputFormat::Plain,
-        );
+        let result =
+            crate::extraction::derive::derive_extraction_result(doc, false, crate::core::config::OutputFormat::Plain);
 
         assert!(result.form_fields.is_empty());
     }

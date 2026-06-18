@@ -8,7 +8,7 @@
 //! appended. XFA-only forms are fully extracted.
 
 use super::OxideDocument;
-use crate::types::{BoundingBox, PdfFormField, FormFieldType};
+use crate::types::{BoundingBox, FormFieldType, PdfFormField};
 
 /// Extract form fields from a PDF document using pdf_oxide.
 ///
@@ -99,10 +99,7 @@ fn extract_xfa_fields(doc: &mut OxideDocument) -> Option<Vec<PdfFormField>> {
 fn map_form_field(oxide_field: pdf_oxide::extractors::forms::FormField) -> PdfFormField {
     let field_type = map_field_type(&oxide_field.field_type, oxide_field.flags);
     let value = map_field_value(&oxide_field.value);
-    let default_value = oxide_field
-        .default_value
-        .as_ref()
-        .and_then(map_field_value);
+    let default_value = oxide_field.default_value.as_ref().and_then(map_field_value);
     let bbox = oxide_field.bounds.map(|bounds| BoundingBox {
         x0: bounds[0],
         y0: bounds[1],
@@ -224,18 +221,17 @@ fn map_xfa_field_direct(xfa_field: &pdf_oxide::xfa::XfaField) -> PdfFormField {
 
     // Construct bounding box from XFA position/dimension hints
     // XFA fields use f32 coordinates; BoundingBox expects f64, so cast.
-    let bbox = if let (Some(x), Some(y), Some(w), Some(h)) =
-        (xfa_field.x, xfa_field.y, xfa_field.width, xfa_field.height)
-    {
-        Some(BoundingBox {
-            x0: x as f64,
-            y0: y as f64,
-            x1: (x + w) as f64,
-            y1: (y + h) as f64,
-        })
-    } else {
-        None
-    };
+    let bbox =
+        if let (Some(x), Some(y), Some(w), Some(h)) = (xfa_field.x, xfa_field.y, xfa_field.width, xfa_field.height) {
+            Some(BoundingBox {
+                x0: x as f64,
+                y0: y as f64,
+                x1: (x + w) as f64,
+                y1: (y + h) as f64,
+            })
+        } else {
+            None
+        };
 
     PdfFormField {
         name: xfa_field.name.clone(),
@@ -298,7 +294,10 @@ mod tests {
 
     #[test]
     fn test_map_field_type_unknown() {
-        assert_eq!(map_field_type(&FieldType::Unknown("custom".to_string()), None), FormFieldType::Unknown);
+        assert_eq!(
+            map_field_type(&FieldType::Unknown("custom".to_string()), None),
+            FormFieldType::Unknown
+        );
     }
 
     #[test]

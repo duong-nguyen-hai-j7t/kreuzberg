@@ -453,7 +453,16 @@ impl InternalElement {
     }
 
     /// Set the content layer.
-    #[cfg(all(test, any(feature = "ocr", feature = "pdf", feature = "paddle-ocr", feature = "xml", feature = "office")))]
+    #[cfg(all(
+        test,
+        any(
+            feature = "ocr",
+            feature = "pdf",
+            feature = "paddle-ocr",
+            feature = "xml",
+            feature = "office"
+        )
+    ))]
     pub(crate) fn with_layer(mut self, layer: ContentLayer) -> Self {
         self.layer = layer;
         self

@@ -52,9 +52,15 @@ pub use models::yolo::{YoloModel, YoloVariant};
 #[cfg(all(feature = "layout-detection", feature = "pdf"))]
 use std::sync::OnceLock;
 
-#[cfg(all(feature = "layout-detection", any(feature = "pdf", feature = "ocr", feature = "ocr-wasm")))]
+#[cfg(all(
+    feature = "layout-detection",
+    any(feature = "pdf", feature = "ocr", feature = "ocr-wasm")
+))]
 use crate::core::config::layout::LayoutDetectionConfig;
-#[cfg(all(feature = "layout-detection", any(feature = "pdf", feature = "ocr", feature = "ocr-wasm")))]
+#[cfg(all(
+    feature = "layout-detection",
+    any(feature = "pdf", feature = "ocr", feature = "ocr-wasm")
+))]
 use crate::model_cache::ModelCache;
 
 // ---------------------------------------------------------------------------
@@ -65,7 +71,10 @@ use crate::model_cache::ModelCache;
 ///
 /// Used by the image extractor (layout-detection + ocr/ocr-wasm) and the
 /// PDF extractor (layout-detection + pdf).
-#[cfg(all(feature = "layout-detection", any(feature = "pdf", feature = "ocr", feature = "ocr-wasm")))]
+#[cfg(all(
+    feature = "layout-detection",
+    any(feature = "pdf", feature = "ocr", feature = "ocr-wasm")
+))]
 static CACHED_ENGINE: ModelCache<LayoutEngine> = ModelCache::new();
 
 /// Global cached TATR table structure recognition model.
@@ -81,7 +90,10 @@ static CACHED_TATR: ModelCache<models::tatr::TatrModel> = ModelCache::new();
 static TATR_TRIED: OnceLock<bool> = OnceLock::new();
 
 /// Convert a [`LayoutDetectionConfig`] into a [`LayoutEngineConfig`].
-#[cfg(all(feature = "layout-detection", any(feature = "pdf", feature = "ocr", feature = "ocr-wasm")))]
+#[cfg(all(
+    feature = "layout-detection",
+    any(feature = "pdf", feature = "ocr", feature = "ocr-wasm")
+))]
 pub(crate) fn config_from_extraction(layout_config: &LayoutDetectionConfig) -> LayoutEngineConfig {
     LayoutEngineConfig {
         backend: ModelBackend::RtDetr,
@@ -95,7 +107,10 @@ pub(crate) fn config_from_extraction(layout_config: &LayoutDetectionConfig) -> L
 /// Create a [`LayoutEngine`] from a [`LayoutDetectionConfig`].
 ///
 /// Ensures ORT is available, then creates the engine with model download.
-#[cfg(all(feature = "layout-detection", any(feature = "pdf", feature = "ocr", feature = "ocr-wasm")))]
+#[cfg(all(
+    feature = "layout-detection",
+    any(feature = "pdf", feature = "ocr", feature = "ocr-wasm")
+))]
 pub(crate) fn create_engine(layout_config: &LayoutDetectionConfig) -> Result<LayoutEngine, LayoutError> {
     crate::ort_discovery::ensure_ort_available();
     let config = config_from_extraction(layout_config);
@@ -107,13 +122,19 @@ pub(crate) fn create_engine(layout_config: &LayoutDetectionConfig) -> Result<Lay
 /// The caller owns the engine for the duration of its work and should
 /// return it via [`return_engine`] when done. This avoids holding the
 /// global mutex during inference.
-#[cfg(all(feature = "layout-detection", any(feature = "pdf", feature = "ocr", feature = "ocr-wasm")))]
+#[cfg(all(
+    feature = "layout-detection",
+    any(feature = "pdf", feature = "ocr", feature = "ocr-wasm")
+))]
 pub(crate) fn take_or_create_engine(layout_config: &LayoutDetectionConfig) -> Result<LayoutEngine, LayoutError> {
     CACHED_ENGINE.take_or_create(|| create_engine(layout_config))
 }
 
 /// Return a layout engine to the global cache for reuse by future extractions.
-#[cfg(all(feature = "layout-detection", any(feature = "pdf", feature = "ocr", feature = "ocr-wasm")))]
+#[cfg(all(
+    feature = "layout-detection",
+    any(feature = "pdf", feature = "ocr", feature = "ocr-wasm")
+))]
 pub(crate) fn return_engine(engine: LayoutEngine) {
     CACHED_ENGINE.put(engine);
 }

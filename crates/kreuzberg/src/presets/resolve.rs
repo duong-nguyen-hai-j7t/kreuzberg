@@ -148,8 +148,7 @@ mod tests {
     #[test]
     fn custom_schema_overrides_preset_schema() {
         let preset = fixture();
-        let custom =
-            serde_json::json!({"type": "object", "properties": {"x": {"type": "string"}}});
+        let custom = serde_json::json!({"type": "object", "properties": {"x": {"type": "string"}}});
         let resolved = resolve(&preset, Some(custom.clone()), &BTreeMap::new()).unwrap();
         assert_eq!(resolved.schema, custom);
     }
@@ -189,8 +188,7 @@ mod tests {
     #[test]
     fn template_preserves_multibyte_utf8() {
         let mut preset = fixture();
-        preset.context_template =
-            Some("Vendor — {{vendor}}\nNotes: café · α · 中 · א".into());
+        preset.context_template = Some("Vendor — {{vendor}}\nNotes: café · α · 中 · א".into());
         let mut ctx = BTreeMap::new();
         ctx.insert("vendor".into(), "Acmé".into());
         let resolved = resolve(&preset, None, &ctx).unwrap();

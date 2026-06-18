@@ -27,7 +27,7 @@ pub mod types;
 
 pub use loader::LoadError;
 pub use registry::Registry;
-pub use resolve::{resolve, ResolvedPreset, ResolveError};
+pub use resolve::{ResolveError, ResolvedPreset, resolve};
 pub use types::{CallMode, MergeMode, Preset, PresetCategory, PresetSample, PresetSummary};
 
 #[cfg(test)]
@@ -156,8 +156,7 @@ mod tests {
     fn resolve_generic_document_without_overrides() {
         let registry = Registry::load_embedded().expect("load");
         let preset = registry.get("generic_document").expect("present");
-        let resolved =
-            resolve(preset, None, &BTreeMap::new()).expect("resolve must succeed");
+        let resolved = resolve(preset, None, &BTreeMap::new()).expect("resolve must succeed");
         assert_eq!(resolved.id, "generic_document");
         assert_eq!(resolved.schema, preset.schema);
         assert_eq!(resolved.system_prompt, preset.system_prompt);

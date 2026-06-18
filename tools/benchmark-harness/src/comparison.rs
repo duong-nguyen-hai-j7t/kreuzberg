@@ -158,16 +158,20 @@ impl Pipeline {
             }
             "pdf-oxide" | "pdf_oxide" | "oxide" => Some(Pipeline::PdfOxide),
             "pdf-oxide+layout" | "pdf-oxide-layout" | "oxide+layout" | "oxide-layout" => Some(Pipeline::PdfOxideLayout),
-            "pdf-oxide+layout+reading-order" | "pdf-oxide-layout-reading-order" | "oxide+layout+reading-order" | "oxide-layout-reading-order" => Some(Pipeline::PdfOxideReadingOrder),
+            "pdf-oxide+layout+reading-order"
+            | "pdf-oxide-layout-reading-order"
+            | "oxide+layout+reading-order"
+            | "oxide-layout-reading-order" => Some(Pipeline::PdfOxideReadingOrder),
             "candle-trocr" | "candle_trocr" | "trocr" => Some(Pipeline::CandleTrocr),
             "candle-paddleocr-vl" | "candle_paddleocr_vl" | "paddleocr-vl" => Some(Pipeline::CandlePaddleocrVl),
             "candle-glm-ocr" | "candle_glm_ocr" | "glm-ocr" => Some(Pipeline::CandleGlmOcr),
             "candle-glm-ocr+layout" | "candle_glm_ocr_layout" | "glm-ocr+layout" | "glm-ocr-layout" => {
                 Some(Pipeline::CandleGlmOcrLayout)
             }
-            "candle-glm-ocr+layout+chart" | "candle_glm_ocr_layout_chart" | "glm-ocr+layout+chart" | "glm-ocr-layout-chart" => {
-                Some(Pipeline::CandleGlmOcrLayoutChart)
-            }
+            "candle-glm-ocr+layout+chart"
+            | "candle_glm_ocr_layout_chart"
+            | "glm-ocr+layout+chart"
+            | "glm-ocr-layout-chart" => Some(Pipeline::CandleGlmOcrLayoutChart),
             "candle-hunyuan-ocr" | "candle_hunyuan_ocr" | "hunyuan-ocr" => Some(Pipeline::CandleHunyuanOcr),
             "candle-deepseek-ocr" | "candle_deepseek_ocr" | "deepseek-ocr" => Some(Pipeline::CandleDeepseekOcr),
             "candle-paddleocr-vl-15" | "candle_paddleocr_vl_15" | "paddleocr-vl-15" => {

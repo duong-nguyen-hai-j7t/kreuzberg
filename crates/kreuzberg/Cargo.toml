@@ -321,13 +321,25 @@ ner-onnx = [
     "tokio-runtime",
 ]
 
-presets = ["dep:include_dir", "dep:jsonschema", "dep:sha2"] # Preset format + registry + loader + resolver; pure-Rust.
+presets = [
+    "dep:include_dir",
+    "dep:jsonschema",
+    "dep:sha2",
+] # Preset format + registry + loader + resolver; pure-Rust.
 
 # LLM vision structured-extraction orchestrator: rasterize → token-aware batch → vision call →
 # schema-validate+merge → citation-fuse. Needs native http (liter-llm) + pdf rendering, so it is
 # excluded from no-ort-target/wasm-target and joins full/android-target/windows-target instead.
 # The module is additionally gated `#[cfg(not(target_arch = "wasm32"))]` in source.
-structured = ["liter-llm", "presets", "heuristics", "pdf", "ocr-pipeline", "dep:moka", "tokio-runtime"]
+structured = [
+    "liter-llm",
+    "presets",
+    "heuristics",
+    "pdf",
+    "ocr-pipeline",
+    "dep:moka",
+    "tokio-runtime",
+]
 
 redaction = ["dep:sha2"] # Pattern-based PII engine; pure-Rust.
 redaction-ml = ["redaction", "ner"] # Couple in NER for PERSON/ORG/LOC redaction.
@@ -571,8 +583,6 @@ html-to-markdown-rs = { workspace = true, features = [
 ], optional = true }
 icu_provider = { version = "2", features = ["sync"], optional = true }
 icu_segmenter = { version = "2", optional = true }
-include_dir = { version = "0.7", optional = true }
-jsonschema = { version = "0.46", optional = true }
 image = { workspace = true, default-features = false, features = [
     "png",
     "jpeg",
@@ -583,10 +593,12 @@ image = { workspace = true, default-features = false, features = [
     "pnm",
     "rayon",
 ], optional = true }
+include_dir = { version = "0.7", optional = true }
 indexmap = "2.14.0"
 infer = "0.19.0"
 itertools = { workspace = true, optional = true }
 jotdown = "0.10"
+jsonschema = { version = "0.46", optional = true }
 kreuzberg-gliner-rs = { version = "0.2.0", optional = true }
 kreuzberg-libheif = { path = "../kreuzberg-libheif", version = "5.0.0-rc.22", optional = true }
 kreuzberg-orp = { version = "0.1.1", optional = true }

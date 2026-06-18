@@ -66,21 +66,20 @@ pub struct MetaSchema {
 impl MetaSchema {
     /// Compile the given JSON text as a Draft 2020-12 meta-schema.
     pub fn compile(meta_schema_json: &str) -> Result<Self, LoadError> {
-        let schema: serde_json::Value = serde_json::from_str(meta_schema_json)
-            .map_err(|e| LoadError::BadMetaSchema(format!("parse: {e}")))?;
-        let validator = jsonschema::draft202012::new(&schema)
-            .map_err(|e| LoadError::BadMetaSchema(format!("compile: {e}")))?;
+        let schema: serde_json::Value =
+            serde_json::from_str(meta_schema_json).map_err(|e| LoadError::BadMetaSchema(format!("parse: {e}")))?;
+        let validator =
+            jsonschema::draft202012::new(&schema).map_err(|e| LoadError::BadMetaSchema(format!("compile: {e}")))?;
         Ok(Self { validator })
     }
 
     /// Validate `raw` against the meta-schema and deserialize into a [`Preset`],
     /// stamping the fingerprint over the canonical file bytes.
     pub fn parse_preset(&self, path: &str, raw: &[u8]) -> Result<Preset, LoadError> {
-        let value: serde_json::Value =
-            serde_json::from_slice(raw).map_err(|source| LoadError::Parse {
-                path: path.to_string(),
-                source,
-            })?;
+        let value: serde_json::Value = serde_json::from_slice(raw).map_err(|source| LoadError::Parse {
+            path: path.to_string(),
+            source,
+        })?;
         let issues: Vec<String> = self
             .validator
             .iter_errors(&value)
@@ -92,11 +91,10 @@ impl MetaSchema {
                 errors: issues.join("\n"),
             });
         }
-        let mut preset: Preset =
-            serde_json::from_value(value).map_err(|source| LoadError::Deserialize {
-                path: path.to_string(),
-                source,
-            })?;
+        let mut preset: Preset = serde_json::from_value(value).map_err(|source| LoadError::Deserialize {
+            path: path.to_string(),
+            source,
+        })?;
         preset.fingerprint = fingerprint(raw);
         Ok(preset)
     }

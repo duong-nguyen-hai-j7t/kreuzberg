@@ -50,10 +50,10 @@
 //! # }
 //! ```
 
-use crate::error::Result;
 use super::builder::heading_path_from_context;
 use super::config::{ChunkerType, ChunkingConfig, ChunkingResult};
 use super::core::chunk_text;
+use crate::error::Result;
 
 /// Chunk text for RAG retrieval, ensuring every chunk carries a `heading_path`.
 ///
@@ -151,7 +151,10 @@ mod tests {
             ..Default::default()
         };
         let result = chunk_for_rag(text, &config).unwrap();
-        assert!(!result.chunks.is_empty(), "should produce chunks from multi-heading doc");
+        assert!(
+            !result.chunks.is_empty(),
+            "should produce chunks from multi-heading doc"
+        );
 
         // Every chunk that has a heading_context must also have a non-empty heading_path.
         for chunk in &result.chunks {
@@ -178,10 +181,7 @@ mod tests {
         let result = chunk_for_rag(text, &config).unwrap();
 
         // Find a chunk that is under both Root and Child.
-        let deep_chunk = result
-            .chunks
-            .iter()
-            .find(|c| c.metadata.heading_path.len() >= 2);
+        let deep_chunk = result.chunks.iter().find(|c| c.metadata.heading_path.len() >= 2);
 
         if let Some(chunk) = deep_chunk {
             assert_eq!(
@@ -235,7 +235,10 @@ mod tests {
         let result = chunk_for_rag(text, &config).unwrap();
         // At least one chunk should have heading_path set (heading_context resolved).
         let has_path = result.chunks.iter().any(|c| !c.metadata.heading_path.is_empty());
-        assert!(has_path, "upgrading Text → Markdown must produce heading_path on at least one chunk");
+        assert!(
+            has_path,
+            "upgrading Text → Markdown must produce heading_path on at least one chunk"
+        );
     }
 
     #[test]
@@ -262,7 +265,10 @@ mod tests {
             ..Default::default()
         };
         let result = chunk_for_rag(text, &config).unwrap();
-        assert!(result.chunks.len() >= 2, "multi-heading document should produce multiple chunks");
+        assert!(
+            result.chunks.len() >= 2,
+            "multi-heading document should produce multiple chunks"
+        );
         assert_eq!(result.chunks.len(), result.chunk_count);
 
         // All chunks are non-empty.
@@ -356,7 +362,10 @@ mod tests {
             ..Default::default()
         };
         let result = chunk_for_rag(text, &config).unwrap();
-        assert!(!result.chunks.is_empty(), "semantic chunker should produce at least one chunk");
+        assert!(
+            !result.chunks.is_empty(),
+            "semantic chunker should produce at least one chunk"
+        );
 
         // At least one chunk must carry a non-empty heading_path.
         let has_path = result.chunks.iter().any(|c| !c.metadata.heading_path.is_empty());

@@ -51,9 +51,7 @@ impl Registry {
     /// test ensures this cannot happen for the embedded presets; a panic here
     /// indicates a build artifact problem, not a runtime error.
     pub fn global() -> &'static Registry {
-        GLOBAL.get_or_init(|| {
-            Registry::load_embedded().expect("embedded presets must validate against meta-schema")
-        })
+        GLOBAL.get_or_init(|| Registry::load_embedded().expect("embedded presets must validate against meta-schema"))
     }
 
     /// Look up a preset by its identifier.
@@ -155,8 +153,5 @@ fn preset_stem(path: &str) -> String {
     {
         return stem.to_string();
     }
-    p.file_stem()
-        .and_then(|s| s.to_str())
-        .unwrap_or_default()
-        .to_string()
+    p.file_stem().and_then(|s| s.to_str()).unwrap_or_default().to_string()
 }

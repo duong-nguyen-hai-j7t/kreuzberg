@@ -16,20 +16,18 @@
 
 use serde_json::json;
 
+use kreuzberg::heuristics::StructuredCallMode;
 use kreuzberg::presets::Preset;
 use kreuzberg::presets::types::{CallMode, MergeMode, PresetCategory};
 use kreuzberg::structured::{PresetSpec, StructuredOptions, VisionConfig};
-use kreuzberg::heuristics::StructuredCallMode;
-use kreuzberg::{extract_structured, extract_structured_json, split_and_extract, LlmConfig};
+use kreuzberg::{LlmConfig, extract_structured, extract_structured_json, split_and_extract};
 
 // ── Fixture paths (relative to the crate dir `crates/kreuzberg/`) ─────────────
 
 const FAKE_MEMO_PDF: &str = "../../test_documents/pdf/fake_memo.pdf";
-const RECEIPT_PDF: &str =
-    "../../test_documents/vendored/markitdown/pdf/RECEIPT-2024-TXN-98765_retail_purchase.pdf";
+const RECEIPT_PDF: &str = "../../test_documents/vendored/markitdown/pdf/RECEIPT-2024-TXN-98765_retail_purchase.pdf";
 const INVOICE_IMAGE_PNG: &str = "../../test_documents/images/invoice_image.png";
-const REPAIR_PDF: &str =
-    "../../test_documents/vendored/markitdown/pdf/REPAIR-2022-INV-001_multipage.pdf";
+const REPAIR_PDF: &str = "../../test_documents/vendored/markitdown/pdf/REPAIR-2022-INV-001_multipage.pdf";
 
 // ── Macros ────────────────────────────────────────────────────────────────────
 
@@ -89,7 +87,11 @@ fn inline_invoice_preset() -> Preset {
     }
 }
 
-fn make_structured_options(model: &str, api_key: String, force_call_mode: Option<StructuredCallMode>) -> StructuredOptions {
+fn make_structured_options(
+    model: &str,
+    api_key: String,
+    force_call_mode: Option<StructuredCallMode>,
+) -> StructuredOptions {
     StructuredOptions {
         llm: make_llm_config(model, api_key),
         force_call_mode,
@@ -104,8 +106,7 @@ fn make_structured_options(model: &str, api_key: String, force_call_mode: Option
 // ── (a) generic_document named preset on fake_memo.pdf ────────────────────────
 
 async fn run_generic_document_on_memo(model: &str, api_key: String) {
-    let bytes = std::fs::read(FAKE_MEMO_PDF)
-        .unwrap_or_else(|e| panic!("failed to read {FAKE_MEMO_PDF}: {e}"));
+    let bytes = std::fs::read(FAKE_MEMO_PDF).unwrap_or_else(|e| panic!("failed to read {FAKE_MEMO_PDF}: {e}"));
     let spec = PresetSpec::Named("generic_document".into());
     let options = make_structured_options(model, api_key, Some(StructuredCallMode::TextOnly));
 
@@ -113,7 +114,10 @@ async fn run_generic_document_on_memo(model: &str, api_key: String) {
         .await
         .expect("generic_document extraction must succeed");
 
-    assert_eq!(output.preset_id, "generic_document", "preset_id must be generic_document");
+    assert_eq!(
+        output.preset_id, "generic_document",
+        "preset_id must be generic_document"
+    );
     assert_eq!(output.preset_version, "v1", "preset_version must be v1");
     assert_eq!(
         output.call_mode_used,
@@ -134,10 +138,7 @@ async fn run_generic_document_on_memo(model: &str, api_key: String) {
         output.structured_output_flat["summary"]
     );
 
-    assert!(
-        !output.llm_usage.is_empty(),
-        "llm_usage must be non-empty"
-    );
+    assert!(!output.llm_usage.is_empty(), "llm_usage must be non-empty");
     assert!(
         output.llm_usage.iter().any(|u| u.source == "structured_extraction"),
         "expected at least one usage entry with source=structured_extraction, got: {:?}",
@@ -169,8 +170,7 @@ async fn test_generic_document_memo_gemini() {
 // ── (b) inline invoice preset on receipt PDF ──────────────────────────────────
 
 async fn run_inline_invoice_on_receipt(model: &str, api_key: String) {
-    let bytes = std::fs::read(RECEIPT_PDF)
-        .unwrap_or_else(|e| panic!("failed to read {RECEIPT_PDF}: {e}"));
+    let bytes = std::fs::read(RECEIPT_PDF).unwrap_or_else(|e| panic!("failed to read {RECEIPT_PDF}: {e}"));
     let spec = PresetSpec::Inline(Box::new(inline_invoice_preset()));
     let options = make_structured_options(model, api_key, Some(StructuredCallMode::TextOnly));
 
@@ -190,10 +190,7 @@ async fn run_inline_invoice_on_receipt(model: &str, api_key: String) {
         flat.get("invoice_number").is_some(),
         "invoice_number field must be present, got: {flat}"
     );
-    assert!(
-        flat.get("total").is_some(),
-        "total field must be present, got: {flat}"
-    );
+    assert!(flat.get("total").is_some(), "total field must be present, got: {flat}");
 }
 
 #[tokio::test]
@@ -220,8 +217,7 @@ async fn test_inline_invoice_receipt_gemini() {
 // ── (c) VisionOnly on invoice_image.png ──────────────────────────────────────
 
 async fn run_vision_only_invoice_image(model: &str, api_key: String) {
-    let bytes = std::fs::read(INVOICE_IMAGE_PNG)
-        .unwrap_or_else(|e| panic!("failed to read {INVOICE_IMAGE_PNG}: {e}"));
+    let bytes = std::fs::read(INVOICE_IMAGE_PNG).unwrap_or_else(|e| panic!("failed to read {INVOICE_IMAGE_PNG}: {e}"));
     let spec = PresetSpec::Inline(Box::new(inline_invoice_preset()));
     let options = make_structured_options(model, api_key, Some(StructuredCallMode::VisionOnly));
 
@@ -277,8 +273,7 @@ async fn test_vision_fallback_fires_on_pdf_openai() {
     init();
     let api_key = require_env!("OPENAI_API_KEY");
 
-    let bytes = std::fs::read(FAKE_MEMO_PDF)
-        .unwrap_or_else(|e| panic!("failed to read {FAKE_MEMO_PDF}: {e}"));
+    let bytes = std::fs::read(FAKE_MEMO_PDF).unwrap_or_else(|e| panic!("failed to read {FAKE_MEMO_PDF}: {e}"));
     let spec = PresetSpec::Named("generic_document".into());
     let options = StructuredOptions {
         llm: make_llm_config("openai/gpt-4o-mini", api_key),
@@ -309,8 +304,7 @@ async fn test_vision_fallback_fires_on_pdf_openai() {
 // ── (d) split_and_extract on REPAIR multi-page PDF ───────────────────────────
 
 async fn run_split_and_extract_repair(model: &str, api_key: String) {
-    let bytes = std::fs::read(REPAIR_PDF)
-        .unwrap_or_else(|e| panic!("failed to read {REPAIR_PDF}: {e}"));
+    let bytes = std::fs::read(REPAIR_PDF).unwrap_or_else(|e| panic!("failed to read {REPAIR_PDF}: {e}"));
     let spec = PresetSpec::Named("generic_document".into());
     let options = StructuredOptions {
         llm: make_llm_config(model, api_key),
@@ -327,10 +321,7 @@ async fn run_split_and_extract_repair(model: &str, api_key: String) {
         .await
         .expect("split_and_extract on REPAIR PDF must succeed");
 
-    assert!(
-        !outputs.is_empty(),
-        "split_and_extract must return at least 1 segment"
-    );
+    assert!(!outputs.is_empty(), "split_and_extract must return at least 1 segment");
 
     for (i, output) in outputs.iter().enumerate() {
         assert_eq!(
@@ -341,10 +332,7 @@ async fn run_split_and_extract_repair(model: &str, api_key: String) {
             output.structured_output_flat.is_object(),
             "segment {i}: structured_output_flat must be an object"
         );
-        assert!(
-            !output.llm_usage.is_empty(),
-            "segment {i}: llm_usage must be non-empty"
-        );
+        assert!(!output.llm_usage.is_empty(), "segment {i}: llm_usage must be non-empty");
     }
 }
 
@@ -376,8 +364,7 @@ fn test_extract_structured_json_bridge_openai() {
     init();
     let api_key = require_env!("OPENAI_API_KEY");
 
-    let bytes =
-        std::fs::read(FAKE_MEMO_PDF).unwrap_or_else(|e| panic!("failed to read {FAKE_MEMO_PDF}: {e}"));
+    let bytes = std::fs::read(FAKE_MEMO_PDF).unwrap_or_else(|e| panic!("failed to read {FAKE_MEMO_PDF}: {e}"));
 
     let preset_spec_json = json!({"named": "generic_document"}).to_string();
     let options_json = json!({
@@ -392,12 +379,10 @@ fn test_extract_structured_json_bridge_openai() {
     })
     .to_string();
 
-    let result_str =
-        extract_structured_json(&bytes, "application/pdf", &preset_spec_json, &options_json)
-            .expect("extract_structured_json must succeed");
+    let result_str = extract_structured_json(&bytes, "application/pdf", &preset_spec_json, &options_json)
+        .expect("extract_structured_json must succeed");
 
-    let parsed: serde_json::Value =
-        serde_json::from_str(&result_str).expect("result must be valid JSON");
+    let parsed: serde_json::Value = serde_json::from_str(&result_str).expect("result must be valid JSON");
 
     assert_eq!(
         parsed["preset_id"].as_str(),

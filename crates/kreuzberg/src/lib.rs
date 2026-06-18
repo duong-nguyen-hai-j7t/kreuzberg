@@ -42,7 +42,10 @@ pub mod error;
 /// Format-specific document extraction implementations and office metadata types.
 pub mod extraction;
 pub mod extractors;
-#[cfg(all(feature = "layout-detection", any(feature = "pdf", feature = "ocr", feature = "ocr-wasm")))]
+#[cfg(all(
+    feature = "layout-detection",
+    any(feature = "pdf", feature = "ocr", feature = "ocr-wasm")
+))]
 pub mod model_cache;
 pub mod plugins;
 pub mod rendering;
@@ -122,9 +125,9 @@ pub mod structured;
 
 #[cfg(all(feature = "structured", not(target_arch = "wasm32")))]
 pub use structured::{
-    extract_structured, extract_structured_sync, split_and_extract, split_and_extract_sync,
-    CacheKey, CitationEnvelope, CitedField, CitationSource, MokaVisionCache, PageImage,
-    PresetSpec, StructuredError, StructuredOptions, StructuredOutput, VisionCallCache, VisionConfig,
+    CacheKey, CitationEnvelope, CitationSource, CitedField, MokaVisionCache, PageImage, PresetSpec, StructuredError,
+    StructuredOptions, StructuredOutput, VisionCallCache, VisionConfig, extract_structured, extract_structured_sync,
+    split_and_extract, split_and_extract_sync,
 };
 
 #[cfg(all(feature = "structured", not(target_arch = "wasm32")))]
@@ -214,7 +217,7 @@ pub use extractors::security::SecurityLimits;
 // ── Presets — format + registry + resolver ───────────────────────────────────
 #[cfg(feature = "presets")]
 pub use presets::{
-    resolve, LoadError, Preset, PresetCategory, PresetSample, PresetSummary, Registry, ResolvedPreset, ResolveError,
+    LoadError, Preset, PresetCategory, PresetSample, PresetSummary, Registry, ResolveError, ResolvedPreset, resolve,
 };
 // `CallMode` and `MergeMode` are re-exported unconditionally from `core::config` above —
 // they live in `core::config::llm` (always compiled), not behind the `presets` feature.
