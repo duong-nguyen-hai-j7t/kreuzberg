@@ -10,7 +10,7 @@ const CHARS_PER_TOKEN: usize = 4;
 
 /// Configuration for batch packing.
 #[derive(Debug, Clone)]
-pub struct ChunkerConfig {
+pub(crate) struct ChunkerConfig {
     /// Maximum input tokens allowed per batch.
     pub max_input_tokens: u32,
     /// Estimated tokens consumed by a single image.
@@ -28,7 +28,7 @@ impl Default for ChunkerConfig {
 
 /// A batch of pages ready for a single vision-LLM call.
 #[derive(Debug, Clone)]
-pub struct Batch {
+pub(crate) struct Batch {
     /// Page images in this batch.
     pub pages: Vec<PageImage>,
     /// User text (context + excerpt). Only set for the first batch;

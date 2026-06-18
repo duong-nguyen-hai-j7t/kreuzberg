@@ -13,7 +13,7 @@ use crate::heuristics::SchemaCompliance;
 /// High-level outcome of a [`validate_and_merge`] call.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum Outcome {
+pub(crate) enum Outcome {
     /// Every batch validated and merged.
     Success,
     /// At least one batch validated; at least one failed schema validation.
@@ -26,7 +26,7 @@ pub enum Outcome {
 
 /// Result produced by [`validate_and_merge`].
 #[derive(Debug, Clone)]
-pub struct MergedOutput {
+pub(crate) struct MergedOutput {
     /// The merged JSON value, or [`serde_json::Value::Null`] on `Error`/`SchemaInvalid`.
     pub merged: serde_json::Value,
     /// High-level outcome.

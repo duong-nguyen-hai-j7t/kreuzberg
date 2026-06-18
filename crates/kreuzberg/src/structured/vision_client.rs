@@ -21,7 +21,7 @@ use crate::types::LlmUsage;
 
 /// Caller-supplied parameters for a single vision LLM call.
 #[derive(Debug, Clone)]
-pub struct VisionRequest {
+pub(crate) struct VisionRequest {
     /// System-level instruction for the model.
     pub system_prompt: String,
     /// Optional leading user-turn text (e.g. a short document excerpt).
@@ -42,7 +42,7 @@ pub struct VisionRequest {
 
 /// Parsed result of a vision LLM call.
 #[derive(Debug, Clone)]
-pub struct VisionResponse {
+pub(crate) struct VisionResponse {
     /// The model's structured JSON output (already parsed from the message string).
     pub content: serde_json::Value,
     /// Token usage and cost metadata.

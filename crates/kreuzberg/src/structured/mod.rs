@@ -64,6 +64,7 @@ const DEFAULT_AVG_TOKENS_PER_IMAGE: u32 = 1_500;
 
 /// A single rendered document page, ready to send to a vision model.
 #[derive(Debug, Clone)]
+#[cfg_attr(alef, alef(skip))]
 pub struct PageImage {
     /// 1-indexed page number within the source document.
     pub page_number: u32,
@@ -89,6 +90,7 @@ pub enum PresetSpec {
 /// Vision-call tuning. Defaults are conservative starting points; production callers override them.
 #[derive(Debug, Clone, Deserialize)]
 #[serde(default)]
+#[cfg_attr(alef, alef(skip))]
 pub struct VisionConfig {
     /// Rasterization DPI for PDF pages.
     pub dpi: u32,
@@ -126,6 +128,7 @@ impl Default for VisionConfig {
 /// [`VisionCallCache`] trait object. Config-file users construct it from the serializable
 /// [`crate::core::config::StructuredExtractionConfig`].
 #[derive(Debug, Clone)]
+#[cfg_attr(alef, alef(skip))]
 pub struct StructuredOptions {
     /// LLM connection config (model, key, base URL). Reused via [`crate::llm::client`].
     pub llm: LlmConfig,
@@ -163,6 +166,7 @@ impl Default for StructuredOptions {
 /// Where a cited field's value came from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
+#[cfg_attr(alef, alef(skip))]
 pub enum CitationSource {
     /// Value taken from the LLM response only.
     Llm,
@@ -176,13 +180,13 @@ pub enum CitationSource {
 
 /// A single extracted field with optional provenance (page + bounding box + confidence).
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(alef, alef(skip))]
 pub struct CitedField {
     /// The field value.
     pub value: serde_json::Value,
     /// 1-indexed source page, when known.
     pub page: Option<u32>,
     /// Bounding box `[x, y, width, height]` in page pixels, when known.
-    #[cfg_attr(alef, alef(skip))]
     pub bbox: Option<[f64; 4]>,
     /// Citation confidence in `0.0..=1.0`, when known.
     pub confidence: Option<f64>,
@@ -192,6 +196,7 @@ pub struct CitedField {
 
 /// The structured result in both cited (nested) and flattened (value-only) shapes.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(alef, alef(skip))]
 pub struct CitationEnvelope {
     /// Citation-annotated structured output (fields wrapped as [`CitedField`] when citations emit).
     pub structured_output: serde_json::Value,
@@ -202,6 +207,7 @@ pub struct CitationEnvelope {
 /// The result of a structured-extraction run.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
+#[cfg_attr(alef, alef(skip))]
 pub struct StructuredOutput {
     /// The extracted document text (excerpt used for the prompt / text-only mode).
     pub content: String,
@@ -226,6 +232,7 @@ pub struct StructuredOutput {
 /// Errors returned by the structured-extraction entry points.
 #[derive(Debug, thiserror::Error)]
 #[non_exhaustive]
+#[cfg_attr(alef, alef(skip))]
 pub enum StructuredError {
     /// Named preset not found in the registry.
     #[error("preset not found: {0}")]

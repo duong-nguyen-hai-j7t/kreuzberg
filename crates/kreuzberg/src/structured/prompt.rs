@@ -77,7 +77,7 @@ fn fence_nonce() -> String {
 
 /// Built prompt components ready to send to the vision model.
 #[derive(Debug, Clone)]
-pub struct BuiltPrompt {
+pub(crate) struct BuiltPrompt {
     /// System instruction primer.
     pub system: String,
     /// User content (text excerpt + rendered context template).
