@@ -773,6 +773,10 @@ zip = { version = ">=7.0.0, <8.7.0", default-features = false, features = ["defl
 name = "structured_pipeline"
 required-features = ["structured"]
 
+[[test]]
+name = "structured_live"
+required-features = ["structured"]
+
 [[bench]]
 name = "text_quality"
 harness = false
