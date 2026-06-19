@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **deps**: upgrade dependencies to latest — `liter-llm` 1.7.1, `html-to-markdown-rs` 3.6.15, `tree-sitter-language-pack` 1.9.1, `bitvec` 1.1, plus refreshed `Cargo.lock`, `pnpm-lock.yaml`, and `uv.lock`.
+
 ### Fixed
 
 - **presets**: derive `Clone` on `Registry`. The Dart FRB mirror crate generates a borrowed-return accessor for the `Registry::global()` singleton that clones the borrowed value before the owned `From` conversion (`Mirror::from(v.clone())`); without `Clone` on `Registry` this failed to compile (`From<&kreuzberg::Registry>` not satisfied). `Preset` already derived `Clone`.

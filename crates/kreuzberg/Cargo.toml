@@ -557,7 +557,7 @@ biblib = { version = "0.4", default-features = false, features = [
     "xml",
     "regex",
 ], optional = true }
-bitvec = "1.0"
+bitvec = "1.1"
 blake3 = { workspace = true }
 bytes = { workspace = true }
 calamine = { version = "0.35.0", features = ["dates"], optional = true }
