@@ -85,6 +85,9 @@
   <a href="https://docs.kreuzberg.dev/demo.html">
     <img height="22" src="https://img.shields.io/badge/Live%20Demo-Open-007ec6?logo=webassembly&logoColor=white" alt="Live Demo">
   </a>
+  <a href="https://github.com/kreuzberg-dev/kreuzberg/stargazers">
+    <img height="22" src="https://img.shields.io/github/stars/kreuzberg-dev/kreuzberg?style=social" alt="GitHub Stars">
+  </a>
 </div>
 
 Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, and images. WebAssembly bindings for browsers, Deno, and Cloudflare Workers with portable deployment and multi-threading support.

@@ -85,6 +85,9 @@
   <a href="https://docs.kreuzberg.dev/demo.html">
     <img height="22" src="https://img.shields.io/badge/Live%20Demo-Open-007ec6?logo=webassembly&logoColor=white" alt="Live Demo">
   </a>
+  <a href="https://github.com/kreuzberg-dev/kreuzberg/stargazers">
+    <img height="22" src="https://img.shields.io/github/stars/kreuzberg-dev/kreuzberg?style=social" alt="GitHub Stars">
+  </a>
 </div>
 
 High-performance document intelligence for Go backed by the Rust core that powers every Kreuzberg binding.

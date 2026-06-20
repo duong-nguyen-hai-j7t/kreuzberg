@@ -4,6 +4,12 @@
 
 Extract text, metadata, transcripts, and code intelligence from 96 file formats and 306 programming languages at native speeds without needing a GPU.
 
+<div align="center">
+  <a href="https://github.com/kreuzberg-dev/kreuzberg/stargazers">
+    <img width="1515" height="647" alt="stars" src="https://github.com/user-attachments/assets/acae69af-bbd4-44f0-b13a-b6269cdd4042" />
+  </a>
+</div>
+
 ## Key Features
 
 - **Code intelligence** – Extract functions, classes, imports, symbols, and docstrings from [306 programming languages](https://docs.tree-sitter-language-pack.kreuzberg.dev) via tree-sitter. Results in `ExtractionResult.code_intelligence` with semantic chunking
@@ -273,7 +279,7 @@ Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 - [html-to-markdown](https://github.com/kreuzberg-dev/html-to-markdown) — fast, lossless HTML→Markdown engine.
 - [liter-llm](https://github.com/kreuzberg-dev/liter-llm) — universal LLM API client with native bindings for 14 languages and 143 providers.
 - [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sitter-language-pack) — tree-sitter grammars and code-intelligence primitives.
-- [alef](https://github.com/kreuzberg-dev/alef) — the polyglot binding generator that produces all per-language bindings.
+- [alef](https://github.com/kreuzberg-dev/alef) — the polyglot binding generator that produces every per-language binding across the 5 polyglot repos.
 - [Discord](https://discord.gg/xt9WY3GnKR) — community, roadmap, announcements.
 
 ## License
