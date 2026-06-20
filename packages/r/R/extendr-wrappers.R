@@ -1272,6 +1272,7 @@ BatchFileItem <- new.env(parent = emptyenv())
 #' @field append_ocr_text When `true` and `ocr_text_only` is `false`, append the OCR text after the image placeholder
 #' @field output_format Target format for re-encoding extracted images.
 #' @field svg SVG-specific knobs for the image-encode pipeline.
+#' @field include_data_base64 When `true`, populate `ExtractedImage::data_base64` with a Base64-encoded copy of the raw
 #' @export
 ImageExtractionConfig <- new.env(parent = emptyenv())
 ImageExtractionConfig$default <- function() .Call("wrap__ImageExtractionConfig__default", PACKAGE = "kreuzberg")
@@ -1676,6 +1677,7 @@ PostProcessorConfig$from_json <- function(json) {
 #' @field sizing How to measure chunk size.
 #' @field prepend_heading_context When `true` and `chunker_type` is `Markdown`, prepend the heading hierarchy path
 #' @field topic_threshold Optional cosine similarity threshold for semantic topic boundary detection.
+#' @field table_chunking How to handle markdown tables that exceed the chunk size limit.
 #' @export
 ChunkingConfig <- new.env(parent = emptyenv())
 ChunkingConfig$default <- function() .Call("wrap__ChunkingConfig__default", PACKAGE = "kreuzberg")
@@ -4885,6 +4887,13 @@ MergeMode  <- function() list() |> structure(class = "MergeMode")
 #' @return A NerBackendKind enum value
 #' @export
 NerBackendKind  <- function() list() |> structure(class = "NerBackendKind")
+#' Create a TableChunkingMode enum value
+#'
+#' Returns the default TableChunkingMode variant.
+#'
+#' @return A TableChunkingMode enum value
+#' @export
+TableChunkingMode  <- function() list() |> structure(class = "TableChunkingMode")
 #' Create a ChunkerType enum value
 #'
 #' Returns the default ChunkerType variant.

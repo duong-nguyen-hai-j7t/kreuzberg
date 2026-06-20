@@ -41,6 +41,7 @@ export {
   StructuredCallMode,
   StructuredDataType,
   SummaryStrategy,
+  TableChunkingMode,
   TableModel,
   TextDirection,
   TokenCounter,

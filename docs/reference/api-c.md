@@ -2939,6 +2939,7 @@ Use `..the default constructor` when constructing to allow for future field addi
 | `sizing` | `KreuzbergChunkSizing` | `KREUZBERG_KREUZBERG_CHARACTERS` | How to measure chunk size. Default: `Characters` (Unicode character count). Enable `chunking-tiktoken` or `chunking-tokenizers` features for token-based sizing. |
 | `prepend_heading_context` | `bool` | `false` | When `true` and `chunker_type` is `Markdown`, prepend the heading hierarchy path (e.g. `"# Title > ## Section\n\n"`) to each chunk's content string. This is useful for RAG pipelines where each chunk needs self-contained context about its position in the document structure. Default: `false` |
 | `topic_threshold` | `float*` | `NULL` | Optional cosine similarity threshold for semantic topic boundary detection. Only used when `chunker_type` is `Semantic` and an `EmbeddingConfig` is provided. You almost never need to set this. When omitted, defaults to `0.75` which works well for most documents. Lower values detect more topic boundaries (more, smaller chunks); higher values detect fewer. Range: `0.0..=1.0`. |
+| `table_chunking` | `KreuzbergTableChunkingMode` | `KREUZBERG_KREUZBERG_SPLIT` | How to handle markdown tables that exceed the chunk size limit. Only applies when `chunker_type` is `Markdown`. - `Split` (default) — tables are split at row boundaries; continuation chunks do not repeat the header. - `RepeatHeader` — the table header row and separator are prepended to every continuation chunk so each chunk is self-contained. Default: `Split` |
 
 ##### Methods
 
@@ -4203,6 +4204,7 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 | `cluster_id` | `uint32_t*` | `NULL` | Identifier shared across images that form a single logical figure (e.g. all raster tiles of one technical drawing). `NULL` for singletons. |
 | `caption` | `const char**` | `NULL` | VLM-generated caption describing the image, when captioning is configured. Populated by the captioning post-processor (`crates/kreuzberg/src/plugins/processor/builtin/captioning.rs`), which routes each image through `crate.llm.region_extractor.extract_region_with_vlm` in caption mode. `NULL` when captioning is disabled or the VLM declined to caption. |
 | `qr_codes` | `KreuzbergQrCode**` | `NULL` | QR codes decoded from this image, when QR detection is enabled. Populated by the QR post-processor (`crates/kreuzberg/src/extractors/qr.rs`) via the pure-Rust `rqrr` decoder. `NULL` when QR detection is disabled; an empty `Some(\[\])` when detection ran but found nothing. |
+| `data_base64` | `const char**` | `NULL` | Base64-encoded copy of `data`; populated when `ImageExtractionConfig.include_data_base64` is `true`. Omitted from JSON by default; use instead of `data` in JSON-only clients. |
 
 ---
 
@@ -4812,6 +4814,7 @@ Image extraction configuration.
 | `append_ocr_text` | `bool` | `false` | When `true` and `ocr_text_only` is `false`, append the OCR text after the image placeholder in the rendered output. |
 | `output_format` | `KreuzbergImageOutputFormat` | `KREUZBERG_KREUZBERG_NATIVE` | Target format for re-encoding extracted images. When set to anything other than `Native`, each extracted image is re-encoded to the requested format before being returned. This lets callers receive uniform output without duplicating encode logic downstream. Defaults to `Native` — no re-encode pass is performed and `ExtractedImage.format` reflects the source extractor's output. |
 | `svg` | `KreuzbergSvgOptions` | — | SVG-specific knobs for the image-encode pipeline. Controls sanitization and rasterization DPI when the source or output format is SVG.  Only available when the `svg` feature is active. |
+| `include_data_base64` | `bool` | `false` | When `true`, populate `ExtractedImage.data_base64` with a Base64-encoded copy of the raw image bytes. Useful for JSON-only clients that cannot efficiently parse the default integer-array serialization of `data`. Defaults to `false`; enabling it doubles the in-memory image representation for the duration of the response. |
 
 ##### Methods
 
@@ -9049,6 +9052,30 @@ detected by `OcrConfig.validate` and will surface as a
 | `KREUZBERG_DISABLED` | No VLM fallback (default). Behaves identically to the pre-policy single-backend mode. |
 | `KREUZBERG_ON_LOW_QUALITY` | Try the classical OCR backend first. If the quality score is below `quality_threshold`, send the page to the VLM. `quality_threshold` is in the `\[0.0, 1.0\]` range produced by `calculate_quality_score`. A value of `0.5` is a reasonable starting point; calibrate with the Stage 0 benchmark harness. — Fields: `quality_threshold`: `double` |
 | `KREUZBERG_ALWAYS` | Skip the classical OCR backend entirely. Every page is sent to the VLM. |
+
+---
+
+#### KreuzbergTableChunkingMode
+
+Controls how markdown tables are handled when they exceed the chunk size limit.
+
+Only applies when `chunker_type` is `Markdown`.
+
+### Variants
+
+- `Split` - Default behavior: tables are split at row boundaries like any
+  other block element. Continuation chunks contain only data rows without
+  the header, which can break downstream consumers that need column context.
+
+- `RepeatHeader` - Prepend the table header (header row + separator row) to
+  every continuation chunk that contains data rows from the same table.
+  Adds a small amount of duplicate text but ensures each chunk is
+  self-contained for extraction, search, and LLM consumption.
+
+| Value | Description |
+|-------|-------------|
+| `KREUZBERG_SPLIT` | Split tables at row boundaries (default). Continuation chunks have no header. |
+| `KREUZBERG_REPEAT_HEADER` | Prepend the table header to every chunk that continues a split table. |
 
 ---
 

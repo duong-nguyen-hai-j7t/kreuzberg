@@ -9,7 +9,7 @@ import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lib.freezed.dart';
 
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `CaptioningEnrichmentConfig`, `ClassificationEnrichmentConfig`, `DocumentExtractorDartCallbacks`, `EmbeddingBackendDartCallbacks`, `OcrBackendDartCallbacks`, `PostProcessorDartCallbacks`, `RendererDartCallbacks`, `RerankerBackendDartCallbacks`, `ValidatorDartCallbacks`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `clone`, `dimensions`, `embed`, `emits_structured_markdown`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `rerank`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`, `version`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `backend_type`, `can_handle`, `clone`, `dimensions`, `embed`, `emits_structured_markdown`, `estimated_duration_ms`, `extract_bytes`, `extract_file`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `initialize`, `name`, `name`, `name`, `name`, `name`, `name`, `name`, `priority`, `priority`, `priority`, `process_document`, `process_image_file`, `process_image`, `process`, `processing_stage`, `render`, `rerank`, `should_process`, `should_validate`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `shutdown`, `supported_languages`, `supported_mime_types`, `supports_document_processing`, `supports_language`, `supports_table_detection`, `validate`, `version`, `version`, `version`, `version`, `version`, `version`, `version`
 
 /// Extract content from a byte array.
 ///
@@ -2987,6 +2987,18 @@ class ChunkingConfig {
   /// Range: `0.0..=1.0`.
   final double? topicThreshold;
 
+  /// How to handle markdown tables that exceed the chunk size limit.
+  ///
+  /// Only applies when `chunker_type` is `Markdown`.
+  ///
+  /// * `Split` (default) — tables are split at row boundaries; continuation
+  ///   chunks do not repeat the header.
+  /// * `RepeatHeader` — the table header row and separator are prepended to
+  ///   every continuation chunk so each chunk is self-contained.
+  ///
+  /// Default: `Split`
+  final TableChunkingMode tableChunking;
+
   const ChunkingConfig({
     required this.maxCharacters,
     required this.overlap,
@@ -2997,6 +3009,7 @@ class ChunkingConfig {
     required this.sizing,
     required this.prependHeadingContext,
     this.topicThreshold,
+    required this.tableChunking,
   });
 
   @override
@@ -3009,7 +3022,8 @@ class ChunkingConfig {
       preset.hashCode ^
       sizing.hashCode ^
       prependHeadingContext.hashCode ^
-      topicThreshold.hashCode;
+      topicThreshold.hashCode ^
+      tableChunking.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -3024,7 +3038,8 @@ class ChunkingConfig {
           preset == other.preset &&
           sizing == other.sizing &&
           prependHeadingContext == other.prependHeadingContext &&
-          topicThreshold == other.topicThreshold;
+          topicThreshold == other.topicThreshold &&
+          tableChunking == other.tableChunking;
 }
 
 @freezed
@@ -5538,6 +5553,10 @@ class ExtractedImage {
   /// `Some(vec![])` when detection ran but found nothing.
   final List<QrCode>? qrCodes;
 
+  /// Base64-encoded copy of `data`; populated when `ImageExtractionConfig::include_data_base64`
+  /// is `true`. Omitted from JSON by default; use instead of `data` in JSON-only clients.
+  final String? dataBase64;
+
   const ExtractedImage({
     required this.data,
     required this.format,
@@ -5557,6 +5576,7 @@ class ExtractedImage {
     this.clusterId,
     this.caption,
     this.qrCodes,
+    this.dataBase64,
   });
 
   @override
@@ -5578,7 +5598,8 @@ class ExtractedImage {
       kindConfidence.hashCode ^
       clusterId.hashCode ^
       caption.hashCode ^
-      qrCodes.hashCode;
+      qrCodes.hashCode ^
+      dataBase64.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -5602,7 +5623,8 @@ class ExtractedImage {
           kindConfidence == other.kindConfidence &&
           clusterId == other.clusterId &&
           caption == other.caption &&
-          qrCodes == other.qrCodes;
+          qrCodes == other.qrCodes &&
+          dataBase64 == other.dataBase64;
 }
 
 /// A URI extracted from a document.
@@ -7602,6 +7624,14 @@ class ImageExtractionConfig {
   /// format is SVG.  Only available when the `svg` feature is active.
   final SvgOptions svg;
 
+  /// When `true`, populate `ExtractedImage::data_base64` with a Base64-encoded
+  /// copy of the raw image bytes.
+  ///
+  /// Useful for JSON-only clients that cannot efficiently parse the default
+  /// integer-array serialization of `data`. Defaults to `false`; enabling it
+  /// doubles the in-memory image representation for the duration of the response.
+  final bool includeDataBase64;
+
   const ImageExtractionConfig({
     required this.extractImages,
     required this.targetDpi,
@@ -7618,6 +7648,7 @@ class ImageExtractionConfig {
     required this.appendOcrText,
     required this.outputFormat,
     required this.svg,
+    required this.includeDataBase64,
   });
 
   @override
@@ -7636,7 +7667,8 @@ class ImageExtractionConfig {
       ocrTextOnly.hashCode ^
       appendOcrText.hashCode ^
       outputFormat.hashCode ^
-      svg.hashCode;
+      svg.hashCode ^
+      includeDataBase64.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -7657,7 +7689,8 @@ class ImageExtractionConfig {
           ocrTextOnly == other.ocrTextOnly &&
           appendOcrText == other.appendOcrText &&
           outputFormat == other.outputFormat &&
-          svg == other.svg;
+          svg == other.svg &&
+          includeDataBase64 == other.includeDataBase64;
 }
 
 /// Heuristic classification of what an image likely depicts.
@@ -13323,6 +13356,27 @@ class TableCell {
           rowSpan == other.rowSpan &&
           colSpan == other.colSpan &&
           isHeader == other.isHeader;
+}
+
+/// Controls how markdown tables are handled when they exceed the chunk size limit.
+///
+/// Only applies when `chunker_type` is `Markdown`.
+///
+/// # Variants
+///
+/// * `Split` - Default behavior: tables are split at row boundaries like any
+///   other block element. Continuation chunks contain only data rows without
+///   the header, which can break downstream consumers that need column context.
+/// * `RepeatHeader` - Prepend the table header (header row + separator row) to
+///   every continuation chunk that contains data rows from the same table.
+///   Adds a small amount of duplicate text but ensures each chunk is
+///   self-contained for extraction, search, and LLM consumption.
+enum TableChunkingMode {
+  /// Split tables at row boundaries (default). Continuation chunks have no header.
+  split,
+
+  /// Prepend the table header to every chunk that continues a split table.
+  repeatHeader,
 }
 
 /// Cell-level changes for a pair of tables that share the same index.

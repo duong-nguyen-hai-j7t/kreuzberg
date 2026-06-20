@@ -2153,6 +2153,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   TableCell dco_decode_table_cell(dynamic raw);
 
   @protected
+  TableChunkingMode dco_decode_table_chunking_mode(dynamic raw);
+
+  @protected
   TableDiff dco_decode_table_diff(dynamic raw);
 
   @protected
@@ -4626,6 +4629,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   TableCell sse_decode_table_cell(SseDeserializer deserializer);
+
+  @protected
+  TableChunkingMode sse_decode_table_chunking_mode(
+    SseDeserializer deserializer,
+  );
 
   @protected
   TableDiff sse_decode_table_diff(SseDeserializer deserializer);
@@ -7909,6 +7917,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_table_cell(TableCell self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_table_chunking_mode(
+    TableChunkingMode self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_table_diff(TableDiff self, SseSerializer serializer);

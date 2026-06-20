@@ -28,7 +28,7 @@
 
 use crate::*;
 use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
-use flutter_rust_bridge::for_generated::{Lifetimeable, Lockable, transform_result_dco};
+use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
 use flutter_rust_bridge::{Handler, IntoIntoDart};
 
 // Section: boilerplate
@@ -9214,6 +9214,7 @@ const _: fn() = || {
         let _: crate::ChunkSizing = ChunkingConfig.sizing;
         let _: bool = ChunkingConfig.prepend_heading_context;
         let _: Option<f64> = ChunkingConfig.topic_threshold;
+        let _: crate::TableChunkingMode = ChunkingConfig.table_chunking;
     }
     match None::<crate::ChunkingDecision>.unwrap() {
         crate::ChunkingDecision::NoChunking { reason } => {
@@ -9670,6 +9671,7 @@ const _: fn() = || {
         let _: Option<i64> = ExtractedImage.cluster_id;
         let _: Option<String> = ExtractedImage.caption;
         let _: Option<Vec<crate::QrCode>> = ExtractedImage.qr_codes;
+        let _: Option<String> = ExtractedImage.data_base64;
     }
     {
         let ExtractedUri = None::<crate::ExtractedUri>.unwrap();
@@ -9991,6 +9993,7 @@ const _: fn() = || {
         let _: bool = ImageExtractionConfig.append_ocr_text;
         let _: crate::ImageOutputFormat = ImageExtractionConfig.output_format;
         let _: crate::SvgOptions = ImageExtractionConfig.svg;
+        let _: bool = ImageExtractionConfig.include_data_base64;
     }
     {
         let ImageMetadata = None::<crate::ImageMetadata>.unwrap();
@@ -12545,6 +12548,7 @@ impl SseDecode for crate::ChunkingConfig {
         let mut var_sizing = <crate::ChunkSizing>::sse_decode(deserializer);
         let mut var_prependHeadingContext = <bool>::sse_decode(deserializer);
         let mut var_topicThreshold = <Option<f64>>::sse_decode(deserializer);
+        let mut var_tableChunking = <crate::TableChunkingMode>::sse_decode(deserializer);
         return crate::ChunkingConfig {
             max_characters: var_maxCharacters,
             overlap: var_overlap,
@@ -12555,6 +12559,7 @@ impl SseDecode for crate::ChunkingConfig {
             sizing: var_sizing,
             prepend_heading_context: var_prependHeadingContext,
             topic_threshold: var_topicThreshold,
+            table_chunking: var_tableChunking,
         };
     }
 }
@@ -13636,6 +13641,7 @@ impl SseDecode for crate::ExtractedImage {
         let mut var_clusterId = <Option<i64>>::sse_decode(deserializer);
         let mut var_caption = <Option<String>>::sse_decode(deserializer);
         let mut var_qrCodes = <Option<Vec<crate::QrCode>>>::sse_decode(deserializer);
+        let mut var_dataBase64 = <Option<String>>::sse_decode(deserializer);
         return crate::ExtractedImage {
             data: var_data,
             format: var_format,
@@ -13655,6 +13661,7 @@ impl SseDecode for crate::ExtractedImage {
             cluster_id: var_clusterId,
             caption: var_caption,
             qr_codes: var_qrCodes,
+            data_base64: var_dataBase64,
         };
     }
 }
@@ -14358,6 +14365,7 @@ impl SseDecode for crate::ImageExtractionConfig {
         let mut var_appendOcrText = <bool>::sse_decode(deserializer);
         let mut var_outputFormat = <crate::ImageOutputFormat>::sse_decode(deserializer);
         let mut var_svg = <crate::SvgOptions>::sse_decode(deserializer);
+        let mut var_includeDataBase64 = <bool>::sse_decode(deserializer);
         return crate::ImageExtractionConfig {
             extract_images: var_extractImages,
             target_dpi: var_targetDpi,
@@ -14374,6 +14382,7 @@ impl SseDecode for crate::ImageExtractionConfig {
             append_ocr_text: var_appendOcrText,
             output_format: var_outputFormat,
             svg: var_svg,
+            include_data_base64: var_includeDataBase64,
         };
     }
 }
@@ -18954,6 +18963,18 @@ impl SseDecode for crate::TableCell {
     }
 }
 
+impl SseDecode for crate::TableChunkingMode {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <i32>::sse_decode(deserializer);
+        return match inner {
+            0 => crate::TableChunkingMode::Split,
+            1 => crate::TableChunkingMode::RepeatHeader,
+            _ => unreachable!("Invalid variant for TableChunkingMode: {}", inner),
+        };
+    }
+}
+
 impl SseDecode for crate::TableDiff {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -20506,6 +20527,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::ChunkingConfig> {
             self.0.sizing.into_into_dart().into_dart(),
             self.0.prepend_heading_context.into_into_dart().into_dart(),
             self.0.topic_threshold.into_into_dart().into_dart(),
+            self.0.table_chunking.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -21639,6 +21661,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::ExtractedImage> {
             self.0.cluster_id.into_into_dart().into_dart(),
             self.0.caption.into_into_dart().into_dart(),
             self.0.qr_codes.into_into_dart().into_dart(),
+            self.0.data_base64.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -22232,6 +22255,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::ImageExtractionConfig> 
             self.0.append_ocr_text.into_into_dart().into_dart(),
             self.0.output_format.into_into_dart().into_dart(),
             self.0.svg.into_into_dart().into_dart(),
+            self.0.include_data_base64.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -24864,6 +24888,22 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::TableCell>> for crate::
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::TableChunkingMode> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self.0 {
+            crate::TableChunkingMode::Split => 0.into_dart(),
+            crate::TableChunkingMode::RepeatHeader => 1.into_dart(),
+            _ => unreachable!(),
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<crate::TableChunkingMode> {}
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::TableChunkingMode>> for crate::TableChunkingMode {
+    fn into_into_dart(self) -> FrbWrapper<crate::TableChunkingMode> {
+        self.into()
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::TableDiff> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -26085,6 +26125,7 @@ impl SseEncode for crate::ChunkingConfig {
         <crate::ChunkSizing>::sse_encode(self.sizing, serializer);
         <bool>::sse_encode(self.prepend_heading_context, serializer);
         <Option<f64>>::sse_encode(self.topic_threshold, serializer);
+        <crate::TableChunkingMode>::sse_encode(self.table_chunking, serializer);
     }
 }
 
@@ -26854,6 +26895,7 @@ impl SseEncode for crate::ExtractedImage {
         <Option<i64>>::sse_encode(self.cluster_id, serializer);
         <Option<String>>::sse_encode(self.caption, serializer);
         <Option<Vec<crate::QrCode>>>::sse_encode(self.qr_codes, serializer);
+        <Option<String>>::sse_encode(self.data_base64, serializer);
     }
 }
 
@@ -27355,6 +27397,7 @@ impl SseEncode for crate::ImageExtractionConfig {
         <bool>::sse_encode(self.append_ocr_text, serializer);
         <crate::ImageOutputFormat>::sse_encode(self.output_format, serializer);
         <crate::SvgOptions>::sse_encode(self.svg, serializer);
+        <bool>::sse_encode(self.include_data_base64, serializer);
     }
 }
 
@@ -31120,6 +31163,22 @@ impl SseEncode for crate::TableCell {
     }
 }
 
+impl SseEncode for crate::TableChunkingMode {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(
+            match self {
+                crate::TableChunkingMode::Split => 0,
+                crate::TableChunkingMode::RepeatHeader => 1,
+                _ => {
+                    unimplemented!("");
+                }
+            },
+            serializer,
+        );
+    }
+}
+
 impl SseEncode for crate::TableDiff {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -31466,7 +31525,7 @@ mod io {
     use super::*;
     use crate::*;
     use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
-    use flutter_rust_bridge::for_generated::{Lifetimeable, Lockable, transform_result_dco};
+    use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
     use flutter_rust_bridge::{Handler, IntoIntoDart};
 
     // Section: boilerplate
@@ -31757,7 +31816,7 @@ mod web {
     use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
     use flutter_rust_bridge::for_generated::wasm_bindgen;
     use flutter_rust_bridge::for_generated::wasm_bindgen::prelude::*;
-    use flutter_rust_bridge::for_generated::{Lifetimeable, Lockable, transform_result_dco};
+    use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
     use flutter_rust_bridge::{Handler, IntoIntoDart};
 
     // Section: boilerplate
