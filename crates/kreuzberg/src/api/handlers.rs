@@ -1520,7 +1520,8 @@ mod tests {
             .route("/cache/manifest", get(cache_manifest_handler))
             .route("/cache/warm", post(cache_warm_handler))
             .route("/embed", post(embed_handler))
-            .route("/chunk", post(chunk_handler));
+            .route("/chunk", post(chunk_handler))
+            .route("/rerank", post(rerank_handler));
 
         #[cfg(feature = "api")]
         let router = router

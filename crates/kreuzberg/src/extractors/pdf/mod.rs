@@ -2362,6 +2362,10 @@ mod tests {
             }),
             pdf_options: Some(crate::core::config::pdf::PdfConfig {
                 ocr_inline_images: false,
+                // extract_images must be true so embedded images appear in the
+                // result for the assertion below; without it the extractor skips
+                // image decompression entirely and result.images stays empty.
+                extract_images: true,
                 ..Default::default()
             }),
             ..Default::default()

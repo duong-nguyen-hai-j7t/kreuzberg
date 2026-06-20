@@ -1403,8 +1403,11 @@ mod tests {
         assert!(json.get("annotations").is_none());
         assert!(json.get("attributes").is_none());
 
+        // id is intentionally excluded from the wire format (#[serde(skip)]):
+        // it is a computed internal handle, never transmitted over FFI/network.
+        assert!(json.get("id").is_none());
+
         // These should be present
-        assert!(json.get("id").is_some());
         assert!(json.get("content").is_some());
         assert!(json.get("page").is_some());
     }

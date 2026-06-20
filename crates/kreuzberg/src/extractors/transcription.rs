@@ -357,14 +357,22 @@ mod tests {
 
     #[test]
     fn test_sync_duration_limit_enforced() {
+        // Read a real WAV fixture so symphonia can probe and decode it — the
+        // duration limit is checked after successful decode, so we need valid
+        // audio bytes.  max_duration_ms=0 means any non-empty decoded audio
+        // (silence-1s.wav is ~1000 ms) exceeds the limit immediately.
+        let wav_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../test_documents/audio/silence-1s.wav");
+        let bytes = std::fs::read(&wav_path)
+            .unwrap_or_else(|e| panic!("missing audio fixture {wav_path:?}: {e}"));
+
         let ext = TranscriptionExtractor;
-        // Decode stub returns duration_ms based on byte count; use a tiny limit to trigger it.
         let tcfg = TranscriptionConfig {
             max_duration_ms: Some(0),
             ..Default::default()
         };
         let cfg = config_with_transcription(tcfg);
-        let result = ext.extract_sync(&[0u8; 16], "audio/mpeg", &cfg);
+        let result = ext.extract_sync(&bytes, "audio/wav", &cfg);
         assert!(result.is_err(), "expected error when decoded duration exceeds limit");
         let msg = result.unwrap_err().to_string();
         assert!(msg.contains("duration") || msg.contains("limit"), "unexpected: {msg}");

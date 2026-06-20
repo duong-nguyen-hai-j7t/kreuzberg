@@ -1082,7 +1082,9 @@ mod output_format_pass_tests {
         );
     }
 
-    /// An SVG image is left untouched and a ProcessingWarning is pushed for it.
+    /// Without the `svg` feature: an SVG image is left untouched and a
+    /// `ProcessingWarning` is pushed for it (it is an untranslatable format).
+    #[cfg(not(feature = "svg"))]
     #[test]
     fn svg_image_skipped_with_warning() {
         let svg_bytes = Bytes::from_static(b"<svg xmlns=\"http://www.w3.org/2000/svg\"/>");
@@ -1113,6 +1115,39 @@ mod output_format_pass_tests {
             result.processing_warnings[0].source.as_ref(),
             "image_encoder",
             "warning source must be image_encoder"
+        );
+    }
+
+    /// With the `svg` feature: an SVG image is rasterized to the target format
+    /// (PNG here) via `resvg`/`usvg`.  No warning is pushed — the encode succeeds.
+    #[cfg(feature = "svg")]
+    #[test]
+    fn svg_image_skipped_with_warning() {
+        let svg_bytes = Bytes::from_static(b"<svg xmlns=\"http://www.w3.org/2000/svg\"/>");
+
+        let mut result = ExtractionResult {
+            images: Some(vec![
+                make_image(make_jpeg_bytes(), "jpeg"),
+                make_image(svg_bytes, "svg"),
+            ]),
+            ..Default::default()
+        };
+
+        let cfg = ImageExtractionConfig {
+            output_format: ImageOutputFormat::Png,
+            ..Default::default()
+        };
+
+        apply_output_format_pass(&mut result, &cfg);
+
+        let images = result.images.as_ref().expect("images must be present");
+        assert_eq!(images[0].format.as_ref(), "png", "jpeg must be re-encoded to png");
+        // SVG is rasterized to PNG when the svg feature is active — no warning.
+        assert_eq!(images[1].format.as_ref(), "png", "svg must be rasterized to png");
+        assert!(
+            result.processing_warnings.is_empty(),
+            "no warnings expected when svg is rasterized successfully; got: {:?}",
+            result.processing_warnings
         );
     }
 
