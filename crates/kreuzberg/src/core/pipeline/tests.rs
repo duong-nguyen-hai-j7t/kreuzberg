@@ -1170,10 +1170,7 @@ mod data_base64_pass_tests {
         let second_bytes = Bytes::from_static(b"\xff\xd8\xff");
 
         let mut result = ExtractionResult {
-            images: Some(vec![
-                make_image(first_bytes.clone()),
-                make_image(second_bytes.clone()),
-            ]),
+            images: Some(vec![make_image(first_bytes.clone()), make_image(second_bytes.clone())]),
             ..Default::default()
         };
 
@@ -1219,8 +1216,7 @@ mod data_base64_pass_tests {
         let images = result.images.as_ref().expect("images must be present");
         for (idx, image) in images.iter().enumerate() {
             assert_eq!(
-                image.data_base64,
-                None,
+                image.data_base64, None,
                 "image[{idx}].data_base64 must remain None when include_data_base64 is false"
             );
         }

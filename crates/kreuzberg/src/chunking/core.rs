@@ -239,7 +239,9 @@ fn inject_table_headers(chunks: &mut [crate::types::Chunk]) {
     // Strip only the trailing line terminator (\r\n or \n) from a line, leaving
     // interior whitespace (cell padding, alignment) untouched.
     fn strip_line_terminator(line: &str) -> &str {
-        line.strip_suffix("\r\n").or_else(|| line.strip_suffix('\n')).unwrap_or(line)
+        line.strip_suffix("\r\n")
+            .or_else(|| line.strip_suffix('\n'))
+            .unwrap_or(line)
     }
 
     // Return true if `line` is a GFM table separator row.
@@ -1743,8 +1745,7 @@ mod tests {
         // inject_table_headers will prepend it to continuation chunks, producing chunks
         // larger than max_characters. This is documented accepted behaviour — the
         // invariant is no panic and no data loss, not size capping.
-        let wide_cols: String =
-            (0..20).map(|i| format!("| Column {i:02} ")).collect::<String>() + "|";
+        let wide_cols: String = (0..20).map(|i| format!("| Column {i:02} ")).collect::<String>() + "|";
         let separator: String = (0..20).map(|_| "|----------").collect::<String>() + "|";
         let row: String = (0..20).map(|i| format!("| value  {i:02} ")).collect::<String>() + "|";
         let rows: String = (0..20).map(|_| format!("{row}\n")).collect::<String>();
@@ -1758,7 +1759,10 @@ mod tests {
             ..Default::default()
         };
         let result = chunk_text(&markdown, &config, None).unwrap();
-        assert!(!result.chunks.is_empty(), "must produce chunks even with oversized header");
+        assert!(
+            !result.chunks.is_empty(),
+            "must produce chunks even with oversized header"
+        );
     }
 
     // -----------------------------------------------------------------------
@@ -1773,8 +1777,7 @@ mod tests {
         // The table below has a valid header + separator on lines 1-2, then data rows
         // where one cell is literally " - ". None of the data rows should be
         // mistaken for a separator, so no spurious header injection should occur.
-        let markdown =
-            "| Item | Status |\n|------|--------|\n| foo  | - |\n| bar  | done |\n| baz  | :- |\n";
+        let markdown = "| Item | Status |\n|------|--------|\n| foo  | - |\n| bar  | done |\n| baz  | :- |\n";
         let config = ChunkingConfig {
             max_characters: 5000,
             overlap: 0,
@@ -1811,9 +1814,7 @@ mod tests {
     fn table_repeat_header_crlf_input_header_uses_crlf_line_endings() {
         // Build a CRLF table large enough to force a split.
         let header = "| Name | Value |\r\n|------|-------|\r\n";
-        let data_rows: String = (0..40)
-            .map(|i| format!("| item{i:02} | {i:03} |\r\n"))
-            .collect();
+        let data_rows: String = (0..40).map(|i| format!("| item{i:02} | {i:03} |\r\n")).collect();
         let markdown = format!("{header}{data_rows}");
 
         let config = ChunkingConfig {
@@ -1825,10 +1826,7 @@ mod tests {
             ..Default::default()
         };
         let result = chunk_text(&markdown, &config, None).unwrap();
-        assert!(
-            result.chunks.len() > 1,
-            "CRLF table must split into multiple chunks"
-        );
+        assert!(result.chunks.len() > 1, "CRLF table must split into multiple chunks");
 
         // Every continuation chunk that starts with `|` must have its injected header
         // terminated with \r\n, not \n, so that line endings are consistent with the body.
@@ -1870,9 +1868,7 @@ mod tests {
     fn table_repeat_header_alignment_separators_are_detected_correctly() {
         // Use left-align, right-align, and center-align separator cells.
         let header = "| Left | Right | Center |\n|:-----|------:|:------:|\n";
-        let data_rows: String = (0..40)
-            .map(|i| format!("| l{i:02} | r{i:02} | c{i:02} |\n"))
-            .collect();
+        let data_rows: String = (0..40).map(|i| format!("| l{i:02} | r{i:02} | c{i:02} |\n")).collect();
         let markdown = format!("{header}{data_rows}");
 
         let config = ChunkingConfig {
