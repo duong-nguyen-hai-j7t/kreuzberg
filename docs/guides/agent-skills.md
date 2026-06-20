@@ -13,6 +13,7 @@ Install the Kreuzberg plugin from the [`kreuzberg-dev/plugins`](https://github.c
 /plugin marketplace add kreuzberg-dev/plugins
 /plugin install kreuzberg@kreuzberg
 ```
+
 </details>
 
 <details>
@@ -37,6 +38,7 @@ Settings → Plugins → Add from URL → `https://github.com/kreuzberg-dev/plug
 ```text
 gemini extensions install https://github.com/kreuzberg-dev/plugins
 ```
+
 </details>
 
 <details>
@@ -46,6 +48,7 @@ gemini extensions install https://github.com/kreuzberg-dev/plugins
 droid plugin marketplace add https://github.com/kreuzberg-dev/plugins
 droid plugin install kreuzberg@kreuzberg
 ```
+
 </details>
 
 <details>
@@ -55,6 +58,7 @@ droid plugin install kreuzberg@kreuzberg
 copilot plugin marketplace add https://github.com/kreuzberg-dev/plugins
 copilot plugin install kreuzberg@kreuzberg
 ```
+
 </details>
 
 <details>
@@ -68,6 +72,7 @@ Add the package to `opencode.json`:
   "plugin": ["@kreuzberg/opencode-kreuzberg"]
 }
 ```
+
 </details>
 
 ## What the Skill Provides

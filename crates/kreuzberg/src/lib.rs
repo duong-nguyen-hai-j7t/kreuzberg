@@ -252,19 +252,13 @@ pub use text::ner::NerBackend;
 //   (a) `ner-llm` feature is off entirely, OR
 //   (b) `ner-llm` is on but we are on android x86_64 (module gated out there).
 // This ensures `LlmBackend` is always in scope for alef-generated bindings.
-#[cfg(any(
-    not(feature = "ner-llm"),
-    all(target_os = "android", target_arch = "x86_64")
-))]
+#[cfg(any(not(feature = "ner-llm"), all(target_os = "android", target_arch = "x86_64")))]
 #[derive(Clone, Debug)]
 pub struct LlmBackend {
     _config: LlmConfig,
 }
 
-#[cfg(any(
-    not(feature = "ner-llm"),
-    all(target_os = "android", target_arch = "x86_64")
-))]
+#[cfg(any(not(feature = "ner-llm"), all(target_os = "android", target_arch = "x86_64")))]
 impl LlmBackend {
     pub fn new(config: LlmConfig) -> Self {
         Self { _config: config }

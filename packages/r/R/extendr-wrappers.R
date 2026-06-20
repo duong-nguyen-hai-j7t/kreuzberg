@@ -45,108 +45,6 @@ extract_bytes <- function(content, mime_type, config = ExtractionConfig$default(
 #' Returns `KreuzbergError::UnsupportedFormat` if MIME type is not supported.
 #' @export
 extract_file <- function(path, mime_type = NULL, config = ExtractionConfig$default()) .Call("wrap__extract_file", path, mime_type, config, PACKAGE = "kreuzberg")
-#' Synchronous wrapper for `extract_file`
-#'
-#' This is a convenience function that blocks the current thread until extraction completes.
-#' For async code, use `extract_file` directly.
-#'
-#' Uses the global Tokio runtime for 100x+ performance improvement over creating
-#' a new runtime per call. Always uses the global runtime to avoid nested runtime issues.
-#'
-#' This function is only available with the `tokio-runtime` feature. For WASM targets,
-#' use a truly synchronous extraction approach instead.
-#' @param path File path as character string.
-#' @param mime_type Character string.
-#' @param config ExtractionConfig object (list with class attribute).
-#' @return ExtractionResult object (list with class attribute).
-#' @export
-extract_file_sync <- function(path, mime_type = NULL, config = ExtractionConfig$default()) .Call("wrap__extract_file_sync", path, mime_type, config, PACKAGE = "kreuzberg")
-#' Synchronous wrapper for `extract_bytes`
-#'
-#' Uses the global Tokio runtime for 100x+ performance improvement over creating
-#' a new runtime per call.
-#'
-#' With the `tokio-runtime` feature, this blocks the current thread using the global
-#' Tokio runtime. Without it (WASM), this calls a truly synchronous implementation.
-#' @param content Raw vector of bytes.
-#' @param mime_type Character string.
-#' @param config ExtractionConfig object (list with class attribute).
-#' @return ExtractionResult object (list with class attribute).
-#' @export
-extract_bytes_sync <- function(content, mime_type, config = ExtractionConfig$default()) .Call("wrap__extract_bytes_sync", content, mime_type, config, PACKAGE = "kreuzberg")
-#' Synchronous wrapper for `extract_bytes` (WASM-compatible version)
-#'
-#' This is a truly synchronous implementation without tokio runtime dependency.
-#' It calls `extract_bytes_sync_impl()` to perform the extraction.
-#' @param content Raw vector of bytes.
-#' @param mime_type Character string.
-#' @param config ExtractionConfig object (list with class attribute).
-#' @return ExtractionResult object (list with class attribute).
-#' @export
-extract_bytes_sync <- function(content, mime_type, config = ExtractionConfig$default()) .Call("wrap__extract_bytes_sync", content, mime_type, config, PACKAGE = "kreuzberg")
-#' Synchronous wrapper for `batch_extract_files`
-#'
-#' Uses the global Tokio runtime for optimal performance.
-#' Only available with `tokio-runtime` (WASM has no filesystem).
-#' @param items List of batchfileitem object (list with class attribute).
-#' @param config ExtractionConfig object (list with class attribute).
-#' @return List of extractionresult object (list with class attribute).
-#' @export
-batch_extract_files_sync <- function(items, config = ExtractionConfig$default()) .Call("wrap__batch_extract_files_sync", items, config, PACKAGE = "kreuzberg")
-#' Synchronous wrapper for `batch_extract_bytes`
-#'
-#' Uses the global Tokio runtime for optimal performance.
-#' With the `tokio-runtime` feature, this blocks the current thread using the global
-#' Tokio runtime. Without it (WASM), this calls a truly synchronous implementation
-#' that iterates through items and calls `extract_bytes_sync()`.
-#' @param items List of batchbytesitem object (list with class attribute).
-#' @param config ExtractionConfig object (list with class attribute).
-#' @return List of extractionresult object (list with class attribute).
-#' @export
-batch_extract_bytes_sync <- function(items, config = ExtractionConfig$default()) .Call("wrap__batch_extract_bytes_sync", items, config, PACKAGE = "kreuzberg")
-#' Synchronous wrapper for `batch_extract_bytes` (WASM-compatible version)
-#'
-#' Iterates through items sequentially, applying per-file config overrides.
-#' @param items List of batchbytesitem object (list with class attribute).
-#' @param config ExtractionConfig object (list with class attribute).
-#' @return List of extractionresult object (list with class attribute).
-#' @export
-batch_extract_bytes_sync <- function(items, config = ExtractionConfig$default()) .Call("wrap__batch_extract_bytes_sync", items, config, PACKAGE = "kreuzberg")
-#' Extract content from multiple files concurrently
-#'
-#' This function processes multiple files in parallel, automatically managing
-#' concurrency to prevent resource exhaustion. The concurrency limit can be
-#' configured via `ExtractionConfig::max_concurrent_extractions` or defaults
-#' to `(num_cpus * 1.5).ceil()`.
-#'
-#' Each file can optionally specify a [`FileExtractionConfig`] that overrides specific
-#' fields from the batch-level `config`. Pass `None` for a file to use the batch defaults.
-#' Batch-level settings like `max_concurrent_extractions` and `use_cache` are always
-#' taken from the batch-level `config`.
-#' @param items Vector of `BatchFileItem` structs, each containing a path and optional per-file configuration overrides.
-#' @param config Batch-level extraction configuration (provides defaults and batch settings).
-#' @return A vector of `ExtractionResult` in the same order as the input items.
-#'
-#' @section Errors:
-#' Individual file errors are captured in the result metadata. System errors
-#' (IO, RuntimeError equivalents) will bubble up and fail the entire batch.
-#' @export
-batch_extract_files <- function(items, config = ExtractionConfig$default()) .Call("wrap__batch_extract_files", items, config, PACKAGE = "kreuzberg")
-#' Extract content from multiple byte arrays concurrently
-#'
-#' This function processes multiple byte arrays in parallel, automatically managing
-#' concurrency to prevent resource exhaustion. The concurrency limit can be
-#' configured via `ExtractionConfig::max_concurrent_extractions` or defaults
-#' to `(num_cpus * 1.5).ceil()`.
-#'
-#' Each item can optionally specify a [`FileExtractionConfig`] that overrides specific
-#' fields from the batch-level `config`. Pass `None` as the config to use
-#' the batch-level defaults for that item.
-#' @param items Vector of `BatchBytesItem` structs, each containing content bytes, MIME type, and optional per-item configuration overrides.
-#' @param config Batch-level extraction configuration.
-#' @return A vector of `ExtractionResult` in the same order as the input items.
-#' @export
-batch_extract_bytes <- function(items, config = ExtractionConfig$default()) .Call("wrap__batch_extract_bytes", items, config, PACKAGE = "kreuzberg")
 #' Detect MIME type from raw file bytes
 #'
 #' Uses magic byte signatures to detect file type from content.
@@ -262,49 +160,6 @@ classify_pages <- function(result = ExtractionResult$default(), config) .Call("w
 #' or any error returned by prompt rendering or the underlying LLM call.
 #' @export
 classify_text <- function(text, config) .Call("wrap__classify_text", text, config, PACKAGE = "kreuzberg")
-#' Classify a single document (as multiple pages or a single text block)
-#'
-#' Aggregates classifications across all pages in the provided text, returning
-#' a combined label set that represents the document as a whole.
-#' @param pages Slice of page texts to classify. Each page is classified independently using the configured LLM, and results are aggregated.
-#' @param config Classification configuration including labels and LLM settings.
-#' @return A vector of `ClassificationLabel` entries representing the document's overall classification.
-#'
-#' @section Errors:
-#' Returns an error if `config.labels` is empty or if LLM calls fail.
-#' @export
-classify_document <- function(pages, config) .Call("wrap__classify_document", pages, config, PACKAGE = "kreuzberg")
-#' Eagerly download a NER model into the kreuzberg cache
-#'
-#' `name` is a HuggingFace repo id (e.g. `urchade/gliner_multi-v2.1`). The
-#' CLI flag `kreuzberg warm --ner` delegates here.
-#' @param name Character string.
-#' @param cache_dir File path as character string.
-#' @return File path as character string.
-#' @export
-download_model <- function(name, cache_dir = NULL) .Call("wrap__download_model", name, cache_dir, PACKAGE = "kreuzberg")
-#' download_model
-#' @param _name Character string.
-#' @param _cache_dir File path as character string.
-#' @return File path as character string.
-#' @export
-download_model <- function(name, cache_dir = NULL) .Call("wrap__download_model", name, cache_dir, PACKAGE = "kreuzberg")
-#' Pinned default NER model identifier
-#' @return Character string.
-#' @export
-default_model_name <- function() .Call("wrap__default_model_name", PACKAGE = "kreuzberg")
-#' default_model_name
-#' @return Character string.
-#' @export
-default_model_name <- function() .Call("wrap__default_model_name", PACKAGE = "kreuzberg")
-#' All NER models kreuzberg knows about (used by `--all-ner-models`)
-#' @return List of character string.
-#' @export
-known_models <- function() .Call("wrap__known_models", PACKAGE = "kreuzberg")
-#' known_models
-#' @return List of character string.
-#' @export
-known_models <- function() .Call("wrap__known_models", PACKAGE = "kreuzberg")
 #' Download a NER model into the kreuzberg cache
 #' @param _name Character string.
 #' @param _cache_dir File path as character string.
@@ -357,303 +212,6 @@ token_count <- function(text) .Call("wrap__token_count", text, PACKAGE = "kreuzb
 #' @return Invisible NULL.
 #' @export
 translate_result <- function(result = ExtractionResult$default(), config) .Call("wrap__translate_result", result, config, PACKAGE = "kreuzberg")
-#' Chunk text for RAG retrieval, ensuring every chunk carries a `heading_path`
-#'
-#' Delegates to [`chunk_text`] using the caller's config (defaulting to
-#' `ChunkerType::Markdown` when the config uses the default `Text` type, so that
-#' heading hierarchy is resolved).  After chunking, derives
-#' [`ChunkMetadata::heading_path`](crate::types::ChunkMetadata::heading_path) from each chunk's `heading_context`.
-#' @param text — Text to chunk. Markdown formatting enables heading-aware splitting.
-#' @param config — Chunking configuration.  The `chunker_type` field controls the underlying splitter; use `ChunkerType::Markdown` for documents with ATX headings.
-#' @return A [`ChunkingResult`] where every chunk's `heading_path` is populated from its
-#'   `heading_context` (empty when the chunk is not under any heading).
-#'
-#' @section Errors:
-#' Propagates any error from the underlying chunker (e.g. invalid overlap).
-#' @export
-chunk_for_rag <- function(text, config = ChunkingConfig$default()) .Call("wrap__chunk_for_rag", text, config, PACKAGE = "kreuzberg")
-#' Compare two extraction results and return a structured diff
-#'
-#' The comparison is purely structural — no I/O, no side effects. All fields
-#' of [`ExtractionDiff`] are populated according to the provided [`DiffOptions`].
-#' @param a — the "before" extraction result.
-#' @param b — the "after" extraction result.
-#' @param opts — controls which sections are compared and optional truncation.
-#' @return ExtractionDiff object (list with class attribute).
-#' @export
-compare <- function(a = ExtractionResult$default(), b = ExtractionResult$default(), opts = DiffOptions$default()) .Call("wrap__compare", a, b, opts, PACKAGE = "kreuzberg")
-#' Extract content from a pre-cropped image region using a VLM
-#'
-#' The caller is responsible for cropping the page image to the region's bounding
-#' box before calling this function. The `image_bytes` parameter must contain the
-#' raw bytes of the **cropped** region image (JPEG, PNG, WebP, etc.).
-#' @param image_bytes — Raw bytes of the **pre-cropped** region image.
-#' @param image_mime — MIME type of the image (`"image/png"`, `"image/jpeg"`, etc.).
-#' @param region_kind — Content type of the region, used to select the default prompt.
-#' @param llm_config — LLM provider and model configuration.
-#' @param custom_prompt — Optional override for the default per-region prompt template.
-#' @return Extracted Markdown text from the VLM, or an error if the VLM call fails.
-#'
-#' @section Errors:
-#' - `Ocr` if the VLM call fails or returns no content.
-#' - `MissingDependency` if the liter-llm client cannot
-#'   be initialised.
-#' @export
-extract_region_with_vlm <- function(image_bytes, image_mime, region_kind, llm_config = LlmConfig$default(), custom_prompt = NULL) .Call("wrap__extract_region_with_vlm", image_bytes, image_mime, region_kind, llm_config, custom_prompt, PACKAGE = "kreuzberg")
-#' Rerank documents asynchronously
-#'
-#' Async counterpart to [`rerank`]. Offloads blocking ONNX inference to a
-#' dedicated blocking thread pool via Tokio's `spawn_blocking`, keeping the
-#' async executor free.
-#'
-#' Since v5.0.0.
-#' @param query Character string.
-#' @param documents List of character string.
-#' @param config RerankerConfig object (list with class attribute).
-#' @return List of rerankeddocument object (list with class attribute).
-#' @export
-rerank_async <- function(query, documents, config = RerankerConfig$default()) .Call("wrap__rerank_async", query, documents, config, PACKAGE = "kreuzberg")
-#' Extract keywords from text using the specified algorithm
-#'
-#' This is the unified entry point for keyword extraction. The algorithm
-#' used is determined by `config.algorithm`.
-#' @param text The text to extract keywords from.
-#' @param config Keyword extraction configuration.
-#' @return A vector of keywords sorted by relevance (highest score first).
-#'
-#' @section Errors:
-#' Returns an error if:
-#' - The specified algorithm feature is not enabled
-#' - Keyword extraction fails
-#' @export
-extract_keywords <- function(text, config = KeywordConfig$default()) .Call("wrap__extract_keywords", text, config, PACKAGE = "kreuzberg")
-#' Analyze a document and determine the optimal chunking strategy
-#'
-#' Decision logic (in priority order):
-#'
-#' 1. If user provides `disable_chunking` → no chunking
-#' 2. If user provides page_ranges → use user overrides
-#' 3. If chunking is not enabled → no chunking
-#' 4. If format doesn't support chunking → no chunking
-#' 5. If file is small (below both thresholds) and not force_chunking → no chunking
-#' 6. If PDF has a substantial text layer AND !force_ocr → no chunking
-#'    *(only when `heuristics-pdf` feature is enabled; otherwise skipped)*
-#' 7. Otherwise → chunk the document
-#' @param metadata DocumentMetadata object (list with class attribute).
-#' @param config HeuristicsConfig object (list with class attribute).
-#' @param document_bytes Raw vector of bytes.
-#' @return ChunkingDecision object (list with class attribute).
-#'
-#' @section Errors:
-#' Returns an error only when the `heuristics-pdf` feature is active and
-#' the PDF text-layer analysis itself returns a hard error.  In all other
-#' cases the function returns a `ChunkingDecision`.
-#' @export
-analyze_document <- function(metadata, config = HeuristicsConfig$default(), document_bytes = NULL) .Call("wrap__analyze_document", metadata, config, document_bytes, PACKAGE = "kreuzberg")
-#' Analyze a document with user-specified chunk ranges
-#'
-#' Creates a chunk plan based on user-provided page ranges.
-#' @param user_ranges List of pagerange object (list with class attribute).
-#' @param total_pages Integer.
-#' @param size_bytes Integer.
-#' @param config HeuristicsConfig object (list with class attribute).
-#' @return ChunkingDecision object (list with class attribute).
-#' @export
-analyze_with_user_chunks <- function(user_ranges, total_pages, size_bytes, config = HeuristicsConfig$default()) .Call("wrap__analyze_with_user_chunks", user_ranges, total_pages, size_bytes, config, PACKAGE = "kreuzberg")
-#' Score a [`ConfidenceSignals`] triple into an [`ExtractionConfidence`] using
-#'
-#' the supplied weights.
-#'
-#' When `signals.ocr_aggregate` is `None`, the OCR weight folds into
-#' `text_coverage` so the weighted sum still totals 1.0.
-#' @param signals ConfidenceSignals object (list with class attribute).
-#' @param weights ConfidenceWeights object (list with class attribute).
-#' @return ExtractionConfidence object (list with class attribute).
-#' @export
-score_confidence <- function(signals, weights = ConfidenceWeights$default()) .Call("wrap__score_confidence", signals, weights, PACKAGE = "kreuzberg")
-#' Decision returned for pre-extraction rejection based on XLSX/PPTX-specific
-#'
-#' resource bounds. Returns `Some(reason)` to reject; `None` to proceed.
-#'
-#' Callers must provide counts from a pre-extraction peek (e.g. parsing
-#' `xl/workbook.xml` for sheet count).
-#' @param mime_type Character string.
-#' @param sheet_count Integer.
-#' @param workbook_cells Integer.
-#' @param embedded_count Integer.
-#' @param config HeuristicsConfig object (list with class attribute).
-#' @return Optional character string. Defaults to NULL.
-#' @export
-check_format_limits <- function(mime_type, sheet_count = NULL, workbook_cells = NULL, embedded_count = NULL, config = HeuristicsConfig$default()) .Call("wrap__check_format_limits", mime_type, sheet_count, workbook_cells, embedded_count, config, PACKAGE = "kreuzberg")
-#' Derive document boundaries from an already-produced [`ExtractionResult`](crate::types::ExtractionResult)
-#'
-#' Builds a [`MultidocInput`] from `result.pages` (one [`PageSignals`] per
-#' `PageContent` entry), then delegates to [`detect_boundaries`].
-#'
-#' # Fallback behaviour
-#'
-#' - If `result.pages` is `None` or empty the whole document is treated as a
-#'   single document: returns `[Start(1), End(1)]`, matching the contract of
-#'   [`detect_boundaries`] for a one-page input.
-#'
-#' # Text density
-#'
-#' `PageContent` does not carry a pre-computed density score.
-#' This function approximates density as
-#' `non_whitespace_chars / total_chars` (clamped to `[0.0, 1.0]`), which is a
-#' reasonable proxy for how text-dense a page is relative to itself.  Pass a
-#' custom [`MultidocInput`] to [`detect_boundaries`] directly when you need a
-#' higher-fidelity density measurement (e.g. chars-per-pt² from a PDF extractor).
-#' @param result — Extraction result whose `pages` field will be used.
-#' @param thresholds — Detection thresholds forwarded to [`detect_boundaries`].
-#' @return List of documentboundary object (list with class attribute).
-#' @export
-boundaries_from_extraction_result <- function(result = ExtractionResult$default(), thresholds = MultidocThresholds$default()) .Call("wrap__boundaries_from_extraction_result", result, thresholds, PACKAGE = "kreuzberg")
-#' Detect document boundaries in a multi-document PDF
-#'
-#' Returns a list of detected boundaries, always including implicit boundaries
-#' at start (page 1) and end (page_count).  Boundaries are returned in ascending
-#' order of `start_page`.
-#' @param input Page signals for the PDF.
-#' @param thresholds Detection thresholds.
-#' @return Ordered list of document boundaries.
-#' @export
-detect_boundaries <- function(input, thresholds = MultidocThresholds$default()) .Call("wrap__detect_boundaries", input, thresholds, PACKAGE = "kreuzberg")
-#' Decide which call mode best fits this document
-#'
-#' Rules applied in order:
-#'
-#' 1. `image/*` → [`StructuredCallMode::VisionOnly`] (no text layer to start from).
-#' 2. `application/pdf` → [`StructuredCallMode::TextOnly`] regardless of
-#'    `text_coverage` or embedded image count.  Kreuzberg's OCR + text-layer
-#'    extraction produces text for scanned PDFs; the orchestrator's
-#'    post-call confidence gate handles any vision escalation actually needed.
-#' 3. DOCX / `text/html` / `text/*` / `application/json` / `application/xml` /
-#'    `application/rtf` with `avg_chars_per_page > docx_text_min_density`
-#'    → [`StructuredCallMode::TextOnly`].
-#' 4. Anything else → [`StructuredCallMode::Skip`].
-#'
-#' After rule selection two post-rule promotions apply (in order):
-#'
-#' - `user_force_vision` promotes `TextOnly` → `TextPlusVision`
-#'   (`Skip` stays `Skip` — caller meant to opt out).
-#' - `enable_vision_fallback` promotes `TextOnly` →
-#'   `TextOnlyWithVisionFallback` (does **not** upgrade `TextPlusVision` or
-#'   `Skip`).
-#' @param input StructuredInput object (list with class attribute).
-#' @param t StructuredThresholds object (list with class attribute).
-#' @return StructuredCallMode object (list with class attribute).
-#' @export
-choose_call_mode <- function(input, t = StructuredThresholds$default()) .Call("wrap__choose_call_mode", input, t, PACKAGE = "kreuzberg")
-#' Calculate a chunking plan for a document
-#' @param page_count Total number of pages in the document.
-#' @param size_bytes File size in bytes.
-#' @param needs_ocr Whether OCR will be required.
-#' @param config Heuristics configuration.
-#' @return A [`ChunkPlan`] with optimal chunk boundaries.
-#' @export
-calculate_chunk_plan <- function(page_count, size_bytes, needs_ocr, config = HeuristicsConfig$default()) .Call("wrap__calculate_chunk_plan", page_count, size_bytes, needs_ocr, config, PACKAGE = "kreuzberg")
-#' Calculate a chunk plan from user-specified page ranges
-#'
-#' Validates and processes user overrides into a proper chunk plan.
-#' @param user_chunks List of pagerange object (list with class attribute).
-#' @param total_pages Integer.
-#' @param size_bytes Integer.
-#' @param config HeuristicsConfig object (list with class attribute).
-#' @return ChunkPlan object (list with class attribute).
-#' @export
-calculate_plan_from_overrides <- function(user_chunks, total_pages, size_bytes, config = HeuristicsConfig$default()) .Call("wrap__calculate_plan_from_overrides", user_chunks, total_pages, size_bytes, config, PACKAGE = "kreuzberg")
-#' Stable sha256 fingerprint of `raw`, formatted as `sha256:<hex>`
-#' @param raw Raw vector of bytes.
-#' @return Character string.
-#' @export
-fingerprint <- function(raw) .Call("wrap__fingerprint", raw, PACKAGE = "kreuzberg")
-#' Resolve `(preset, custom_schema_override, context)` into a [`ResolvedPreset`]
-#'
-#' - `custom_schema` overrides `preset.schema` when set.
-#' - `context` substitutes `{{key}}` tokens in `preset.context_template`; the
-#'   rendered string is appended to `system_prompt` so the model sees it.
-#' @param preset Preset object (list with class attribute).
-#' @param custom_schema JSON-serializable value.
-#' @param context Named list.
-#' @return ResolvedPreset object (list with class attribute).
-#' @export
-resolve <- function(preset, custom_schema = NULL, context) .Call("wrap__resolve", preset, custom_schema, context, PACKAGE = "kreuzberg")
-#' Extract structured JSON from a document using JSON-encoded preset spec and options
-#'
-#' This is the synchronous JSON-in / JSON-out entry point suitable for FFI and
-#' language-binding call paths.
-#' @param bytes — raw document bytes.
-#' @param mime — MIME type string.
-#' @param preset_spec_json Character string.
-#' @param options_json — JSON string mirroring [`StructuredOptions`] fields (except `cache`).  Pass `"{}"` to use all defaults.
-#' @return JSON-serialised `StructuredOutput` on success.
-#'
-#' @section Errors:
-#' Returns `Validation` when either JSON argument is
-#' malformed.  All other failures from the underlying
-#' `extract_structured_sync` call are mapped onto `KreuzbergError`
-#' via [`From<StructuredError>`](super::StructuredError).
-#' @export
-extract_structured_json <- function(bytes, mime, preset_spec_json, options_json) .Call("wrap__extract_structured_json", bytes, mime, preset_spec_json, options_json, PACKAGE = "kreuzberg")
-#' Split a multi-document PDF and extract structured JSON from each segment,
-#'
-#' returning a JSON array of `StructuredOutput` objects.
-#'
-#' Non-PDF documents are passed through as a single-element array.
-#' @param bytes Raw vector of bytes.
-#' @param mime Character string.
-#' @param preset_spec_json Character string.
-#' @param options_json Character string.
-#' @return JSON-serialised `Vec<``StructuredOutput``>` (a JSON array) on success.
-#'
-#' @section Errors:
-#' Returns `Validation` when either JSON argument is
-#' malformed.  All other failures from the underlying
-#' `split_and_extract_sync` call are mapped onto `KreuzbergError`
-#' via [`From<StructuredError>`](super::StructuredError).
-#' @export
-split_and_extract_json <- function(bytes, mime, preset_spec_json, options_json) .Call("wrap__split_and_extract_json", bytes, mime, preset_spec_json, options_json, PACKAGE = "kreuzberg")
-#' Render a single PDF page to PNG bytes
-#'
-#' Returns raw PNG-encoded bytes for the specified page at the given DPI.
-#' Uses pdf_oxide with tiny-skia for pure-Rust rendering.
-#'
-#' For pages with extreme dimensions (very wide vector diagrams, etc.) the
-#' effective DPI may be automatically reduced to avoid rasterizer failure.
-#' A warning is logged when this happens.
-#' @param pdf_bytes Raw PDF file bytes.
-#' @param page_index Zero-based page index.
-#' @param dpi Resolution in dots per inch (default: 150).
-#' @param password Optional password for encrypted PDFs.
-#' @return Raw vector of bytes.
-#'
-#' @section Errors:
-#' Returns `KreuzbergError::Parsing` if the PDF cannot be opened, authenticated,
-#' or rendered, or if `page_index` is out of range.
-#' @export
-render_pdf_page_to_png <- function(pdf_bytes, page_index, dpi = NULL, password = NULL) .Call("wrap__render_pdf_page_to_png", pdf_bytes, page_index, dpi, password, PACKAGE = "kreuzberg")
-#' Caption a single image from bytes
-#' @param image_bytes The image data.
-#' @param llm_config LLM configuration for the VLM call.
-#' @param custom_prompt Optional custom caption prompt. Uses the default `RegionKind::Caption` prompt when `None`.
-#' @return The generated caption text.
-#'
-#' @section Errors:
-#' Returns an error if the VLM call fails or if image format detection fails.
-#' @export
-caption_image <- function(image_bytes, llm_config = LlmConfig$default(), custom_prompt = NULL) .Call("wrap__caption_image", image_bytes, llm_config, custom_prompt, PACKAGE = "kreuzberg")
-#' Caption a single image from a file path
-#' @param path Path to the image file.
-#' @param llm_config LLM configuration for the VLM call.
-#' @param custom_prompt Optional custom caption prompt. Uses the default `RegionKind::Caption` prompt when `None`.
-#' @return The generated caption text.
-#'
-#' @section Errors:
-#' Returns an error if the file cannot be read, if image format detection fails,
-#' or if the VLM call fails.
-#' @export
-caption_image_file <- function(path, llm_config = LlmConfig$default(), custom_prompt = NULL) .Call("wrap__caption_image_file", path, llm_config, custom_prompt, PACKAGE = "kreuzberg")
 #' Detect the MIME type of a file at the given path
 #'
 #' Uses the file extension and optionally the file content to determine the MIME type.
@@ -663,109 +221,6 @@ caption_image_file <- function(path, llm_config = LlmConfig$default(), custom_pr
 #' @return Character string.
 #' @export
 detect_mime_type <- function(path, check_exists) .Call("wrap__detect_mime_type", path, check_exists, PACKAGE = "kreuzberg")
-#' embed_texts_async
-#' @param _texts List of character string.
-#' @param _config EmbeddingConfig object (list with class attribute).
-#' @return List of list of numeric.
-#' @export
-embed_texts_async <- function(texts, config = EmbeddingConfig$default()) .Call("wrap__embed_texts_async", texts, config, PACKAGE = "kreuzberg")
-#' Get an embedding preset by name
-#'
-#' Returns `None` if no preset with the given name exists. Returns an owned
-#' clone so the value is safe to pass across FFI boundaries.
-#' @param name Character string.
-#' @return Optional EmbeddingPreset object (list with class attribute). Defaults to NULL.
-#' @export
-get_embedding_preset <- function(name) .Call("wrap__get_embedding_preset", name, PACKAGE = "kreuzberg")
-#' List the names of all available embedding presets
-#'
-#' Returns owned `String`s so the values are safe to pass across FFI boundaries.
-#' @return List of character string.
-#' @export
-list_embedding_presets <- function() .Call("wrap__list_embedding_presets", PACKAGE = "kreuzberg")
-#' Returns `None` for builds without the `embedding-presets` feature
-#' @param _name Character string.
-#' @return Optional EmbeddingPreset object (list with class attribute). Defaults to NULL.
-#' @export
-get_embedding_preset <- function(name) .Call("wrap__get_embedding_preset", name, PACKAGE = "kreuzberg")
-#' Returns an empty list for builds without the `embedding-presets` feature
-#' @return List of character string.
-#' @export
-list_embedding_presets <- function() .Call("wrap__list_embedding_presets", PACKAGE = "kreuzberg")
-#' Rerank a list of documents by relevance to a query
-#'
-#' Returns documents sorted descending by score. Applies `top_k` truncation if
-#' configured.
-#' @param query Character string.
-#' @param documents List of character string.
-#' @param config RerankerConfig object (list with class attribute).
-#' @return List of rerankeddocument object (list with class attribute).
-#'
-#' @section Errors:
-#' - [`KreuzbergError::Validation`] if `query` is empty or blank.
-#' - [`KreuzbergError::MissingDependency`] if ONNX Runtime is not installed (ONNX path).
-#' - [`KreuzbergError::Reranking`] if the preset is unknown or model download fails.
-#'
-#' Since v5.0.0.
-#' @export
-rerank <- function(query, documents, config = RerankerConfig$default()) .Call("wrap__rerank", query, documents, config, PACKAGE = "kreuzberg")
-#' Stub for builds without the `reranker` feature — keeps the symbol available
-#'
-#' on no-ORT targets (Android x86_64 emulator, WASM) so language bindings compile.
-#'
-#' Since v5.0.0.
-#' @param _query Character string.
-#' @param _documents List of character string.
-#' @param _config RerankerConfig object (list with class attribute).
-#' @return List of rerankeddocument object (list with class attribute).
-#' @export
-rerank <- function(query, documents, config = RerankerConfig$default()) .Call("wrap__rerank", query, documents, config, PACKAGE = "kreuzberg")
-#' Stub for builds without the `reranker` feature
-#'
-#' Since v5.0.0.
-#' @param _query Character string.
-#' @param _documents List of character string.
-#' @param _config RerankerConfig object (list with class attribute).
-#' @return List of rerankeddocument object (list with class attribute).
-#' @export
-rerank_async <- function(query, documents, config = RerankerConfig$default()) .Call("wrap__rerank_async", query, documents, config, PACKAGE = "kreuzberg")
-#' Get a reranker preset by name
-#'
-#' Returns `None` if no preset with the given name exists. Returns an owned
-#' clone so the value is safe to pass across FFI boundaries.
-#'
-#' Since v5.0.0.
-#' @param name Character string.
-#' @return Optional RerankerPreset object (list with class attribute). Defaults to NULL.
-#' @export
-get_reranker_preset <- function(name) .Call("wrap__get_reranker_preset", name, PACKAGE = "kreuzberg")
-#' List the names of all available reranker presets
-#'
-#' Returns owned `String`s so the values are safe to pass across FFI boundaries.
-#'
-#' Since v5.0.0.
-#' @return List of character string.
-#' @export
-list_reranker_presets <- function() .Call("wrap__list_reranker_presets", PACKAGE = "kreuzberg")
-#' Returns `None` for builds without the `reranker-presets` feature
-#'
-#' Since v5.0.0.
-#' @param _name Character string.
-#' @return Optional RerankerPreset object (list with class attribute). Defaults to NULL.
-#' @export
-get_reranker_preset <- function(name) .Call("wrap__get_reranker_preset", name, PACKAGE = "kreuzberg")
-#' Returns an empty list for builds without the `reranker-presets` feature
-#'
-#' Since v5.0.0.
-#' @return List of character string.
-#' @export
-list_reranker_presets <- function() .Call("wrap__list_reranker_presets", PACKAGE = "kreuzberg")
-#' embed_texts_async
-#' @param _texts List of character string.
-#' @param _config EmbeddingConfig object (list with class attribute).
-#' @return List of list of numeric.
-#' @export
-embed_texts_async <- function(texts, config = EmbeddingConfig$default()) .Call("wrap__embed_texts_async", texts, config, PACKAGE = "kreuzberg")
 #' register_ocr_backend
 #'
 #' Register an R-side plugin implementation. Pass a named list whose entries
@@ -2220,8 +1675,6 @@ TokenReductionConfig$from_json <- function(json) {
 #' Liter-llm-backed NER backend
 #' @export
 LlmBackend <- new.env(parent = emptyenv())
-LlmBackend$detect <- function(self, text, categories) .Call("wrap__LlmBackend__detect", self, text, categories, PACKAGE = "kreuzberg")
-LlmBackend$detect_with_custom <- function(self, text, categories, custom_labels) .Call("wrap__LlmBackend__detect_with_custom", self, text, categories, custom_labels, PACKAGE = "kreuzberg")
 #' @export
 `$.LlmBackend` <- function(self, name) {
   func <- LlmBackend[[name]]
@@ -2233,10 +1686,6 @@ LlmBackend$detect_with_custom <- function(self, text, categories, custom_labels)
 }
 #' @export
 `[[.LlmBackend` <- `$.LlmBackend`
-#' @export
-detect.LlmBackend <- function(x, ...) x$detect(...)
-#' @export
-detect_with_custom.LlmBackend <- function(x, ...) x$detect_with_custom(...)
 #' One detected PII span in the input text
 #' @field start Inclusive byte-offset start of the match in the source text.
 #' @field end Exclusive byte-offset end of the match.
@@ -4234,11 +3683,8 @@ parse_preset.MetaSchema <- function(x, ...) x$parse_preset(...)
 Registry <- new.env(parent = emptyenv())
 Registry$load_embedded <- function() .Call("wrap__Registry__load_embedded", PACKAGE = "kreuzberg")
 Registry$global <- function() .Call("wrap__Registry__global", PACKAGE = "kreuzberg")
-Registry$get <- function(self, id) .Call("wrap__Registry__get", self, id, PACKAGE = "kreuzberg")
-Registry$summaries <- function(self) .Call("wrap__Registry__summaries", self, PACKAGE = "kreuzberg")
 Registry$len <- function(self) .Call("wrap__Registry__len", self, PACKAGE = "kreuzberg")
 Registry$is_empty <- function(self) .Call("wrap__Registry__is_empty", self, PACKAGE = "kreuzberg")
-Registry$sample_bytes <- function(self, preset_id, name) .Call("wrap__Registry__sample_bytes", self, preset_id, name, PACKAGE = "kreuzberg")
 Registry$extend_from_dir <- function(self, dir) .Call("wrap__Registry__extend_from_dir", self, dir, PACKAGE = "kreuzberg")
 #' @export
 `$.Registry` <- function(self, name) {
@@ -4252,15 +3698,9 @@ Registry$extend_from_dir <- function(self, dir) .Call("wrap__Registry__extend_fr
 #' @export
 `[[.Registry` <- `$.Registry`
 #' @export
-get.Registry <- function(x, ...) x$get(...)
-#' @export
-summaries.Registry <- function(x, ...) x$summaries(...)
-#' @export
 len.Registry <- function(x, ...) x$len(...)
 #' @export
 is_empty.Registry <- function(x, ...) x$is_empty(...)
-#' @export
-sample_bytes.Registry <- function(x, ...) x$sample_bytes(...)
 #' @export
 extend_from_dir.Registry <- function(x, ...) x$extend_from_dir(...)
 #' A preset merged with caller-supplied overrides (custom schema, prompt suffix,
@@ -5280,16 +4720,42 @@ RevisionAnchor$from_json <- function(json) .Call("wrap__RevisionAnchor__from_jso
 }
 #' @export
 `[[.RevisionAnchor` <- `$.RevisionAnchor`
+#' Reason for not chunking a document
+#' @export
+NoChunkingReason <- new.env(parent = emptyenv())
+NoChunkingReason$default <- function() .Call("wrap__NoChunkingReason__default", PACKAGE = "kreuzberg")
+NoChunkingReason$from_json <- function(json) .Call("wrap__NoChunkingReason__from_json", json, PACKAGE = "kreuzberg")
+#' @export
+`$.NoChunkingReason` <- function(self, name) {
+  func <- NoChunkingReason[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.NoChunkingReason` <- `$.NoChunkingReason`
+#' Reason for chunking a document
+#' @export
+ChunkingReason <- new.env(parent = emptyenv())
+ChunkingReason$default <- function() .Call("wrap__ChunkingReason__default", PACKAGE = "kreuzberg")
+ChunkingReason$from_json <- function(json) .Call("wrap__ChunkingReason__from_json", json, PACKAGE = "kreuzberg")
+#' @export
+`$.ChunkingReason` <- function(self, name) {
+  func <- ChunkingReason[[name]]
+  if (identical(names(formals(func))[1], "self")) {
+    function(...) func(self, ...)
+  } else {
+    func
+  }
+}
+#' @export
+`[[.ChunkingReason` <- `$.ChunkingReason`
 #' @export
 cors_allows_all <- function(x, ...) UseMethod("cors_allows_all")
 #' @export
-detect <- function(x, ...) UseMethod("detect")
-#' @export
-detect_with_custom <- function(x, ...) UseMethod("detect_with_custom")
-#' @export
 extend_from_dir <- function(x, ...) UseMethod("extend_from_dir")
-#' @export
-get <- function(x, ...) UseMethod("get")
 #' @export
 is_empty <- function(x, ...) UseMethod("is_empty")
 #' @export
@@ -5312,10 +4778,6 @@ needs_image_processing <- function(x, ...) UseMethod("needs_image_processing")
 page_count <- function(x, ...) UseMethod("page_count")
 #' @export
 parse_preset <- function(x, ...) UseMethod("parse_preset")
-#' @export
-sample_bytes <- function(x, ...) UseMethod("sample_bytes")
-#' @export
-summaries <- function(x, ...) UseMethod("summaries")
 #' @export
 validate <- function(x, ...) UseMethod("validate")
 #' @export

@@ -9,14 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.0.0-rc.26] - 2026-06-20
+
 ### Added
 
 - **images**: `ExtractedImage::data_base64` opt-in field and `ImageExtractionConfig::include_data_base64` flag. When enabled, a Base64-encoded copy of each image's raw bytes is attached to the result, letting JSON-only clients avoid the default integer-array serialization of `data`. Defaults to `false`; the field is omitted from JSON when unset, so existing payloads are unchanged (#1143).
 - **chunking**: `TableChunkingMode` enum and `ChunkingConfig::table_chunking` field. When set to `RepeatHeader`, the markdown chunker prepends the table header row and separator to every continuation chunk produced by splitting a large table, so each chunk is self-contained for extraction, search, and LLM consumption. Default is `Split` (previous behavior, no header injection). Only applies when `chunker_type` is `Markdown` (#1100).
 
+### Changed
+
+- **alef**: bump `alef_version` to 0.25.54 and regenerate all bindings, FFI, e2e suites, and API docs. Picks up the Go backend's `result`-param collision rename and `Option<&[u8]>` return conversion, the extendr (R) backend's function dedup plus heuristics/presets return conversions and `extendr_module!` cfg-registration handling, and the csharp/swift capsule fixes.
+- **heuristics**: internally tag `ChunkingDecision`, `NoChunkingReason`, and `ChunkingReason` with `#[serde(tag = "type")]` so they follow the supported internally-tagged binding path across every language — fixes the Go data-enum codegen (`wire.Type`) and the silent payload-drop in the Java/C#/Node string-enum mappings.
+
 ### Fixed
 
 - **derive**: `result.pages[*].content` now respects `output_format`. Previously, per-page content was always plain text even when `OutputFormat::Markdown`, `Djot`, or `Html` was requested — only `result.content` was formatted by `apply_output_format`. The new `apply_page_content_format` step re-renders each page's element subset with the same renderer used for the full document. Pages built from prebuilt extractor content that have no page-tagged elements (native PDF, image OCR, Excel, PPTX) are returned unchanged (#1094).
+- **ner**: gate the crate-root `LlmBackend` re-export out on `x86_64-linux-android`. The `llm` module is cfg'd out there while `android-target` enables `ner-llm`, so the re-export hit `E0432` (CI Mobile).
+- **docker**: copy `kreuzberg-candle-ocr` into the full/core/cli images. It is a new optional path-dependency of the core crate, so cargo must read its `Cargo.toml` during workspace resolution even when the feature is off (Publish Docker).
+- **ci(rust)**: exclude `kreuzberg-candle-ocr` from the `--all-features` workspace test/build on every platform — its `metal` feature pulls Apple-only `objc2-metal` (breaks Linux) and its `cuda` feature pulls `cudarc` which needs `nvcc` (breaks macOS).
+- **ci(e2e)**: bump kotlin-android Gradle to 9.6.0 (Android Gradle Plugin 9.2.0 requires Gradle >= 9.4.1).
+- **lint**: exclude ai-rulez-generated dirs (`.agents/`, `.cursor/`, `.github/{agents,commands,skills}`) from prek hooks; CI regenerates them and oxfmt was failing on the generated output.
+- **tests**: fix five tests failing under `--features full` — stale `id` serde-skip assertion, the unregistered `/rerank` test route, SVG rasterization under the `svg` feature, the transcription duration fixture, and `extract_images` in the inline-OCR test.
 
 ## [5.0.0-rc.25] - 2026-06-20
 

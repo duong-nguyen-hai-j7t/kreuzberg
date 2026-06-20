@@ -361,10 +361,9 @@ mod tests {
         // duration limit is checked after successful decode, so we need valid
         // audio bytes.  max_duration_ms=0 means any non-empty decoded audio
         // (silence-1s.wav is ~1000 ms) exceeds the limit immediately.
-        let wav_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("../../test_documents/audio/silence-1s.wav");
-        let bytes = std::fs::read(&wav_path)
-            .unwrap_or_else(|e| panic!("missing audio fixture {wav_path:?}: {e}"));
+        let wav_path =
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../test_documents/audio/silence-1s.wav");
+        let bytes = std::fs::read(&wav_path).unwrap_or_else(|e| panic!("missing audio fixture {wav_path:?}: {e}"));
 
         let ext = TranscriptionExtractor;
         let tcfg = TranscriptionConfig {
