@@ -11,6 +11,31 @@ use image::{DynamicImage, ImageFormat};
 use std::borrow::Cow;
 use std::io::Cursor;
 
+/// Detect image format from magic bytes, returning a static format string.
+///
+/// This function validates that image data actually matches its claimed format
+/// by inspecting magic bytes. If the data doesn't match any known format, it
+/// returns `"raw"`.
+#[inline]
+fn detect_image_format_from_bytes(data: &[u8]) -> &'static str {
+    if data.starts_with(b"\xff\xd8\xff") {
+        "jpeg"
+    } else if data.starts_with(b"\x89PNG\r\n\x1a\n") {
+        "png"
+    } else if data.starts_with(b"GIF8") {
+        "gif"
+    } else if data.starts_with(b"II") || data.starts_with(b"MM") {
+        "tiff"
+    } else if data.starts_with(b"BM") {
+        "bmp"
+    } else if data.len() >= 8 && data[0..4] == [0x00, 0x00, 0x00, 0x0C] && data[4..8] == [0x6A, 0x50, 0x20, 0x20] {
+        // JPEG 2000: 12-byte box starting with length 0x0000000C and type "jP  "
+        "jpeg2000"
+    } else {
+        "raw"
+    }
+}
+
 /// Extract at most `limit` images from a page by walking its XObject resource dictionary.
 ///
 /// Unlike `doc.doc.extract_images(page_idx)` which decompresses every image on the page
@@ -277,7 +302,12 @@ pub(crate) fn extract_images_with_data(
         for oxide_img in &oxide_images {
             let (data, format) = match oxide_img.data() {
                 pdf_oxide::extractors::ImageData::Jpeg(jpeg_bytes) => {
-                    (Bytes::copy_from_slice(jpeg_bytes), Cow::Borrowed("jpeg"))
+                    let data_bytes = Bytes::copy_from_slice(jpeg_bytes);
+                    // Validate that the data actually starts with JPEG magic bytes.
+                    // pdf_oxide may return JPEG format for data that lacks proper headers,
+                    // so detect the actual format from magic bytes.
+                    let actual_format = detect_image_format_from_bytes(data_bytes.as_ref());
+                    (data_bytes, Cow::Borrowed(actual_format))
                 }
                 pdf_oxide::extractors::ImageData::Raw { pixels, format } => {
                     match raw_pixels_to_png(oxide_img.width(), oxide_img.height(), format, pixels) {
@@ -550,5 +580,50 @@ mod tests {
              got {} image(s)",
             result.len()
         );
+    }
+
+    /// Verify that `detect_image_format_from_bytes` correctly identifies formats from magic bytes.
+    /// This test ensures that even if pdf_oxide returns data labeled as JPEG but lacking proper
+    /// headers, we can detect the actual format.
+    #[test]
+    fn test_detect_image_format_from_bytes() {
+        // JPEG magic bytes: FF D8 FF
+        let jpeg_data = b"\xff\xd8\xff\xe0\x00\x10JFIF";
+        assert_eq!(detect_image_format_from_bytes(jpeg_data), "jpeg");
+
+        // PNG magic bytes: 89 50 4E 47 0D 0A 1A 0A
+        let png_data = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR";
+        assert_eq!(detect_image_format_from_bytes(png_data), "png");
+
+        // GIF magic bytes: 47 49 46 38
+        let gif_data = b"GIF89a";
+        assert_eq!(detect_image_format_from_bytes(gif_data), "gif");
+
+        // TIFF (little-endian) magic: 49 49 (II)
+        let tiff_le = b"II\x2a\x00";
+        assert_eq!(detect_image_format_from_bytes(tiff_le), "tiff");
+
+        // TIFF (big-endian) magic: 4D 4D (MM)
+        let tiff_be = b"MM\x00\x2a";
+        assert_eq!(detect_image_format_from_bytes(tiff_be), "tiff");
+
+        // BMP magic: 42 4D (BM)
+        let bmp_data = b"BM\x00\x00\x00";
+        assert_eq!(detect_image_format_from_bytes(bmp_data), "bmp");
+
+        // JPEG 2000 magic: 00 00 00 0C 6A 50 20 20 (jP  box header)
+        let jp2_data = b"\x00\x00\x00\x0cjP  ";
+        assert_eq!(detect_image_format_from_bytes(jp2_data), "jpeg2000");
+
+        // Unknown format should return "raw"
+        let raw_data = b"\x00\x01\x02\x03\x04\x05";
+        assert_eq!(detect_image_format_from_bytes(raw_data), "raw");
+
+        // Empty data should return "raw"
+        assert_eq!(detect_image_format_from_bytes(b""), "raw");
+
+        // Incomplete JPEG header should return "raw"
+        let incomplete = b"\xff\xd8";
+        assert_eq!(detect_image_format_from_bytes(incomplete), "raw");
     }
 }
