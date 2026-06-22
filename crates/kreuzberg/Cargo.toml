@@ -135,8 +135,11 @@ ocr-wasm = [
 # HEIF / HEIC / AVIF / HEICS / AVCS decoding via vendored libheif bindings.
 # Native-only — libheif is a C library with no working WASM/Android story.
 # Pulls in `nom-exif` so HEIC EXIF blocks are readable even without the full `ocr` feature.
-# On non-Windows platforms (Linux, macOS, etc.), uses embedded-libheif to build libheif from source
-# (avoids pkg-config dependency). Windows uses vcpkg integration.
+# libheif is provisioned as a system library by the `install-system-deps` composite action (built
+# from source + cached on Linux/macOS, vcpkg on Windows). Any CI/publish job that builds `heic` must
+# run that action first. An embedded source build was tried (commit c16b101ffe) but libheif 1.23.0's
+# bundled dav1d plugin fails to compile against current libdav1d, and it stripped the libheif version
+# feature on Windows — see CHANGELOG and the `system-libheif-provisioning` note.
 heic = ["dep:kreuzberg-libheif", "dep:image", "dep:nom-exif", "image-encode"]
 # PaddleOCR type definitions only — pure-Rust config structs, no ORT dependency.
 # Exposes PaddleOcrConfig, PaddleLanguage, ModelPaths. Safe on Android/WASM.
@@ -626,7 +629,7 @@ itertools = { workspace = true, optional = true }
 jotdown = "0.10"
 jsonschema = { version = "0.46", optional = true }
 kreuzberg-gliner-rs = { version = "0.2.0", optional = true }
-kreuzberg-libheif = { path = "../kreuzberg-libheif", version = "5.0.0-rc.29", optional = true, default-features = false }
+kreuzberg-libheif = { path = "../kreuzberg-libheif", version = "5.0.0-rc.29", optional = true }
 kreuzberg-orp = { version = "0.1.1", optional = true }
 kreuzberg-tesseract = { path = "../kreuzberg-tesseract", optional = true }
 libc = { workspace = true }
@@ -742,9 +745,6 @@ hf-hub = { version = "0.5", default-features = false, features = ["ureq", "nativ
 # To avoid conflicts during feature unification, GPU features (candle-cuda/metal/mkl/accelerate) should
 # only be explicitly enabled with platform awareness. CI uses `--features full` which excludes GPU accel.
 kreuzberg-candle-ocr = { path = "../kreuzberg-candle-ocr", version = "5.0.0-rc.29", optional = true }
-# HEIF/HEIC: on non-Windows platforms, enable embedded-libheif to statically build libheif from source.
-# Avoids pkg-config dependency for CI environments without system libheif >=1.21 (e.g., android-check, mobile).
-kreuzberg-libheif = { path = "../kreuzberg-libheif", version = "5.0.0-rc.29", optional = true, features = ["embedded-libheif"] }
 # PaddleOCR via ONNX Runtime - not available on WASM (vendored from paddle-ocr-rs)
 kreuzberg-paddle-ocr = { path = "../kreuzberg-paddle-ocr", version = "5.0.0-rc.29", optional = true }
 liter-llm = { workspace = true, optional = true, features = ["native-http"] }
