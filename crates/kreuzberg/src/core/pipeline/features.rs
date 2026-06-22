@@ -100,6 +100,7 @@ pub(crate) fn recompute_boundaries_from_pages(content: &str, pages: &[crate::typ
 /// in `metadata.pages.boundaries` used as a fallback when [`recompute_boundaries_from_pages`] cannot
 /// locate a page — without tripping the chunking page-boundary validation (#1148). Boundaries that
 /// are already in range and aligned are returned unchanged.
+#[cfg(feature = "chunking")]
 pub(crate) fn clamp_boundaries_to_text(boundaries: &[PageBoundary], text: &str) -> Vec<PageBoundary> {
     let len = text.len();
     boundaries
@@ -1090,6 +1091,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "chunking")]
     fn clamp_boundaries_to_text_caps_stale_offsets_within_text() {
         use crate::chunking::validation::validate_utf8_boundaries;
 
