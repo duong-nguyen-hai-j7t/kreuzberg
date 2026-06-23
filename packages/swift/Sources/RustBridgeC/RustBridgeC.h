@@ -4004,6 +4004,7 @@ struct __private__ResultPtrAndPtr __swift_bridge__$chunk_for_rag(void* text, voi
 struct __private__ResultPtrAndPtr __swift_bridge__$classify_document(void* pages, void* config);
 void* __swift_bridge__$compare(void* a, void* b, void* opts);
 struct __private__ResultPtrAndPtr __swift_bridge__$render_pdf_page_to_png(void* pdf_bytes, uintptr_t page_index, struct __private__OptionI32 dpi, void* password);
+struct __swift_bridge__$ResultUIntAndString __swift_bridge__$pdf_page_count(void* pdf_bytes, void* password);
 struct __private__ResultPtrAndPtr __swift_bridge__$extract_file_sync(void* path, void* mime_type, void* config);
 struct __private__ResultPtrAndPtr __swift_bridge__$batch_extract_files_sync(void* items, void* config);
 struct __private__ResultPtrAndPtr __swift_bridge__$batch_extract_files(void* items, void* config);
@@ -4481,6 +4482,9 @@ void* __swift_bridge__$__alef_phantom_vec_region_kind(void);
 void* __swift_bridge__$__alef_phantom_vec_psm_mode(void);
 void* __swift_bridge__$__alef_phantom_vec_paddle_language(void);
 void* __swift_bridge__$__alef_phantom_vec_layout_class(void);
+typedef enum __swift_bridge__$ResultUIntAndString$Tag {__swift_bridge__$ResultUIntAndString$ResultOk, __swift_bridge__$ResultUIntAndString$ResultErr} __swift_bridge__$ResultUIntAndString$Tag;
+union __swift_bridge__$ResultUIntAndString$Fields {uintptr_t ok; void* err;};
+typedef struct __swift_bridge__$ResultUIntAndString{__swift_bridge__$ResultUIntAndString$Tag tag; union __swift_bridge__$ResultUIntAndString$Fields payload;} __swift_bridge__$ResultUIntAndString;
 
 
 

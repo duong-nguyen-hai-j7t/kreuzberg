@@ -2,7 +2,7 @@
 title: "Kotlin (Android) API Reference"
 ---
 
-## Kotlin (Android) API Reference <span class="version-badge">v5.0.0-rc.31</span>
+## Kotlin (Android) API Reference <span class="version-badge">v5.0.0-rc.32</span>
 
 ### Functions
 
@@ -2393,6 +2393,45 @@ val result = renderPdfPageToPng("data".toByteArray(), 42, 42, "value")
 | `password` | `String?` | No | Optional password for encrypted PDFs |
 
 **Returns:** `ByteArray`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### pdfPageCount()
+
+Count the pages in a PDF without rendering any of them.
+
+Opens the document and returns its page count from the PDF structure. No page
+is rasterized, so this is cheap relative to `render_pdf_page_to_png` — use it
+when you only need the count (e.g. to drive a render loop over the pages).
+
+**Errors:**
+
+Returns `KreuzbergError.Parsing` if the PDF cannot be opened, authenticated,
+or its page count read.
+
+**Signature:**
+
+```kotlin
+@Throws(Error::class)
+fun pdfPageCount(pdfBytes: ByteArray, password: String? = null): Long
+```
+
+**Example:**
+
+```kotlin
+val result = pdfPageCount("data".toByteArray(), "value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `pdfBytes` | `ByteArray` | Yes | Raw PDF file bytes |
+| `password` | `String?` | No | Optional password for encrypted PDFs |
+
+**Returns:** `Long`
 
 **Errors:** Throws `Error`.
 

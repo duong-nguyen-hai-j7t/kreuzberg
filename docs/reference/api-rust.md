@@ -2,7 +2,7 @@
 title: "Rust API Reference"
 ---
 
-## Rust API Reference <span class="version-badge">v5.0.0-rc.31</span>
+## Rust API Reference <span class="version-badge">v5.0.0-rc.32</span>
 
 ### Functions
 
@@ -2612,6 +2612,44 @@ let result = render_pdf_page_to_png(b"data", 42, 42, "value")?;
 | `password` | `Option<String>` | No | Optional password for encrypted PDFs |
 
 **Returns:** `Vec<u8>`
+
+**Errors:** Returns `Err(Error)`.
+
+---
+
+#### pdf_page_count()
+
+Count the pages in a PDF without rendering any of them.
+
+Opens the document and returns its page count from the PDF structure. No page
+is rasterized, so this is cheap relative to `render_pdf_page_to_png` — use it
+when you only need the count (e.g. to drive a render loop over the pages).
+
+**Errors:**
+
+Returns `KreuzbergError::Parsing` if the PDF cannot be opened, authenticated,
+or its page count read.
+
+**Signature:**
+
+```rust
+pub fn pdf_page_count(pdf_bytes: &[u8], password: Option<String>) -> Result<usize, Error>
+```
+
+**Example:**
+
+```rust
+let result = pdf_page_count(b"data", "value")?;
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `pdf_bytes` | `Vec<u8>` | Yes | Raw PDF file bytes |
+| `password` | `Option<String>` | No | Optional password for encrypted PDFs |
+
+**Returns:** `usize`
 
 **Errors:** Returns `Err(Error)`.
 

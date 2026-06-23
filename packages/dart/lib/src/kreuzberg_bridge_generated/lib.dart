@@ -905,6 +905,24 @@ Future<Uint8List> renderPdfPageToPng({
   password: password,
 );
 
+/// Count the pages in a PDF without rendering any of them.
+///
+/// Opens the document and returns its page count from the PDF structure. No page
+/// is rasterized, so this is cheap relative to `render_pdf_page_to_png` — use it
+/// when you only need the count (e.g. to drive a render loop over the pages).
+///
+/// **Errors:**
+///
+/// Returns `KreuzbergError.Parsing` if the PDF cannot be opened, authenticated,
+/// or its page count read.
+Future<PlatformInt64> pdfPageCount({
+  required List<int> pdfBytes,
+  String? password,
+}) => RustLib.instance.api.cratePdfPageCount(
+  pdfBytes: pdfBytes,
+  password: password,
+);
+
 /// Caption a single image from bytes.
 ///
 ///   `RegionKind.Caption` prompt when `null`.

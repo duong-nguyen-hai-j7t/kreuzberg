@@ -6,7 +6,7 @@
 
     <groupId>dev.kreuzberg</groupId>
     <artifactId>kreuzberg</artifactId>
-    <version>5.0.0-rc.31</version>
+    <version>5.0.0-rc.32</version>
     <packaging>jar</packaging>
 
     <name>kreuzberg</name>

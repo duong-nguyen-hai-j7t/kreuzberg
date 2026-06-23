@@ -107,6 +107,7 @@ export {
   listValidators,
   parseCitations,
   parseFootnoteDefinitions,
+  pdfPageCount,
   redact,
   registerBuiltin,
   registerDocumentExtractor,

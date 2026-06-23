@@ -2,7 +2,7 @@
 title: "PHP API Reference"
 ---
 
-## PHP API Reference <span class="version-badge">v5.0.0-rc.31</span>
+## PHP API Reference <span class="version-badge">v5.0.0-rc.32</span>
 
 ### Functions
 
@@ -2407,6 +2407,44 @@ $result = renderPdfPageToPng("data", 42, 42, "value");
 | `password` | `?string` | No | Optional password for encrypted PDFs |
 
 **Returns:** `string`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### pdfPageCount()
+
+Count the pages in a PDF without rendering any of them.
+
+Opens the document and returns its page count from the PDF structure. No page
+is rasterized, so this is cheap relative to `render_pdf_page_to_png` — use it
+when you only need the count (e.g. to drive a render loop over the pages).
+
+**Errors:**
+
+Returns `KreuzbergError::Parsing` if the PDF cannot be opened, authenticated,
+or its page count read.
+
+**Signature:**
+
+```php
+public static function pdfPageCount(string $pdfBytes, ?string $password = null): int
+```
+
+**Example:**
+
+```php
+$result = pdfPageCount("data", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `pdfBytes` | `string` | Yes | Raw PDF file bytes |
+| `password` | `?string` | No | Optional password for encrypted PDFs |
+
+**Returns:** `int`
 
 **Errors:** Throws `Error`.
 

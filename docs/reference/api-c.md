@@ -2,7 +2,7 @@
 title: "C API Reference"
 ---
 
-## C API Reference <span class="version-badge">v5.0.0-rc.31</span>
+## C API Reference <span class="version-badge">v5.0.0-rc.32</span>
 
 ### Functions
 
@@ -2349,6 +2349,44 @@ const uint8_t *result = kreuzberg_render_pdf_page_to_png((const uint8_t *)"data"
 | `password` | `const char**` | No | Optional password for encrypted PDFs |
 
 **Returns:** `const uint8_t*`
+
+**Errors:** Returns `NULL` on error.
+
+---
+
+#### kreuzberg_pdf_page_count()
+
+Count the pages in a PDF without rendering any of them.
+
+Opens the document and returns its page count from the PDF structure. No page
+is rasterized, so this is cheap relative to `render_pdf_page_to_png` — use it
+when you only need the count (e.g. to drive a render loop over the pages).
+
+**Errors:**
+
+Returns `KreuzbergError.Parsing` if the PDF cannot be opened, authenticated,
+or its page count read.
+
+**Signature:**
+
+```c
+uintptr_t kreuzberg_pdf_page_count(const uint8_t* pdf_bytes, const char* password);
+```
+
+**Example:**
+
+```c
+uintptr_t result = kreuzberg_pdf_page_count((const uint8_t *)"data", "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `pdf_bytes` | `const uint8_t*` | Yes | Raw PDF file bytes |
+| `password` | `const char**` | No | Optional password for encrypted PDFs |
+
+**Returns:** `uintptr_t`
 
 **Errors:** Returns `NULL` on error.
 

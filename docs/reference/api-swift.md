@@ -2,7 +2,7 @@
 title: "Swift API Reference"
 ---
 
-## Swift API Reference <span class="version-badge">v5.0.0-rc.31</span>
+## Swift API Reference <span class="version-badge">v5.0.0-rc.32</span>
 
 ### Functions
 
@@ -2225,6 +2225,44 @@ let result = try renderPdfPageToPng(Data("data".utf8), 42, 42, "value")
 | `password` | `String?` | No | Optional password for encrypted PDFs |
 
 **Returns:** `Data`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### pdfPageCount()
+
+Count the pages in a PDF without rendering any of them.
+
+Opens the document and returns its page count from the PDF structure. No page
+is rasterized, so this is cheap relative to `render_pdf_page_to_png` — use it
+when you only need the count (e.g. to drive a render loop over the pages).
+
+**Errors:**
+
+Returns `KreuzbergError.Parsing` if the PDF cannot be opened, authenticated,
+or its page count read.
+
+**Signature:**
+
+```swift
+public static func pdfPageCount(pdfBytes: Data, password: String? = nil) throws -> UInt64
+```
+
+**Example:**
+
+```swift
+let result = try pdfPageCount(Data("data".utf8), "value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `pdfBytes` | `Data` | Yes | Raw PDF file bytes |
+| `password` | `String?` | No | Optional password for encrypted PDFs |
+
+**Returns:** `UInt64`
 
 **Errors:** Throws `Error`.
 

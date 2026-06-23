@@ -2,7 +2,7 @@
 title: "Dart API Reference"
 ---
 
-## Dart API Reference <span class="version-badge">v5.0.0-rc.31</span>
+## Dart API Reference <span class="version-badge">v5.0.0-rc.32</span>
 
 ### Functions
 
@@ -2407,6 +2407,44 @@ final result = renderPdfPageToPng(Uint8List.fromList([100, 97, 116, 97]), 42, 42
 | `password` | `String?` | No | Optional password for encrypted PDFs |
 
 **Returns:** `Uint8List`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### pdfPageCount()
+
+Count the pages in a PDF without rendering any of them.
+
+Opens the document and returns its page count from the PDF structure. No page
+is rasterized, so this is cheap relative to `render_pdf_page_to_png` — use it
+when you only need the count (e.g. to drive a render loop over the pages).
+
+**Errors:**
+
+Returns `KreuzbergError.Parsing` if the PDF cannot be opened, authenticated,
+or its page count read.
+
+**Signature:**
+
+```dart
+int pdfPageCount(Uint8List pdfBytes, [String? password])
+```
+
+**Example:**
+
+```dart
+final result = pdfPageCount(Uint8List.fromList([100, 97, 116, 97]), "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `pdfBytes` | `Uint8List` | Yes | Raw PDF file bytes |
+| `password` | `String?` | No | Optional password for encrypted PDFs |
+
+**Returns:** `int`
 
 **Errors:** Throws `Error`.
 

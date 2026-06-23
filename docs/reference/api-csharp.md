@@ -2,7 +2,7 @@
 title: "C# API Reference"
 ---
 
-## C# API Reference <span class="version-badge">v5.0.0-rc.31</span>
+## C# API Reference <span class="version-badge">v5.0.0-rc.32</span>
 
 ### Functions
 
@@ -2349,6 +2349,44 @@ var result = RenderPdfPageToPng(System.Text.Encoding.UTF8.GetBytes("data"), 42, 
 | `Password` | `string?` | No | Optional password for encrypted PDFs |
 
 **Returns:** `byte[]`
+
+**Errors:** Throws `Error`.
+
+---
+
+#### PdfPageCount()
+
+Count the pages in a PDF without rendering any of them.
+
+Opens the document and returns its page count from the PDF structure. No page
+is rasterized, so this is cheap relative to `render_pdf_page_to_png` — use it
+when you only need the count (e.g. to drive a render loop over the pages).
+
+**Errors:**
+
+Returns `KreuzbergError.Parsing` if the PDF cannot be opened, authenticated,
+or its page count read.
+
+**Signature:**
+
+```csharp
+public static nuint PdfPageCount(byte[] pdfBytes, string? password = null)
+```
+
+**Example:**
+
+```csharp
+var result = PdfPageCount(System.Text.Encoding.UTF8.GetBytes("data"), "value");
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `PdfBytes` | `byte\[\]` | Yes | Raw PDF file bytes |
+| `Password` | `string?` | No | Optional password for encrypted PDFs |
+
+**Returns:** `nuint`
 
 **Errors:** Throws `Error`.
 

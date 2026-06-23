@@ -2,7 +2,7 @@
 title: "Python API Reference"
 ---
 
-## Python API Reference <span class="version-badge">v5.0.0-rc.31</span>
+## Python API Reference <span class="version-badge">v5.0.0-rc.32</span>
 
 ### Functions
 
@@ -2407,6 +2407,44 @@ result = render_pdf_page_to_png(b"data", 42, dpi=42, password="value")
 | `password` | `str \| None` | No | Optional password for encrypted PDFs |
 
 **Returns:** `bytes`
+
+**Errors:** Raises `Error`.
+
+---
+
+#### pdf_page_count()
+
+Count the pages in a PDF without rendering any of them.
+
+Opens the document and returns its page count from the PDF structure. No page
+is rasterized, so this is cheap relative to `render_pdf_page_to_png` — use it
+when you only need the count (e.g. to drive a render loop over the pages).
+
+**Errors:**
+
+Returns `KreuzbergError.Parsing` if the PDF cannot be opened, authenticated,
+or its page count read.
+
+**Signature:**
+
+```python
+def pdf_page_count(pdf_bytes: bytes, password: str = None) -> int
+```
+
+**Example:**
+
+```python
+result = pdf_page_count(b"data", password="value")
+```
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `pdf_bytes` | `bytes` | Yes | Raw PDF file bytes |
+| `password` | `str \| None` | No | Optional password for encrypted PDFs |
+
+**Returns:** `int`
 
 **Errors:** Raises `Error`.
 

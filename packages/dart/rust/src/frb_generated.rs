@@ -39,7 +39,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.12.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1728930767;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1744657564;
 
 // Section: executor
 
@@ -8541,6 +8541,35 @@ fn wire__crate__parse_footnote_definitions_impl(
             move |context| {
                 transform_result_sse::<_, ()>((move || {
                     let output_ok = Result::<_, ()>::Ok(crate::parse_footnote_definitions(api_markdown))?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__pdf_page_count_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "pdf_page_count",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
+            };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_pdf_bytes = <Vec<u8>>::sse_decode(&mut deserializer);
+            let api_password = <Option<String>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, String>((move || {
+                    let output_ok = crate::pdf_page_count(api_pdf_bytes, api_password)?;
                     Ok(output_ok)
                 })())
             }
@@ -20118,33 +20147,34 @@ fn pde_ffi_dispatcher_primary_impl(
         284 => wire__crate__list_validators_impl(port, ptr, rust_vec_len, data_len),
         285 => wire__crate__parse_citations_impl(port, ptr, rust_vec_len, data_len),
         286 => wire__crate__parse_footnote_definitions_impl(port, ptr, rust_vec_len, data_len),
-        287 => wire__crate__redact_impl(port, ptr, rust_vec_len, data_len),
-        288 => wire__crate__register_builtin_impl(port, ptr, rust_vec_len, data_len),
-        289 => wire__crate__register_document_extractor_impl(port, ptr, rust_vec_len, data_len),
-        290 => wire__crate__register_embedding_backend_impl(port, ptr, rust_vec_len, data_len),
-        291 => wire__crate__register_ocr_backend_impl(port, ptr, rust_vec_len, data_len),
-        292 => wire__crate__register_post_processor_impl(port, ptr, rust_vec_len, data_len),
-        293 => wire__crate__register_renderer_impl(port, ptr, rust_vec_len, data_len),
-        294 => wire__crate__register_reranker_backend_impl(port, ptr, rust_vec_len, data_len),
-        295 => wire__crate__register_validator_impl(port, ptr, rust_vec_len, data_len),
-        296 => wire__crate__render_pdf_page_to_png_impl(port, ptr, rust_vec_len, data_len),
-        297 => wire__crate__rerank_impl(port, ptr, rust_vec_len, data_len),
-        298 => wire__crate__rerank_async_impl(port, ptr, rust_vec_len, data_len),
-        299 => wire__crate__resolve_impl(port, ptr, rust_vec_len, data_len),
-        300 => wire__crate__scan_text_impl(port, ptr, rust_vec_len, data_len),
-        301 => wire__crate__score_confidence_impl(port, ptr, rust_vec_len, data_len),
-        302 => wire__crate__split_and_extract_json_impl(port, ptr, rust_vec_len, data_len),
-        303 => wire__crate__summarize_impl(port, ptr, rust_vec_len, data_len),
-        304 => wire__crate__token_count_impl(port, ptr, rust_vec_len, data_len),
-        305 => wire__crate__translate_result_impl(port, ptr, rust_vec_len, data_len),
-        306 => wire__crate__unregister_document_extractor_impl(port, ptr, rust_vec_len, data_len),
-        307 => wire__crate__unregister_embedding_backend_impl(port, ptr, rust_vec_len, data_len),
-        308 => wire__crate__unregister_ocr_backend_impl(port, ptr, rust_vec_len, data_len),
-        309 => wire__crate__unregister_post_processor_impl(port, ptr, rust_vec_len, data_len),
-        310 => wire__crate__unregister_renderer_impl(port, ptr, rust_vec_len, data_len),
-        311 => wire__crate__unregister_reranker_backend_impl(port, ptr, rust_vec_len, data_len),
-        312 => wire__crate__unregister_validator_impl(port, ptr, rust_vec_len, data_len),
-        313 => wire__crate__verify_excerpt_impl(port, ptr, rust_vec_len, data_len),
+        287 => wire__crate__pdf_page_count_impl(port, ptr, rust_vec_len, data_len),
+        288 => wire__crate__redact_impl(port, ptr, rust_vec_len, data_len),
+        289 => wire__crate__register_builtin_impl(port, ptr, rust_vec_len, data_len),
+        290 => wire__crate__register_document_extractor_impl(port, ptr, rust_vec_len, data_len),
+        291 => wire__crate__register_embedding_backend_impl(port, ptr, rust_vec_len, data_len),
+        292 => wire__crate__register_ocr_backend_impl(port, ptr, rust_vec_len, data_len),
+        293 => wire__crate__register_post_processor_impl(port, ptr, rust_vec_len, data_len),
+        294 => wire__crate__register_renderer_impl(port, ptr, rust_vec_len, data_len),
+        295 => wire__crate__register_reranker_backend_impl(port, ptr, rust_vec_len, data_len),
+        296 => wire__crate__register_validator_impl(port, ptr, rust_vec_len, data_len),
+        297 => wire__crate__render_pdf_page_to_png_impl(port, ptr, rust_vec_len, data_len),
+        298 => wire__crate__rerank_impl(port, ptr, rust_vec_len, data_len),
+        299 => wire__crate__rerank_async_impl(port, ptr, rust_vec_len, data_len),
+        300 => wire__crate__resolve_impl(port, ptr, rust_vec_len, data_len),
+        301 => wire__crate__scan_text_impl(port, ptr, rust_vec_len, data_len),
+        302 => wire__crate__score_confidence_impl(port, ptr, rust_vec_len, data_len),
+        303 => wire__crate__split_and_extract_json_impl(port, ptr, rust_vec_len, data_len),
+        304 => wire__crate__summarize_impl(port, ptr, rust_vec_len, data_len),
+        305 => wire__crate__token_count_impl(port, ptr, rust_vec_len, data_len),
+        306 => wire__crate__translate_result_impl(port, ptr, rust_vec_len, data_len),
+        307 => wire__crate__unregister_document_extractor_impl(port, ptr, rust_vec_len, data_len),
+        308 => wire__crate__unregister_embedding_backend_impl(port, ptr, rust_vec_len, data_len),
+        309 => wire__crate__unregister_ocr_backend_impl(port, ptr, rust_vec_len, data_len),
+        310 => wire__crate__unregister_post_processor_impl(port, ptr, rust_vec_len, data_len),
+        311 => wire__crate__unregister_renderer_impl(port, ptr, rust_vec_len, data_len),
+        312 => wire__crate__unregister_reranker_backend_impl(port, ptr, rust_vec_len, data_len),
+        313 => wire__crate__unregister_validator_impl(port, ptr, rust_vec_len, data_len),
+        314 => wire__crate__verify_excerpt_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
