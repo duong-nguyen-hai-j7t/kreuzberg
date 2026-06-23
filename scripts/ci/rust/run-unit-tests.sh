@@ -73,12 +73,15 @@ if ! {
   if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
     extra_excludes+=(--exclude benchmark-harness)
   fi
-  # Exclude kreuzberg-candle-ocr from --all-features on every platform: its accel
-  # features are mutually platform-hostile under --all-features — `metal` pulls
-  # objc2-metal (Apple-only, breaks Linux) and `cuda` pulls cudarc which needs nvcc
-  # (absent on macOS). It cannot be --all-features-built on any CI runner; its
-  # device features are exercised by a dedicated curated-feature job, not here.
+  # Exclude kreuzberg-candle-ocr and kreuzberg-cli from --all-features on every
+  # platform: both have platform-hostile accelerator features. kreuzberg-candle-ocr
+  # has `metal` (Apple-only, breaks Linux) and `cuda` (needs nvcc, absent on macOS).
+  # kreuzberg-cli re-exports candle-cuda and candle-metal, so --all-features pulls
+  # cudarc (nvcc) and objc2-metal (Apple-only). Neither can be --all-features-built
+  # on any CI runner; their device features are exercised by a dedicated
+  # curated-feature job, not here.
   extra_excludes+=(--exclude kreuzberg-candle-ocr)
+  extra_excludes+=(--exclude kreuzberg-cli)
   RUST_BACKTRACE=full cargo test --locked \
     --workspace \
     --exclude kreuzberg \
