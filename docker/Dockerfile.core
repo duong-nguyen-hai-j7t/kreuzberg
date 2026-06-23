@@ -73,7 +73,7 @@ RUN sed -i '/kreuzberg-py/d; /kreuzberg_rb/d; /kreuzberg-node/d; /kreuzberg-ffi/
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/usr/local/cargo/git \
     --mount=type=cache,target=/build/target \
-    cargo build --offline --release --package kreuzberg-cli --features all && \
+    cargo build --release --package kreuzberg-cli --features all && \
     cp target/release/kreuzberg /build/kreuzberg && \
     strip /build/kreuzberg
 
