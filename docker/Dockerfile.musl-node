@@ -80,6 +80,18 @@ RUN sed -i '/kreuzberg-py/d; /kreuzberg_rb/d; /kreuzberg-cli/d; /kreuzberg-jni/d
 ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=gcc
 ENV CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=gcc
 
+# cc-rs (used by tesseract/leptonica and other C deps) ALSO treats the explicit
+# --target as a cross-compile and searches for a triple-prefixed compiler
+# (aarch64-linux-musl-gcc / -g++), independent of the cargo *_LINKER vars above.
+# Alpine's gcc/g++ are unprefixed and musl-native, so point cc-rs's per-target
+# CC_/CXX_ lookups at plain gcc/g++ (only the pair matching TARGET is consulted).
+# Without this, napi's cross path fails with `failed to find tool
+# "aarch64-linux-musl-gcc"` even though the linker is resolved.
+ENV CC_aarch64_unknown_linux_musl=gcc
+ENV CXX_aarch64_unknown_linux_musl=g++
+ENV CC_x86_64_unknown_linux_musl=gcc
+ENV CXX_x86_64_unknown_linux_musl=g++
+
 # Build the NAPI binding for the musl target.
 #
 # napi build wraps `cargo build` and emits kreuzberg.<platform>.node. Run it via

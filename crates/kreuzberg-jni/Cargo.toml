@@ -28,13 +28,13 @@ serde_json = "1"
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync"] }
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios", target_os = "windows")))'.dependencies]
-kreuzberg = { version = "5.0.0-rc.33", path = "../kreuzberg", features = ["full"] }
+kreuzberg = { version = "5.0.0-rc.34", path = "../kreuzberg", features = ["full"] }
 
 [target.'cfg(target_os = "android")'.dependencies]
-kreuzberg = { version = "5.0.0-rc.33", path = "../kreuzberg", features = ["android-target"] }
+kreuzberg = { version = "5.0.0-rc.34", path = "../kreuzberg", features = ["android-target"] }
 
 [target.'cfg(target_os = "ios")'.dependencies]
-kreuzberg = { version = "5.0.0-rc.33", path = "../kreuzberg", features = ["android-target"] }
+kreuzberg = { version = "5.0.0-rc.34", path = "../kreuzberg", features = ["android-target"] }
 
 [target.'cfg(target_os = "windows")'.dependencies]
-kreuzberg = { version = "5.0.0-rc.33", path = "../kreuzberg", features = ["windows-target"] }
+kreuzberg = { version = "5.0.0-rc.34", path = "../kreuzberg", features = ["windows-target"] }
