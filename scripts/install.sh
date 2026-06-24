@@ -139,6 +139,14 @@ install() {
   cp "$binary_path" "${install_dir}/${BINARY_NAME}"
   chmod +x "${install_dir}/${BINARY_NAME}"
 
+  # Create xberg symlink
+  if [ -f "${install_dir}/${BINARY_NAME}.exe" ]; then
+    # Windows .exe handling
+    ln -sf "${BINARY_NAME}.exe" "${install_dir}/xberg.exe" 2>/dev/null || cp "${install_dir}/${BINARY_NAME}.exe" "${install_dir}/xberg.exe"
+  else
+    ln -sf "${BINARY_NAME}" "${install_dir}/xberg" 2>/dev/null || cp "${install_dir}/${BINARY_NAME}" "${install_dir}/xberg"
+  fi
+
   # Install the actual binary (musl builds use wrapper + .bin)
   if [ -f "${stage_dir}/${BINARY_NAME}.bin" ]; then
     cp "${stage_dir}/${BINARY_NAME}.bin" "${install_dir}/${BINARY_NAME}.bin"

@@ -10,7 +10,8 @@
 		"directory": "cli-proxy/npm"
 	},
 	"bin": {
-		"kreuzberg": "bin/kreuzberg.js"
+		"kreuzberg": "bin/kreuzberg.js",
+		"xberg": "bin/kreuzberg.js"
 	},
 	"files": [
 		"bin/",

@@ -1796,6 +1796,80 @@ jobs:
           ffi-crate: kreuzberg-ffi
           package-dir: packages/zig
 
+  # ─── CLI proxy wheels (platform-specific, with bundled binary) ──────────
+
+  cli-proxy-wheels:
+    name: Build CLI proxy wheel (${{ matrix.target }})
+    needs: [prepare, check-cli, cli-binaries, cli-binaries-musl]
+    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.cli-binaries.result == 'success' && needs.cli-binaries-musl.result == 'success' && needs.check-cli.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { target: aarch64-apple-darwin }
+          - { target: aarch64-unknown-linux-gnu }
+          - { target: aarch64-unknown-linux-musl }
+          - { target: x86_64-apple-darwin }
+          - { target: x86_64-unknown-linux-gnu }
+          - { target: x86_64-unknown-linux-musl }
+          - { target: x86_64-pc-windows-msvc }
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.prepare.outputs.checkout_ref }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Download CLI binaries
+        uses: actions/download-artifact@v8
+        with:
+          pattern: cli-${{ matrix.target }}
+          path: dist-cli-binaries
+          merge-multiple: true
+
+      - name: Prepare binary for wheel
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET="${{ matrix.target }}"
+
+          # Find the binary artifact
+          if [ -f "dist-cli-binaries/kreuzberg-cli-${TARGET}.tar.gz" ]; then
+            ARTIFACT="dist-cli-binaries/kreuzberg-cli-${TARGET}.tar.gz"
+          elif [ -f "dist-cli-binaries/kreuzberg-cli-${TARGET}.zip" ]; then
+            ARTIFACT="dist-cli-binaries/kreuzberg-cli-${TARGET}.zip"
+          else
+            echo "Error: No binary found for ${TARGET}"
+            ls -la dist-cli-binaries/ || true
+            exit 1
+          fi
+
+          # Extract to repo root so hatch_build.py can find it
+          cp "$ARTIFACT" "kreuzberg-cli-${TARGET}.$([ "${ARTIFACT##*.}" = "gz" ] && echo tar.gz || echo zip)"
+          echo "Binary prepared: kreuzberg-cli-${TARGET}.*"
+
+      - name: Build wheel with bundled binary
+        shell: bash
+        working-directory: cli-proxy/pypi
+        env:
+          # The build host is always ubuntu/amd64; the hook cannot infer the triple
+          # from platform.*, so pass the matrix target explicitly.
+          KREUZBERG_CLI_TARGET: ${{ matrix.target }}
+        run: |
+          pip install hatchling build
+          python -m build --wheel
+
+      - name: Upload wheel
+        uses: actions/upload-artifact@v7
+        with:
+          name: cli-proxy-wheel-${{ matrix.target }}
+          path: cli-proxy/pypi/dist/*.whl
+          retention-days: 14
+
   # ─── GitHub Release asset uploads ─────────────────────────────────────
 
   upload-cli-release:
@@ -2050,6 +2124,52 @@ jobs:
           # native .so/.dylib/.dll but sdist doesn't; sdist carries the
           # source tree the wheels strip. The basic `python` allowlist also
           # only matches wheels. strict=false reports diffs without blocking.
+          strict: "false"
+
+      - uses: kreuzberg-dev/actions/publish-pypi@v1
+        with:
+          packages-dir: dist
+          dry-run: ${{ needs.prepare.outputs.dry_run }}
+
+  publish-cli-proxy:
+    name: Publish CLI proxy to PyPI (wheels + sdist)
+    needs: [prepare, check-cli, cli-proxy-wheels]
+    if: ${{ needs.prepare.outputs.release_cli == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-cli.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.prepare.outputs.checkout_ref }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Download CLI proxy wheels
+        uses: actions/download-artifact@v8
+        with:
+          pattern: cli-proxy-wheel-*
+          path: dist
+          merge-multiple: true
+
+      - name: Build CLI proxy sdist (fallback with downloader)
+        working-directory: cli-proxy/pypi
+        run: |
+          pip install hatchling build
+          python -m build --sdist
+          cp dist/*.tar.gz ../../dist/
+
+      - name: Verify CLI proxy package contents
+        uses: kreuzberg-dev/actions/verify-package-contents@v1
+        with:
+          language: python
+          artifact-path: dist
+          package-name: kreuzberg-cli
           strict: "false"
 
       - uses: kreuzberg-dev/actions/publish-pypi@v1
