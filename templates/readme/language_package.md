@@ -63,7 +63,7 @@
 
 ## OCR Support
 
-Kreuzberg supports multiple OCR backends for extracting text from scanned documents and images:
+Xberg supports multiple OCR backends for extracting text from scanned documents and images:
 
 {% for backend in ocr_backends %}
 
@@ -88,7 +88,7 @@ This binding provides full async/await support for non-blocking document process
 
 ## Plugin System
 
-Kreuzberg supports extensible post-processing plugins for custom text transformation and filtering.
+Xberg supports extensible post-processing plugins for custom text transformation and filtering.
 
 For detailed plugin documentation, visit [Plugin System Guide](https://docs.xberg.io/guides/plugins/).
 
@@ -133,9 +133,9 @@ For advanced configuration options including language detection, table extractio
 
 ## Contributing
 
-Contributions are welcome! See [Contributing Guide](https://github.com/xberg-io/kreuzberg/blob/main/CONTRIBUTING.md).
+Contributions are welcome! See [Contributing Guide](https://github.com/xberg-io/xberg/blob/main/CONTRIBUTING.md).
 
-## Part of Kreuzberg.dev
+## Part of Xberg.dev
 
 - [Xberg Enterprise](https://github.com/xberg-io/xberg-enterprise) — managed extraction API with SDKs, dashboards, and observability.
 - [kreuzcrawl](https://github.com/xberg-io/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.
@@ -152,5 +152,5 @@ Contributions are welcome! See [Contributing Guide](https://github.com/xberg-io/
 ## Support
 
 - **Discord Community**: [Join our Discord](https://discord.gg/xt9WY3GnKR)
-- **GitHub Issues**: [Report bugs](https://github.com/xberg-io/kreuzberg/issues)
-- **Discussions**: [Ask questions](https://github.com/xberg-io/kreuzberg/discussions)
+- **GitHub Issues**: [Report bugs](https://github.com/xberg-io/xberg/issues)
+- **Discussions**: [Ask questions](https://github.com/xberg-io/xberg/discussions)

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	kz "github.com/xberg-io/xberg/packages/go/v4"
+	kz "github.com/xberg-io/xberg/packages/go"
 )
 
 var debugEnabled = os.Getenv("XBERG_BENCHMARK_DEBUG") != ""

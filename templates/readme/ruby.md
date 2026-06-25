@@ -1,4 +1,4 @@
-# Kreuzberg for Ruby
+# Xberg for Ruby
 
 {% include 'partials/badges.html.jinja' %}
 
@@ -16,7 +16,7 @@
 Add to your Gemfile:
 
 ```ruby
-gem 'kreuzberg'
+gem 'xberg'
 ```
 
 Then execute:
@@ -28,7 +28,7 @@ bundle install
 Or install it directly:
 
 ```bash
-gem install kreuzberg
+gem install xberg
 ```
 
 ## Quick Start
@@ -36,21 +36,21 @@ gem install kreuzberg
 ### Basic Usage
 
 ```ruby
-require 'kreuzberg'
+require 'xberg'
 
 # Simple synchronous extraction
-result = Kreuzberg.extract_file("document.pdf")
+result = Xberg.extract_file("document.pdf")
 puts result.content
 ```
 
 ### Async Extraction
 
 ```ruby
-require 'kreuzberg'
+require 'xberg'
 
 # Using Fiber for concurrency (Ruby 3.0+)
 Fiber.new do
-  result = Kreuzberg.extract_file_async("document.pdf")
+  result = Xberg.extract_file_async("document.pdf")
   puts result.content
 end.resume
 ```
@@ -58,11 +58,11 @@ end.resume
 ### Batch Processing
 
 ```ruby
-require 'kreuzberg'
+require 'xberg'
 
 files = ["doc1.pdf", "doc2.docx", "doc3.xlsx"]
 
-results = files.map { |file| Kreuzberg.extract_file(file) }
+results = files.map { |file| Xberg.extract_file(file) }
 
 results.each do |result|
   puts "Content length: #{result.content.length}"
@@ -72,18 +72,18 @@ end
 ## Configuration
 
 ```ruby
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
+config = Xberg::ExtractionConfig.new(
   use_cache: true,
   enable_quality_processing: true,
-  ocr: Kreuzberg::OcrConfig.new(
+  ocr: Xberg::OcrConfig.new(
     backend: 'tesseract',
     language: 'eng'
   )
 )
 
-result = Kreuzberg.extract_file("document.pdf", config: config)
+result = Xberg.extract_file("document.pdf", config: config)
 puts result.content
 ```
 
@@ -92,38 +92,38 @@ puts result.content
 ### Tesseract Configuration
 
 ```ruby
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  ocr: Kreuzberg::OcrConfig.new(
+config = Xberg::ExtractionConfig.new(
+  ocr: Xberg::OcrConfig.new(
     backend: 'tesseract',
     language: 'eng',
-    tesseract_config: Kreuzberg::TesseractConfig.new(
+    tesseract_config: Xberg::TesseractConfig.new(
       psm: 6,
       enable_table_detection: true
     )
   )
 )
 
-result = Kreuzberg.extract_file("scanned.pdf", config: config)
+result = Xberg.extract_file("scanned.pdf", config: config)
 puts result.content
 ```
 
 ## Table Extraction
 
 ```ruby
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  ocr: Kreuzberg::OcrConfig.new(
+config = Xberg::ExtractionConfig.new(
+  ocr: Xberg::OcrConfig.new(
     backend: 'tesseract',
-    tesseract_config: Kreuzberg::TesseractConfig.new(
+    tesseract_config: Xberg::TesseractConfig.new(
       enable_table_detection: true
     )
   )
 )
 
-result = Kreuzberg.extract_file("invoice.pdf", config: config)
+result = Xberg.extract_file("invoice.pdf", config: config)
 
 result.tables.each_with_index do |table, index|
   puts "Table #{index}:"
@@ -134,9 +134,9 @@ end
 ## Metadata Extraction
 
 ```ruby
-require 'kreuzberg'
+require 'xberg'
 
-result = Kreuzberg.extract_file("document.pdf")
+result = Xberg.extract_file("document.pdf")
 
 # PDF metadata
 if result.metadata[:pdf]
@@ -158,16 +158,16 @@ end
 ## Text Chunking
 
 ```ruby
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  chunking: Kreuzberg::ChunkingConfig.new(
+config = Xberg::ExtractionConfig.new(
+  chunking: Xberg::ChunkingConfig.new(
     max_chars: 1000,
     max_overlap: 200
   )
 )
 
-result = Kreuzberg.extract_file("long_document.pdf", config: config)
+result = Xberg.extract_file("long_document.pdf", config: config)
 
 result.chunks.each_with_index do |chunk, index|
   puts "Chunk #{index}: #{chunk.length} characters"
@@ -177,30 +177,30 @@ end
 ## Password-Protected PDFs
 
 ```ruby
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  pdf_options: Kreuzberg::PdfConfig.new(
+config = Xberg::ExtractionConfig.new(
+  pdf_options: Xberg::PdfConfig.new(
     passwords: ["password1", "password2"]
   )
 )
 
-result = Kreuzberg.extract_file("protected.pdf", config: config)
+result = Xberg.extract_file("protected.pdf", config: config)
 puts result.content
 ```
 
 ## Language Detection
 
 ```ruby
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  language_detection: Kreuzberg::LanguageDetectionConfig.new(
+config = Xberg::ExtractionConfig.new(
+  language_detection: Xberg::LanguageDetectionConfig.new(
     enabled: true
   )
 )
 
-result = Kreuzberg.extract_file("multilingual.pdf", config: config)
+result = Xberg.extract_file("multilingual.pdf", config: config)
 puts "Detected languages: #{result.detected_languages}"
 ```
 
@@ -208,10 +208,10 @@ puts "Detected languages: #{result.detected_languages}"
 
 ### Main Methods
 
-- `Kreuzberg.extract_file(path, config: nil)` – Extract from file
-- `Kreuzberg.extract_file_async(path, config: nil)` – Async extraction
-- `Kreuzberg.extract_bytes(data, mime_type, config: nil)` – Extract from bytes
-- `Kreuzberg.batch_extract_files(paths, config: nil)` – Batch processing
+- `Xberg.extract_file(path, config: nil)` – Extract from file
+- `Xberg.extract_file_async(path, config: nil)` – Async extraction
+- `Xberg.extract_bytes(data, mime_type, config: nil)` – Extract from bytes
+- `Xberg.batch_extract_files(paths, config: nil)` – Batch processing
 
 ### Configuration Classes
 
@@ -253,12 +253,12 @@ sudo apt-get install tesseract-ocr  # Ubuntu/Debian
 
 ### Ruby 4.0 Compatibility
 
-Kreuzberg is fully compatible with Ruby 4.0 (released December 25, 2025) and later. Key Ruby 4.0 features that work seamlessly:
+Xberg is fully compatible with Ruby 4.0 (released December 25, 2025) and later. Key Ruby 4.0 features that work seamlessly:
 
 - **Ruby Box** - Improved memory efficiency and performance
 - **ZJIT Compiler** - Enhanced JIT compilation for faster execution
 - **Ractor Improvements** - Better multi-threaded document processing
-- **Set Promoted to Core** - No changes needed for Kreuzberg
+- **Set Promoted to Core** - No changes needed for Xberg
 
 All tests pass with Ruby 4.0.1 with 100% compatibility. The gem compiles without any breaking changes.
 
@@ -267,8 +267,8 @@ All tests pass with Ruby 4.0.1 with 100% compatibility. The gem compiles without
 Clone and setup:
 
 ```bash
-git clone https://github.com/xberg-io/kreuzberg.git
-cd kreuzberg
+git clone https://github.com/xberg-io/xberg.git
+cd xberg
 bundle install
 ```
 
@@ -295,13 +295,13 @@ sudo apt-get install build-essential ruby-dev
 ridk install
 ```
 
-### "Could not find Kreuzberg"
+### "Could not find Xberg"
 
 Reinstall the gem:
 
 ```bash
-gem uninstall kreuzberg
-gem install kreuzberg --no-document
+gem uninstall xberg
+gem install xberg --no-document
 ```
 
 ### OCR not working
@@ -317,12 +317,12 @@ tesseract --version
 ### Process Directory of PDFs
 
 ```ruby
-require 'kreuzberg'
+require 'xberg'
 require 'pathname'
 
 Dir.glob("documents/*.pdf").each do |file|
   puts "Processing: #{file}"
-  result = Kreuzberg.extract_file(file)
+  result = Xberg.extract_file(file)
   puts "  Content length: #{result.content.length}"
   puts "  Language: #{result.detected_languages}"
 end
@@ -331,10 +331,10 @@ end
 ### Extract and Parse Structured Data
 
 ```ruby
-require 'kreuzberg'
+require 'xberg'
 require 'json'
 
-result = Kreuzberg.extract_file("data.pdf")
+result = Xberg.extract_file("data.pdf")
 
 # Parse content as JSON (if applicable)
 begin
@@ -348,15 +348,15 @@ end
 ### Save Extracted Images
 
 ```ruby
-require 'kreuzberg'
+require 'xberg'
 
-config = Kreuzberg::ExtractionConfig.new(
-  images: Kreuzberg::ImageExtractionConfig.new(
+config = Xberg::ExtractionConfig.new(
+  images: Xberg::ImageExtractionConfig.new(
     extract_images: true
   )
 )
 
-result = Kreuzberg.extract_file("document.pdf", config: config)
+result = Xberg.extract_file("document.pdf", config: config)
 
 result.images&.each_with_index do |image, index|
   File.write("image_#{index}.png", image.data)
@@ -367,7 +367,7 @@ end
 
 For comprehensive documentation, visit [https://xberg.io](https://xberg.io)
 
-## Part of Kreuzberg.dev
+## Part of Xberg.dev
 
 - [Xberg Enterprise](https://github.com/xberg-io/xberg-enterprise) — managed extraction API with SDKs, dashboards, and observability.
 - [kreuzcrawl](https://github.com/xberg-io/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.

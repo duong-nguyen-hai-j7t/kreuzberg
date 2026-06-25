@@ -1,74 +1,74 @@
-# Kreuzberg
+# Xberg
 
 <div align="center" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 20px 0;">
   <a href="https://github.com/xberg-io/alef">
     <img src="https://img.shields.io/badge/Bindings-alef%20%D7%90-007ec6" alt="Bindings">
   </a>
   <!-- Language Bindings -->
-  <a href="https://crates.io/crates/kreuzberg">
-    <img src="https://img.shields.io/crates/v/kreuzberg?label=Rust&color=007ec6" alt="Rust">
+  <a href="https://crates.io/crates/xberg">
+    <img src="https://img.shields.io/crates/v/xberg?label=Rust&color=007ec6" alt="Rust">
   </a>
-  <a href="https://pypi.org/project/kreuzberg/">
-    <img src="https://img.shields.io/pypi/v/kreuzberg?label=Python&color=007ec6" alt="Python">
+  <a href="https://pypi.org/project/xberg/">
+    <img src="https://img.shields.io/pypi/v/xberg?label=Python&color=007ec6" alt="Python">
   </a>
-  <a href="https://www.npmjs.com/package/@kreuzberg/node">
-    <img src="https://img.shields.io/npm/v/@kreuzberg/node?label=Node.js&color=007ec6" alt="Node.js">
+  <a href="https://www.npmjs.com/package/@xberg/node">
+    <img src="https://img.shields.io/npm/v/@xberg/node?label=Node.js&color=007ec6" alt="Node.js">
   </a>
-  <a href="https://www.npmjs.com/package/@kreuzberg/wasm">
-    <img src="https://img.shields.io/npm/v/@kreuzberg/wasm?label=WASM&color=007ec6" alt="WASM">
+  <a href="https://www.npmjs.com/package/@xberg/wasm">
+    <img src="https://img.shields.io/npm/v/@xberg/wasm?label=WASM&color=007ec6" alt="WASM">
   </a>
-  <a href="https://central.sonatype.com/artifact/dev.kreuzberg/kreuzberg">
-    <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
+  <a href="https://central.sonatype.com/artifact/dev.xberg/xberg">
+    <img src="https://img.shields.io/maven-central/v/dev.xberg/xberg?label=Java&color=007ec6" alt="Java">
   </a>
-  <a href="https://github.com/xberg-io/kreuzberg/tree/main/packages/go/v5">
-    <img src="https://img.shields.io/github/v/tag/xberg-io/kreuzberg?label=Go&color=007ec6&filter=v5*" alt="Go">
+  <a href="https://github.com/xberg-io/xberg/tree/main/packages/go">
+    <img src="https://img.shields.io/github/v/tag/xberg-io/xberg?label=Go&color=007ec6&filter=v1*" alt="Go">
   </a>
-  <a href="https://www.nuget.org/packages/Kreuzberg/">
-    <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
+  <a href="https://www.nuget.org/packages/Xberg/">
+    <img src="https://img.shields.io/nuget/v/Xberg?label=C%23&color=007ec6" alt="C#">
   </a>
-  <a href="https://packagist.org/packages/xberg-io/kreuzberg">
-    <img src="https://img.shields.io/packagist/v/xberg-io/kreuzberg?label=PHP&color=007ec6" alt="PHP">
+  <a href="https://packagist.org/packages/xberg-io/xberg">
+    <img src="https://img.shields.io/packagist/v/xberg-io/xberg?label=PHP&color=007ec6" alt="PHP">
   </a>
-  <a href="https://rubygems.org/gems/kreuzberg">
-    <img src="https://img.shields.io/gem/v/kreuzberg?label=Ruby&color=007ec6" alt="Ruby">
+  <a href="https://rubygems.org/gems/xberg">
+    <img src="https://img.shields.io/gem/v/xberg?label=Ruby&color=007ec6" alt="Ruby">
   </a>
-  <a href="https://hex.pm/packages/kreuzberg">
-    <img src="https://img.shields.io/hexpm/v/kreuzberg?label=Elixir&color=007ec6" alt="Elixir">
+  <a href="https://hex.pm/packages/xberg">
+    <img src="https://img.shields.io/hexpm/v/xberg?label=Elixir&color=007ec6" alt="Elixir">
   </a>
-  <a href="https://xberg-io.r-universe.dev/kreuzberg">
-    <img src="https://img.shields.io/badge/R-kreuzberg-007ec6" alt="R">
+  <a href="https://xberg-io.r-universe.dev/xberg">
+    <img src="https://img.shields.io/badge/R-xberg-007ec6" alt="R">
   </a>
-  <a href="https://pub.dev/packages/kreuzberg">
-    <img src="https://img.shields.io/pub/v/kreuzberg?label=Dart&color=007ec6" alt="Dart">
+  <a href="https://pub.dev/packages/xberg">
+    <img src="https://img.shields.io/pub/v/xberg?label=Dart&color=007ec6" alt="Dart">
   </a>
-  <a href="https://central.sonatype.com/artifact/dev.kreuzberg/kreuzberg-android">
-    <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg-android?label=Kotlin&color=007ec6" alt="Kotlin">
+  <a href="https://central.sonatype.com/artifact/dev.xberg/xberg-android">
+    <img src="https://img.shields.io/maven-central/v/dev.xberg/xberg-android?label=Kotlin&color=007ec6" alt="Kotlin">
   </a>
-  <a href="https://github.com/xberg-io/kreuzberg/tree/main/packages/swift">
+  <a href="https://github.com/xberg-io/xberg/tree/main/packages/swift">
     <img src="https://img.shields.io/badge/Swift-SPM-007ec6" alt="Swift">
   </a>
-  <a href="https://github.com/xberg-io/kreuzberg/tree/main/packages/zig">
+  <a href="https://github.com/xberg-io/xberg/tree/main/packages/zig">
     <img src="https://img.shields.io/badge/Zig-package-007ec6" alt="Zig">
   </a>
-  <a href="https://github.com/xberg-io/kreuzberg/releases">
+  <a href="https://github.com/xberg-io/xberg/releases">
     <img src="https://img.shields.io/badge/C-FFI-007ec6" alt="C FFI">
   </a>
-  <a href="https://github.com/xberg-io/kreuzberg/pkgs/container/kreuzberg">
+  <a href="https://github.com/xberg-io/xberg/pkgs/container/xberg">
     <img src="https://img.shields.io/badge/Docker-ghcr.io-007ec6?logo=docker&logoColor=white" alt="Docker">
   </a>
-  <a href="https://github.com/xberg-io/kreuzberg/pkgs/container/charts%2Fkreuzberg">
+  <a href="https://github.com/xberg-io/xberg/pkgs/container/charts%2Fxberg">
     <img src="https://img.shields.io/badge/Helm-ghcr.io-007ec6?logo=helm&logoColor=white" alt="Helm">
   </a>
 
   <!-- Project Info -->
-  <a href="https://github.com/xberg-io/kreuzberg/blob/main/LICENSE">
+  <a href="https://github.com/xberg-io/xberg/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-Elastic--2.0-007ec6" alt="License">
   </a>
   <a href="https://docs.xberg.io">
-    <img src="https://img.shields.io/badge/Docs-kreuzberg-007ec6" alt="Documentation">
+    <img src="https://img.shields.io/badge/Docs-xberg-007ec6" alt="Documentation">
   </a>
-  <a href="https://huggingface.co/Kreuzberg">
-    <img src="https://img.shields.io/badge/Hugging%20Face-Kreuzberg-007ec6" alt="Hugging Face">
+  <a href="https://huggingface.co/Xberg">
+    <img src="https://img.shields.io/badge/Hugging%20Face-Xberg-007ec6" alt="Hugging Face">
   </a>
 </div>
 
@@ -79,45 +79,45 @@
   <a href="https://docs.xberg.io/demo.html">
     <img height="22" src="https://img.shields.io/badge/Live%20Demo-Open-007ec6?logo=webassembly&logoColor=white" alt="Live Demo">
   </a>
-  <a href="https://github.com/xberg-io/kreuzberg/stargazers">
-    <img height="22" src="https://img.shields.io/github/stars/xberg-io/kreuzberg?style=social" alt="GitHub Stars">
+  <a href="https://github.com/xberg-io/xberg/stargazers">
+    <img height="22" src="https://img.shields.io/github/stars/xberg-io/xberg?style=social" alt="GitHub Stars">
   </a>
 </div>
 
-High-performance document intelligence for Go backed by the Rust core that powers every Kreuzberg binding.
+High-performance document intelligence for Go backed by the Rust core that powers every Xberg binding.
 
 > **Version 1.0.0-rc.1**
-> Report issues at [github.com/xberg-io/kreuzberg](https://github.com/xberg-io/kreuzberg/issues).
+> Report issues at [github.com/xberg-io/xberg](https://github.com/xberg-io/xberg/issues).
 
 ## What This Package Provides
 
 - **Go module over the Rust core** — context-aware extraction with Go structs and errors.
 - **Structured results** — text, tables, images, metadata, language detection, chunks, and warnings.
-- **Static-link workflow** — build against `kreuzberg-ffi` and ship a self-contained Go binary.
+- **Static-link workflow** — build against `xberg-ffi` and ship a self-contained Go binary.
 - **Cross-binding parity** — output matches the Python, Node.js, Ruby, Java, .NET, PHP, Elixir, R, Dart, Swift, Zig, WASM, and C FFI packages.
 
 ## Install
 
-Kreuzberg Go binaries are **statically linked** — once built, they are self-contained and require no runtime library dependencies. Only the static library is needed at build time.
+Xberg Go binaries are **statically linked** — once built, they are self-contained and require no runtime library dependencies. Only the static library is needed at build time.
 
 ### Quick Start (Monorepo Development)
 
-For development in the Kreuzberg monorepo:
+For development in the Xberg monorepo:
 
 ```bash
 # Build the static FFI library
-cargo build -p kreuzberg-ffi --release
+cargo build -p xberg-ffi --release
 
 # Go build will automatically link against the static library
-# (from target/release/libkreuzberg_ffi.a)
-cd packages/go/v5
+# (from target/release/libxberg_ffi.a)
+cd packages/go
 go build -v
 
 # Run your binary (no library path needed - it's statically linked)
 ./v4
 ```
 
-That's it! The resulting binary is self-contained and has no runtime dependencies on Kreuzberg libraries.
+That's it! The resulting binary is self-contained and has no runtime dependencies on Xberg libraries.
 
 ### Using Go Modules
 
@@ -135,30 +135,30 @@ You'll need to provide the static library at build time. See [Building with Stat
 
 ### Building with Static Libraries
 
-When building outside the Kreuzberg monorepo, you need to provide the static library (`.a` file on Unix, `.lib` on Windows).
+When building outside the Xberg monorepo, you need to provide the static library (`.a` file on Unix, `.lib` on Windows).
 
 #### Option 1: Download Pre-built Static Library
 
-Download the static library for your platform from [GitHub Releases](https://github.com/xberg-io/kreuzberg/releases):
+Download the static library for your platform from [GitHub Releases](https://github.com/xberg-io/xberg/releases):
 
 ```bash
 # Example: Linux x86_64
-curl -LO https://github.com/xberg-io/kreuzberg/releases/download/v1.0.0-rc.1/go-ffi-linux-x86_64.tar.gz
+curl -LO https://github.com/xberg-io/xberg/releases/download/v1.0.0-rc.1/go-ffi-linux-x86_64.tar.gz
 tar -xzf go-ffi-linux-x86_64.tar.gz
 
 # Copy to a permanent location
-mkdir -p ~/kreuzberg/lib
-cp kreuzberg-ffi/lib/libkreuzberg_ffi.a ~/kreuzberg/lib/
+mkdir -p ~/xberg/lib
+cp xberg-ffi/lib/libxberg_ffi.a ~/xberg/lib/
 ```
 
 Then build with `CGO_LDFLAGS`:
 
 ```bash
 # Linux/macOS
-CGO_LDFLAGS="-L$HOME/kreuzberg/lib -lkreuzberg_ffi" go build
+CGO_LDFLAGS="-L$HOME/xberg/lib -lxberg_ffi" go build
 
 # Windows (MSVC)
-set CGO_LDFLAGS=-L%USERPROFILE%\kreuzberg\lib -lkreuzberg_ffi
+set CGO_LDFLAGS=-L%USERPROFILE%\xberg\lib -lxberg_ffi
 go build
 ```
 
@@ -168,20 +168,20 @@ If pre-built libraries aren't available for your platform:
 
 ```bash
 # Clone the repository
-git clone https://github.com/xberg-io/kreuzberg.git
-cd kreuzberg
+git clone https://github.com/xberg-io/xberg.git
+cd xberg
 
 # Build the static library
-cargo build -p kreuzberg-ffi --release
+cargo build -p xberg-ffi --release
 
-# The static library is now at: target/release/libkreuzberg_ffi.a
+# The static library is now at: target/release/libxberg_ffi.a
 # Copy it to a permanent location
-mkdir -p ~/kreuzberg/lib
-cp target/release/libkreuzberg_ffi.a ~/kreuzberg/lib/
+mkdir -p ~/xberg/lib
+cp target/release/libxberg_ffi.a ~/xberg/lib/
 
 # Now you can build Go projects
 cd ~/my-go-project
-CGO_LDFLAGS="-L$HOME/kreuzberg/lib -lkreuzberg_ffi" go build
+CGO_LDFLAGS="-L$HOME/xberg/lib -lxberg_ffi" go build
 ```
 
 ### System Requirements
@@ -234,13 +234,13 @@ Build and run:
 
 ```bash
 # Build (make sure you have the static library available - see Install)
-CGO_LDFLAGS="-L$HOME/kreuzberg/lib -lkreuzberg_ffi" go build
+CGO_LDFLAGS="-L$HOME/xberg/lib -lxberg_ffi" go build
 
 # Run - no library paths needed!
 ./myapp
 ```
 
-The binary is self-contained and can be distributed without any Kreuzberg library dependencies.
+The binary is self-contained and can be distributed without any Xberg library dependencies.
 
 ## Examples
 
@@ -328,8 +328,8 @@ func init() {
 
 | Issue                                                                          | Fix                                                                                                                                                                                                                 |
 | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ld returned 1 exit status` or `undefined reference to 'html_to_markdown_...'` | The static library wasn't found. Make sure `CGO_LDFLAGS` points to the directory containing `libkreuzberg_ffi.a`: `CGO_LDFLAGS="-L/path/to/lib -lkreuzberg_ffi" go build`                                           |
-| `cannot find -lkreuzberg_ffi`                                                  | The static library file is missing or in the wrong location. Download it from [GitHub Releases](https://github.com/xberg-io/kreuzberg/releases) or build it yourself: `cargo build -p kreuzberg-ffi --release` |
+| `ld returned 1 exit status` or `undefined reference to 'html_to_markdown_...'` | The static library wasn't found. Make sure `CGO_LDFLAGS` points to the directory containing `libxberg_ffi.a`: `CGO_LDFLAGS="-L/path/to/lib -lxberg_ffi" go build`                                           |
+| `cannot find -lxberg_ffi`                                                  | The static library file is missing or in the wrong location. Download it from [GitHub Releases](https://github.com/xberg-io/xberg/releases) or build it yourself: `cargo build -p xberg-ffi --release` |
 | `undefined: v4.ExtractFile`                                                    | This function was removed in v4.1.0. Use `ExtractFileSync` and wrap in goroutine if needed (see migration guide)                                                                                                    |
 | `Missing dependency: tesseract`                                                | Install the OCR backend and ensure it is on `PATH`. Errors bubble up as `*v4.MissingDependencyError`.                                                                                                               |
 | `undefined: C.customValidator` during build                                    | Export the callback with `//export` in a `*_cgo.go` file before using it in `Register*` helpers.                                                                                                                    |
@@ -344,7 +344,7 @@ func init() {
 
 Need help? Join the [Discord](https://discord.gg/xt9WY3GnKR) or open an issue with logs, platform info, and the steps you tried.
 
-## Part of Kreuzberg.dev
+## Part of Xberg.dev
 
 - [Xberg Enterprise](https://github.com/xberg-io/xberg-enterprise) — managed extraction API with SDKs, dashboards, and observability.
 - [kreuzcrawl](https://github.com/xberg-io/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.

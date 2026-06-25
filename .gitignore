@@ -6,9 +6,9 @@ dist/
 /check_pdf_oxide
 /check_*
 # Hand-authored WASM JS distribution files (intentionally committed)
-!crates/kreuzberg-wasm/dist/index.js
-!crates/kreuzberg-wasm/dist/extraction/files.js
-!crates/kreuzberg-wasm/dist/ocr/enabler.js
+!crates/xberg-wasm/dist/index.js
+!crates/xberg-wasm/dist/extraction/files.js
+!crates/xberg-wasm/dist/ocr/enabler.js
 .lycheecache
 dist-musl/
 *.so
@@ -47,7 +47,7 @@ __pycache__/
 htmlcov/
 share/python-wheels/
 prompt_template.egg-info/
-packages/python/kreuzberg/kreuzberg-cli
+packages/python/xberg/xberg-cli
 
 # Node.js / WASM
 node_modules/
@@ -57,12 +57,12 @@ pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 # NAPI-RS generated files (index.js and index.d.ts are committed for TypeScript type resolution)
-crates/kreuzberg-node/*.tgz
-# ORT dylibs are copied to crates/kreuzberg-node/ at build time and included in npm publish
+crates/xberg-node/*.tgz
+# ORT dylibs are copied to crates/xberg-node/ at build time and included in npm publish
 # despite the global *.dylib/*.so/*.dll rules below
-!crates/kreuzberg-node/*.dylib
-!crates/kreuzberg-node/*.so
-!crates/kreuzberg-node/*.dll
+!crates/xberg-node/*.dylib
+!crates/xberg-node/*.so
+!crates/xberg-node/*.dll
 .wrangler/
 .pnpm-store/
 
@@ -77,9 +77,9 @@ packages/ruby/vendor/
 
 # PHP
 vendor/
-!crates/kreuzberg-candle-ocr/src/vendor/
-php-kreuzberg.ini
-packages/php/php-kreuzberg.ini
+!crates/xberg-candle-ocr/src/vendor/
+php-xberg.ini
+packages/php/php-xberg.ini
 packages/php/tests.xml
 packages/php/var/
 .php-cs-fixer.cache
@@ -120,10 +120,10 @@ packages/r/src/.cargo/
 packages/go/v*/install
 
 # C FFI
-crates/kreuzberg-ffi/tests/c/test_*
-!crates/kreuzberg-ffi/tests/c/test_*.c
-crates/kreuzberg-ffi/tests/c/*.o
-crates/kreuzberg-ffi/tests/c/*.dSYM/
+crates/xberg-ffi/tests/c/test_*
+!crates/xberg-ffi/tests/c/test_*.c
+crates/xberg-ffi/tests/c/*.o
+crates/xberg-ffi/tests/c/*.dSYM/
 e2e/c/test_*
 !e2e/c/test_*.c
 e2e/c/*.o
@@ -229,7 +229,7 @@ packages/csharp/test_html_debug.cs
 .claude/
 .codex/
 .gemini/
-.kreuzberg/
+.xberg/
 .mcp.json
 .playwright-mcp/
 .fastembed_cache/
@@ -250,7 +250,7 @@ output.txt
 examples.txt
 requirements.txt
 docker-compose.yaml
-/tmp/kreuzberg-docker-test-results.json
+/tmp/xberg-docker-test-results.json
 tools/benchmark-harness/datasets/
 tools/benchmark-harness/vendored/docling/md/iso_21111_10.md
 visualizations/
@@ -304,7 +304,7 @@ erl_crash.dump
 
 .gradle/
 
-packages/go/v5/.lib/
+packages/go/.lib/
 
 .build/
 

@@ -129,7 +129,7 @@ flutter pub add {{ package_name }}
 Add to your `Package.swift` dependencies:
 
 ```swift
-.package(url: "https://github.com/xberg-io/kreuzberg.git", from: "{{ version }}"),
+.package(url: "https://github.com/xberg-io/xberg.git", from: "{{ version }}"),
 ```
 
 Then add the product to the relevant target:
@@ -138,7 +138,7 @@ Then add the product to the relevant target:
 .target(
     name: "YourTarget",
     dependencies: [
-        .product(name: "{{ package_name }}", package: "kreuzberg"),
+        .product(name: "{{ package_name }}", package: "xberg"),
     ]
 ),
 ```
@@ -158,21 +158,21 @@ end
 Fetch the package and pin it in `build.zig.zon`:
 
 ```bash
-zig fetch --save https://github.com/xberg-io/kreuzberg/archive/refs/tags/v{{ version }}.tar.gz
+zig fetch --save https://github.com/xberg-io/xberg/archive/refs/tags/v{{ version }}.tar.gz
 ```
 
 Then wire it into `build.zig`:
 
 ```zig
-const kreuzberg_dep = b.dependency("{{ package_name }}", .{
+const xberg_dep = b.dependency("{{ package_name }}", .{
     .target = target,
     .optimize = optimize,
 });
-exe.root_module.addImport("{{ package_name }}", kreuzberg_dep.module("{{ package_name }}"));
+exe.root_module.addImport("{{ package_name }}", xberg_dep.module("{{ package_name }}"));
 ```
 
 {% elif pm == "install.packages" %}
-Install from the kreuzberg R-universe:
+Install from the xberg R-universe:
 
 ```r
 install.packages("{{ package_name }}",
@@ -186,7 +186,7 @@ Build the shared library from the workspace:
 cargo build --release -p {{ package_name }}
 ```
 
-The built artifacts are emitted under `target/release/` (`lib{{ package_name | replace("-", "_") }}.{so,dylib,a}`) along with the C header at `crates/{{ package_name }}/include/kreuzberg.h`.
+The built artifacts are emitted under `target/release/` (`lib{{ package_name | replace("-", "_") }}.{so,dylib,a}`) along with the C header at `crates/{{ package_name }}/include/xberg.h`.
 
 {% endif %}
 {% endfor %}
@@ -249,7 +249,7 @@ Pre-built binaries available for:
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 {% elif language == "ffi" %}
 - A C/C++ toolchain (clang, gcc, or MSVC) and a Rust toolchain (`rustup`) for building from source
-- A `pkg-config` or CMake-aware build system that can locate `libkreuzberg_ffi` and `kreuzberg.h`
+- A `pkg-config` or CMake-aware build system that can locate `libxberg_ffi` and `xberg.h`
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.24+ for ORT-dependent inference features
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 {% elif language == "dart" %}
@@ -259,12 +259,12 @@ Pre-built binaries available for:
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 {% elif language == "swift" %}
 - **Swift 6.0+** (`swift-tools-version: 6.0`) on macOS 13+ or iOS 16+
-- Native runtime delivered through the C FFI surface from `kreuzberg-ffi`; published artifacts ship as a binary target
+- Native runtime delivered through the C FFI surface from `xberg-ffi`; published artifacts ship as a binary target
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.24+ for ORT-dependent inference features
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 {% elif language == "zig" %}
 - **Zig 0.16.0+** required (`minimum_zig_version` declared in `build.zig.zon`)
-- Links the C FFI surface from `kreuzberg-ffi`; the build resolves the library via `linkSystemLibrary` against the consumer-provided search path
+- Links the C FFI surface from `xberg-ffi`; the build resolves the library via `linkSystemLibrary` against the consumer-provided search path
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.24+ for ORT-dependent inference features
 - Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
 {% else %}

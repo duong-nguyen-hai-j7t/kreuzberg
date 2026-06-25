@@ -22,7 +22,7 @@ extend-ignore-re = [
 
 [default.extend-words]
 # Project-specific terms that are not typos.
-kreuzberg = "kreuzberg"
+xberg = "xberg"
 zensical = "zensical"
 tesseract = "tesseract"
 onnx = "onnx"
@@ -77,7 +77,7 @@ formated = "formated"
 specifing = "specifing"
 # English variants / valid words flagged incorrectly
 unparseable = "unparseable"
-# Dutch word in crates/kreuzberg/tests/pdf_glyph_spacing_issue_962.rs module doc
+# Dutch word in crates/xberg/tests/pdf_glyph_spacing_issue_962.rs module doc
 # ("relatie-id" = Dutch for "relation-id", from Microsoft Word broken-image placeholder)
 relatie = "relatie"
 # PaddleOCR upstream naming

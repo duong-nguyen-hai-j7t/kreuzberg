@@ -23,7 +23,7 @@ defmodule E2e.TestStubs.TestStubRegisterDocumentExtractorTraitBridgeGenServer do
     args = Jason.decode!(args_json)
     result = apply(E2e.TestStubs.TestStubRegisterDocumentExtractorTraitBridge, method_atom, args)
     result_json = Jason.encode!(result)
-    Kreuzberg.Native.complete_trait_call(reply_id, result_json)
+    Xberg.Native.complete_trait_call(reply_id, result_json)
     {:noreply, state}
   end
 end
@@ -35,7 +35,7 @@ defmodule E2e.PluginApiTest do
   describe "register_document_extractor_trait_bridge" do
     test "register_document_extractor_trait_bridge" do
       {:ok, registerdocumentextractortraitbridge_pid} = E2e.TestStubs.TestStubRegisterDocumentExtractorTraitBridgeGenServer.start_link(nil)
-      result = Kreuzberg.register_document_extractor(registerdocumentextractortraitbridge_pid, "test-extractor")
+      result = Xberg.register_document_extractor(registerdocumentextractortraitbridge_pid, "test-extractor")
     end
   end
 end

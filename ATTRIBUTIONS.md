@@ -1,6 +1,6 @@
 # Attributions
 
-This document acknowledges the sources of test documents and baseline data used in the Kreuzberg project.
+This document acknowledges the sources of test documents and baseline data used in the Xberg project.
 
 ## Pandoc Test Suite
 
@@ -91,16 +91,16 @@ This script processes all test documents and generates fresh baselines using the
 
 ## docx-lite
 
-DOCX XML parser vendored into `crates/kreuzberg/src/extraction/docx/parser.rs`:
+DOCX XML parser vendored into `crates/xberg/src/extraction/docx/parser.rs`:
 
 - **Source**: <https://github.com/v-lawyer/docx-lite>
 - **License**: MIT OR Apache-2.0
 - **Authors**: V-Lawyer Team
 - **Version**: 0.2.0 (vendored with modifications)
-- **Usage**: DOCX text extraction parser inlined into kreuzberg core
+- **Usage**: DOCX text extraction parser inlined into xberg core
 - **Modifications**:
   - Fixed `Paragraph::to_text()` joining text runs without whitespace (#359)
-  - Adapted to kreuzberg's `quick-xml` v0.39 and `zip` v7.x APIs
+  - Adapted to xberg's `quick-xml` v0.39 and `zip` v7.x APIs
   - Removed file-path based APIs (only bytes/reader needed)
 
 ---
@@ -113,7 +113,7 @@ Vendored HWP text extraction code from the hwpers crate:
 - **License**: MIT OR Apache-2.0
 - **Authors**: HWP Parser Contributors
 - **Vendored Version**: 0.5.0
-- **Location**: `crates/kreuzberg/src/extraction/hwp/`
+- **Location**: `crates/xberg/src/extraction/hwp/`
 - **Purpose**: Text extraction from Korean Hangul Word Processor (.hwp) files
 - **Scope**: Minimal subset — CFB reader, binary record parser, text extraction only
 - **Excluded**: HWPX (XML/ZIP), writer, renderer, crypto, preview modules
@@ -128,7 +128,7 @@ Vendored source code from the paddle-ocr-rs crate for PaddleOCR via ONNX Runtime
 - **Original License**: Apache-2.0
 - **Author**: mg-chao (<chao@mgchao.top>)
 - **Vendored Version**: 0.6.1
-- **Location**: `crates/kreuzberg-paddle-ocr/`
+- **Location**: `crates/xberg-paddle-ocr/`
 - **Purpose**: Text detection and recognition using PaddlePaddle's OCR models via ONNX Runtime
 
 ### Vendored Files
@@ -147,10 +147,10 @@ The following source files were vendored from paddle-ocr-rs:
 
 ### Modifications
 
-The vendored code has been modified for Kreuzberg integration:
+The vendored code has been modified for Xberg integration:
 
 - Updated to Rust 2024 edition
-- Aligned with Kreuzberg workspace dependencies
+- Aligned with Xberg workspace dependencies
 - License changed to MIT with dual copyright (original author retained)
 
 ### License Compatibility
@@ -161,13 +161,13 @@ The original Apache-2.0 license is compatible with MIT relicensing. The original
 
 ## fastembed-rs
 
-Text embedding inference pipeline vendored into `crates/kreuzberg/src/embeddings/engine.rs`:
+Text embedding inference pipeline vendored into `crates/xberg/src/embeddings/engine.rs`:
 
 - **Source**: <https://github.com/Anush008/fastembed-rs>
 - **License**: Apache-2.0
 - **Author**: Anush008 and contributors
 - **Vendored Version**: Based on 0.2.x
-- **Location**: `crates/kreuzberg/src/embeddings/engine.rs`
+- **Location**: `crates/xberg/src/embeddings/engine.rs`
 - **Purpose**: ONNX-based text embedding inference with thread-safe concurrent embedding generation
 
 ### Modifications
@@ -175,12 +175,12 @@ Text embedding inference pipeline vendored into `crates/kreuzberg/src/embeddings
 The vendored code has been modified from the original fastembed-rs:
 
 - Changed `embed()` method signature from `&mut self` to `&self` for thread-safe concurrent inference without mutex contention
-- Adapted to Kreuzberg's ONNX Runtime integration and error handling
-- Integrated with Kreuzberg's embedding configuration and model management
+- Adapted to Xberg's ONNX Runtime integration and error handling
+- Integrated with Xberg's embedding configuration and model management
 
 ### License Compatibility
 
-The original Apache-2.0 license is fully compatible with Kreuzberg's Elastic License 2.0 (ELv2). The original copyright and attribution are preserved in the vendored code's comments.
+The original Apache-2.0 license is fully compatible with Xberg's Elastic License 2.0 (ELv2). The original copyright and attribution are preserved in the vendored code's comments.
 
 ---
 
@@ -201,48 +201,48 @@ Test documents derived from the `numbers-parser` test suite:
 
 ## yake-rust
 
-YAKE keyword extraction algorithm vendored into kreuzberg:
+YAKE keyword extraction algorithm vendored into xberg:
 
 - **Source**: <https://github.com/quesurifn/yake-rust>
 - **License**: MIT
 - **Authors**: Kyle Fahey, Anton Vikstrom, Igor Strebz
 - **Vendored Version**: 1.0.3
-- **Location**: `crates/kreuzberg/src/keywords/yake/`
+- **Location**: `crates/xberg/src/keywords/yake/`
 - **Purpose**: YAKE (Yet Another Keyword Extractor) statistical keyword extraction
 
 ### Modifications
 
 - Replaced segtok dependency with custom memchr-based sentence splitter (fixes #676 BacktrackLimitExceeded on large files)
-- Integrated with kreuzberg's stopwords module (64 languages vs original 34)
+- Integrated with xberg's stopwords module (64 languages vs original 34)
 - Replaced hashbrown with ahash, inlined streaming-stats and levenshtein
 - Optimized punctuation checks with byte lookup tables
 - Removed itertools dependency (manual dedup)
 
 ### License Compatibility
 
-The original MIT license is compatible with Kreuzberg's Elastic License 2.0 (ELv2).
+The original MIT license is compatible with Xberg's Elastic License 2.0 (ELv2).
 
 ## text-splitter (inlined)
 
-The chunking submodule `crates/kreuzberg/src/chunking/text_splitter/` is a trimmed inline copy of [text-splitter](https://github.com/benbrandt/text-splitter) v0.30.1 by Benjamin Brandt. We inlined it because upstream pins `tokenizers = "0.22"`, which conflicts with kreuzberg's direct `tokenizers 0.23` dependency and pulls a duplicate copy of `tokenizers` into the build graph (breaking the `Tokenizer: ChunkSizer` bound in `chunking::core`).
+The chunking submodule `crates/xberg/src/chunking/text_splitter/` is a trimmed inline copy of [text-splitter](https://github.com/benbrandt/text-splitter) v0.30.1 by Benjamin Brandt. We inlined it because upstream pins `tokenizers = "0.22"`, which conflicts with xberg's direct `tokenizers 0.23` dependency and pulls a duplicate copy of `tokenizers` into the build graph (breaking the `Tokenizer: ChunkSizer` bound in `chunking::core`).
 
 - **Source**: <https://github.com/benbrandt/text-splitter> @ v0.30.1
 - **License**: MIT
 - **Copyright**: © 2023 Benjamin Brandt <benjamin.j.brandt@gmail.com>
-- **Location**: `crates/kreuzberg/src/chunking/text_splitter/`
+- **Location**: `crates/xberg/src/chunking/text_splitter/`
 
 ### Modifications
 
-- Dropped the `code` (tree-sitter) splitter — kreuzberg has its own tree-sitter integration and does not use the upstream code splitter.
+- Dropped the `code` (tree-sitter) splitter — xberg has its own tree-sitter integration and does not use the upstream code splitter.
 - Dropped the `tiktoken-rs` sizer — unused.
 - Rebuilt against `tokenizers 0.23`.
-- Renamed feature gate `tokenizers` → `chunking-tokenizers`; the `markdown` splitter is always available because `pulldown-cmark` is already a non-optional kreuzberg dependency.
+- Renamed feature gate `tokenizers` → `chunking-tokenizers`; the `markdown` splitter is always available because `pulldown-cmark` is already a non-optional xberg dependency.
 - Tightened visibility on internal types to `pub(crate)`.
 - Path rewiring: upstream `crate::*` paths inside the inlined module rewritten relative to the new submodule root.
 
 ### License Compatibility
 
-The MIT license is compatible with Kreuzberg's Elastic License 2.0 (ELv2). The full upstream license text is reproduced below:
+The MIT license is compatible with Xberg's Elastic License 2.0 (ELv2). The full upstream license text is reproduced below:
 
 ```text
 MIT License
@@ -282,15 +282,15 @@ The following test inputs were copied from the text-splitter repository to `/tes
 ## libheif-rs
 
 Safe Rust bindings around `libheif-sys` for decoding HEIF / HEIC / AVIF
-containers, vendored as the `kreuzberg-libheif` crate:
+containers, vendored as the `xberg-libheif` crate:
 
 - **Source**: <https://github.com/Cykooz/libheif-rs>
 - **License**: MIT
 - **Author(s)**: Kirill Kuzminykh (Cykooz) and contributors
 - **Vendored Version**: 2.7.0
-- **Location**: `crates/kreuzberg-libheif/`
+- **Location**: `crates/xberg-libheif/`
 - **Purpose**: Decode HEIF-family containers (HEIC, HEIF, AVIF, HEICS, AVCS) to
-  interleaved RGBA pixels and expose EXIF / XMP metadata blocks for kreuzberg's
+  interleaved RGBA pixels and expose EXIF / XMP metadata blocks for xberg's
   image-extraction and OCR pipeline.
 
 ### Vendored Files / Scope
@@ -312,9 +312,9 @@ containers, vendored as the `kreuzberg-libheif` crate:
 
 ### License Compatibility
 
-MIT is permissive and compatible with re-distribution alongside Kreuzberg's
+MIT is permissive and compatible with re-distribution alongside Xberg's
 Elastic License 2.0 (ELv2) workspace. The upstream MIT license text is
-preserved verbatim at `crates/kreuzberg-libheif/LICENSE`.
+preserved verbatim at `crates/xberg-libheif/LICENSE`.
 
 ### System Library Requirement
 
@@ -322,20 +322,20 @@ preserved verbatim at `crates/kreuzberg-libheif/LICENSE`.
 requires `libde265` (HEVC) and `libaom` (AV1). These must be available at build
 and runtime. `libheif` is LGPL-licensed and is linked dynamically only (never
 statically vendored). Pixel decoding is therefore native-only — the `heic` feature is excluded from
-kreuzberg's `wasm-target` and `android-target` aggregate features. EXIF
+xberg's `wasm-target` and `android-target` aggregate features. EXIF
 extraction via `nom-exif` is pure Rust and works on every target.
 
 ---
 
 ## jhqxxx/aha
 
-Rust-native VLM-OCR backends vendored into `crates/kreuzberg-candle-ocr/`:
+Rust-native VLM-OCR backends vendored into `crates/xberg-candle-ocr/`:
 
 - **Source**: <https://github.com/jhqxxx/aha>
 - **License**: Apache-2.0
 - **Author**: jhqxxx
 - **Vendored Version**: `e29ddc589d089042afd66ab8ea76409d8d33f701` (jhqxxx/aha @ HEAD on 2026-06-17)
-- **Location**: `crates/kreuzberg-candle-ocr/src/vendor/aha/` (shared infra), `crates/kreuzberg-candle-ocr/src/models/hunyuan_ocr/` (Hunyuan-OCR), `crates/kreuzberg-candle-ocr/src/models/deepseek_ocr/` (DeepSeek-OCR + Qwen2 decoder), `crates/kreuzberg-candle-ocr/src/models/paddleocr_vl/` (PaddleOCR-VL 1.5 upgrade)
+- **Location**: `crates/xberg-candle-ocr/src/vendor/aha/` (shared infra), `crates/xberg-candle-ocr/src/models/hunyuan_ocr/` (Hunyuan-OCR), `crates/xberg-candle-ocr/src/models/deepseek_ocr/` (DeepSeek-OCR + Qwen2 decoder), `crates/xberg-candle-ocr/src/models/paddleocr_vl/` (PaddleOCR-VL 1.5 upgrade)
 - **Purpose**: Rust-native VLM-OCR backends (Hunyuan-OCR, PaddleOCR-VL 1.5, DeepSeek-OCR) including their Qwen2 decoder dependency and shared SigLIP/CLIP/MRoPE infrastructure subsets.
 
 ### Vendored Files
@@ -349,13 +349,13 @@ Rust-native VLM-OCR backends vendored into `crates/kreuzberg-candle-ocr/`:
 - `anyhow::Result<T>` → `Result<T, CandleOcrError>` throughout
 - `assert!`/`assert_eq!`/`panic!`/`unwrap()` on user-controlled values → typed `CandleOcrError` returns
 - Candle 0.9.2 → Candle 0.10 API migration
-- Generation loop routed through `kreuzberg_candle_ocr::models::glm_ocr::mtp::generate_mrope` (with a new `forward_step_with_position_ids` trait extension per A3) — NOT aha's `common/generate.rs`
+- Generation loop routed through `xberg_candle_ocr::models::glm_ocr::mtp::generate_mrope` (with a new `forward_step_with_position_ids` trait extension per A3) — NOT aha's `common/generate.rs`
 - rustdoc on every `pub` item
 - Dead code blocks dropped (specific examples: aha `modules.rs:214-230, 265-266`)
 
 ### License Compatibility
 
-Apache-2.0 is compatible with Kreuzberg's Elastic License 2.0 (ELv2). Original Apache-2.0 copyright headers are preserved at file-top in each vendored file.
+Apache-2.0 is compatible with Xberg's Elastic License 2.0 (ELv2). Original Apache-2.0 copyright headers are preserved at file-top in each vendored file.
 
 **Last Updated**: 2026-06-17
 

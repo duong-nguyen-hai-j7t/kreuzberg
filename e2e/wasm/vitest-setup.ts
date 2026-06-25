@@ -1,4 +1,4 @@
-// Setup WASI polyfills before importing kreuzberg
+// Setup WASI polyfills before importing xberg
 import { createWasiPreview1 } from "jco";
 
 // This will be executed before any tests

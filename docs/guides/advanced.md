@@ -613,7 +613,7 @@ extract_form_fields = false
 
     import (
         "fmt"
-        xberg "github.com/xberg-io/xberg/packages/go/v5"
+        xberg "github.com/xberg-io/xberg/packages/go"
     )
 
     func main() {

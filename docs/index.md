@@ -6,9 +6,9 @@ description: "Xberg – Extract text, tables, metadata, and audio transcripts fr
 
 Document intelligence with a Rust core and polyglot SDKs. Extract text, tables, metadata, and audio transcripts from 96 formats with optional OCR — usable as an SDK, CLI, REST API, MCP server, or Docker image.
 
-!!! note "Project formerly named Xberg"
+!!! note "Project formerly named Kreuzberg"
 
-    Xberg is the continuation of Xberg, starting fresh with version 1.0.0-rc.1. The previous version 1.0.0-rc.1 remains available at [docs.kreuzberg.dev](https://docs.kreuzberg.dev).
+    Xberg is the continuation of Kreuzberg, starting fresh with version 1.0.0-rc.1. The previous version 5.0.0-rc.36 remains available at [docs.kreuzberg.dev](https://docs.kreuzberg.dev).
 
 <div class="hero-badges" markdown>
 

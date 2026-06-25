@@ -63,6 +63,6 @@
 			"swift",
 			"zig"
 		],
-		"reason": "Requires liter-llm feature and KREUZBERG_LLM_API_KEY env var; runtime-only skip"
+		"reason": "Requires liter-llm feature and XBERG_LLM_API_KEY env var; runtime-only skip"
 	}
 }

@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/xberg-io/xberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go"
 )
 
 //export loggingPostProcessor

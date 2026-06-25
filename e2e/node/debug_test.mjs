@@ -1,9 +1,9 @@
-import { extractFileSync } from "kreuzberg";
+import { extractFileSync } from "xberg";
 
 // Test 1: XLSX
 console.log("=== Testing XLSX ===");
 const xlsxResult = extractFileSync(
-	"/Users/naamanhirschfeld/workspace/xberg-io/kreuzberg/test_documents/xlsx/stanley_cups.xlsx",
+	"/Users/naamanhirschfeld/workspace/xberg-io/xberg/test_documents/xlsx/stanley_cups.xlsx",
 );
 console.log("metadata:", JSON.stringify(xlsxResult.metadata, null, 2));
 console.log("format:", xlsxResult.metadata?.format);
@@ -12,7 +12,7 @@ console.log("excel:", xlsxResult.metadata?.format?.excel);
 // Test 2: DOCX with document structure
 console.log("\n=== Testing DOCX ===");
 const docxResult = extractFileSync(
-	"/Users/naamanhirschfeld/workspace/xberg-io/kreuzberg/test_documents/docx/fake.docx",
+	"/Users/naamanhirschfeld/workspace/xberg-io/xberg/test_documents/docx/fake.docx",
 	undefined,
 	{
 		includeDocumentStructure: true,

@@ -1,5 +1,5 @@
 {
-	"name": "kreuzberg",
+	"name": "xberg",
 	"version": "4.10.0-rc.15",
 	"description": "High-performance document intelligence library",
 	"keywords": [
@@ -12,7 +12,7 @@
 	"homepage": "https://xberg.io",
 	"license": "Elastic-2.0",
 	"author": "Na'aman Hirschfeld <naaman@kreuzberg.dev>",
-	"repository": "https://github.com/xberg-io/kreuzberg",
+	"repository": "https://github.com/xberg-io/xberg",
 	"files": [
 		"index.js",
 		"index.d.ts",
@@ -37,7 +37,7 @@
 		"typescript": "^6.0.3"
 	},
 	"napi": {
-		"name": "kreuzberg",
+		"name": "xberg",
 		"triples": [
 			"x86_64-unknown-linux-gnu",
 			"x86_64-apple-darwin",

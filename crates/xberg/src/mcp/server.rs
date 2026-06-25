@@ -1088,7 +1088,7 @@ impl ServerHandler for XbergMcp {
             .with_description(
                 "Document intelligence library for extracting content from PDFs, images, office documents, and more.",
             )
-            .with_website_url("https://xberg-dev.github.io/xberg/");
+            .with_website_url("https://docs.xberg.io");
 
         InitializeResult::new(capabilities)
             .with_server_info(server_info)
@@ -1442,7 +1442,7 @@ mod tests {
         assert_eq!(info.server_info.version, env!("CARGO_PKG_VERSION"));
         assert_eq!(
             info.server_info.website_url,
-            Some("https://xberg-dev.github.io/xberg/".to_string())
+            Some("https://docs.xberg.io".to_string())
         );
         assert!(info.instructions.is_some());
         assert!(info.capabilities.tools.is_some());

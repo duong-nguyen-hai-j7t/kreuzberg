@@ -114,7 +114,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  go get github.com/xberg-io/xberg/v5@latest
+  go get github.com/xberg-io/xberg@latest
   ```
 
   [API Reference](../reference/api-go.md){ .install-api-link }
@@ -428,7 +428,7 @@ Ships prebuilt NIF binaries via RustlerPrecompiled. Falls back to compiling from
 ### Go
 
 ```bash
-go get github.com/xberg-io/xberg/v5@latest
+go get github.com/xberg-io/xberg@latest
 ```
 
 !!! Warning "Windows"

@@ -1,1 +1,1 @@
-export * from "../../crates/kreuzberg-node/index";
+export * from "../../crates/xberg-node/index";

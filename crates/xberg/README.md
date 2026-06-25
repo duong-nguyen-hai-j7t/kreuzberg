@@ -1,19 +1,19 @@
-# Kreuzberg
+# Xberg
 
 [![Bindings](https://img.shields.io/badge/Bindings-alef%20%D7%90-007ec6)](https://github.com/xberg-io/alef)
 
-[![Rust](https://img.shields.io/crates/v/kreuzberg?label=Rust&color=007ec6)](https://crates.io/crates/kreuzberg)
-[![Python](https://img.shields.io/pypi/v/kreuzberg?label=Python&color=007ec6)](https://pypi.org/project/kreuzberg/)
-[![TypeScript](https://img.shields.io/npm/v/@kreuzberg/node?label=TypeScript&color=007ec6)](https://www.npmjs.com/package/@kreuzberg/node)
-[![WASM](https://img.shields.io/npm/v/@kreuzberg/wasm?label=WASM&color=007ec6)](https://www.npmjs.com/package/@kreuzberg/wasm)
-[![Ruby](https://img.shields.io/gem/v/kreuzberg?label=Ruby&color=007ec6)](https://rubygems.org/gems/kreuzberg)
-[![Java](https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6)](https://central.sonatype.com/artifact/dev.kreuzberg/kreuzberg)
-[![Go](https://img.shields.io/github/v/tag/xberg-io/kreuzberg?label=Go&color=007ec6)](https://github.com/xberg-io/kreuzberg/tree/main/packages/go/v5)
-[![C#](https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6)](https://www.nuget.org/packages/Kreuzberg/)
+[![Rust](https://img.shields.io/crates/v/xberg?label=Rust&color=007ec6)](https://crates.io/crates/xberg)
+[![Python](https://img.shields.io/pypi/v/xberg?label=Python&color=007ec6)](https://pypi.org/project/xberg/)
+[![TypeScript](https://img.shields.io/npm/v/@xberg/node?label=TypeScript&color=007ec6)](https://www.npmjs.com/package/@xberg/node)
+[![WASM](https://img.shields.io/npm/v/@xberg/wasm?label=WASM&color=007ec6)](https://www.npmjs.com/package/@xberg/wasm)
+[![Ruby](https://img.shields.io/gem/v/xberg?label=Ruby&color=007ec6)](https://rubygems.org/gems/xberg)
+[![Java](https://img.shields.io/maven-central/v/dev.xberg/xberg?label=Java&color=007ec6)](https://central.sonatype.com/artifact/dev.xberg/xberg)
+[![Go](https://img.shields.io/github/v/tag/xberg-io/xberg?label=Go&color=007ec6)](https://github.com/xberg-io/xberg/tree/main/packages/go)
+[![C#](https://img.shields.io/nuget/v/Xberg?label=C%23&color=007ec6)](https://www.nuget.org/packages/Xberg/)
 
 [![License: Elastic-2.0](https://img.shields.io/badge/License-Elastic--2.0-007ec6)](https://www.elastic.co/licensing/elastic-license)
-[![Documentation](https://img.shields.io/badge/Docs-kreuzberg-007ec6)](https://xberg.io/)
-[![Hugging Face](https://img.shields.io/badge/Hugging%20Face-Kreuzberg-007ec6)](https://huggingface.co/Kreuzberg)
+[![Documentation](https://img.shields.io/badge/Docs-xberg-007ec6)](https://xberg.io/)
+[![Hugging Face](https://img.shields.io/badge/Hugging%20Face-Xberg-007ec6)](https://huggingface.co/Xberg)
 [![Discord](https://img.shields.io/badge/Discord-Chat-007ec6)](https://discord.gg/xt9WY3GnKR)
 
 High-performance document intelligence library for Rust. Extract text, metadata, transcripts, and structured information from PDFs, Office documents, images, audio/video, and 96 formats.
@@ -21,7 +21,7 @@ High-performance document intelligence library for Rust. Extract text, metadata,
 This is the core Rust library that powers the Python, TypeScript, and Ruby bindings.
 
 > **Version 5.0.0-rc.17 Release**
-> This is a pre-release version. We invite you to test the library and [report any issues](https://github.com/xberg-io/kreuzberg/issues) you encounter.
+> This is a pre-release version. We invite you to test the library and [report any issues](https://github.com/xberg-io/xberg/issues) you encounter.
 >
 > **Note**: The Rust crate is not currently published to crates.io for this RC. Use git dependencies or language bindings (Python, TypeScript, Ruby) instead.
 
@@ -29,13 +29,13 @@ This is the core Rust library that powers the Python, TypeScript, and Ruby bindi
 
 ```toml
 [dependencies]
-kreuzberg = "5.0.0-rc.17"
+xberg = "5.0.0-rc.17"
 tokio = { version = "1", features = ["rt", "macros"] }
 ```
 
 ## PDFium Linking Options
 
-Kreuzberg offers flexible PDFium linking strategies for different deployment scenarios. **Note:** Language bindings (Python, TypeScript, Ruby, Java, Go, C#, PHP, Elixir) automatically bundle PDFium—no configuration needed. This section applies only to the Rust crate.
+Xberg offers flexible PDFium linking strategies for different deployment scenarios. **Note:** Language bindings (Python, TypeScript, Ruby, Java, Go, C#, PHP, Elixir) automatically bundle PDFium—no configuration needed. This section applies only to the Rust crate.
 
 | Strategy              | Feature Flag  | Description                           | Use Case                                            |
 | --------------------- | ------------- | ------------------------------------- | --------------------------------------------------- |
@@ -49,22 +49,22 @@ Kreuzberg offers flexible PDFium linking strategies for different deployment sce
 ```toml
 # Default (dynamic linking)
 [dependencies]
-kreuzberg = "5.0.0-rc.17"
+xberg = "5.0.0-rc.17"
 
 # Static linking
 [dependencies]
-kreuzberg = { version = "5.0.0-rc.17", features = ["pdf-static"] }
+xberg = { version = "5.0.0-rc.17", features = ["pdf-static"] }
 
 # Bundled in binary
 [dependencies]
-kreuzberg = { version = "5.0.0-rc.17", features = ["pdf-bundled"] }
+xberg = { version = "5.0.0-rc.17", features = ["pdf-bundled"] }
 
 # System library (requires PDFium installed)
 [dependencies]
-kreuzberg = { version = "5.0.0-rc.17", features = ["pdf-system"] }
+xberg = { version = "5.0.0-rc.17", features = ["pdf-system"] }
 ```
 
-For more details on feature flags and configuration options, see the [Kreuzberg documentation](https://docs.xberg.io).
+For more details on feature flags and configuration options, see the [Xberg documentation](https://docs.xberg.io).
 
 ## System Requirements
 
@@ -89,9 +89,9 @@ Without ONNX Runtime, embeddings will raise `MissingDependencyError` with instal
 ## Quick Start
 
 ```rust
-use kreuzberg::{extract_file_sync, ExtractionConfig};
+use xberg::{extract_file_sync, ExtractionConfig};
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     let config = ExtractionConfig::default();
     let result = extract_file_sync("document.pdf", None, &config)?;
     println!("{}", result.content);
@@ -102,10 +102,10 @@ fn main() -> kreuzberg::Result<()> {
 ### Async Extraction
 
 ```rust
-use kreuzberg::{extract_file, ExtractionConfig};
+use xberg::{extract_file, ExtractionConfig};
 
 #[tokio::main]
-async fn main() -> kreuzberg::Result<()> {
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig::default();
     let result = extract_file("document.pdf", None, &config).await?;
     println!("{}", result.content);
@@ -116,10 +116,10 @@ async fn main() -> kreuzberg::Result<()> {
 ### Batch Processing
 
 ```rust
-use kreuzberg::{batch_extract_file, ExtractionConfig};
+use xberg::{batch_extract_file, ExtractionConfig};
 
 #[tokio::main]
-async fn main() -> kreuzberg::Result<()> {
+async fn main() -> xberg::Result<()> {
     let config = ExtractionConfig::default();
     let files = vec!["doc1.pdf", "doc2.pdf", "doc3.pdf"];
     let results = batch_extract_file(&files, None, &config).await?;
@@ -134,9 +134,9 @@ async fn main() -> kreuzberg::Result<()> {
 ## OCR with Table Extraction
 
 ```rust
-use kreuzberg::{extract_file_sync, ExtractionConfig, OcrConfig, TesseractConfig};
+use xberg::{extract_file_sync, ExtractionConfig, OcrConfig, TesseractConfig};
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         ocr: Some(OcrConfig {
             backend: "tesseract".to_string(),
@@ -161,9 +161,9 @@ fn main() -> kreuzberg::Result<()> {
 ## Password-Protected PDFs
 
 ```rust
-use kreuzberg::{extract_file_sync, ExtractionConfig, PdfConfig};
+use xberg::{extract_file_sync, ExtractionConfig, PdfConfig};
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         pdf_options: Some(PdfConfig {
             passwords: Some(vec!["password1".to_string(), "password2".to_string()]),
@@ -180,10 +180,10 @@ fn main() -> kreuzberg::Result<()> {
 ## Extract from Bytes
 
 ```rust
-use kreuzberg::{extract_bytes_sync, ExtractionConfig};
+use xberg::{extract_bytes_sync, ExtractionConfig};
 use std::fs;
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     let data = fs::read("document.pdf")?;
     let config = ExtractionConfig::default();
     let result = extract_bytes_sync(&data, "application/pdf", &config)?;
@@ -194,14 +194,14 @@ fn main() -> kreuzberg::Result<()> {
 
 ## Code Intelligence
 
-Kreuzberg integrates [tree-sitter-language-pack](https://docs.tree-sitter-language-pack.xberg.io) to parse and analyze source code files across **306 programming languages**. When you extract a source code file, Kreuzberg automatically detects the language and produces structured analysis including functions, classes, imports, exports, symbols, diagnostics, and semantic code chunks.
+Xberg integrates [tree-sitter-language-pack](https://docs.tree-sitter-language-pack.xberg.io) to parse and analyze source code files across **306 programming languages**. When you extract a source code file, Xberg automatically detects the language and produces structured analysis including functions, classes, imports, exports, symbols, diagnostics, and semantic code chunks.
 
 Code intelligence data is available via the `metadata.format` field as a `FormatMetadata::Code` variant containing a `ProcessResult`.
 
 ```rust
-use kreuzberg::{extract_file_sync, ExtractionConfig, TreeSitterConfig, TreeSitterProcessConfig};
+use xberg::{extract_file_sync, ExtractionConfig, TreeSitterConfig, TreeSitterProcessConfig};
 
-fn main() -> kreuzberg::Result<()> {
+fn main() -> xberg::Result<()> {
     let config = ExtractionConfig {
         tree_sitter: Some(TreeSitterConfig {
             process: TreeSitterProcessConfig {
@@ -220,7 +220,7 @@ fn main() -> kreuzberg::Result<()> {
     let result = extract_file_sync("app.py", None, &config)?;
 
     // Access code intelligence from format metadata
-    if let Some(kreuzberg::types::FormatMetadata::Code(ref code)) = result.metadata.format {
+    if let Some(xberg::types::FormatMetadata::Code(ref code)) = result.metadata.format {
         println!("Language: {}", code.language);
         println!("Functions/classes: {}", code.structure.len());
         println!("Imports: {}", code.imports.len());
@@ -238,7 +238,7 @@ fn main() -> kreuzberg::Result<()> {
 }
 ```
 
-Requires the `tree-sitter` feature flag (included in `full`). See the [Kreuzberg docs](https://docs.xberg.io/) for configuration details and examples in all languages.
+Requires the `tree-sitter` feature flag (included in `full`). See the [Xberg docs](https://docs.xberg.io/) for configuration details and examples in all languages.
 
 ## Features
 
@@ -246,7 +246,7 @@ The crate uses feature flags for optional functionality:
 
 ```toml
 [dependencies]
-kreuzberg = { version = "5.0.0-rc.17", features = ["pdf", "excel", "ocr"] }
+xberg = { version = "5.0.0-rc.17", features = ["pdf", "excel", "ocr"] }
 ```
 
 ### Available Features
@@ -268,26 +268,26 @@ kreuzberg = { version = "5.0.0-rc.17", features = ["pdf", "excel", "ocr"] }
 ### Feature Bundles
 
 ```toml
-kreuzberg = { version = "5.0.0-rc.17", features = ["full"] }
-kreuzberg = { version = "5.0.0-rc.17", features = ["server"] }
-kreuzberg = { version = "5.0.0-rc.17", features = ["cli"] }
+xberg = { version = "5.0.0-rc.17", features = ["full"] }
+xberg = { version = "5.0.0-rc.17", features = ["server"] }
+xberg = { version = "5.0.0-rc.17", features = ["cli"] }
 ```
 
 ## PDF Support
 
-Kreuzberg uses **pdf_oxide** — a pure-Rust PDF library with no system dependencies.
+Xberg uses **pdf_oxide** — a pure-Rust PDF library with no system dependencies.
 Enable PDF extraction with the `pdf` feature:
 
 ```toml
 [dependencies]
-kreuzberg = { version = "5.0", features = ["pdf"] }
+xberg = { version = "5.0", features = ["pdf"] }
 ```
 
 No native libraries required. Works on all platforms including musl, Docker, and WASM.
 
 ## Documentation
 
-**[API Documentation](https://docs.rs/kreuzberg)** – Complete API reference with examples
+**[API Documentation](https://docs.rs/xberg)** – Complete API reference with examples
 
 **[https://docs.xberg.io](https://docs.xberg.io)** – User guide and tutorials
 

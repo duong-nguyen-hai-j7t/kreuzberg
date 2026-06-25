@@ -84,7 +84,7 @@ Use the `fast` preset to rerank three documents against a query.
 === "Go"
 
     ```go
-    import "github.com/xberg-io/xberg/v5"
+    import "github.com/xberg-io/xberg"
 
     config := xberg.RerankerConfig{
         Model: &xberg.RerankerModelTypePreset{Name: "fast"},

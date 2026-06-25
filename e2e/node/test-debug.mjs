@@ -1,4 +1,4 @@
-import { extractFileSync } from "kreuzberg";
+import { extractFileSync } from "xberg";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 

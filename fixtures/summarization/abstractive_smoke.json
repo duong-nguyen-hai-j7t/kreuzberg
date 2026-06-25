@@ -1,7 +1,7 @@
 {
 	"id": "summarization_abstractive_smoke",
 	"category": "summarization",
-	"description": "LLM-driven abstractive summary. Skipped automatically when KREUZBERG_LLM_API_KEY (or OPENAI_API_KEY) is not set.",
+	"description": "LLM-driven abstractive summary. Skipped automatically when XBERG_LLM_API_KEY (or OPENAI_API_KEY) is not set.",
 	"tags": ["summarization", "abstractive", "llm"],
 	"call": "extract_file_sync",
 	"input": {
@@ -48,6 +48,6 @@
 			"swift",
 			"zig"
 		],
-		"reason": "Requires liter-llm feature and KREUZBERG_LLM_API_KEY env var; runtime-only skip; deterministic extractive variant covers offline CI"
+		"reason": "Requires liter-llm feature and XBERG_LLM_API_KEY env var; runtime-only skip; deterministic extractive variant covers offline CI"
 	}
 }

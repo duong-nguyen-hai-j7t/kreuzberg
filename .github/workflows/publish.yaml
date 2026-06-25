@@ -3005,10 +3005,10 @@ jobs:
         with:
           tag: ${{ needs.prepare.outputs.tag }}
           is-prerelease: ${{ needs.prepare.outputs.is_prerelease == 'true' && 'true' || 'false' }}
-          go-module-path: packages/go/v5
-          # Our go.mod lives at `packages/go/v5/go.mod`, not at the stripped
+          go-module-path: packages/go
+          # Our go.mod lives at `packages/go/go.mod`, not at the stripped
           # parent. Disabling the default `/vN` strip yields a Go module tag of
-          # `packages/go/v5/{tag}`, which Go's module proxy resolves against
+          # `packages/go/{tag}`, which Go's module proxy resolves against
           # that subtree. Fixes `missing go.mod at revision v5.0.0-rc.7`.
           go-strip-major-version: "false"
           token: ${{ steps.app-token.outputs.token }}

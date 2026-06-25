@@ -5,70 +5,70 @@
     <img src="https://img.shields.io/badge/Bindings-alef%20%D7%90-007ec6" alt="Bindings">
   </a>
   <!-- Language Bindings -->
-  <a href="https://crates.io/crates/kreuzberg">
-    <img src="https://img.shields.io/crates/v/kreuzberg?label=Rust&color=007ec6" alt="Rust">
+  <a href="https://crates.io/crates/xberg">
+    <img src="https://img.shields.io/crates/v/xberg?label=Rust&color=007ec6" alt="Rust">
   </a>
-  <a href="https://pypi.org/project/kreuzberg/">
-    <img src="https://img.shields.io/pypi/v/kreuzberg?label=Python&color=007ec6" alt="Python">
+  <a href="https://pypi.org/project/xberg/">
+    <img src="https://img.shields.io/pypi/v/xberg?label=Python&color=007ec6" alt="Python">
   </a>
-  <a href="https://www.npmjs.com/package/@kreuzberg/node">
-    <img src="https://img.shields.io/npm/v/@kreuzberg/node?label=Node.js&color=007ec6" alt="Node.js">
+  <a href="https://www.npmjs.com/package/@xberg/node">
+    <img src="https://img.shields.io/npm/v/@xberg/node?label=Node.js&color=007ec6" alt="Node.js">
   </a>
-  <a href="https://www.npmjs.com/package/@kreuzberg/wasm">
-    <img src="https://img.shields.io/npm/v/@kreuzberg/wasm?label=WASM&color=007ec6" alt="WASM">
+  <a href="https://www.npmjs.com/package/@xberg/wasm">
+    <img src="https://img.shields.io/npm/v/@xberg/wasm?label=WASM&color=007ec6" alt="WASM">
   </a>
-  <a href="https://central.sonatype.com/artifact/dev.kreuzberg/kreuzberg">
-    <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
+  <a href="https://central.sonatype.com/artifact/dev.xberg/xberg">
+    <img src="https://img.shields.io/maven-central/v/dev.xberg/xberg?label=Java&color=007ec6" alt="Java">
   </a>
-  <a href="https://github.com/xberg-io/kreuzberg/tree/main/packages/go/v5">
-    <img src="https://img.shields.io/github/v/tag/xberg-io/kreuzberg?label=Go&color=007ec6&filter=v5*" alt="Go">
+  <a href="https://github.com/xberg-io/xberg/tree/main/packages/go">
+    <img src="https://img.shields.io/github/v/tag/xberg-io/xberg?label=Go&color=007ec6&filter=v1*" alt="Go">
   </a>
-  <a href="https://www.nuget.org/packages/Kreuzberg/">
-    <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
+  <a href="https://www.nuget.org/packages/Xberg/">
+    <img src="https://img.shields.io/nuget/v/Xberg?label=C%23&color=007ec6" alt="C#">
   </a>
-  <a href="https://packagist.org/packages/xberg-io/kreuzberg">
-    <img src="https://img.shields.io/packagist/v/xberg-io/kreuzberg?label=PHP&color=007ec6" alt="PHP">
+  <a href="https://packagist.org/packages/xberg-io/xberg">
+    <img src="https://img.shields.io/packagist/v/xberg-io/xberg?label=PHP&color=007ec6" alt="PHP">
   </a>
-  <a href="https://rubygems.org/gems/kreuzberg">
-    <img src="https://img.shields.io/gem/v/kreuzberg?label=Ruby&color=007ec6" alt="Ruby">
+  <a href="https://rubygems.org/gems/xberg">
+    <img src="https://img.shields.io/gem/v/xberg?label=Ruby&color=007ec6" alt="Ruby">
   </a>
-  <a href="https://hex.pm/packages/kreuzberg">
-    <img src="https://img.shields.io/hexpm/v/kreuzberg?label=Elixir&color=007ec6" alt="Elixir">
+  <a href="https://hex.pm/packages/xberg">
+    <img src="https://img.shields.io/hexpm/v/xberg?label=Elixir&color=007ec6" alt="Elixir">
   </a>
-  <a href="https://xberg-io.r-universe.dev/kreuzberg">
-    <img src="https://img.shields.io/badge/R-kreuzberg-007ec6" alt="R">
+  <a href="https://xberg-io.r-universe.dev/xberg">
+    <img src="https://img.shields.io/badge/R-xberg-007ec6" alt="R">
   </a>
-  <a href="https://pub.dev/packages/kreuzberg">
-    <img src="https://img.shields.io/pub/v/kreuzberg?label=Dart&color=007ec6" alt="Dart">
+  <a href="https://pub.dev/packages/xberg">
+    <img src="https://img.shields.io/pub/v/xberg?label=Dart&color=007ec6" alt="Dart">
   </a>
-  <a href="https://central.sonatype.com/artifact/dev.kreuzberg/kreuzberg-android">
-    <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg-android?label=Kotlin&color=007ec6" alt="Kotlin">
+  <a href="https://central.sonatype.com/artifact/dev.xberg/xberg-android">
+    <img src="https://img.shields.io/maven-central/v/dev.xberg/xberg-android?label=Kotlin&color=007ec6" alt="Kotlin">
   </a>
-  <a href="https://github.com/xberg-io/kreuzberg/tree/main/packages/swift">
+  <a href="https://github.com/xberg-io/xberg/tree/main/packages/swift">
     <img src="https://img.shields.io/badge/Swift-SPM-007ec6" alt="Swift">
   </a>
-  <a href="https://github.com/xberg-io/kreuzberg/tree/main/packages/zig">
+  <a href="https://github.com/xberg-io/xberg/tree/main/packages/zig">
     <img src="https://img.shields.io/badge/Zig-package-007ec6" alt="Zig">
   </a>
-  <a href="https://github.com/xberg-io/kreuzberg/releases">
+  <a href="https://github.com/xberg-io/xberg/releases">
     <img src="https://img.shields.io/badge/C-FFI-007ec6" alt="C FFI">
   </a>
-  <a href="https://github.com/xberg-io/kreuzberg/pkgs/container/kreuzberg">
+  <a href="https://github.com/xberg-io/xberg/pkgs/container/xberg">
     <img src="https://img.shields.io/badge/Docker-ghcr.io-007ec6?logo=docker&logoColor=white" alt="Docker">
   </a>
-  <a href="https://github.com/xberg-io/kreuzberg/pkgs/container/charts%2Fkreuzberg">
+  <a href="https://github.com/xberg-io/xberg/pkgs/container/charts%2Fxberg">
     <img src="https://img.shields.io/badge/Helm-ghcr.io-007ec6?logo=helm&logoColor=white" alt="Helm">
   </a>
 
   <!-- Project Info -->
-  <a href="https://github.com/xberg-io/kreuzberg/blob/main/LICENSE">
+  <a href="https://github.com/xberg-io/xberg/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-Elastic--2.0-007ec6" alt="License">
   </a>
   <a href="https://docs.xberg.io">
-    <img src="https://img.shields.io/badge/Docs-kreuzberg-007ec6" alt="Documentation">
+    <img src="https://img.shields.io/badge/Docs-xberg-007ec6" alt="Documentation">
   </a>
-  <a href="https://huggingface.co/Kreuzberg">
-    <img src="https://img.shields.io/badge/Hugging%20Face-Kreuzberg-007ec6" alt="Hugging Face">
+  <a href="https://huggingface.co/Xberg">
+    <img src="https://img.shields.io/badge/Hugging%20Face-Xberg-007ec6" alt="Hugging Face">
   </a>
 </div>
 
@@ -79,8 +79,8 @@
   <a href="https://docs.xberg.io/demo.html">
     <img height="22" src="https://img.shields.io/badge/Live%20Demo-Open-007ec6?logo=webassembly&logoColor=white" alt="Live Demo">
   </a>
-  <a href="https://github.com/xberg-io/kreuzberg/stargazers">
-    <img height="22" src="https://img.shields.io/github/stars/xberg-io/kreuzberg?style=social" alt="GitHub Stars">
+  <a href="https://github.com/xberg-io/xberg/stargazers">
+    <img height="22" src="https://img.shields.io/github/stars/xberg-io/xberg?style=social" alt="GitHub Stars">
   </a>
 </div>
 
@@ -123,12 +123,12 @@ flutter pub add xberg
 Extract text, metadata, and structure from any supported document format:
 
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   // Sync semantics — flutter_rust_bridge surfaces every call as a Future,
   // so even the *Sync entrypoints must be awaited from Dart.
-  final result = await KreuzbergBridge.extractFileSync('document.pdf', null);
+  final result = await XbergBridge.extractFileSync('document.pdf', null);
 
   print(result.content);
   print('MIME type: ${result.mimeType}');
@@ -145,7 +145,7 @@ Most use cases benefit from configuration to control extraction behavior:
 **With OCR (for scanned documents):**
 
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   final config = ExtractionConfig(
@@ -166,7 +166,7 @@ Future<void> main() async {
     useLayoutForMarkdown: false,
   );
 
-  final result = await KreuzbergBridge.extractFile('scanned.pdf', null, config);
+  final result = await XbergBridge.extractFile('scanned.pdf', null, config);
   print(result.content);
 }
 ```
@@ -178,7 +178,7 @@ See [Configuration Guide](https://docs.xberg.io/guides/configuration/) for table
 #### Processing Multiple Files
 
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   final items = <BatchFileItem>[
@@ -190,7 +190,7 @@ Future<void> main() async {
   ];
 
   // Sync semantics — flutter_rust_bridge still returns a Future from Dart.
-  final results = await KreuzbergBridge.batchExtractFilesSync(items);
+  final results = await XbergBridge.batchExtractFilesSync(items);
 
   print('Processed ${results.length} files');
   for (final result in results) {
@@ -204,10 +204,10 @@ Future<void> main() async {
 For non-blocking document processing:
 
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
-  final result = await KreuzbergBridge.extractFile('document.pdf', null);
+  final result = await XbergBridge.extractFile('document.pdf', null);
 
   print(result.content);
   print('MIME type: ${result.mimeType}');
@@ -324,7 +324,7 @@ Powered by [tree-sitter-language-pack](https://github.com/xberg-io/tree-sitter-l
 
 ## OCR Support
 
-Kreuzberg supports multiple OCR backends for extracting text from scanned documents and images:
+Xberg supports multiple OCR backends for extracting text from scanned documents and images:
 
 - **Tesseract**
 
@@ -333,7 +333,7 @@ Kreuzberg supports multiple OCR backends for extracting text from scanned docume
 ### OCR Configuration Example
 
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   final config = ExtractionConfig(
@@ -354,7 +354,7 @@ Future<void> main() async {
     useLayoutForMarkdown: false,
   );
 
-  final result = await KreuzbergBridge.extractFile('scanned.pdf', null, config);
+  final result = await XbergBridge.extractFile('scanned.pdf', null, config);
   print(result.content);
 }
 ```
@@ -364,10 +364,10 @@ Future<void> main() async {
 This binding provides full async/await support for non-blocking document processing:
 
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
-  final result = await KreuzbergBridge.extractFile('document.pdf', null);
+  final result = await XbergBridge.extractFile('document.pdf', null);
 
   print(result.content);
   print('MIME type: ${result.mimeType}');
@@ -377,7 +377,7 @@ Future<void> main() async {
 
 ## Plugin System
 
-Kreuzberg supports extensible post-processing plugins for custom text transformation and filtering.
+Xberg supports extensible post-processing plugins for custom text transformation and filtering.
 
 For detailed plugin documentation, visit [Plugin System Guide](https://docs.xberg.io/guides/plugins/).
 
@@ -392,7 +392,7 @@ Generate vector embeddings for extracted text using the built-in ONNX Runtime su
 Process multiple documents efficiently:
 
 ```dart title="Dart"
-import 'package:kreuzberg/kreuzberg.dart';
+import 'package:xberg/xberg.dart';
 
 Future<void> main() async {
   final items = <BatchFileItem>[
@@ -404,7 +404,7 @@ Future<void> main() async {
   ];
 
   // Sync semantics — flutter_rust_bridge still returns a Future from Dart.
-  final results = await KreuzbergBridge.batchExtractFilesSync(items);
+  final results = await XbergBridge.batchExtractFilesSync(items);
 
   print('Processed ${results.length} files');
   for (final result in results) {
@@ -427,9 +427,9 @@ For advanced configuration options including language detection, table extractio
 
 ## Contributing
 
-Contributions are welcome! See [Contributing Guide](https://github.com/xberg-io/kreuzberg/blob/main/CONTRIBUTING.md).
+Contributions are welcome! See [Contributing Guide](https://github.com/xberg-io/xberg/blob/main/CONTRIBUTING.md).
 
-## Part of Kreuzberg.dev
+## Part of Xberg.dev
 
 - [Xberg Enterprise](https://github.com/xberg-io/xberg-enterprise) — managed extraction API with SDKs, dashboards, and observability.
 - [kreuzcrawl](https://github.com/xberg-io/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.
@@ -446,5 +446,5 @@ Elastic-2.0 License — see [LICENSE](../../LICENSE) for details.
 ## Support
 
 - **Discord Community**: [Join our Discord](https://discord.gg/xt9WY3GnKR)
-- **GitHub Issues**: [Report bugs](https://github.com/xberg-io/kreuzberg/issues)
-- **Discussions**: [Ask questions](https://github.com/xberg-io/kreuzberg/discussions)
+- **GitHub Issues**: [Report bugs](https://github.com/xberg-io/xberg/issues)
+- **Discussions**: [Ask questions](https://github.com/xberg-io/xberg/discussions)

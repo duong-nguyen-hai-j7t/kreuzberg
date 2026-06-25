@@ -4,7 +4,7 @@ package main
 import (
 	"log"
 
-	"github.com/xberg-io/xberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go"
 )
 
 // MyEmbedder wraps an already-loaded embedder so xberg can call back into

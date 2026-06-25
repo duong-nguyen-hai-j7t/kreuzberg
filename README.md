@@ -1,7 +1,5 @@
 # Xberg
 
-> **Note:** Xberg is the continuation of Xberg, starting with version 1.0.0-rc.1. The previous Xberg v1.0.0-rc.1 remains documented at [docs.kreuzberg.dev](https://docs.kreuzberg.dev).
-
 <div align="center" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 20px 0;">
   <a href="https://github.com/xberg-io/alef">
     <img src="https://img.shields.io/badge/Bindings-alef%20%D7%90-007ec6" alt="Bindings">
@@ -22,7 +20,7 @@
   <a href="https://central.sonatype.com/artifact/dev.xberg/xberg">
     <img src="https://img.shields.io/maven-central/v/dev.xberg/xberg?label=Java&color=007ec6" alt="Java">
   </a>
-  <a href="https://github.com/xberg-io/xberg/tree/main/packages/go/v1">
+  <a href="https://github.com/xberg-io/xberg/tree/main/packages/go">
     <img src="https://img.shields.io/github/v/tag/xberg-io/xberg?label=Go&color=007ec6&filter=v1*" alt="Go">
   </a>
   <a href="https://www.nuget.org/packages/Xberg/">
@@ -85,6 +83,8 @@
     <img height="22" src="https://img.shields.io/github/stars/xberg-io/xberg?style=social" alt="GitHub Stars">
   </a>
 </div>
+
+> **Note:** Xberg is the continuation of Kreuzberg, starting with version 1.0.0-rc.1. The previous Kreuzberg v5.0.0-rc.36 remains documented at [docs.kreuzberg.dev](https://docs.kreuzberg.dev).
 
 Extract text, metadata, transcripts, and code intelligence from 96 file formats and 306 programming languages at native speeds without needing a GPU.
 
@@ -168,10 +168,10 @@ See [Rust README](https://github.com/xberg-io/xberg/tree/main/crates/xberg) for 
 <summary><strong>Go</strong></summary>
 
 ```sh
-go get github.com/xberg-io/xberg/v1
+go get github.com/xberg-io/xberg
 ```
 
-See [Go README](https://github.com/xberg-io/xberg/tree/main/packages/go/v1) for full documentation.
+See [Go README](https://github.com/xberg-io/xberg/tree/main/packages/go) for full documentation.
 
 </details>
 
@@ -218,7 +218,7 @@ See [PHP README](https://github.com/xberg-io/xberg/tree/main/packages/php) for f
 <details>
 <summary><strong>Elixir</strong></summary>
 
-Add `{:xberg, "~> 1.0"}` to your `mix.exs` dependencies. See [Elixir README](https://github.com/xberg-io/xberg/tree/main/packages/elixir) for full documentation.
+Add `{:xberg, "~> 5.0"}` to your `mix.exs` dependencies. See [Elixir README](https://github.com/xberg-io/xberg/tree/main/packages/elixir) for full documentation.
 
 </details>
 
@@ -420,14 +420,14 @@ Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 
 Join our [Discord community](https://discord.gg/xt9WY3GnKR) for questions and discussion.
 
-## Part of Xberg.io
+## Part of Xberg.dev
 
 - [Xberg Enterprise](https://github.com/xberg-io/xberg-enterprise) — managed extraction API with SDKs, dashboards, and observability.
-- [kreuzcrawl](https://github.com/xberg-dev/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.
-- [html-to-markdown](https://github.com/xberg-dev/html-to-markdown) — fast, lossless HTML→Markdown engine.
-- [liter-llm](https://github.com/xberg-dev/liter-llm) — universal LLM API client with native bindings for 14 languages and 143 providers.
-- [tree-sitter-language-pack](https://github.com/xberg-dev/tree-sitter-language-pack) — tree-sitter grammars and code-intelligence primitives.
-- [alef](https://github.com/xberg-dev/alef) — the polyglot binding generator that produces every per-language binding across the 5 polyglot repos.
+- [kreuzcrawl](https://github.com/xberg-io/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.
+- [html-to-markdown](https://github.com/xberg-io/html-to-markdown) — fast, lossless HTML→Markdown engine.
+- [liter-llm](https://github.com/xberg-io/liter-llm) — universal LLM API client with native bindings for 14 languages and 143 providers.
+- [tree-sitter-language-pack](https://github.com/xberg-io/tree-sitter-language-pack) — tree-sitter grammars and code-intelligence primitives.
+- [alef](https://github.com/xberg-io/alef) — the polyglot binding generator that produces every per-language binding across the 5 polyglot repos.
 
 ## License
 

@@ -2,7 +2,7 @@
 
 ## Our Pledge
 
-Kreuzberg is committed to a welcoming, respectful community for everyone regardless of
+Xberg is committed to a welcoming, respectful community for everyone regardless of
 background or experience level.
 
 ## Expected Behaviour

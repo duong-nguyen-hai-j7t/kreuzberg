@@ -16,7 +16,7 @@
 		"terminology": {
 			"severity": "warning",
 			"defaultTerms": false,
-			"terms": ["Kreuzberg", "Zensical"]
+			"terms": ["Xberg", "Zensical"]
 		},
 		"no-zero-width-spaces": true,
 		"@textlint-rule/no-invalid-control-character": true,

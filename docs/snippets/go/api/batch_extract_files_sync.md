@@ -4,7 +4,7 @@ package main
 import (
 	"log"
 
-	"github.com/xberg-io/xberg/v5"
+	"github.com/xberg-io/xberg"
 )
 
 func main() {

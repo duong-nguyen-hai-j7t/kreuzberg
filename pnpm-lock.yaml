@@ -30,14 +30,6 @@ importers:
         specifier: ^4.1.9
         version: 4.1.9(@types/node@22.19.21)(@vitest/coverage-v8@4.1.9)(vite@8.0.16(@types/node@22.19.21)(esbuild@0.28.1)(tsx@4.22.4))
 
-  crates/kreuzberg-node:
-    devDependencies:
-      '@napi-rs/cli':
-        specifier: ^3.6.2
-        version: 3.7.1(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@22.19.21)
-
-  crates/kreuzberg-wasm: {}
-
   crates/xberg-node:
     devDependencies:
       '@napi-rs/cli':

@@ -1,7 +1,7 @@
 ```go title="Go"
 package main
 
-import "github.com/xberg-io/xberg/packages/go/v5"
+import "github.com/xberg-io/xberg/packages/go"
 
 func main() {
 	enabled := true

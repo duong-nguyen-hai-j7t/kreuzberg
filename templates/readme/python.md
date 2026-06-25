@@ -1,4 +1,4 @@
-# Kreuzberg
+# Xberg
 
 {% include 'partials/badges.html.jinja' %}
 
@@ -14,20 +14,20 @@
 ## Installation
 
 ```bash
-pip install kreuzberg
+pip install xberg
 ```
 
 ### With OCR Support
 
 ```bash
-pip install "kreuzberg[easyocr]"
-pip install "kreuzberg[paddleocr]"
+pip install "xberg[easyocr]"
+pip install "xberg[paddleocr]"
 ```
 
 ### All Features
 
 ```bash
-pip install "kreuzberg[all]"
+pip install "xberg[all]"
 ```
 
 ## Quick Start
@@ -53,7 +53,7 @@ pip install "kreuzberg[all]"
 ### EasyOCR (GPU-Accelerated)
 
 ```python
-from kreuzberg import extract_file_sync, ExtractionConfig, OcrConfig
+from xberg import extract_file_sync, ExtractionConfig, OcrConfig
 
 config = ExtractionConfig(
     ocr=OcrConfig(backend="easyocr", language="en")
@@ -69,7 +69,7 @@ result = extract_file_sync(
 ### PaddleOCR (Complex Layouts)
 
 ```python
-from kreuzberg import extract_file_sync, ExtractionConfig, OcrConfig
+from xberg import extract_file_sync, ExtractionConfig, OcrConfig
 
 config = ExtractionConfig(
     ocr=OcrConfig(backend="paddleocr", language="ch")
@@ -84,7 +84,7 @@ result = extract_file_sync(
 ## Table Extraction
 
 ```python
-from kreuzberg import extract_file_sync, ExtractionConfig, OcrConfig, TesseractConfig
+from xberg import extract_file_sync, ExtractionConfig, OcrConfig, TesseractConfig
 
 config = ExtractionConfig(
     ocr=OcrConfig(
@@ -107,7 +107,7 @@ for table in result.tables:
 ### Complete Configuration Example
 
 ```python
-from kreuzberg import (
+from xberg import (
     extract_file_sync,
     ExtractionConfig,
     OcrConfig,
@@ -164,7 +164,7 @@ result = extract_file_sync("document.pdf", config=config)
 ### HTML Conversion Options & Batch Concurrency
 
 ```python
-from kreuzberg import ExtractionConfig
+from xberg import ExtractionConfig
 
 config = ExtractionConfig(
     max_concurrent_extractions=8,
@@ -181,7 +181,7 @@ config = ExtractionConfig(
 ## Metadata Extraction
 
 ```python
-from kreuzberg import extract_file_sync
+from xberg import extract_file_sync
 
 result = extract_file_sync("document.pdf")
 
@@ -206,7 +206,7 @@ if "pdf" in result.metadata:
 ## Password-Protected PDFs
 
 ```python
-from kreuzberg import extract_file_sync, ExtractionConfig, PdfConfig
+from xberg import extract_file_sync, ExtractionConfig, PdfConfig
 
 config = ExtractionConfig(
     pdf_options=PdfConfig(
@@ -220,7 +220,7 @@ result = extract_file_sync("protected.pdf", config=config)
 ## Language Detection
 
 ```python
-from kreuzberg import extract_file_sync, ExtractionConfig, LanguageDetectionConfig
+from xberg import extract_file_sync, ExtractionConfig, LanguageDetectionConfig
 
 config = ExtractionConfig(
     language_detection=LanguageDetectionConfig(enabled=True)
@@ -233,7 +233,7 @@ print(result.detected_languages)
 ## Text Chunking
 
 ```python
-from kreuzberg import extract_file_sync, ExtractionConfig, ChunkingConfig
+from xberg import extract_file_sync, ExtractionConfig, ChunkingConfig
 
 config = ExtractionConfig(
     chunking=ChunkingConfig(
@@ -251,7 +251,7 @@ for chunk in result.chunks:
 ## Extract from Bytes
 
 ```python
-from kreuzberg import extract_bytes_sync
+from xberg import extract_bytes_sync
 
 with open("document.pdf", "rb") as f:
     data = f.read()
@@ -292,7 +292,7 @@ print(result.content)
 
 ### Exceptions
 
-- `KreuzbergError` – Base exception
+- `XbergError` – Base exception
 - `ValidationError` – Invalid configuration or input
 - `ParsingError` – Document parsing failure
 - `OCRError` – OCR processing failure
@@ -303,7 +303,7 @@ print(result.content)
 ### Custom Processing
 
 ```python
-from kreuzberg import extract_file_sync
+from xberg import extract_file_sync
 
 result = extract_file_sync("document.pdf")
 
@@ -317,7 +317,7 @@ print(text)
 ### Multiple Files with Progress
 
 ```python
-from kreuzberg import extract_file_sync
+from xberg import extract_file_sync
 from pathlib import Path
 
 files = list(Path("documents").glob("*.pdf"))
@@ -335,7 +335,7 @@ for name, result in results:
 ### Filter by Language
 
 ```python
-from kreuzberg import extract_file_sync, ExtractionConfig, LanguageDetectionConfig
+from xberg import extract_file_sync, ExtractionConfig, LanguageDetectionConfig
 
 config = ExtractionConfig(
     language_detection=LanguageDetectionConfig(enabled=True)
@@ -365,7 +365,7 @@ brew install onnxruntime
 # Download from https://github.com/microsoft/onnxruntime/releases
 ```
 
-**Important:** Kreuzberg requires ONNX Runtime version 1.24+ for embeddings and other ORT-dependent inference features.
+**Important:** Xberg requires ONNX Runtime version 1.24+ for embeddings and other ORT-dependent inference features.
 
 Without ONNX Runtime, ORT-dependent features will raise `MissingDependencyError` with installation instructions.
 
@@ -391,12 +391,12 @@ sudo apt-get install pandoc
 
 ## Troubleshooting
 
-### Import Error: No module named '\_kreuzberg'
+### Import Error: No module named '\_xberg'
 
 This usually means the Rust extension wasn't built correctly. Try:
 
 ```bash
-pip install --force-reinstall --no-cache-dir kreuzberg
+pip install --force-reinstall --no-cache-dir xberg
 ```
 
 ### OCR Not Working
@@ -438,7 +438,7 @@ PDFium adds approximately 8-15 MB to the package size depending on platform. Thi
 
 For comprehensive documentation, visit [https://xberg.io](https://xberg.io)
 
-## Part of Kreuzberg.dev
+## Part of Xberg.dev
 
 - [Xberg Enterprise](https://github.com/xberg-io/xberg-enterprise) — managed extraction API with SDKs, dashboards, and observability.
 - [kreuzcrawl](https://github.com/xberg-io/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.

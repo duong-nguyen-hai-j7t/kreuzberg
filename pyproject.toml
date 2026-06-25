@@ -42,11 +42,11 @@ environments = [ "python_version >= '3.11'" ]
 workspace.members = [ "packages/python" ]
 conflicts = [
   [
-    { package = "kreuzberg", group = "bench-docling" },
-    { package = "kreuzberg", group = "bench-markitdown" },
-    { package = "kreuzberg", group = "bench-mineru" },
-    { package = "kreuzberg", group = "bench-pymupdf4llm" },
-    { package = "kreuzberg", group = "bench-unstructured" },
+    { package = "xberg", group = "bench-docling" },
+    { package = "xberg", group = "bench-markitdown" },
+    { package = "xberg", group = "bench-mineru" },
+    { package = "xberg", group = "bench-pymupdf4llm" },
+    { package = "xberg", group = "bench-unstructured" },
   ],
 ]
 cache-keys = [
@@ -222,7 +222,7 @@ lint.per-file-ignores."tools/benchmark-harness/scripts/*.py" = [
   "T201",
 ]
 lint.per-file-ignores."tools/perf/*.py" = [ "D103", "T201" ]
-lint.isort.known-first-party = [ "kreuzberg" ]
+lint.isort.known-first-party = [ "xberg" ]
 lint.mccabe.max-complexity = 15
 lint.pydocstyle.convention = "google"
 lint.pylint.max-args = 10
@@ -234,7 +234,7 @@ keep_full_version = true
 max_supported_python = "3.14"
 
 [tool.mypy]
-packages = [ "kreuzberg" ]
+packages = [ "xberg" ]
 exclude = [ "examples", "benchmarks", "crates", "e2e/smoke", "test_apps" ]
 python_version = "3.10"
 disable_error_code = [ "import-untyped", "untyped-decorator" ]
@@ -248,7 +248,7 @@ module = [
   "keybert",
   "easyocr",
   "torch",
-  "kreuzberg._internal_bindings",
+  "xberg._internal_bindings",
   "docling.*",
   "markitdown",
   "unstructured.*",
@@ -303,7 +303,7 @@ ini_options.filterwarnings = [
 run.branch = true
 run.omit = [ "benchmarks/*", "packages/python/tests/*", "scripts/*" ]
 run.plugins = [ "covdefaults" ]
-run.source = [ "packages/python/kreuzberg" ]
+run.source = [ "packages/python/xberg" ]
 report.exclude_lines = [
   "@(abc\\.)?abstractmethod",
   "class .*\\bProtocol\\):",
@@ -316,4 +316,4 @@ report.exclude_lines = [
   "raise NotImplementedError",
 ]
 report.fail_under = 90
-report.omit = [ "packages/python/kreuzberg/ocr/easyocr.py" ]
+report.omit = [ "packages/python/xberg/ocr/easyocr.py" ]

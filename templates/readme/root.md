@@ -1,14 +1,16 @@
-# Kreuzberg
+# Xberg
 
 {% include 'partials/badges.html.jinja' %}
+
+> **Note:** Xberg is the continuation of Kreuzberg, starting with version 1.0.0-rc.1. The previous Kreuzberg v5.0.0-rc.36 remains documented at [docs.kreuzberg.dev](https://docs.kreuzberg.dev).
 
 Extract text, metadata, transcripts, and code intelligence from 96 file formats and 306 programming languages at native speeds without needing a GPU.
 
 ## What and Why?
 
-Kreuzberg is a document-intelligence framework with a Rust core and native bindings for 16 languages. It turns documents, images, audio, and source code into clean, structured text — extracting tables, metadata, transcripts, and code intelligence from 96 file formats and 306 programming languages.
+Xberg is a document-intelligence framework with a Rust core and native bindings for 16 languages. It turns documents, images, audio, and source code into clean, structured text — extracting tables, metadata, transcripts, and code intelligence from 96 file formats and 306 programming languages.
 
-Modern AI and RAG pipelines need fast, reliable extraction without a GPU or a stack of heavyweight dependencies. Kreuzberg delivers that from a single Rust core: SIMD-accelerated parsing, pure-Rust PDF, streaming for multi-GB files, and consistent output across every binding. Run it as a library, CLI, REST API, or MCP server.
+Modern AI and RAG pipelines need fast, reliable extraction without a GPU or a stack of heavyweight dependencies. Xberg delivers that from a single Rust core: SIMD-accelerated parsing, pure-Rust PDF, streaming for multi-GB files, and consistent output across every binding. Run it as a library, CLI, REST API, or MCP server.
 
 OCR (Tesseract, PaddleOCR, EasyOCR, and VLM across 143 vision providers), Whisper audio/video transcription, chunking, language detection, embeddings, and structured LLM extraction are all built in.
 
@@ -32,12 +34,12 @@ OCR (Tesseract, PaddleOCR, EasyOCR, and VLM across 143 vision providers), Whispe
 96 file formats across 8 categories — Office documents, images (OCR-enabled), web and structured data, email, archives, academic, and audio/video — plus code intelligence for 306 programming languages. See the [format reference](https://docs.xberg.io/reference/formats/) for the complete list.
 
 <div align="center">
-  <a href="https://github.com/xberg-io/kreuzberg/stargazers">
-    <img src="docs/assets/star.gif" alt="Star Kreuzberg on GitHub" width="640">
+  <a href="https://github.com/xberg-io/xberg/stargazers">
+    <img src="docs/assets/star.gif" alt="Star Xberg on GitHub" width="640">
   </a>
 </div>
 
-<p align="center"><strong>⭐ Star this repo to show your support — it helps others discover Kreuzberg.</strong></p>
+<p align="center"><strong>⭐ Star this repo to show your support — it helps others discover Xberg.</strong></p>
 
 ## Quick Start
 
@@ -47,14 +49,14 @@ OCR (Tesseract, PaddleOCR, EasyOCR, and VLM across 143 vision providers), Whispe
 <summary><strong>Python</strong></summary>
 
 ```sh
-pip install kreuzberg
+pip install xberg
 ```
 
 ```sh
-uv add kreuzberg
+uv add xberg
 ```
 
-See [Python README](https://github.com/xberg-io/kreuzberg/tree/main/packages/python) for full documentation.
+See [Python README](https://github.com/xberg-io/xberg/tree/main/packages/python) for full documentation.
 
 </details>
 
@@ -62,10 +64,10 @@ See [Python README](https://github.com/xberg-io/kreuzberg/tree/main/packages/pyt
 <summary><strong>Node.js</strong></summary>
 
 ```sh
-npm install @kreuzberg/node
+npm install @xberg/node
 ```
 
-See [Node.js README](https://github.com/xberg-io/kreuzberg/tree/main/crates/kreuzberg-node) for full documentation.
+See [Node.js README](https://github.com/xberg-io/xberg/tree/main/crates/xberg-node) for full documentation.
 
 </details>
 
@@ -73,10 +75,10 @@ See [Node.js README](https://github.com/xberg-io/kreuzberg/tree/main/crates/kreu
 <summary><strong>Rust</strong></summary>
 
 ```sh
-cargo add kreuzberg
+cargo add xberg
 ```
 
-See [Rust README](https://github.com/xberg-io/kreuzberg/tree/main/crates/kreuzberg) for full documentation.
+See [Rust README](https://github.com/xberg-io/xberg/tree/main/crates/xberg) for full documentation.
 
 </details>
 
@@ -84,17 +86,17 @@ See [Rust README](https://github.com/xberg-io/kreuzberg/tree/main/crates/kreuzbe
 <summary><strong>Go</strong></summary>
 
 ```sh
-go get github.com/xberg-io/kreuzberg/v5
+go get github.com/xberg-io/xberg
 ```
 
-See [Go README](https://github.com/xberg-io/kreuzberg/tree/main/packages/go/v5) for full documentation.
+See [Go README](https://github.com/xberg-io/xberg/tree/main/packages/go) for full documentation.
 
 </details>
 
 <details>
 <summary><strong>Java</strong></summary>
 
-Available on Maven Central as `dev.kreuzberg:kreuzberg`. See [Java README](https://github.com/xberg-io/kreuzberg/tree/main/packages/java) for the dependency snippet and current version.
+Available on Maven Central as `dev.xberg:xberg`. See [Java README](https://github.com/xberg-io/xberg/tree/main/packages/java) for the dependency snippet and current version.
 
 </details>
 
@@ -102,10 +104,10 @@ Available on Maven Central as `dev.kreuzberg:kreuzberg`. See [Java README](https
 <summary><strong>C#</strong></summary>
 
 ```sh
-dotnet add package Kreuzberg
+dotnet add package Xberg
 ```
 
-See [C# README](https://github.com/xberg-io/kreuzberg/tree/main/packages/csharp) for full documentation.
+See [C# README](https://github.com/xberg-io/xberg/tree/main/packages/csharp) for full documentation.
 
 </details>
 
@@ -113,10 +115,10 @@ See [C# README](https://github.com/xberg-io/kreuzberg/tree/main/packages/csharp)
 <summary><strong>Ruby</strong></summary>
 
 ```sh
-gem install kreuzberg
+gem install xberg
 ```
 
-See [Ruby README](https://github.com/xberg-io/kreuzberg/tree/main/packages/ruby) for full documentation.
+See [Ruby README](https://github.com/xberg-io/xberg/tree/main/packages/ruby) for full documentation.
 
 </details>
 
@@ -124,17 +126,17 @@ See [Ruby README](https://github.com/xberg-io/kreuzberg/tree/main/packages/ruby)
 <summary><strong>PHP</strong></summary>
 
 ```sh
-composer require xberg-io/kreuzberg
+composer require xberg-io/xberg
 ```
 
-See [PHP README](https://github.com/xberg-io/kreuzberg/tree/main/packages/php) for full documentation.
+See [PHP README](https://github.com/xberg-io/xberg/tree/main/packages/php) for full documentation.
 
 </details>
 
 <details>
 <summary><strong>Elixir</strong></summary>
 
-Add `{:kreuzberg, "~> 5.0"}` to your `mix.exs` dependencies. See [Elixir README](https://github.com/xberg-io/kreuzberg/tree/main/packages/elixir) for full documentation.
+Add `{:xberg, "~> 5.0"}` to your `mix.exs` dependencies. See [Elixir README](https://github.com/xberg-io/xberg/tree/main/packages/elixir) for full documentation.
 
 </details>
 
@@ -142,31 +144,31 @@ Add `{:kreuzberg, "~> 5.0"}` to your `mix.exs` dependencies. See [Elixir README]
 <summary><strong>WebAssembly</strong></summary>
 
 ```sh
-npm install @kreuzberg/wasm
+npm install @xberg/wasm
 ```
 
-See [WebAssembly README](https://github.com/xberg-io/kreuzberg/tree/main/crates/kreuzberg-wasm) for full documentation.
+See [WebAssembly README](https://github.com/xberg-io/xberg/tree/main/crates/xberg-wasm) for full documentation.
 
 </details>
 
 <details>
 <summary><strong>R</strong></summary>
 
-Install from r-universe. See [R README](https://github.com/xberg-io/kreuzberg/tree/main/packages/r) for full documentation.
+Install from r-universe. See [R README](https://github.com/xberg-io/xberg/tree/main/packages/r) for full documentation.
 
 </details>
 
 <details>
 <summary><strong>Kotlin (Android)</strong></summary>
 
-Available on Maven Central as `dev.kreuzberg:kreuzberg-android`. See [Kotlin README](https://github.com/xberg-io/kreuzberg/tree/main/packages/kotlin-android) for the dependency snippet and current version.
+Available on Maven Central as `dev.xberg:xberg-android`. See [Kotlin README](https://github.com/xberg-io/xberg/tree/main/packages/kotlin-android) for the dependency snippet and current version.
 
 </details>
 
 <details>
 <summary><strong>Swift</strong></summary>
 
-Add via Swift Package Manager. See [Swift README](https://github.com/xberg-io/kreuzberg/tree/main/packages/swift) for full documentation.
+Add via Swift Package Manager. See [Swift README](https://github.com/xberg-io/xberg/tree/main/packages/swift) for full documentation.
 
 </details>
 
@@ -174,24 +176,24 @@ Add via Swift Package Manager. See [Swift README](https://github.com/xberg-io/kr
 <summary><strong>Dart / Flutter</strong></summary>
 
 ```sh
-dart pub add kreuzberg
+dart pub add xberg
 ```
 
-See [Dart README](https://github.com/xberg-io/kreuzberg/tree/main/packages/dart) for full documentation.
+See [Dart README](https://github.com/xberg-io/xberg/tree/main/packages/dart) for full documentation.
 
 </details>
 
 <details>
 <summary><strong>Zig</strong></summary>
 
-Add via `zig fetch`. See [Zig README](https://github.com/xberg-io/kreuzberg/tree/main/packages/zig) for full documentation.
+Add via `zig fetch`. See [Zig README](https://github.com/xberg-io/xberg/tree/main/packages/zig) for full documentation.
 
 </details>
 
 <details>
 <summary><strong>C/C++ (FFI)</strong></summary>
 
-Build from source as part of this workspace. See [C (FFI) README](https://github.com/xberg-io/kreuzberg/tree/main/crates/kreuzberg-ffi) for full documentation.
+Build from source as part of this workspace. See [C (FFI) README](https://github.com/xberg-io/xberg/tree/main/crates/xberg-ffi) for full documentation.
 
 </details>
 
@@ -199,7 +201,7 @@ Build from source as part of this workspace. See [C (FFI) README](https://github
 <summary><strong>CLI</strong></summary>
 
 ```sh
-brew install xberg-io/tap/kreuzberg
+brew install xberg-io/tap/xberg
 ```
 
 See [CLI usage](https://docs.xberg.io/cli/usage/) for full documentation.
@@ -210,7 +212,7 @@ See [CLI usage](https://docs.xberg.io/cli/usage/) for full documentation.
 <summary><strong>Docker</strong></summary>
 
 ```sh
-docker pull ghcr.io/xberg-io/kreuzberg:latest
+docker pull ghcr.io/xberg-io/xberg:latest
 ```
 
 See [Docker guide](https://docs.xberg.io/guides/docker/) for API, CLI, and MCP server modes.
@@ -220,20 +222,20 @@ See [Docker guide](https://docs.xberg.io/guides/docker/) for API, CLI, and MCP s
 <details>
 <summary><strong>MCP Server</strong></summary>
 
-Run Kreuzberg as a [Model Context Protocol](https://modelcontextprotocol.io/) server. The prebuilt
+Run Xberg as a [Model Context Protocol](https://modelcontextprotocol.io/) server. The prebuilt
 binaries (Homebrew, `install.sh`, Docker) include it; from source, enable the `mcp` feature.
 
 ```sh
 # Prebuilt (Homebrew / install.sh / Docker) — MCP is included
-brew install xberg-io/tap/kreuzberg
-kreuzberg mcp                                   # stdio (default)
+brew install xberg-io/tap/xberg
+xberg mcp                                   # stdio (default)
 
 # From source — enable the mcp feature
-cargo install kreuzberg-cli --features mcp
-kreuzberg mcp
+cargo install xberg-cli --features mcp
+xberg mcp
 
 # HTTP transport instead of stdio
-kreuzberg mcp --transport http --host 127.0.0.1 --port 8001
+xberg mcp --transport http --host 127.0.0.1 --port 8001
 ```
 
 Add it to an MCP client (Claude Desktop `claude_desktop_config.json`, Cursor `.cursor/mcp.json`):
@@ -241,7 +243,7 @@ Add it to an MCP client (Claude Desktop `claude_desktop_config.json`, Cursor `.c
 ```json
 {
   "mcpServers": {
-    "kreuzberg": { "command": "kreuzberg", "args": ["mcp"] }
+    "xberg": { "command": "xberg", "args": ["mcp"] }
   }
 }
 ```
@@ -253,14 +255,14 @@ resources, prompts, HTTP transport, and configuration.
 
 ### AI Coding Assistants
 
-Install the Kreuzberg plugin from the [`xberg-io/plugins`](https://github.com/xberg-io/plugins) marketplace. It ships the Kreuzberg agent skills (extraction APIs, OCR backends, configuration, language conventions) and works with every major coding agent — expand your harness below.
+Install the Xberg plugin from the [`xberg-io/plugins`](https://github.com/xberg-io/plugins) marketplace. It ships the Xberg agent skills (extraction APIs, OCR backends, configuration, language conventions) and works with every major coding agent — expand your harness below.
 
 <details open>
 <summary><strong>Claude Code</strong></summary>
 
 ```text
 /plugin marketplace add xberg-io/plugins
-/plugin install kreuzberg@kreuzberg
+/plugin install xberg@xberg
 ```
 
 </details>
@@ -272,14 +274,14 @@ Install the Kreuzberg plugin from the [`xberg-io/plugins`](https://github.com/xb
 /plugins add https://github.com/xberg-io/plugins
 ```
 
-Then search for `kreuzberg` and select **Install Plugin**.
+Then search for `xberg` and select **Install Plugin**.
 
 </details>
 
 <details>
 <summary><strong>Cursor</strong></summary>
 
-Settings → Plugins → Add from URL → `https://github.com/xberg-io/plugins`, then select **kreuzberg**.
+Settings → Plugins → Add from URL → `https://github.com/xberg-io/plugins`, then select **xberg**.
 
 </details>
 
@@ -297,7 +299,7 @@ gemini extensions install https://github.com/xberg-io/plugins
 
 ```text
 droid plugin marketplace add https://github.com/xberg-io/plugins
-droid plugin install kreuzberg@kreuzberg
+droid plugin install xberg@xberg
 ```
 
 </details>
@@ -307,7 +309,7 @@ droid plugin install kreuzberg@kreuzberg
 
 ```text
 copilot plugin marketplace add https://github.com/xberg-io/plugins
-copilot plugin install kreuzberg@kreuzberg
+copilot plugin install xberg@xberg
 ```
 
 </details>
@@ -320,7 +322,7 @@ Add the package to `opencode.json`:
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["@kreuzberg/opencode-kreuzberg"]
+  "plugin": ["@xberg/opencode-xberg"]
 }
 ```
 
@@ -336,7 +338,7 @@ Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 
 Join our [Discord community](https://discord.gg/xt9WY3GnKR) for questions and discussion.
 
-## Part of Kreuzberg.dev
+## Part of Xberg.dev
 
 - [Xberg Enterprise](https://github.com/xberg-io/xberg-enterprise) — managed extraction API with SDKs, dashboards, and observability.
 - [kreuzcrawl](https://github.com/xberg-io/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.

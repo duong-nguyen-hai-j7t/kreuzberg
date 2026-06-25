@@ -104,7 +104,7 @@ Creates config in parent dir, changes to subdirectory, discovers config.
 
 **Example**: `config_discover.json`
 
-- Creates `kreuzberg.toml` in temp dir
+- Creates `xberg.toml` in temp dir
 - Creates subdirectory and changes to it
 - Calls `ExtractionConfig.discover()`
 - Verifies config was found from parent
@@ -249,11 +249,11 @@ After modifying fixtures, regenerate tests:
 
 ```bash
 # Regenerate for all languages
-cargo run -p kreuzberg-e2e-generator -- generate --lang python
-cargo run -p kreuzberg-e2e-generator -- generate --lang typescript
-cargo run -p kreuzberg-e2e-generator -- generate --lang ruby
-cargo run -p kreuzberg-e2e-generator -- generate --lang java
-cargo run -p kreuzberg-e2e-generator -- generate --lang go
+cargo run -p xberg-e2e-generator -- generate --lang python
+cargo run -p xberg-e2e-generator -- generate --lang typescript
+cargo run -p xberg-e2e-generator -- generate --lang ruby
+cargo run -p xberg-e2e-generator -- generate --lang java
+cargo run -p xberg-e2e-generator -- generate --lang go
 ```
 
 Or use the task runner:

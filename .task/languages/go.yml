@@ -7,7 +7,7 @@ tasks:
     silent: false
     cmds:
       - cmd: |
-          cd packages/go/v5 && go get -u=patch ./... && go mod tidy
+          cd packages/go && go get -u=patch ./... && go mod tidy
         ignore_error: false
 
   upgrade:
@@ -16,5 +16,5 @@ tasks:
     cmds:
       - cmd: |
           command -v go >/dev/null 2>&1 || { echo "Go not found, skipping Go upgrade"; exit 0; }
-          cd packages/go/v5 && go get -u ./... && go mod tidy
+          cd packages/go && go get -u ./... && go mod tidy
         ignore_error: false

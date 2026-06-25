@@ -1,8 +1,8 @@
-import { extractFileSync } from "kreuzberg";
+import { extractFileSync } from "xberg";
 
 // Test XLSX
 const xlsxResult = extractFileSync(
-	"/Users/naamanhirschfeld/workspace/xberg-io/kreuzberg/test_documents/xlsx/stanley_cups.xlsx",
+	"/Users/naamanhirschfeld/workspace/xberg-io/xberg/test_documents/xlsx/stanley_cups.xlsx",
 );
 const fmt = xlsxResult.metadata?.format;
 console.log("fmt.excel:", fmt?.excel);

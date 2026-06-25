@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/xberg-io/xberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go"
 )
 
 func main() {

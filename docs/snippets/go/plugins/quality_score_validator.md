@@ -7,7 +7,7 @@ import (
 	"log"
 	"unsafe"
 
-	"github.com/xberg-io/xberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go"
 )
 
 /*

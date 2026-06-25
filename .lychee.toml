@@ -27,7 +27,7 @@ exclude = [
   "github\\.com/.*/raw/",
 
   # Docs site self-references (404 until deployed, or unreachable from CI)
-  "kreuzberg\\.dev",
+  "xberg\\.dev",
 
   # PyPI project pages (rate-limited)
   "pypi\\.org/project/",

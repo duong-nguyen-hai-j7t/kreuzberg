@@ -1,41 +1,41 @@
-# Kreuzberg
+# Xberg
 
 {% include 'partials/badges.html.jinja' %}
 
-High-performance document intelligence for Go backed by the Rust core that powers every Kreuzberg binding.
+High-performance document intelligence for Go backed by the Rust core that powers every Xberg binding.
 
 > **Version {{ version }}**
-> Report issues at [github.com/xberg-io/kreuzberg](https://github.com/xberg-io/kreuzberg/issues).
+> Report issues at [github.com/xberg-io/xberg](https://github.com/xberg-io/xberg/issues).
 
 ## What This Package Provides
 
 - **Go module over the Rust core** — context-aware extraction with Go structs and errors.
 - **Structured results** — text, tables, images, metadata, language detection, chunks, and warnings.
-- **Static-link workflow** — build against `kreuzberg-ffi` and ship a self-contained Go binary.
+- **Static-link workflow** — build against `xberg-ffi` and ship a self-contained Go binary.
 - **Cross-binding parity** — output matches the Python, Node.js, Ruby, Java, .NET, PHP, Elixir, R, Dart, Swift, Zig, WASM, and C FFI packages.
 
 ## Install
 
-Kreuzberg Go binaries are **statically linked** — once built, they are self-contained and require no runtime library dependencies. Only the static library is needed at build time.
+Xberg Go binaries are **statically linked** — once built, they are self-contained and require no runtime library dependencies. Only the static library is needed at build time.
 
 ### Quick Start (Monorepo Development)
 
-For development in the Kreuzberg monorepo:
+For development in the Xberg monorepo:
 
 ```bash
 # Build the static FFI library
-cargo build -p kreuzberg-ffi --release
+cargo build -p xberg-ffi --release
 
 # Go build will automatically link against the static library
-# (from target/release/libkreuzberg_ffi.a)
-cd packages/go/v5
+# (from target/release/libxberg_ffi.a)
+cd packages/go
 go build -v
 
 # Run your binary (no library path needed - it's statically linked)
 ./v4
 ```
 
-That's it! The resulting binary is self-contained and has no runtime dependencies on Kreuzberg libraries.
+That's it! The resulting binary is self-contained and has no runtime dependencies on Xberg libraries.
 
 ### Using Go Modules
 
@@ -53,30 +53,30 @@ You'll need to provide the static library at build time. See [Building with Stat
 
 ### Building with Static Libraries
 
-When building outside the Kreuzberg monorepo, you need to provide the static library (`.a` file on Unix, `.lib` on Windows).
+When building outside the Xberg monorepo, you need to provide the static library (`.a` file on Unix, `.lib` on Windows).
 
 #### Option 1: Download Pre-built Static Library
 
-Download the static library for your platform from [GitHub Releases](https://github.com/xberg-io/kreuzberg/releases):
+Download the static library for your platform from [GitHub Releases](https://github.com/xberg-io/xberg/releases):
 
 ```bash
 # Example: Linux x86_64
-curl -LO https://github.com/xberg-io/kreuzberg/releases/download/v{{ version }}/go-ffi-linux-x86_64.tar.gz
+curl -LO https://github.com/xberg-io/xberg/releases/download/v{{ version }}/go-ffi-linux-x86_64.tar.gz
 tar -xzf go-ffi-linux-x86_64.tar.gz
 
 # Copy to a permanent location
-mkdir -p ~/kreuzberg/lib
-cp kreuzberg-ffi/lib/libkreuzberg_ffi.a ~/kreuzberg/lib/
+mkdir -p ~/xberg/lib
+cp xberg-ffi/lib/libxberg_ffi.a ~/xberg/lib/
 ```
 
 Then build with `CGO_LDFLAGS`:
 
 ```bash
 # Linux/macOS
-CGO_LDFLAGS="-L$HOME/kreuzberg/lib -lkreuzberg_ffi" go build
+CGO_LDFLAGS="-L$HOME/xberg/lib -lxberg_ffi" go build
 
 # Windows (MSVC)
-set CGO_LDFLAGS=-L%USERPROFILE%\kreuzberg\lib -lkreuzberg_ffi
+set CGO_LDFLAGS=-L%USERPROFILE%\xberg\lib -lxberg_ffi
 go build
 ```
 
@@ -86,20 +86,20 @@ If pre-built libraries aren't available for your platform:
 
 ```bash
 # Clone the repository
-git clone https://github.com/xberg-io/kreuzberg.git
-cd kreuzberg
+git clone https://github.com/xberg-io/xberg.git
+cd xberg
 
 # Build the static library
-cargo build -p kreuzberg-ffi --release
+cargo build -p xberg-ffi --release
 
-# The static library is now at: target/release/libkreuzberg_ffi.a
+# The static library is now at: target/release/libxberg_ffi.a
 # Copy it to a permanent location
-mkdir -p ~/kreuzberg/lib
-cp target/release/libkreuzberg_ffi.a ~/kreuzberg/lib/
+mkdir -p ~/xberg/lib
+cp target/release/libxberg_ffi.a ~/xberg/lib/
 
 # Now you can build Go projects
 cd ~/my-go-project
-CGO_LDFLAGS="-L$HOME/kreuzberg/lib -lkreuzberg_ffi" go build
+CGO_LDFLAGS="-L$HOME/xberg/lib -lxberg_ffi" go build
 ```
 
 ### System Requirements
@@ -152,13 +152,13 @@ Build and run:
 
 ```bash
 # Build (make sure you have the static library available - see Install)
-CGO_LDFLAGS="-L$HOME/kreuzberg/lib -lkreuzberg_ffi" go build
+CGO_LDFLAGS="-L$HOME/xberg/lib -lxberg_ffi" go build
 
 # Run - no library paths needed!
 ./myapp
 ```
 
-The binary is self-contained and can be distributed without any Kreuzberg library dependencies.
+The binary is self-contained and can be distributed without any Xberg library dependencies.
 
 ## Examples
 
@@ -246,8 +246,8 @@ func init() {
 
 | Issue                                                                          | Fix                                                                                                                                                                                                                 |
 | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ld returned 1 exit status` or `undefined reference to 'html_to_markdown_...'` | The static library wasn't found. Make sure `CGO_LDFLAGS` points to the directory containing `libkreuzberg_ffi.a`: `CGO_LDFLAGS="-L/path/to/lib -lkreuzberg_ffi" go build`                                           |
-| `cannot find -lkreuzberg_ffi`                                                  | The static library file is missing or in the wrong location. Download it from [GitHub Releases](https://github.com/xberg-io/kreuzberg/releases) or build it yourself: `cargo build -p kreuzberg-ffi --release` |
+| `ld returned 1 exit status` or `undefined reference to 'html_to_markdown_...'` | The static library wasn't found. Make sure `CGO_LDFLAGS` points to the directory containing `libxberg_ffi.a`: `CGO_LDFLAGS="-L/path/to/lib -lxberg_ffi" go build`                                           |
+| `cannot find -lxberg_ffi`                                                  | The static library file is missing or in the wrong location. Download it from [GitHub Releases](https://github.com/xberg-io/xberg/releases) or build it yourself: `cargo build -p xberg-ffi --release` |
 | `undefined: v4.ExtractFile`                                                    | This function was removed in v4.1.0. Use `ExtractFileSync` and wrap in goroutine if needed (see migration guide)                                                                                                    |
 | `Missing dependency: tesseract`                                                | Install the OCR backend and ensure it is on `PATH`. Errors bubble up as `*v4.MissingDependencyError`.                                                                                                               |
 | `undefined: C.customValidator` during build                                    | Export the callback with `//export` in a `*_cgo.go` file before using it in `Register*` helpers.                                                                                                                    |
@@ -262,7 +262,7 @@ func init() {
 
 Need help? Join the [Discord](https://discord.gg/xt9WY3GnKR) or open an issue with logs, platform info, and the steps you tried.
 
-## Part of Kreuzberg.dev
+## Part of Xberg.dev
 
 - [Xberg Enterprise](https://github.com/xberg-io/xberg-enterprise) — managed extraction API with SDKs, dashboards, and observability.
 - [kreuzcrawl](https://github.com/xberg-io/kreuzcrawl) — web crawling and scraping with HTML→Markdown and headless-Chrome fallback.

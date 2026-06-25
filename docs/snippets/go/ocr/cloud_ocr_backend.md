@@ -4,7 +4,7 @@ package main
 import (
 	"log"
 
-	"github.com/xberg-io/xberg/packages/go/v5"
+	"github.com/xberg-io/xberg/packages/go"
 )
 
 // The Go binding does not currently expose plugin OCR backend registration.

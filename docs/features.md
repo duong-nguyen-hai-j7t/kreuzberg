@@ -576,7 +576,7 @@ Rust builds are modular through Cargo features. The default feature set is `toki
 
     ```bash
     gem install xberg                  # Ruby
-    go get github.com/xberg-io/xberg/packages/go/v5  # Go
+    go get github.com/xberg-io/xberg/packages/go  # Go
     dotnet add package Xberg           # C#
     ```
 

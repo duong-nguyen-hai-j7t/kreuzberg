@@ -9,17 +9,17 @@
 # Allow only what Docker builds need
 !Cargo.toml
 !Cargo.lock
-!crates/kreuzberg/
-!crates/kreuzberg-cli/
-!crates/kreuzberg-tesseract/
-!crates/kreuzberg-paddle-ocr/
-!crates/kreuzberg-candle-ocr/
-!crates/kreuzberg-ffi/
-!crates/kreuzberg-libheif/
-!crates/kreuzberg-py/
-!crates/kreuzberg-node/
-!crates/kreuzberg-wasm/
-!packages/elixir/native/kreuzberg_nif/
+!crates/xberg/
+!crates/xberg-cli/
+!crates/xberg-tesseract/
+!crates/xberg-paddle-ocr/
+!crates/xberg-candle-ocr/
+!crates/xberg-ffi/
+!crates/xberg-libheif/
+!crates/xberg-py/
+!crates/xberg-node/
+!crates/xberg-wasm/
+!packages/elixir/native/xberg_nif/
 !docker/
 
 # Re-exclude build artifacts inside allowed dirs
