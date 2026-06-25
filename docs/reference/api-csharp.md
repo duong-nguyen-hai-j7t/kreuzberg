@@ -1623,7 +1623,7 @@ Chunk text for RAG retrieval, ensuring every chunk carries a `heading_path`.
 
 Delegates to `chunk_text` using the caller's config (defaulting to
 `ChunkerType.Markdown` when the config uses the default `Text` type, so that
-heading hierarchy is resolved).  After chunking, derives
+heading hierarchy is resolved). After chunking, derives
 `ChunkMetadata.heading_path` from each chunk's `heading_context`.
 
   underlying splitter; use `ChunkerType.Markdown` for documents with ATX
@@ -1838,7 +1838,7 @@ Decision logic (in priority order):
 **Errors:**
 
 Returns an error only when the `heuristics-pdf` feature is active and
-the PDF text-layer analysis itself returns a hard error.  In all other
+the PDF text-layer analysis itself returns a hard error. In all other
 cases the function returns a `ChunkingDecision`.
 
 **Signature:**
@@ -1981,7 +1981,7 @@ Builds a `MultidocInput` from `result.pages` (one `PageSignals` per
 `PageContent` does not carry a pre-computed density score.
 This function approximates density as
 `non_whitespace_chars / total_chars` (clamped to `[0.0, 1.0]`), which is a
-reasonable proxy for how text-dense a page is relative to itself.  Pass a
+reasonable proxy for how text-dense a page is relative to itself. Pass a
 custom `MultidocInput` to `detect_boundaries` directly when you need a
 higher-fidelity density measurement (e.g. chars-per-pt² from a PDF extractor).
 
@@ -2013,7 +2013,7 @@ var result = BoundariesFromExtractionResult(new ExtractionResult(), new Multidoc
 Detect document boundaries in a multi-document PDF.
 
 Returns a list of detected boundaries, always including implicit boundaries
-at start (page 1) and end (page_count).  Boundaries are returned in ascending
+at start (page 1) and end (page_count). Boundaries are returned in ascending
 order of `start_page`.
 
 **Returns:**
@@ -2051,7 +2051,7 @@ Rules applied in order:
 
 1. `image/*` → `StructuredCallMode.VisionOnly` (no text layer to start from).
 2. `application/pdf` → `StructuredCallMode.TextOnly` regardless of
-   `text_coverage` or embedded image count.  Xberg's OCR + text-layer
+   `text_coverage` or embedded image count. Xberg's OCR + text-layer
    extraction produces text for scanned PDFs; the orchestrator's
    post-call confidence gate handles any vision escalation actually needed.
 
@@ -2224,7 +2224,7 @@ Extract structured JSON from a document using JSON-encoded preset spec and optio
 This is the synchronous JSON-in / JSON-out entry point suitable for FFI and
 language-binding call paths.
 
-  `cache`).  Pass `"{}"` to use all defaults.
+  `cache`). Pass `"{}"` to use all defaults.
 
 **Returns:**
 
@@ -2233,7 +2233,7 @@ JSON-serialised `StructuredOutput` on success.
 **Errors:**
 
 Returns `Validation` when either JSON argument is
-malformed.  All other failures from the underlying
+malformed. All other failures from the underlying
 `extract_structured_sync` call are mapped onto `XbergError`
 via `From<StructuredError>`.
 
@@ -2280,7 +2280,7 @@ JSON-serialised `List<StructuredOutput>` (a JSON array) on success.
 **Errors:**
 
 Returns `Validation` when either JSON argument is
-malformed.  All other failures from the underlying
+malformed. All other failures from the underlying
 `split_and_extract_sync` call are mapped onto `XbergError`
 via `From<StructuredError>`.
 
@@ -3294,7 +3294,7 @@ Build `ConfidenceSignals` from an `ExtractionResult`.
   (e.g. 1.0 for native text formats, value from PDF analysis for PDFs).
 
 The `ocr_aggregate` is computed as the arithmetic mean of all
-`ocr_elements[].confidence.recognition` values.  When `ocr_elements` is
+`ocr_elements[].confidence.recognition` values. When `ocr_elements` is
 `null` or empty the field is set to `null`.
 
 **Signature:**
@@ -4579,6 +4579,7 @@ Returns `false` if both are disabled, allowing optimization to skip unnecessary
 image decompression for text-only extraction workflows.
 
 ##### Optimization Impact
+
 For text-only extractions (no OCR, no image extraction), skipping image
 decompression can improve CPU utilization by 5-10% by avoiding wasteful
 image I/O and processing when results won't be used.
@@ -6037,7 +6038,7 @@ OCR configuration.
 | `TesseractConfig` | `TesseractConfig?` | `null` | Tesseract-specific configuration (optional) |
 | `OutputFormat` | `OutputFormat?` | `null` | Output format for OCR results (optional, for format conversion) |
 | `PaddleOcrConfig` | `object?` | `null` | PaddleOCR-specific configuration (optional, JSON passthrough) |
-| `BackendOptions` | `object?` | `null` | Arbitrary per-call options passed through to the backend unchanged. Custom OCR backends and built-in backends that support runtime tuning can read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored. This is the recommended extension point for per-call parameters that are not covered by the typed fields above (e.g. mode switching, preprocessing flags, inference batch size). **Scope:** when `pipeline` is `null`, this value is propagated to the primary stage of the auto-constructed pipeline. When `pipeline` is explicitly set, this field has **no effect** — the caller must set `OcrPipelineStage.backend_options` directly on the relevant stage(s) instead. Example: ```json { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 } ``` |
+| `BackendOptions` | `object?` | `null` | Arbitrary per-call options passed through to the backend unchanged. Custom OCR backends and built-in backends that support runtime tuning can read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored. This is the recommended extension point for per-call parameters that are not covered by the typed fields above (e.g. mode switching, preprocessing flags, inference batch size). **Scope:** when `pipeline` is `null`, this value is propagated to the primary stage of the auto-constructed pipeline. When `pipeline` is explicitly set, this field has **no effect** — the caller must set `OcrPipelineStage.backend_options` directly on the relevant stage(s) instead. Example: ```json { "mode": "fast", "enable_layout": true, "timeout_ms": 5000 }``` |
 | `ElementConfig` | `OcrElementConfig?` | `null` | OCR element extraction configuration |
 | `QualityThresholds` | `OcrQualityThresholds?` | `null` | Quality thresholds for the native-text-to-OCR fallback decision. When None, uses compiled defaults (matching previous hardcoded behavior). |
 | `Pipeline` | `OcrPipelineConfig?` | `null` | Multi-backend OCR pipeline configuration. When set, enables weighted fallback across multiple OCR backends based on output quality. When None, uses the single `backend` field (same as today). |
@@ -6165,7 +6166,7 @@ A single backend stage in the OCR pipeline.
 | `TesseractConfig` | `TesseractConfig?` | `/* serde(default) */` | Tesseract-specific config override for this stage. |
 | `PaddleOcrConfig` | `object?` | `/* serde(default) */` | PaddleOCR-specific config for this stage. |
 | `VlmConfig` | `LlmConfig?` | `/* serde(default) */` | VLM config override for this pipeline stage. |
-| `BackendOptions` | `object?` | `/* serde(default) */` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true } ``` |
+| `BackendOptions` | `object?` | `/* serde(default) */` | Arbitrary per-call options passed through to the backend unchanged. Backends that support runtime tuning (mode switching, preprocessing flags, inference parameters, etc.) read this value and deserialize the keys they care about. Keys unknown to the backend are silently ignored, so options from different backends can coexist in the same config without conflict. Example (custom backend): ```json { "mode": "fast", "enable_layout": true }``` |
 
 ---
 
@@ -6768,15 +6769,15 @@ Per-page signals extracted from PDF content.
 Derive signals from raw page text.
 
 Callers that already have structured per-page data (e.g. from a PDF extractor)
-can set individual fields directly.  This constructor is for callers that only
+can set individual fields directly. This constructor is for callers that only
 have the plain-text content of a page (e.g. from `PageContent`).
 
   when unknown (disables density-shift detection for this page).
 
 ##### Heuristics
 
-All signal derivations are *conservative starting points*.  Each is documented
-inline.  They err on the side of fewer false positives; tune thresholds via
+All signal derivations are *conservative starting points*. Each is documented
+inline. They err on the side of fewer false positives; tune thresholds via
 `MultidocThresholds` rather than by changing these heuristics.
 
 **Signature:**
@@ -7543,7 +7544,7 @@ var result = RakeParams.CreateDefault();
 Pre-computed table markdown for a table detection region.
 
 Produced by the TATR-based table structure recognizer and surfaced as part of
-layout-aware OCR results.  The struct lives here (under `layout-types`, pure-Rust)
+layout-aware OCR results. The struct lives here (under `layout-types`, pure-Rust)
 so that consumers who do not enable `layout-detection` (ORT) can still reference
 the type in their own code.
 
@@ -8461,7 +8462,7 @@ xberg extraction types so it can be constructed from any source.
 
 Thresholds for the structured-extraction call-mode heuristic.
 
-All defaults are **conservative starting points**.  Deployments should
+All defaults are **conservative starting points**. Deployments should
 measure their own document corpus and override via their own config;
 these values are chosen to be safe-by-default, not to be optimal for
 any particular workload.
@@ -8527,7 +8528,7 @@ Represents a file extension and its corresponding MIME type that Xberg can proce
 SVG-specific configuration for the image-encode pipeline.
 
 Applies when the source image is SVG or when the output format is set to
-`ImageOutputFormat.Svg`.  Available when the `svg` feature is active.
+`ImageOutputFormat.Svg`. Available when the `svg` feature is active.
 
 Used via `ImageExtractionConfig.svg`.
 
@@ -10229,7 +10230,7 @@ Reason for boundary detection.
 Outcome of the structured-extraction call-mode heuristic.
 
 **Distinct from `crate.core.config.CallMode`** which has three variants
-and governs extraction-engine behaviour.  This enum governs whether and how
+and governs extraction-engine behaviour. This enum governs whether and how
 an already-extracted document is sent to an LLM structured-extraction
 pipeline.
 
