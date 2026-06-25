@@ -11,39 +11,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Project renamed `kreuzberg` → `xberg`, version line reset to `1.0.0-rc.1`.** This is a full
-  rebrand with no back-compat aliases. The published `kreuzberg` packages stay frozen at the
+- **Project renamed `xberg` → `xberg`, version line reset to `1.0.0-rc.1`.** This is a full
+  rebrand with no back-compat aliases. The published `xberg` packages stay frozen at the
   `5.0.0-rc.36` line; `xberg` is a fresh set of registry identities starting at `1.0.0-rc.1`.
-  - **Rust:** crate `kreuzberg` → `xberg` (and every `kreuzberg-*` workspace crate → `xberg-*`); the
-    `kreuzberg::` namespace → `xberg::`; `KreuzbergError` → `XbergError`.
-  - **CLI:** binary `kreuzberg` → `xberg`; config discovery `kreuzberg.{toml,yaml,json}` →
-    `xberg.{toml,yaml,json}`; all `KREUZBERG_*` environment variables → `XBERG_*`; cache dir
-    `.kreuzberg/` → `.xberg/`.
-  - **FFI:** symbol prefix `kreuzberg_*` → `xberg_*`; header `kreuzberg.h` → `xberg.h`; lib
-    `kreuzberg_ffi` → `xberg_ffi`.
+  - **Rust:** crate `xberg` → `xberg` (and every `xberg-*` workspace crate → `xberg-*`); the
+    `xberg::` namespace → `xberg::`; `XbergError` → `XbergError`.
+  - **CLI:** binary `xberg` → `xberg`; config discovery `xberg.{toml,yaml,json}` →
+    `xberg.{toml,yaml,json}`; all `XBERG_*` environment variables → `XBERG_*`; cache dir
+    `.xberg/` → `.xberg/`.
+  - **FFI:** symbol prefix `xberg_*` → `xberg_*`; header `xberg.h` → `xberg.h`; lib
+    `xberg_ffi` → `xberg_ffi`.
   - **Package coordinates:** PyPI `xberg`, npm `@xberg/*`, RubyGems/Hex/pub.dev `xberg`, Maven
     `dev.xberg`, NuGet `Xberg`, Packagist `xberg-io/xberg`, Homebrew `xberg`.
   - **Go:** module `github.com/xberg-io/xberg` with **no `/vN` suffix** (v1); the binding now lives at
     `packages/go/` (the `packages/go/{v4,v5}` layout is removed).
-  - **Docs:** new docs at `docs.xberg.io`; the frozen v4 site remains at `docs.kreuzberg.dev`.
+  - **Docs:** new docs at `docs.xberg.io`; the frozen v4 site remains at `docs.xberg.io`.
   - The `kreuzberg-gliner-rs` / `kreuzberg-orp` fork dependencies keep their names (out of scope).
 
 ## [5.0.0-rc.36] - 2026-06-24
 
 ### Removed
 
-- **OpenSSL entirely removed from build.** kreuzberg migrated all TLS to rustls + OS-native trust stores (ureq platform-verifier, ort tls-rustls), eliminating OpenSSL from every target. The `setup-openssl` GitHub action is no longer used. The `linux-features` input (which passed `kreuzberg/openssl-vendored` to enable OpenSSL vendoring on gnu zigbuild) has been removed from xberg-io/actions v1.8.89 and is no longer passed to any build action in publish.yaml. The musl Dockerfiles no longer install `openssl-dev`/`openssl-libs-static`. The python wheel build no longer installs `openssl-devel`. This eliminates the vendored-OpenSSL zigbuild workaround on all targets.
+- **OpenSSL entirely removed from build.** xberg migrated all TLS to rustls + OS-native trust stores (ureq platform-verifier, ort tls-rustls), eliminating OpenSSL from every target. The `setup-openssl` GitHub action is no longer used. The `linux-features` input (which passed `xberg/openssl-vendored` to enable OpenSSL vendoring on gnu zigbuild) has been removed from xberg-io/actions v1.8.89 and is no longer passed to any build action in publish.yaml. The musl Dockerfiles no longer install `openssl-dev`/`openssl-libs-static`. The python wheel build no longer installs `openssl-devel`. This eliminates the vendored-OpenSSL zigbuild workaround on all targets.
 
 ### Fixed
 
-- **build/python-sdist (links collision)**: removed the `version` pin from the `kreuzberg-tesseract` path-dependency (re-added in the rc.34 sync). kreuzberg-tesseract declares `links = "kreuzberg_tesseract"`; a versioned path-dep makes the maturin sdist metadata resolve two copies (path + registry) of a `links` crate, which cargo rejects (`only one package in the dependency graph may specify the same links value`). The path-dep is version-less again; the `publish-crates` action injects the version at cargo-publish time, so crates.io still receives a version requirement. (`crates/kreuzberg/Cargo.toml`)
-- **build/php (biblib)**: pinned `biblib` to `=0.4.3`. biblib 0.4.4 (published 2026-06-23) bumped its `quick-xml` requirement to `^0.39.2` but still calls the removed `Attribute::unescape_value`, so it fails to compile (`error[E0599]: no method named unescape_value`). The out-of-workspace PHP and Python sdist builds run `cargo generate-lockfile`, which re-resolved to the broken 0.4.4 and failed all 16 PHP extension builds; the exact pin keeps them on 0.4.3. biblib 0.5.x is not yet an option (it drops the `regex` feature kreuzberg uses). (`crates/kreuzberg/Cargo.toml`)
-- **build/elixir-nif**: regenerated `packages/elixir/native/kreuzberg_nif/Cargo.lock`, which was stale — it pinned `kreuzberg-orp 0.1.1` / `kreuzberg-gliner-rs 0.2.0` while kreuzberg rc.35 requires `orp ^0.1.2` / `gliner ^0.2.1`, making `cargo build` unsatisfiable (`failed to select a version for kreuzberg-orp`). The lock now resolves orp 0.1.2 + gliner 0.2.1 (and syncs tree-sitter-language-pack to 1.10.9). (`packages/elixir/native/kreuzberg_nif/Cargo.lock`)
+- **build/python-sdist (links collision)**: removed the `version` pin from the `xberg-tesseract` path-dependency (re-added in the rc.34 sync). xberg-tesseract declares `links = "xberg_tesseract"`; a versioned path-dep makes the maturin sdist metadata resolve two copies (path + registry) of a `links` crate, which cargo rejects (`only one package in the dependency graph may specify the same links value`). The path-dep is version-less again; the `publish-crates` action injects the version at cargo-publish time, so crates.io still receives a version requirement. (`crates/xberg/Cargo.toml`)
+- **build/php (biblib)**: pinned `biblib` to `=0.4.3`. biblib 0.4.4 (published 2026-06-23) bumped its `quick-xml` requirement to `^0.39.2` but still calls the removed `Attribute::unescape_value`, so it fails to compile (`error[E0599]: no method named unescape_value`). The out-of-workspace PHP and Python sdist builds run `cargo generate-lockfile`, which re-resolved to the broken 0.4.4 and failed all 16 PHP extension builds; the exact pin keeps them on 0.4.3. biblib 0.5.x is not yet an option (it drops the `regex` feature xberg uses). (`crates/xberg/Cargo.toml`)
+- **build/elixir-nif**: regenerated `packages/elixir/native/xberg_nif/Cargo.lock`, which was stale — it pinned `kreuzberg-orp 0.1.1` / `kreuzberg-gliner-rs 0.2.0` while xberg rc.35 requires `orp ^0.1.2` / `gliner ^0.2.1`, making `cargo build` unsatisfiable (`failed to select a version for kreuzberg-orp`). The lock now resolves orp 0.1.2 + gliner 0.2.1 (and syncs tree-sitter-language-pack to 1.10.9). (`packages/elixir/native/xberg_nif/Cargo.lock`)
 - **build/cli-gnu**: the gnu Linux CLI now builds natively (plain `cargo build` on `ubuntu-22.04`/`ubuntu-22.04-arm`) instead of via `cargo-zigbuild`. The CLI executable statically links C++ deps (tesseract/leptonica/libheif) that reference GNU libstdc++ `__cxx11` symbols, which zig's bundled libc++ does not provide — a PIE executable link failed with an `ld.lld: undefined symbol: std::...` storm. Native gcc links real libstdc++ and lets ORT's glibc prebuilt load at runtime. glibc floor moves from zigbuild's 2.28 to the runner's 2.35; older/Alpine systems remain served by the static musl CLI. (`.github/workflows/publish.yaml`)
 - **build/node-musl**: the Alpine musl Node binding build re-adds the edge `libssl3`/`libcrypto3` runtime libs. Dropping `openssl-dev`/`openssl-libs-static` in the rustls migration also removed the edge OpenSSL 3.4+ runtime that Alpine edge's `node` binary relocates against, breaking it with `Error relocating /usr/bin/node: EVP_MD_CTX_get_size_ex: symbol not found`. The Rust build still uses rustls (no openssl); only the runtime shared libs node needs are restored. (`docker/Dockerfile.musl-node`)
 - **build/node-musl**: the Alpine musl Node binding build sets `CC_/CXX_<target>=gcc/g++` so `cc-rs` (used by `ring`, tesseract) finds a compiler on napi-rs's cross path. It previously failed with `error occurred in cc-rs: failed to find tool "aarch64-linux-musl-gcc"` — the cargo `*_LINKER` vars were set but `cc-rs` resolves the *compiler* via its own per-target `CC_`/`CXX_` lookup. (`docker/Dockerfile.musl-node`)
 - **Ruby gem now ships precompiled platform binaries.** `ruby-gem` only ran `rake build`, emitting a
-  source-only gem on every matrix leg, so `gem install kreuzberg` compiled the native extension from
+  source-only gem on every matrix leg, so `gem install xberg` compiled the native extension from
   source for every consumer. It now runs `rake compile && rake build` to produce platform-tagged gems
   (`-x86_64-linux`, `-aarch64-linux`, `-arm64-darwin`) and drops the duplicate source gem on
   non-canonical builders. (`.github/workflows/publish.yaml`)
@@ -53,10 +53,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   passes `multi-platform-ffi-dir`/`module-name`/`ffi-lib-name`/`update-existing` to `publish-zig`.
   (`.github/workflows/publish.yaml`)
 - **WASM package now publishes its `pkg/` entry points.** The `wasm-bundle` artifact omitted
-  `crates/kreuzberg-wasm/pkg/**`, yet `package.json` `main`/`module`/`types` point under `pkg/`, so the
-  published `@kreuzberg/wasm` tarball was missing its entry points. `pkg/**` + `package.json` are now
+  `crates/xberg-wasm/pkg/**`, yet `package.json` `main`/`module`/`types` point under `pkg/`, so the
+  published `@xberg/wasm` tarball was missing its entry points. `pkg/**` + `package.json` are now
   included. (`.github/workflows/publish.yaml`)
-- **npm provenance restored.** The main `@kreuzberg/node` package, its platform sub-packages, and the
+- **npm provenance restored.** The main `@xberg/node` package, its platform sub-packages, and the
   WASM package now publish with `provenance: "true"` (previously only the CLI proxy did).
   (`.github/workflows/publish.yaml`)
 - **CLI release no longer races/skips musl binaries.** `upload-cli-release` depended only on
@@ -68,9 +68,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **PHP 8.5 extension is now built.** The `php-extension` matrix added `8.5` (the Windows leg already
   uses the `vs17` compiler it needs), so PHP 8.5 users get a precompiled extension.
 - **Node main package waits for its platform sub-packages to index.** `publish-node` now
-  `wait-for-package`s on `@kreuzberg/node-linux-{x64,arm64}-gnu` before publishing the main package,
-  closing the window where `npm install @kreuzberg/node` could fail on unresolved optionalDependencies.
-- **crates.io idempotency now covers `kreuzberg-libheif`.** `check-cratesio` checked five crates but
+  `wait-for-package`s on `@xberg/node-linux-{x64,arm64}-gnu` before publishing the main package,
+  closing the window where `npm install @xberg/node` could fail on unresolved optionalDependencies.
+- **crates.io idempotency now covers `xberg-libheif`.** `check-cratesio` checked five crates but
   `publish-crates` publishes six; `all_exist` now includes libheif so a libheif-only-missing version
   is not skipped.
 - **`release-finalize` now gates on the Swift manifest job**, and Elixir checksum generation passes
@@ -79,7 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **CLI `xberg` alias + offline `kreuzberg-cli` PyPI wheels.** The standalone CLI is now also installed as `xberg` (a shorter alias) across every channel: the `kreuzberg-cli` PyPI/npm proxies expose both `kreuzberg` and `xberg` console scripts, `scripts/install.sh` and the Homebrew formula symlink `xberg` → `kreuzberg`. Additionally, `pip install kreuzberg-cli` / `uv tool install kreuzberg-cli` now resolves a **platform-specific wheel with the native binary bundled** (built per-target in CI via a hatchling build hook that injects the matching `kreuzberg-cli-<triple>` release binary and tags the wheel `manylinux_2_28`/`musllinux_1_2`/`macosx`/`win_amd64`), so the CLI is ready instantly and offline — no first-run GitHub download. The pure-Python sdist keeps the runtime-download fallback for unknown platforms. (`cli-proxy/pypi/`, `cli-proxy/npm/`, `scripts/install.sh`, `.github/workflows/publish.yaml`)
+- **CLI `xberg` alias + offline `xberg-cli` PyPI wheels.** The standalone CLI is now also installed as `xberg` (a shorter alias) across every channel: the `xberg-cli` PyPI/npm proxies expose both `xberg` and `xberg` console scripts, `scripts/install.sh` and the Homebrew formula symlink `xberg` → `xberg`. Additionally, `pip install xberg-cli` / `uv tool install xberg-cli` now resolves a **platform-specific wheel with the native binary bundled** (built per-target in CI via a hatchling build hook that injects the matching `xberg-cli-<triple>` release binary and tags the wheel `manylinux_2_28`/`musllinux_1_2`/`macosx`/`win_amd64`), so the CLI is ready instantly and offline — no first-run GitHub download. The pure-Python sdist keeps the runtime-download fallback for unknown platforms. (`cli-proxy/pypi/`, `cli-proxy/npm/`, `scripts/install.sh`, `.github/workflows/publish.yaml`)
 - **Swift publish now substitutes the XCFramework checksum and creates the `release/swift/<version>`
   branch.** The publish workflow built and uploaded the artifactbundle but never substituted
   `__ALEF_SWIFT_CHECKSUM__` in `Package.swift` or created the branch the alef-generated Swift
@@ -88,21 +88,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   patches `Package.swift`, and pushes the checksummed commit to both the release tag and
   `refs/heads/release/swift/<version>` (matching the other polyglot repos).
   (`.github/workflows/publish.yaml`)
-- **bindings/node**: the npm package now ships **musl** (Alpine/static-libc) native binaries for `linux-x64-musl` and `linux-arm64-musl`, built in an Alpine container (`docker/Dockerfile.musl-node`, system ONNX Runtime + libheif, napi-rs cross via the musl Rust target). napi-rs already selects gnu vs musl at runtime via each platform package's `libc` field, and `crates/kreuzberg-node/package.json` already declared the `@kreuzberg/node-linux-{x64,arm64}-musl` optionalDependencies — they were just never built. Alpine/musl Node users now get a working native binding instead of a missing optional dependency. (Go and Dart musl are not yet shipped — Go cgo cannot select libc flavor at the consumer's build, and Dart's musl path needs alef-generator changes to its native-lib downloader.)
+- **bindings/node**: the npm package now ships **musl** (Alpine/static-libc) native binaries for `linux-x64-musl` and `linux-arm64-musl`, built in an Alpine container (`docker/Dockerfile.musl-node`, system ONNX Runtime + libheif, napi-rs cross via the musl Rust target). napi-rs already selects gnu vs musl at runtime via each platform package's `libc` field, and `crates/xberg-node/package.json` already declared the `@xberg/node-linux-{x64,arm64}-musl` optionalDependencies — they were just never built. Alpine/musl Node users now get a working native binding instead of a missing optional dependency. (Go and Dart musl are not yet shipped — Go cgo cannot select libc flavor at the consumer's build, and Dart's musl path needs alef-generator changes to its native-lib downloader.)
 - **markdown-footnotes**: new pure-Rust `markdown-footnotes` feature with a standalone footnote and citation parsing API (#649), exposed across every binding. Layer 1 (standard markdown): `find_footnote_anchors` returns `[^label]` use-sites with byte offsets (definition sites excluded), `parse_footnote_definitions` returns `[^label]: ...` definitions including multi-line continuations. Layer 2 (structured citation convention): `parse_citations` parses the `[^srcN]: source, locator, excerpt: "..."` block after a `---` + `<!-- citations -->` delimiter into `Citation { label, source, locator, excerpt }`, `find_inference_markers` returns byte offsets of `[*inference*]` markers, `find_unmarked_claims` returns claim-bearing lines lacking any citation/inference marker, and `verify_excerpt` checks an excerpt appears verbatim (exact or whitespace-normalized) in source text. Pure-Rust (no ORT), included in the `analysis` and `no-ort-target` aggregates, so it is available on WASM and Android.
 - **chunking/tokenizers**: `TokenizerSource` enum (`Pretrained(&str)`, `File(&Path)`, `Bytes(&[u8])`) lets callers supply a tokenizer without relying on the HuggingFace Hub. `try_count_tokens(text, source)` counts tokens via the supplied source and surfaces load/encode errors (no silent fallback). `preload_tokenizer(source)` warms the in-process cache at startup. All three are gated behind `chunking-tokenizers` and marked `alef(skip)`. `count_tokens` back-compat is unchanged.
 
 ### Removed
 
-- **build/heic**: removed the static `embedded-libheif` Cargo feature from `kreuzberg-libheif`. `libheif` is LGPL-licensed and Kreuzberg links it **dynamically only** (via `pkg-config`/system shared library); the static-build option was an unused compliance footgun (statically linking an LGPL library). The `heic` feature remains optional and is omitted from the standalone CLI release binaries; container images redistribute the unmodified upstream `libheif` as a replaceable `.so`. Added `THIRD_PARTY_LICENSES.md` documenting the libheif (and codec-plugin) licenses and the dynamic-linking compliance posture.
+- **build/heic**: removed the static `embedded-libheif` Cargo feature from `xberg-libheif`. `libheif` is LGPL-licensed and Xberg links it **dynamically only** (via `pkg-config`/system shared library); the static-build option was an unused compliance footgun (statically linking an LGPL library). The `heic` feature remains optional and is omitted from the standalone CLI release binaries; container images redistribute the unmodified upstream `libheif` as a replaceable `.so`. Added `THIRD_PARTY_LICENSES.md` documenting the libheif (and codec-plugin) licenses and the dynamic-linking compliance posture.
 
 ### Fixed
 
 - **build/linux-glibc**: the prebuilt gnu Linux release binaries (CLI, Go/Java/C#/Dart/C FFI, Elixir NIF, Node) now target a **glibc 2.28 floor** instead of inheriting the CI runner's glibc 2.39, so they run on RHEL 8/9, Debian 12, Ubuntu 22.04, and Amazon Linux 2 — not just bleeding-edge distros. The builds compile via `cargo-zigbuild` against a pinned `*-linux-gnu.2.28` target (Zig's clang backend also sidesteps GCC-14's glibc≥2.38 `__isoc23_*` symbols); the statically-linked tesseract/leptonica C++ is rebuilt at the same floor. musl/macOS/Windows artifacts are unchanged. Lands via the `xberg-io/actions` build actions (opt-in `glibc-version` input); the Python wheels were already at manylinux_2_28 (glibc 2.28).
-- **build/wasm**: `kreuzberg-wasm` again builds for `wasm32-unknown-unknown`. The optional `jsonschema` dependency (pulled in by the `presets` feature, which is part of `no-ort-target`/`wasm-target`) was compiled with default features, whose `resolve-http`/`resolve-file` resolvers emit a `compile_error!` on `wasm32`. It is now declared `default-features = false`; the only `jsonschema` usages (`validator_for`, `draft202012::new` on self-contained in-memory schemas) need no remote/file `$ref` resolution, so this is behaviour-preserving on every target and also removes an SSRF-capable remote-`$ref` path. Fixes the WASM publish job that failed on rc.31.
+- **build/wasm**: `xberg-wasm` again builds for `wasm32-unknown-unknown`. The optional `jsonschema` dependency (pulled in by the `presets` feature, which is part of `no-ort-target`/`wasm-target`) was compiled with default features, whose `resolve-http`/`resolve-file` resolvers emit a `compile_error!` on `wasm32`. It is now declared `default-features = false`; the only `jsonschema` usages (`validator_for`, `draft202012::new` on self-contained in-memory schemas) need no remote/file `$ref` resolution, so this is behaviour-preserving on every target and also removes an SSRF-capable remote-`$ref` path. Fixes the WASM publish job that failed on rc.31.
 - **deps**: bumped workspace dependencies to latest (tree-sitter-language-pack 1.10, liter-llm 1.8, html-to-markdown-rs 3.7, pdf_oxide 0.3.67, mail-parser 0.11.4, cc 1.2.65) and the kotlin-android generated Gradle deps to latest stable (via alef).
 - **build/macos-wheel**: pinned the macOS Python-wheel runner to `macos-15` (was `macos-latest`). The `macos-latest` image rolled forward to macOS 26 "Tahoe", whose Homebrew HEIF/AV1 bottles (libheif, libx265, libaom, libvmaf, libsharpyuv, libde265) are built with an `LC_BUILD_VERSION` minimum of 26.0; that exceeds the wheel's `MACOSX_DEPLOYMENT_TARGET=15.0`, so `delocate-wheel` refused to vendor them (`Library dependencies do not satisfy target MacOS version 15.0`) and the arm64 wheel build failed. Pinning the runner keeps the bottle min-target aligned with the 15.0 wheel tag.
-- **deps/bindings**: synced the per-binding vendored Cargo.lock files (`packages/elixir/native/kreuzberg_nif`, `packages/r/src/rust`) to the workspace dependency bump above. `task upgrade` updated the workspace and Ruby native locks but left these two behind, so they still pinned `cc 1.2.64` while `kreuzberg-tesseract` now requires `cc ^1.2.65` (plus stale `html-to-markdown-rs`/`liter-llm`/`tree-sitter-language-pack`/`mail-parser`). The Elixir NIF builds in an offline Alpine container that cannot re-resolve, so the raised floor surfaced as `failed to select a version for cc` (exit 101) in the musl NIF publish jobs; the R extendr build would have hit the same wall. Both locks now match the workspace versions exactly.
+- **deps/bindings**: synced the per-binding vendored Cargo.lock files (`packages/elixir/native/xberg_nif`, `packages/r/src/rust`) to the workspace dependency bump above. `task upgrade` updated the workspace and Ruby native locks but left these two behind, so they still pinned `cc 1.2.64` while `xberg-tesseract` now requires `cc ^1.2.65` (plus stale `html-to-markdown-rs`/`liter-llm`/`tree-sitter-language-pack`/`mail-parser`). The Elixir NIF builds in an offline Alpine container that cannot re-resolve, so the raised floor surfaced as `failed to select a version for cc` (exit 101) in the musl NIF publish jobs; the R extendr build would have hit the same wall. Both locks now match the workspace versions exactly.
 - **bindings/enums**: regenerated with alef 0.26.6 — externally-tagged enums (those carrying a serde tag, e.g. the `{ "type": ... }` form) now serialize through `serde_json::json!({ "<tag>": s })` in the PyO3 and Magnus data-enum bridges instead of emitting the bare variant string, so the JSON the bindings hand back round-trips through serde's tagged representation. Untagged enums are unchanged (bare `to_string`).
 - **bindings/swift**: regenerated with alef 0.26.5 — the Swift JSON-string overloads now emit positional arguments for underscore-prefixed (positional) Rust params, fixing an `extraneous argument labels` compile error in the generated `embedTextsAsync` wrapper that broke the Swift e2e build.
 - **build/swift-bundle**: the Swift artifact bundle's Linux slices (`aarch64`/`x86_64-unknown-linux-gnu`, cross-compiled from macOS via `cargo zigbuild`) now build OpenSSL from source via the new `openssl-vendored` feature, fixing `openssl-sys: Could not find directory of OpenSSL installation`. This unblocks the bundle upload and, transitively, the Elixir Hex and Zig publishes (which gate on the finalize-release step). Desktop/server still link the system OpenSSL; corporate-CA/`SSL_CERT_FILE` trust (#1146) is preserved.
@@ -112,7 +112,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **server/docker**: the API server and MCP HTTP server now shut down gracefully on `SIGTERM`/`SIGINT` via `tokio::signal` + axum `with_graceful_shutdown`, and the Docker images run under `tini` as PID 1 with an exec-form CMD (#1147). Previously `docker stop`/`docker compose down` hung for the full 10s grace period and the container was SIGKILLed (exit 137), causing false crash alerts. The `api` feature now enables `tokio/signal`.
 - **net/tls**: model downloads from HuggingFace Hub now trust the operating-system certificate store and honor `SSL_CERT_FILE`/`SSL_CERT_DIR`, fixing failures behind corporate TLS-MITM proxies (#1146). `hf-hub`'s ureq Agent was pinned to rustls with the static `webpki-roots` set, which ignores enterprise CAs and the system store; enabling `hf-hub`'s `native-tls` feature (and switching the unified `ureq` dependency to `native-tls`) makes it use the platform TLS provider — OpenSSL on Linux (honoring `SSL_CERT_FILE`/`SSL_CERT_DIR`), Secure Transport on macOS, schannel on Windows — across every model-download path (embeddings, reranker, layout detection, PaddleOCR, transcription, NER). Note: the chunking `TokenizerSource::Pretrained` path downloads via the `tokenizers` crate's separate hf-hub 0.4 (non-WASM), which is not covered by this change; behind a proxy, supply the tokenizer via `TokenizerSource::File`/`Bytes` instead.
 - **mcp**: corrected tool annotations so MCP clients receive accurate safety/optimization hints. `cache_clear` is now marked non-read-only (`read_only_hint=false`) to match its `destructive_hint`; `cache_warm` is marked non-read-only and open-world (it writes the cache and downloads from HuggingFace); `embed_text` is marked open-world (it may fetch a model); and `extract_structured` is marked non-idempotent and open-world (it calls an external LLM). The nine local read-only extraction/info tools are unchanged.
-- **bindings**: regenerated with alef 0.26.0, resolving cross-language e2e failures. Java/C#/Zig no longer bind the non-existent `kreuzberg_registry_global` symbol (was an `ExceptionInInitializerError`/`NoClassDefFoundError` at Java class-init, #1131); the Node plugin trait-bridges hold a persistent `ObjectRef` released in `dispose()`/`Drop` instead of pinning the libuv event loop; the Elixir NIF no longer aborts `on_load` with a duplicate `known_models/0`; the Swift facade no longer references `presets`/`heuristics`/`structured` types the RustBridge layer never compiles; the Kotlin/Android e2e build gains the JUnit Platform launcher; and the Zig e2e `build.zig` links `libheif`.
+- **bindings**: regenerated with alef 0.26.0, resolving cross-language e2e failures. Java/C#/Zig no longer bind the non-existent `xberg_registry_global` symbol (was an `ExceptionInInitializerError`/`NoClassDefFoundError` at Java class-init, #1131); the Node plugin trait-bridges hold a persistent `ObjectRef` released in `dispose()`/`Drop` instead of pinning the libuv event loop; the Elixir NIF no longer aborts `on_load` with a duplicate `known_models/0`; the Swift facade no longer references `presets`/`heuristics`/`structured` types the RustBridge layer never compiles; the Kotlin/Android e2e build gains the JUnit Platform launcher; and the Zig e2e `build.zig` links `libheif`.
 - **embeddings/reranking**: the synchronous `embed_texts` and `rerank` entry points no longer panic with "Cannot drop a runtime in a context where blocking is not allowed" when invoked from inside a caller's blocking context (e.g. a `spawn_blocking` task in server mode). The no-ambient-runtime path previously built a per-call `new_current_thread` runtime and dropped it inside that blocking context; both paths now drive the future on a shared, process-wide multi-thread runtime (`core::runtime::global_runtime`) that is never dropped — also a ~100x speedup over per-call runtime construction. The sync extraction wrappers and the structured-extraction sync path now share the same runtime, collapsing three duplicate definitions into one.
 
 ## [5.0.0-rc.27] - 2026-06-21
@@ -125,15 +125,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **pdf**: Two-column layout headings in column 2 now appear in both markdown output AND `result.elements`. Previously, the hierarchy/elements extraction pipeline used physical (non-column-aware) span ordering while markdown extraction used column-aware reading order, causing column-2 headings to vanish from the elements array while remaining in markdown output. The fix: `pdf/oxide/hierarchy.rs` now calls `extract_page_text_with_options(..., ReadingOrder::ColumnAware)` instead of `extract_spans()`, matching the markdown path. Issue #1098: "3.4. Pharmacokinetics" heading on page 5 now surfaces correctly in elements.
 
-- **concurrency**: `init_thread_pools` no longer silently swallows the global-Rayon-pool initialization race. When the global pool is already initialized — typically because the host application (or another library) built it first — kreuzberg now reuses that existing, externally-provided pool and logs the outcome at debug level, instead of discarding the `build_global` error with `.ok()`. A host that wants a specific pool size should build the global Rayon pool itself before invoking kreuzberg; `ConcurrencyConfig::max_threads` still applies when kreuzberg wins the race and owns the pool.
+- **concurrency**: `init_thread_pools` no longer silently swallows the global-Rayon-pool initialization race. When the global pool is already initialized — typically because the host application (or another library) built it first — xberg now reuses that existing, externally-provided pool and logs the outcome at debug level, instead of discarding the `build_global` error with `.ok()`. A host that wants a specific pool size should build the global Rayon pool itself before invoking xberg; `ConcurrencyConfig::max_threads` still applies when xberg wins the race and owns the pool.
 
 - **pdf**: PDFs with broken ligature ToUnicode CMaps no longer emit C0 control characters in extracted text. `fix_pdf_control_chars()` conservatively repairs the one well-evidenced case from the issue — U+0003 (ETX) following a letter decodes to the `ft` ligature, so "blijft" extracts as "blijft" (not "blij␃"), "Software" as "Software", and "veiligheidsvoorschriften" correctly. U+0002 (whose mapping the issue reports as ambiguous) and any other C0 control are dropped rather than guessed, since guessing corrupts unrelated words; legitimate tab/newline/carriage-return are preserved. Applies to both the pdf_oxide (default) and pdfium paths (#1135).
 
 ### Changed
 
 - **ocr**: Multi-language OCR support via config. `OcrConfig.language` and `OcrPipelineStage.language` now accept both single language codes (`"eng"`) and lists (`["eng", "deu"]`) for deserialiation. Internally, languages are stored as `Vec<String>` and joined with `"+"` for Tesseract (e.g., `["eng", "deu"]` → `"eng+deu"`). Backward compatibility: old configs with single-string language codes deserialize correctly; Tesseract's `"+"` format is automatically split into a list. This fixes issue #1139 — multi-language OCR can now be set from config files and the Python API (#1139).
-- **alef**: bump `alef_version` to 0.25.59 and regenerate all bindings, FFI, e2e suites, and API docs. Completes the extendr (R) binding surface — slice `&[&str]` argument conversion, optional-only `Nullable<&T>` promotion, integer cast-back at call sites, and explicit `KreuzbergError → extendr_api::Error` conversion — so the generated `kreuzberg-r` crate now compiles, alongside the 0.25.58 long-signature parameter-type fix.
-- **php**: the Packagist package is now published as `xberg-io/kreuzberg`; READMEs, the root README badges, and `composer.json` reference the new coordinates.
+- **alef**: bump `alef_version` to 0.25.59 and regenerate all bindings, FFI, e2e suites, and API docs. Completes the extendr (R) binding surface — slice `&[&str]` argument conversion, optional-only `Nullable<&T>` promotion, integer cast-back at call sites, and explicit `XbergError → extendr_api::Error` conversion — so the generated `xberg-r` crate now compiles, alongside the 0.25.58 long-signature parameter-type fix.
+- **php**: the Packagist package is now published as `xberg-io/xberg`; READMEs, the root README badges, and `composer.json` reference the new coordinates.
 
 ## [5.0.0-rc.26] - 2026-06-20
 
@@ -151,8 +151,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **derive**: `result.pages[*].content` now respects `output_format`. Previously, per-page content was always plain text even when `OutputFormat::Markdown`, `Djot`, or `Html` was requested — only `result.content` was formatted by `apply_output_format`. The new `apply_page_content_format` step re-renders each page's element subset with the same renderer used for the full document. Pages built from prebuilt extractor content that have no page-tagged elements (native PDF, image OCR, Excel, PPTX) are returned unchanged (#1094).
 - **ner**: gate the crate-root `LlmBackend` re-export out on `x86_64-linux-android`. The `llm` module is cfg'd out there while `android-target` enables `ner-llm`, so the re-export hit `E0432` (CI Mobile).
-- **docker**: copy `kreuzberg-candle-ocr` into the full/core/cli images. It is a new optional path-dependency of the core crate, so cargo must read its `Cargo.toml` during workspace resolution even when the feature is off (Publish Docker).
-- **ci(rust)**: exclude `kreuzberg-candle-ocr` from the `--all-features` workspace test/build on every platform — its `metal` feature pulls Apple-only `objc2-metal` (breaks Linux) and its `cuda` feature pulls `cudarc` which needs `nvcc` (breaks macOS).
+- **docker**: copy `xberg-candle-ocr` into the full/core/cli images. It is a new optional path-dependency of the core crate, so cargo must read its `Cargo.toml` during workspace resolution even when the feature is off (Publish Docker).
+- **ci(rust)**: exclude `xberg-candle-ocr` from the `--all-features` workspace test/build on every platform — its `metal` feature pulls Apple-only `objc2-metal` (breaks Linux) and its `cuda` feature pulls `cudarc` which needs `nvcc` (breaks macOS).
 - **ci(e2e)**: bump kotlin-android Gradle to 9.6.0 (Android Gradle Plugin 9.2.0 requires Gradle >= 9.4.1).
 - **lint**: exclude ai-rulez-generated dirs (`.agents/`, `.cursor/`, `.github/{agents,commands,skills}`) from prek hooks; CI regenerates them and oxfmt was failing on the generated output.
 - **tests**: fix five tests failing under `--features full` — stale `id` serde-skip assertion, the unregistered `/rerank` test route, SVG rasterization under the `svg` feature, the transcription duration fixture, and `extract_images` in the inline-OCR test.
@@ -168,8 +168,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **heuristics/diff**: derive `Default` on `ExtractionDiff`, `EmbeddedChanges`, and `NoChunkingReason`, and add placeholder `Default` impls for `ChunkPlan` and `ChunkingReason`. The generated Python (`#[serde(skip)]` DTO fields, data-enum wrappers) and Node (data-enum binding→core conversion) bindings require these payload types to be `Default`-constructible; without them the binding crates failed to compile (`EmbeddedChanges`/`ExtractionDiff`/`NoChunkingReason`/`ChunkPlan`/`ChunkingReason: Default` not satisfied).
-- **php**: regenerate against the alef php-backend fixes for data-carrying enums — `ChunkingDecision`/`StructuredCallMode` returns now serialize to JSON/string, `serde_json::Value` params are accepted as JSON strings, `BTreeMap` params are collected from the PHP hash, fallible `Vec<PageRange>` array params force a `PhpResult` return, and the `EnrichStatus` flat-enum conversion no longer assumes a core `Default`. `kreuzberg-php` now compiles.
-- **ci(publish)**: add `kreuzberg-candle-ocr` to the crates.io publish set and its existence gate. It is a new workspace member and path-dependency of `kreuzberg`, so `cargo publish kreuzberg` fails unless it is published first.
+- **php**: regenerate against the alef php-backend fixes for data-carrying enums — `ChunkingDecision`/`StructuredCallMode` returns now serialize to JSON/string, `serde_json::Value` params are accepted as JSON strings, `BTreeMap` params are collected from the PHP hash, fallible `Vec<PageRange>` array params force a `PhpResult` return, and the `EnrichStatus` flat-enum conversion no longer assumes a core `Default`. `xberg-php` now compiles.
+- **ci(publish)**: add `xberg-candle-ocr` to the crates.io publish set and its existence gate. It is a new workspace member and path-dependency of `xberg`, so `cargo publish xberg` fails unless it is published first.
 
 ## [5.0.0-rc.24] - 2026-06-19
 
@@ -179,7 +179,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **presets**: derive `Clone` on `Registry`. The Dart FRB mirror crate generates a borrowed-return accessor for the `Registry::global()` singleton that clones the borrowed value before the owned `From` conversion (`Mirror::from(v.clone())`); without `Clone` on `Registry` this failed to compile (`From<&kreuzberg::Registry>` not satisfied). `Preset` already derived `Clone`.
+- **presets**: derive `Clone` on `Registry`. The Dart FRB mirror crate generates a borrowed-return accessor for the `Registry::global()` singleton that clones the borrowed value before the owned `From` conversion (`Mirror::from(v.clone())`); without `Clone` on `Registry` this failed to compile (`From<&xberg::Registry>` not satisfied). `Preset` already derived `Clone`.
 - **android**: add `classification`, `captioning`, and `ner-llm` to the `android-target` aggregate feature. These are LLM-driven (liter-llm/HTTP) and do not depend on ONNX Runtime, so they are safe on the no-ORT Android emulator surface. The Dart FRB dispatch (`frb_generated.rs`) is not feature-aware and referenced `classify_document`, `caption_image`, and `LlmBackend` unconditionally, so the binding crate failed to compile under `android-target` without them (E0425).
 - **alef**: bump `alef_version` to 0.25.47 and regenerate all bindings. Picks up the Dart rust-crate codegen fixes — converted slice arguments now borrow correctly, and opaque `use`/`impl` blocks are cfg-gated to match their source items.
 
@@ -193,22 +193,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Orphan `docs/reference/api-gleam.md` left behind by `dc268c1c0e chore: drop Gleam binding entirely`. CI Docs `task docs:build:strict` aborted on 8 `unresolved link reference` warnings from this file (e.g. `[\`BatchFileItem\`]`, `[0.0, 1.0]`, `["<https://example.com">]` patterns the strict link checker reads as broken markdown references). The Gleam binding itself was removed earlier; this is just nav cleanup.
-- **java**: removed stale hand-authored trait-bridge overlay in `packages/java/src/main/java/dev/kreuzberg/` (9 files: `IPostProcessor`, `IOcrBackend`, `IValidator`, `IEmbeddingBackend`, `OcrBackendBridge`, `PostProcessorBridge`, `ValidatorBridge`, `EmbeddingBackendBridge`, `package-info`). Alef's trait-bridge code generation now produces these files correctly in the canonical `packages/java/dev/kreuzberg/` location; the overlay was leftover from before alef handled trait bridges and carried only stale unused imports and formatting differences. Both trees were being compiled by Maven's `sourceDirectory=basedir` config, triggering duplicate-class errors and checkstyle violations. The canonical generated copies are now the sole source.
+- **java**: removed stale hand-authored trait-bridge overlay in `packages/java/src/main/java/dev/xberg/` (9 files: `IPostProcessor`, `IOcrBackend`, `IValidator`, `IEmbeddingBackend`, `OcrBackendBridge`, `PostProcessorBridge`, `ValidatorBridge`, `EmbeddingBackendBridge`, `package-info`). Alef's trait-bridge code generation now produces these files correctly in the canonical `packages/java/dev/xberg/` location; the overlay was leftover from before alef handled trait bridges and carried only stale unused imports and formatting differences. Both trees were being compiled by Maven's `sourceDirectory=basedir` config, triggering duplicate-class errors and checkstyle violations. The canonical generated copies are now the sole source.
 
 ### Fixed
 
-- **alef**: re-add `excluded_default_features = ["heic"]` to `[crates.dart]` and `[crates.swift]` — it regressed out of `alef.toml` after the original 0.25.30 fix, so the generated `packages/{dart,swift}/rust/Cargo.toml` `[features] default` arrays pulled `heic` again. A plain `cargo check -p kreuzberg-{dart,swift} --target aarch64-apple-ios` enables default features, and `heic = ["kreuzberg/heic"]` drags in `libheif-sys`, which has no iOS/Android cross-compile story (`pkg-config has not been configured to support cross-compilation`). `heic` stays defined as an opt-in feature for desktop callers; iOS fails only on libheif (ORT cross-compiles fine), so dropping it from `default` is sufficient for the iOS lanes.
-- **ci**: pass `--no-default-features --features android-target` to the `cargo ndk check` steps for `kreuzberg-dart` and `kreuzberg-ffi` in `ci-mobile.yaml`. The Android NDK targets cannot cross-compile either `libheif-sys` (heic) or `ort-sys` (ORT), so the Android lanes need the pure-Rust `android-target` aggregate, not the full default feature set.
+- **alef**: re-add `excluded_default_features = ["heic"]` to `[crates.dart]` and `[crates.swift]` — it regressed out of `alef.toml` after the original 0.25.30 fix, so the generated `packages/{dart,swift}/rust/Cargo.toml` `[features] default` arrays pulled `heic` again. A plain `cargo check -p xberg-{dart,swift} --target aarch64-apple-ios` enables default features, and `heic = ["xberg/heic"]` drags in `libheif-sys`, which has no iOS/Android cross-compile story (`pkg-config has not been configured to support cross-compilation`). `heic` stays defined as an opt-in feature for desktop callers; iOS fails only on libheif (ORT cross-compiles fine), so dropping it from `default` is sufficient for the iOS lanes.
+- **ci**: pass `--no-default-features --features android-target` to the `cargo ndk check` steps for `xberg-dart` and `xberg-ffi` in `ci-mobile.yaml`. The Android NDK targets cannot cross-compile either `libheif-sys` (heic) or `ort-sys` (ORT), so the Android lanes need the pure-Rust `android-target` aggregate, not the full default feature set.
 - **rustdoc**: qualify four unresolved intra-doc links that failed `rustdoc-lint` (`-D rustdoc::broken_intra_doc_links`) under `--features=full`: `ChunkMetadata::heading_path` (`chunking/rag.rs`), `EntityCategory` (`enrichment/mod.rs`), and `ExtractionResult` ×2 (`heuristics/multidoc.rs`) now use explicit `crate::types::…` paths so they resolve outside their defining modules.
-- **ci**: point the root `tsconfig.json` project references at the real TypeScript projects (`packages/node`, `e2e/node`, `e2e/wasm`). The previous references (`crates/kreuzberg-node`, `crates/kreuzberg-wasm`, `packages/typescript/core`, `e2e/wasm-workers`) were stale after the TS surface moved out of the Rust crate dirs, so `tsc --noEmit` aborted with `TS6053: File not found`.
+- **ci**: point the root `tsconfig.json` project references at the real TypeScript projects (`packages/node`, `e2e/node`, `e2e/wasm`). The previous references (`crates/xberg-node`, `crates/xberg-wasm`, `packages/typescript/core`, `e2e/wasm-workers`) were stale after the TS surface moved out of the Rust crate dirs, so `tsc --noEmit` aborted with `TS6053: File not found`.
 - **ci**: exclude `tools/benchmark-harness/scripts/` from the `pmd` hook. The Java subprocess benchmark runner deliberately catches `Error`/`Throwable` to emit a clean failure record, tripping PMD's `AvoidCatchingGenericException` — irrelevant for auxiliary benchmark tooling.
-- **docs**: `docs/features.md` linked the candle VLM-OCR attribution notes to `../ATTRIBUTIONS.md` (a repo-root file outside the docs tree), which `task docs:build:strict` resolves as three non-existent internal pages (`features.md:271/298/325`) and aborts on under `--strict`. The links now point to the canonical GitHub URL (`https://github.com/xberg-io/kreuzberg/blob/main/ATTRIBUTIONS.md`), matching the brand rule that docs link outward to the source repo. Introduced by `082b212931 docs(ocr): document candle-vlm-ocr backends`; CI Docs was last green at `de14720cdb`.
-- **alef**: bump `alef_version` to 0.25.39 and regenerate all bindings. Picks up four fixes that affect the kreuzberg surface. (1) **Kotlin/Android DTO instance methods** (e.g. `ExtractionConfig`, `RedactionConfig`, `ServerConfig`, `PaddleOcrConfig` withers) were emitted as broken top-level functions after the data-class constructor `)` with snake_case locals and references to non-existent native methods, breaking compilation; they are now emitted inside the class body as camelCase member stubs that throw `UnsupportedOperationException` with reconstruct-via-Builder guidance. (2) **Java** stops emitting throwing `UnsupportedOperationException` stubs for `Self`-returning DTO/enum methods (no JNI/FFM symbol exists for them yet — absence beats a stub that compiles but misleads), and restores the `true` default for boxed `@Nullable Boolean` `#[serde(default)]` fields (e.g. `ChunkingConfig.trim`, `EmbeddingConfig.normalize`) so omitted JSON no longer surfaces `null` from the accessor. (3) The new `OcrBackend::emits_structured_markdown` vtable method is now wired through the full FFI/native bridge surface (FFI struct + initializers, C header, Go/Zig/Dart/JNI/node bridges), fixing the rc.20 `missing field emits_structured_markdown in initializer of KreuzbergOcrBackendVTable` native-build break. (4) Enum associated static-factory methods are now collected and surfaced. Also carries the 0.25.36 cfg-variant dedup completeness (pyo3/napi/wasm/zig/dart FRB mirror) and the Java `marshal_optional_bytes.jinja` template registration. (5) **Duplicate-definition build breaks** unmasked once the FFI vtable compiled past `emits_structured_markdown`: the swift Rust crate emitted `pub fn token_counter_noop` twice for own-block opaque types (`TokenCounter`, E0428), and the PHP `#[php_impl]` block emitted `download_model`/`default_model_name`/`known_models` three times each from a `ner-onnx` cfg-pair plus an unconditional re-export (E0592) — alef 0.25.39 consolidates noop emission to a single source and deduplicates the PHP Rust surface. Also includes 0.25.38's napi map-return wrapping and pyo3 enum-factory-staticmethod handling.
+- **docs**: `docs/features.md` linked the candle VLM-OCR attribution notes to `../ATTRIBUTIONS.md` (a repo-root file outside the docs tree), which `task docs:build:strict` resolves as three non-existent internal pages (`features.md:271/298/325`) and aborts on under `--strict`. The links now point to the canonical GitHub URL (`https://github.com/xberg-io/xberg/blob/main/ATTRIBUTIONS.md`), matching the brand rule that docs link outward to the source repo. Introduced by `082b212931 docs(ocr): document candle-vlm-ocr backends`; CI Docs was last green at `de14720cdb`.
+- **alef**: bump `alef_version` to 0.25.39 and regenerate all bindings. Picks up four fixes that affect the xberg surface. (1) **Kotlin/Android DTO instance methods** (e.g. `ExtractionConfig`, `RedactionConfig`, `ServerConfig`, `PaddleOcrConfig` withers) were emitted as broken top-level functions after the data-class constructor `)` with snake_case locals and references to non-existent native methods, breaking compilation; they are now emitted inside the class body as camelCase member stubs that throw `UnsupportedOperationException` with reconstruct-via-Builder guidance. (2) **Java** stops emitting throwing `UnsupportedOperationException` stubs for `Self`-returning DTO/enum methods (no JNI/FFM symbol exists for them yet — absence beats a stub that compiles but misleads), and restores the `true` default for boxed `@Nullable Boolean` `#[serde(default)]` fields (e.g. `ChunkingConfig.trim`, `EmbeddingConfig.normalize`) so omitted JSON no longer surfaces `null` from the accessor. (3) The new `OcrBackend::emits_structured_markdown` vtable method is now wired through the full FFI/native bridge surface (FFI struct + initializers, C header, Go/Zig/Dart/JNI/node bridges), fixing the rc.20 `missing field emits_structured_markdown in initializer of XbergOcrBackendVTable` native-build break. (4) Enum associated static-factory methods are now collected and surfaced. Also carries the 0.25.36 cfg-variant dedup completeness (pyo3/napi/wasm/zig/dart FRB mirror) and the Java `marshal_optional_bytes.jinja` template registration. (5) **Duplicate-definition build breaks** unmasked once the FFI vtable compiled past `emits_structured_markdown`: the swift Rust crate emitted `pub fn token_counter_noop` twice for own-block opaque types (`TokenCounter`, E0428), and the PHP `#[php_impl]` block emitted `download_model`/`default_model_name`/`known_models` three times each from a `ner-onnx` cfg-pair plus an unconditional re-export (E0592) — alef 0.25.39 consolidates noop emission to a single source and deduplicates the PHP Rust surface. Also includes 0.25.38's napi map-return wrapping and pyo3 enum-factory-staticmethod handling.
 
-- **alef**: bump `alef_version` to 0.25.35 and regenerate all bindings, fixing two binding-surface regressions that broke every language e2e suite on rc.20. (1) The async embedding/reranking entry points (`embed_texts_async`, `rerank_async`) vanished from generated bindings — the real implementations are generic / `alef(skip)`-marked and re-exported at the crate root under one cfg, while a no-ORT stub lives under the disjoint `not(...)` cfg; alef's extractor dropped the re-export and a dedup-by-name pass then collapsed the remaining pair, so the symbol disappeared whenever the surviving entry's cfg was inactive (`embedTextsAsync is not a function`, missing `kreuzberg_embed_texts_async` FFI symbol, `:nif_not_loaded`, etc.). alef 0.25.34's pub-use-clears-skip + dedup-by-`(name,cfg)` extractor fixes restore both cfg-gated variants. (2) Those paired variants then produced duplicate-method compile errors in single-surface bindings (Java `Kreuzberg.java` had 14 identical-signature duplicates; C#/Go/Kotlin/Swift/Dart/PHP/Ruby/Elixir + the JNI shim likewise); alef 0.25.35's shared `codegen::fn_dedup` collapses same-named cfg-variant functions to one host method for those backends while Rust-cfg-gated backends (FFI/napi/pyo3/wasm) keep both `#[cfg]` arms. Also carries the alef PHP `Default::default` gating, Swift `exclude_types` forwarder filtering, extendr `extendr_module!` cfg-gated registration, Java checkstyle/import cleanups, and the Dart `token_count` `u32→i64` cast.
-- **ci**: copy `crates/kreuzberg-candle-ocr` into the musl build images. The crate is an optional path-dep of the `kreuzberg` crate (`candle-ocr` family of features) but was never `COPY`'d into `docker/Dockerfile.musl-build`, so `cargo build` aborted at workspace resolution with `failed to read /build/crates/kreuzberg-candle-ocr/Cargo.toml: No such file or directory`. The same gap existed in `docker/Dockerfile.musl-ffi` and `docker/Dockerfile.musl-rustler`, which both depend on `kreuzberg` with the `full` feature set; all three now copy the crate alongside `kreuzberg-paddle-ocr`. The Cargo.toml strip `sed` blocks were already candle-ocr-safe (they never reference it), so the workspace member is preserved consistently.
-- **alef**: bump `alef_version` to 0.25.30 and regenerate. Adds `excluded_default_features = ["heic"]` to the `[crates.dart]` and `[crates.swift]` blocks so the generated `packages/{dart,swift}/rust/Cargo.toml` `default = [...]` arrays no longer pull `heic` — `libheif-sys` has no cross-compile story for iOS or Android NDK targets, which made CI Mobile (`cargo check kreuzberg-dart` on aarch64-apple-ios / aarch64-apple-ios-sim / aarch64-linux-android / x86_64-linux-android) and the rc.20 Publish `Build Swift package` job fail with `pkg-config has not been configured to support cross-compilation`. The `heic` feature itself is preserved as a forwarding entry so desktop callers can opt in via `--features heic`. The regen also picks up alef 0.25.28–0.25.30 fixes: Java PMD-violation suppressions, removal of generated-file `alef:hash` headers, PHP module-entry version sync, and the per-field `Default` fallback for core types without `Default`.
-- `crates/kreuzberg-ffi/tests/vtable_bytes_len.rs` initializer for `KreuzbergOcrBackendVTable` was missing the new `emits_structured_markdown` field added in rc.20, which made CI Rust on `macos-latest` and `ubuntu-24.04-arm` fail with E0063 `missing field`. The test now constructs the full vtable; no production code change required.
+- **alef**: bump `alef_version` to 0.25.35 and regenerate all bindings, fixing two binding-surface regressions that broke every language e2e suite on rc.20. (1) The async embedding/reranking entry points (`embed_texts_async`, `rerank_async`) vanished from generated bindings — the real implementations are generic / `alef(skip)`-marked and re-exported at the crate root under one cfg, while a no-ORT stub lives under the disjoint `not(...)` cfg; alef's extractor dropped the re-export and a dedup-by-name pass then collapsed the remaining pair, so the symbol disappeared whenever the surviving entry's cfg was inactive (`embedTextsAsync is not a function`, missing `xberg_embed_texts_async` FFI symbol, `:nif_not_loaded`, etc.). alef 0.25.34's pub-use-clears-skip + dedup-by-`(name,cfg)` extractor fixes restore both cfg-gated variants. (2) Those paired variants then produced duplicate-method compile errors in single-surface bindings (Java `Xberg.java` had 14 identical-signature duplicates; C#/Go/Kotlin/Swift/Dart/PHP/Ruby/Elixir + the JNI shim likewise); alef 0.25.35's shared `codegen::fn_dedup` collapses same-named cfg-variant functions to one host method for those backends while Rust-cfg-gated backends (FFI/napi/pyo3/wasm) keep both `#[cfg]` arms. Also carries the alef PHP `Default::default` gating, Swift `exclude_types` forwarder filtering, extendr `extendr_module!` cfg-gated registration, Java checkstyle/import cleanups, and the Dart `token_count` `u32→i64` cast.
+- **ci**: copy `crates/xberg-candle-ocr` into the musl build images. The crate is an optional path-dep of the `xberg` crate (`candle-ocr` family of features) but was never `COPY`'d into `docker/Dockerfile.musl-build`, so `cargo build` aborted at workspace resolution with `failed to read /build/crates/xberg-candle-ocr/Cargo.toml: No such file or directory`. The same gap existed in `docker/Dockerfile.musl-ffi` and `docker/Dockerfile.musl-rustler`, which both depend on `xberg` with the `full` feature set; all three now copy the crate alongside `xberg-paddle-ocr`. The Cargo.toml strip `sed` blocks were already candle-ocr-safe (they never reference it), so the workspace member is preserved consistently.
+- **alef**: bump `alef_version` to 0.25.30 and regenerate. Adds `excluded_default_features = ["heic"]` to the `[crates.dart]` and `[crates.swift]` blocks so the generated `packages/{dart,swift}/rust/Cargo.toml` `default = [...]` arrays no longer pull `heic` — `libheif-sys` has no cross-compile story for iOS or Android NDK targets, which made CI Mobile (`cargo check xberg-dart` on aarch64-apple-ios / aarch64-apple-ios-sim / aarch64-linux-android / x86_64-linux-android) and the rc.20 Publish `Build Swift package` job fail with `pkg-config has not been configured to support cross-compilation`. The `heic` feature itself is preserved as a forwarding entry so desktop callers can opt in via `--features heic`. The regen also picks up alef 0.25.28–0.25.30 fixes: Java PMD-violation suppressions, removal of generated-file `alef:hash` headers, PHP module-entry version sync, and the per-field `Default` fallback for core types without `Default`.
+- `crates/xberg-ffi/tests/vtable_bytes_len.rs` initializer for `XbergOcrBackendVTable` was missing the new `emits_structured_markdown` field added in rc.20, which made CI Rust on `macos-latest` and `ubuntu-24.04-arm` fail with E0063 `missing field`. The test now constructs the full vtable; no production code change required.
 - `scripts/publish/update-homebrew-formula.sh` now ensures `depends_on "libheif"` is present in the tap formula at publish time. Homebrew bottle builds were failing during rc.18/rc.19 because `libheif-sys` could not locate `libheif.pc` via `PKG_CONFIG_PATH` in the brew sandbox (the formula declared only `cmake`/`pkg-config`/`rust` as build deps). The injection is idempotent and self-healing for any future formula drift.
 - **ci**: set `MACOSX_DEPLOYMENT_TARGET=15.0` for the macOS Python wheel build (`cibw-environment-macos` in `publish.yaml`). `macos-latest` is now macOS 15 (Sequoia), and the Homebrew HEIF/AV1 dylibs libheif bundles (`libx265`, `libheif`, `libaom`, `libvmaf`, `libsharpyuv`, `libde265`) carry `LC_BUILD_VERSION minos 15.0`. With the wheel tagged `macosx_11_0_arm64`, delocate aborted the rc.20 run with `DelocationError: Library dependencies do not satisfy target MacOS version 11.0`. Pinning to 15.0 tags the wheel `macosx_15_0_arm64` so the bundled dylibs satisfy the check. Only arm64 macOS is built (Intel dropped in rc.20+), and 15.0 is already the effective minimum imposed by the libheif dylibs.
 
@@ -216,7 +216,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **alef**: regenerate polyglot bindings against alef 0.25.27. Picks up the FFI-emitter `same-name fn dedup` fix that makes `kreuzberg_{embed,rerank}_texts_async{,_len}` C symbols emit under the OR-merged cfg rather than the stub's `not(feature = "X")` gate — closes the rc.19 e2e wave where 11/13 languages crashed with `EntryPointNotFoundException`.
+- **alef**: regenerate polyglot bindings against alef 0.25.27. Picks up the FFI-emitter `same-name fn dedup` fix that makes `xberg_{embed,rerank}_texts_async{,_len}` C symbols emit under the OR-merged cfg rather than the stub's `not(feature = "X")` gate — closes the rc.19 e2e wave where 11/13 languages crashed with `EntryPointNotFoundException`.
 - **build**: drop Intel macOS (`macos-13`) from the Python wheel matrix. GH is deprecating macos-13 runners (multi-hour queue tax), and Apple killed Intel Macs. Now arm64-only macOS wheels on `macos-latest`, matching every other language in the publish matrix.
 - **fixtures**: remove three stale duplicate fixture IDs in `fixtures/embeddings/` (`embed_texts_async_{empty_input,happy,preset_switch}.json`) — the active versions live in `fixtures/embed_async_pending/` after the `b4242a0581` "isolate embed_texts_async pending category" move; the originals were never deleted and now cause `duplicate fixture ID` errors during e2e generation.
 
@@ -230,8 +230,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **image**: Formulas recognized by paired-mode GLM-OCR are now surfaced on `ExtractionResult.formulas` for image inputs. Both image OCR paths previously dropped them — the whole-image path destructured the backend result without reading `.formulas`, and the layout-OCR path pushed a Formula text element but never populated the typed carrier.
 - **pdf**: Layout-guided reading-order reconstruction no longer drops the text of pages that lack layout hints. Pages with no hints (or no projected spans) were silently skipped, so a multi-page PDF with `reading_order = true` lost those pages entirely; every page now contributes text (reordered when hints exist, original order otherwise).
 - **deps**: Pin `alloc-stdlib` to `0.2.2` to unify the `alloc-no-stdlib` v2/v3 split that broke `brotli-decompressor` compilation under `cargo check --workspace`. Drop brotli HTTP encoding from `tower-http` (`compression-full` → `compression-gzip,compression-deflate,compression-zstd`); clients negotiating brotli will fall back to gzip. Unblocks the prek `cargo-clippy` hook.
-- **benchmark-harness**: Handle the new `KreuzbergPipeline::CandleGlmOcr` variant in the kreuzberg adapter pipeline-args match — non-exhaustive arm left over from Phase 5 wiring.
-- **candle-ocr**: `TrocrBackend::process_image` now actually invokes the real `TrocrEngine` instead of returning a placeholder string. The engine code in `kreuzberg_candle_ocr::models::trocr` was already real, but the backend wrapper exposed to the OCR registry was the original Phase 3a stub. Runtime `backend_options.variant` now overrides the constructor-time default.
+- **benchmark-harness**: Handle the new `XbergPipeline::CandleGlmOcr` variant in the xberg adapter pipeline-args match — non-exhaustive arm left over from Phase 5 wiring.
+- **candle-ocr**: `TrocrBackend::process_image` now actually invokes the real `TrocrEngine` instead of returning a placeholder string. The engine code in `xberg_candle_ocr::models::trocr` was already real, but the backend wrapper exposed to the OCR registry was the original Phase 3a stub. Runtime `backend_options.variant` now overrides the constructor-time default.
 - **candle-ocr**: `TrocrEngine` now uses `decoder_start_token_id` and `eos_token_id` from the loaded `config.json` instead of `trocr::TrOCRConfig::default()`. Prevents silent generation breakage if any checkpoint's defaults diverge from candle's.
 - **candle-ocr**: `PaddleOcrVlBackend` now reuses engines across calls via a process-wide pool keyed by `(PaddleOcrVlTask, DevicePreference)`. Eliminates the ~900 MB safetensors reload that previously fired on every request. The pool reuses the existing `DevicePreference` taxonomy rather than introducing a parallel `DeviceKind` enum.
 - **candle-ocr**: Backends now resolve their compute device via a shared `resolve_device_preference` helper that consumes the central `AccelerationConfig` (`OcrConfig.acceleration`). Precedence: `backend_options.device` override → `AccelerationConfig.provider` → `DevicePreference::Auto`. ORT-flavoured providers map to candle as: `CoreMl` → `Metal`, `TensorRt` → `Cuda`. This removes the device-parsing duplication that previously lived in each backend's `parse_options`.
@@ -239,7 +239,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **candle-ocr**: PaddleOCR-VL BOS/EOS token ids resolved once at engine load time and cached on the engine, rather than name-looked-up on every decode step. Upstream `paddleocr_vl::Config` does not carry these fields directly.
 - **candle-ocr**: Fixed a typo in `TrocrEngine` weight loading (`from_mapped_safetensors` → `from_mmaped_safetensors`) that prevented the engine from compiling at all under the `trocr` sub-feature.
 - **candle-ocr**: TrOCR backend now pools engine instances across calls instead of re-loading weights every invocation.
-- **candle-ocr**: TrOCR + PaddleOCR-VL backends propagate the underlying `CandleOcrError` as the `source` of `KreuzbergError::Ocr` instead of dropping it.
+- **candle-ocr**: TrOCR + PaddleOCR-VL backends propagate the underlying `CandleOcrError` as the `source` of `XbergError::Ocr` instead of dropping it.
 - **candle-glm-ocr**: MTP repetition penalty no longer doubles down on already-negative logits.
 - **candle-glm-ocr**: Nucleus sampling rejects NaN/inf-tainted probability vectors instead of silently sampling against them.
 - **candle-glm-ocr**: Decoder KV cache reset at the start of each generation call to prevent cross-call contamination.
@@ -260,17 +260,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **presets**: New `presets` feature exposing the structured-extraction preset machinery — `Preset`, `PresetSummary`, `PresetCategory`, `PresetSample`, `ResolvedPreset` types, the `resolve` engine, the `preset.schema.json` meta-schema + loader, and `Registry` (`load_embedded`/`global`/`get`/`iter`/`summaries`/`sample_bytes`/`extend_from_dir`). The library ships exactly one synthetic `generic_document` toy preset; downstream catalogs load additional presets at runtime via `Registry::extend_from_dir`.
 - **heuristics**: New `heuristics` feature with confidence scoring (`score_confidence`, `ConfidenceSignals`, `ConfidenceWeights`, `SchemaCompliance`, `ExtractionConfidence` — surfaced on `ExtractionResult.extraction_confidence`), multi-document boundary detection, and structured call-mode decision (`StructuredInput`, `StructuredThresholds`, `StructuredCallMode`, `choose_call_mode`). All thresholds/weights are conservative, fully-overridable defaults; the library reads no environment variables. Adds `boundaries_from_extraction_result(&ExtractionResult, &MultidocThresholds)` (re-exported at the crate root) — derive document boundaries directly from a produced `ExtractionResult` without hand-building `PageSignals`.
 - **enrichment**: New `enrichment` feature exposing the NATS-free enrichment data types (`EnrichOptions`, `EnrichTextMessage`, `EnrichResult`, `EnrichStatus`).
-- **structured**: New `structured` feature introducing the LLM-vision structured-extraction engine (`kreuzberg::structured`). Public surface: `StructuredOptions`, `VisionConfig`, `PresetSpec`, `StructuredOutput`, `CitationEnvelope`, `CitedField`, `CitationSource`, `StructuredError`, `PageImage`, and the `VisionCallCache` trait + `CacheKey` for caller-supplied (e.g. distributed) caching, and an in-process `MokaVisionCache` implementation. The engine rasterizes pages, packs token-aware vision batches, schema-validates and merges responses, and fuses OCR bounding boxes as citations. Requires native HTTP + PDF rendering, so it is excluded from `no-ort-target`/`wasm-target` and joins `full`/`android-target`/`windows-target`.
+- **structured**: New `structured` feature introducing the LLM-vision structured-extraction engine (`xberg::structured`). Public surface: `StructuredOptions`, `VisionConfig`, `PresetSpec`, `StructuredOutput`, `CitationEnvelope`, `CitedField`, `CitationSource`, `StructuredError`, `PageImage`, and the `VisionCallCache` trait + `CacheKey` for caller-supplied (e.g. distributed) caching, and an in-process `MokaVisionCache` implementation. The engine rasterizes pages, packs token-aware vision batches, schema-validates and merges responses, and fuses OCR bounding boxes as citations. Requires native HTTP + PDF rendering, so it is excluded from `no-ort-target`/`wasm-target` and joins `full`/`android-target`/`windows-target`.
 - **config**: `CallMode` (`text_only`/`vision_only`/`text_plus_vision`) and `MergeMode` (`object_merge`/`array_concat`/`object_first`) in `core::config` — the canonical, snake_case-serialized call-dispatch and result-merge enums referenced by presets.
 - **ocr**: `candle-hunyuan-ocr` backend exposing Tencent Hunyuan-OCR through candle (vendored from jhqxxx/aha, Apache-2.0). Compact vision backbone + causal decoder with KV cache. Multilingual VLM with markdown output. Selectable via `--ocr-backend candle-hunyuan-ocr`; configure via `backend_options.model_path` and `backend_options.device`. Engine pool keyed by `(DevicePreference, DType)` shares weights across requests.
 - **ocr**: `candle-deepseek-ocr` backend exposing DeepSeek-OCR through candle (vendored from jhqxxx/aha, Apache-2.0). SAM-style vision encoder + CLIP embeddings fused with Qwen2 decoder and DeepSeek V2 MoE. Multilingual VLM with markdown output. Selectable via `--ocr-backend candle-deepseek-ocr`; configure via `backend_options.model_path` and `backend_options.device`. Greedy autoregressive decode with `max_new_tokens = 128`.
 - **ocr**: `candle-paddleocr-vl-15` backend exposing PaddleOCR-VL 1.5 through candle (vendored from jhqxxx/aha, Apache-2.0). SigLIP vision encoder + Ernie-4.5 text decoder. Multilingual VLM with markdown output. Selectable via `--ocr-backend candle-paddleocr-vl-15`; configure via `backend_options.model_path` and `backend_options.device`.
 - **ocr**: `candle-vlm-ocr` umbrella feature aggregating all candle VLM-OCR backends (`candle-hunyuan-ocr + candle-deepseek-ocr + candle-paddleocr-vl-15 + candle-glm-ocr + candle-trocr`). Use this to enable every pure-Rust VLM/transformer OCR engine in a single flag.
 - **cli**: `--ocr-backend-options <JSON>` flag for passing per-call backend options (e.g. `--ocr-backend-options '{"model_path":"/path/to/model","device":"metal"}'`). Replaces the previous hardwired `backend_options: None` path.
-- **benchmark-harness**: Candle VLM-OCR pipeline variants (`KreuzbergPipeline::CandleHunyuanOcr`, `CandleDeepseekOcr`, `CandlePaddleocrVl15`) wired into the harness with `task bench:candle-{hunyuan,deepseek,paddleocr-vl-15}` entries and a Python baseline scaffold under `tools/benchmark-harness/python_baselines/`.
-- **ocr**: `candle-trocr` feature enabling real BEiT+RoBERTa TrOCR inference (transformer-based printed/handwritten text recognition) via candle. Wires TrOCR encoder-decoder model behind the `candle-trocr` aggregate feature; backend selectable via `--ocr-backend candle-trocr`. Supports all four model variants (base/large × printed/handwritten) on CPU/CUDA/Metal. Sub-features on `kreuzberg-candle-ocr` for future VLM backends (GOT-OCR 2.0, GLM-OCR, PaddleOCR-VL).
+- **benchmark-harness**: Candle VLM-OCR pipeline variants (`XbergPipeline::CandleHunyuanOcr`, `CandleDeepseekOcr`, `CandlePaddleocrVl15`) wired into the harness with `task bench:candle-{hunyuan,deepseek,paddleocr-vl-15}` entries and a Python baseline scaffold under `tools/benchmark-harness/python_baselines/`.
+- **ocr**: `candle-trocr` feature enabling real BEiT+RoBERTa TrOCR inference (transformer-based printed/handwritten text recognition) via candle. Wires TrOCR encoder-decoder model behind the `candle-trocr` aggregate feature; backend selectable via `--ocr-backend candle-trocr`. Supports all four model variants (base/large × printed/handwritten) on CPU/CUDA/Metal. Sub-features on `xberg-candle-ocr` for future VLM backends (GOT-OCR 2.0, GLM-OCR, PaddleOCR-VL).
 - **ocr**: `candle-paddleocr-vl` feature enabling PaddleOCR-VL 0.9B vision-language model (multi-task: OCR, tables, formulas, charts) via candle. Emits markdown directly from the VLM; extraction pipeline skips layout-reconstruction stages for VLM output. Supports 109+ languages. Selectable via `--ocr-backend candle-paddleocr-vl` with task selection via backend options (`{"task": "table"}`).
-- **cli**: `candle-ocr`, `candle-trocr`, `candle-paddleocr-vl` pass-through Cargo features on `kreuzberg-cli`. The `--ocr-backend` allowlist now accepts `candle-trocr` and `candle-paddleocr-vl`, and the CLI overrides route those names to the actual candle backend in the registry instead of silently falling back to tesseract.
+- **cli**: `candle-ocr`, `candle-trocr`, `candle-paddleocr-vl` pass-through Cargo features on `xberg-cli`. The `--ocr-backend` allowlist now accepts `candle-trocr` and `candle-paddleocr-vl`, and the CLI overrides route those names to the actual candle backend in the registry instead of silently falling back to tesseract.
 - **benchmark-harness**: Candle OCR pipeline variants (`candle-trocr`, `candle-paddleocr-vl`) wired into benchmark harness for comparative evaluation against tesseract and paddle baselines.
 - **benchmark-harness**: Dataset loaders for public structured-extraction corpora (CORD, SROIE, FUNSD, DocILE, VRDU) with manifest-based discovery and JSON-Schema validation via `datasets` module.
 - **benchmark-harness**: JSON-extraction quality metrics (`json_quality` module) including schema validity rate, field-level precision/recall/F1, type correctness, numeric tolerance matching, and exact-match comparison.
@@ -293,7 +293,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `/V` entries, not in the page content stream. The extraction path previously read spans
   exclusively via `extract_spans_raw()`, which ignores Widget annotations, so filled form
   values were entirely absent from the output. After assembling span text per page,
-  kreuzberg now reads Widget annotations via `PdfDocument::get_annotations()` and appends
+  xberg now reads Widget annotations via `PdfDocument::get_annotations()` and appends
   any field values not already present in the assembled text. Values already in the text
   (flattened PDFs where form content is rendered into the content stream) are skipped to
   prevent duplication. Values are appended in top-to-bottom page order (descending PDF Y).
@@ -307,7 +307,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   **Limitation:** `output_format = html` uses verbatim substring search on the HTML-escaped string.
   Pages whose text contains `&`, `<`, or `>` will not match (e.g. `"AT&T"` becomes `"AT&amp;T"`)
   and silently produce no provenance for that page.
-  ([#1105](https://github.com/xberg-io/kreuzberg/issues/1105))
+  ([#1105](https://github.com/xberg-io/xberg/issues/1105))
 
 ## [5.0.0-rc.18] - 2026-06-16
 
@@ -316,8 +316,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Bump alef pin to 0.25.19; regen the polyglot surface against the latest
   generator.** Brings the dart hardened-runtime dlopen fix, swift app-harness
   chunked-fixtures JSON, csharp e2e arm64 RID, ruby magnus cfg-feature
-  forwarding, and the rust 1.96 `needless_update` cleanups into the kreuzberg
-  binding tree. Hash-bumps every alef-emitted file in `crates/kreuzberg-*`,
+  forwarding, and the rust 1.96 `needless_update` cleanups into the xberg
+  binding tree. Hash-bumps every alef-emitted file in `crates/xberg-*`,
   `packages/`, `e2e/`, and `docs/reference/api-*.md`.
 
 - **Pin `heic` out of mobile and Windows cross-compile builds via per-binding
@@ -331,7 +331,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Publish Release failed each of them on libheif-sys cross-compile.
 
 - **Workaround alef 0.25.19 polyglot regen gaps in `alef.toml`.**
-  - Re-declare every kreuzberg core cfg-feature on the FFI binding crate's
+  - Re-declare every xberg core cfg-feature on the FFI binding crate's
     `[features]` table (svg, transcription, transcription-types, ner-onnx,
     ner-llm, diff, redaction, api-types, classification, captioning) so
     `cargo clippy -- -D warnings` no longer trips on `unexpected cfg
@@ -348,8 +348,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     while leaving the field references intact.
 
 - **Note: npm trusted publishing remains a per-package external config on
-  `npmjs.org` for `@kreuzberg/node`, the 8 platform sub-packages, and
-  `@kreuzberg/wasm`.** Until that binding is registered, the Publish Node
+  `npmjs.org` for `@xberg/node`, the 8 platform sub-packages, and
+  `@xberg/wasm`.** Until that binding is registered, the Publish Node
   packages job will keep failing with `BadRequestError: token is invalid`.
 
 ## [5.0.0-rc.17] - 2026-06-16
@@ -358,7 +358,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Whisper ONNX transcription for audio/video MIME types via the `transcription`
   feature.** Models are auto-downloaded from `onnx-community/whisper-*` on first
-  use and cached under `{KREUZBERG_CACHE_DIR}/whisper/{size}/`. Supports Tiny
+  use and cached under `{XBERG_CACHE_DIR}/whisper/{size}/`. Supports Tiny
   through LargeV3, optional language hints, 30-second chunked decode, and both
   sync (`extract_bytes_sync`) and async (`extract_bytes`) API surfaces.
   Engine instances are cached per process; concurrent inference is bounded by
@@ -373,14 +373,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`enrich.rs`: feature-gate unused-config suppressor under `-D warnings`.** When none of `transcription-types`, `classification`, `ner`, or `captioning` features are active (e.g. on the Live HF preset Rust job), the `config: &EnrichmentConfig` parameter was unused and clippy `-D warnings` failed. Added a cfg-gated `let _ = config;` to silence the lint without behavior change.
 - **Node plugin dispose pattern.** `e2e/node/tests/test_plugins.test.ts` stubs now expose `async dispose()` and tests await it before `clearDocumentExtractors()`/`clearRenderers()` to avoid NAPI threadsafe-function handle corruption (separate from the alef trait-bridge refactor tracked in `[[project_node_plugin_api_crash]]`).
-- **R Makevars: rpath for ORT shared library dlopen.** Adds platform-conditional `-Wl,-rpath,@loader_path` (macOS) and `-Wl,-rpath,$ORIGIN` (Linux) link args so the kreuzberg R extension can resolve the bundled ONNX Runtime `dylib`/`so` at `library.dynam2` load time. Closes the runtime gap left after the alef 0.25.17 compile fix (`[[project_r_runtime_ort]]`).
+- **R Makevars: rpath for ORT shared library dlopen.** Adds platform-conditional `-Wl,-rpath,@loader_path` (macOS) and `-Wl,-rpath,$ORIGIN` (Linux) link args so the xberg R extension can resolve the bundled ONNX Runtime `dylib`/`so` at `library.dynam2` load time. Closes the runtime gap left after the alef 0.25.17 compile fix (`[[project_r_runtime_ort]]`).
 - **rc.16 cancelled and untagged.** Mobile/Windows compile failures plus the `enrich.rs` clippy regression blocked every non-desktop registry; no packages reached crates.io, PyPI, npm, RubyGems, Hex, Maven, NuGet, or pub.dev. Tag and GH release were deleted; rc.17 is the first usable v5 RC since rc.15.
 
 ## [5.0.0-rc.16] - 2026-06-15
 
 ### Changed
 
-- **alef pin 0.25.9 → 0.25.16.** Bundles eight upstream alef releases: 0.25.10 swift Heif cfg-gate + extendr type_paths + rustler clone-filter + kotlin-android gradle workspace target; 0.25.11 rustler/swift/elixir-scaffold rc.16 codegen iterations (flat_enum tuple `..Default::default()` conditional, spawn_blocking JoinHandle discharge, swift cfg-gated wrapper structs + extern skip + phantom_vec cfg, elixir check-cfg allow-list); 0.25.12–0.25.14 cfg-union propagation experiment (since reverted); 0.25.15 reverts those propagation passes and emits swift `extern "Rust" { type T; }` decls unconditionally so parent extern blocks resolve when wrapper feature is on; 0.25.16 drops cfg propagation on enum From-impl match arms and raises test_apps/node smoke timeout for slow grammars (vb). Net effect: kreuzberg-swift (desktop), kreuzberg-wasm, kreuzberg-dart, kreuzberg-jni, kreuzberg-node, kreuzberg-py, kreuzberg-ffi, kreuzberg-php all compile clean; node and py emit 4 `unexpected_cfgs` warnings each on `keywords-yake`/`keywords-rake` (their hand-authored Cargo.toml lacks the feature; non-blocking).
+- **alef pin 0.25.9 → 0.25.16.** Bundles eight upstream alef releases: 0.25.10 swift Heif cfg-gate + extendr type_paths + rustler clone-filter + kotlin-android gradle workspace target; 0.25.11 rustler/swift/elixir-scaffold rc.16 codegen iterations (flat_enum tuple `..Default::default()` conditional, spawn_blocking JoinHandle discharge, swift cfg-gated wrapper structs + extern skip + phantom_vec cfg, elixir check-cfg allow-list); 0.25.12–0.25.14 cfg-union propagation experiment (since reverted); 0.25.15 reverts those propagation passes and emits swift `extern "Rust" { type T; }` decls unconditionally so parent extern blocks resolve when wrapper feature is on; 0.25.16 drops cfg propagation on enum From-impl match arms and raises test_apps/node smoke timeout for slow grammars (vb). Net effect: xberg-swift (desktop), xberg-wasm, xberg-dart, xberg-jni, xberg-node, xberg-py, xberg-ffi, xberg-php all compile clean; node and py emit 4 `unexpected_cfgs` warnings each on `keywords-yake`/`keywords-rake` (their hand-authored Cargo.toml lacks the feature; non-blocking).
 
 ### Fixed
 
@@ -388,7 +388,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **CI: drop `--offline` from musl Docker builds.** `docker/Dockerfile.musl-build`, `docker/Dockerfile.musl-ffi`, and `docker/Dockerfile.musl-rustler` all ran `cargo build --offline` against a fresh Alpine image whose `~/.cargo/registry` cache was never populated. Every dependency resolved to `error: no matching package named 'async-trait' found` (and similar), failing every CI musl build matrix cell for at least rc.13 → rc.15. Drop `--offline` so cargo can fetch from the network using `Cargo.lock` as a resolution hint; the slimmed manifest is still rewritten in the layer, so `--locked` cannot be used here.
 - **CI: pin Python wheel macOS runner to `macos-13`.** macOS-15 (current `macos-latest`) ships Homebrew bottles for libheif and its codec deps (`libx265`, `libde265`, `libaom`, `libsharpyuv`, `libvmaf`) built with a 15.0 minimum target. cibuildwheel's wheel-repair step refuses to repair a wheel claiming `macosx_11_0_arm64` compatibility when the bundled dylibs require 15.0, failing the `Build Python wheels (macos-latest)` job for rc.13 → rc.15. Pin the matrix entry to `macos-13` (Ventura) so the bottled deps carry a 13.0-min target that matches the wheel platform tag; `MACOSX_DEPLOYMENT_TARGET` env bumped 10.12 → 13.0 to match.
 - **`EncodeWarning::UnsupportedDirection` is now `#[cfg(feature = "svg")]`-gated.** The variant is only constructed in the SVG-feature-gated raster→SVG rejection branch of `re_encode`. On `windows-target` (which omits `svg`), the variant became dead code and tripped `-D dead_code → -D warnings`, breaking Build C FFI distribution (windows-x86_64), Build Dart server native (windows-x86_64), Build Java natives (windows-x86_64), and Build Go FFI library (windows-x86_64) on rc.15 Publish run 27524121424. Gating the variant and its Display match arm together keeps the match exhaustive and the enum minimal under every aggregate.
-- **E2E (node) test_plugins: drop the `require()`-per-call workaround that crashed on bridge cleanup.** `e2e/node/tests/test_plugins.test.ts` re-required `@kreuzberg/node` inside every helper (`getNativeBinding()`) on the theory that vitest worker isolation could corrupt the cached module after a trait-bridge crash. In practice the `require()` itself returned `undefined` mid-suite under ESM/vitest after the first crash — surfacing the actual TypeError `Cannot convert undefined or null to object` at `tests/test_plugins.test.ts:52:22` on the `clearRenderers()` helper in the `clear_then_list_renderer_empty` case (rc.15 CI E2E run 27524114823 job 81351410565). Switched every helper to use the already-imported `native` binding (line 27) — single import, single reference, no per-call `require()`. The underlying native bridge `unsafe { transmute::<Object<'_>, Object<'static>>(js_obj) }` in alef's `src/backends/napi/templates/trait_bridge_constructor.jinja` is a separate, deeper issue (cross-handle-scope JS handle storage) tracked in memory `[[project_node_plugin_api_crash]]`; this test-side fix eliminates the symptom path on the green-path tests while the bridge refactor lands separately.
+- **E2E (node) test_plugins: drop the `require()`-per-call workaround that crashed on bridge cleanup.** `e2e/node/tests/test_plugins.test.ts` re-required `@xberg/node` inside every helper (`getNativeBinding()`) on the theory that vitest worker isolation could corrupt the cached module after a trait-bridge crash. In practice the `require()` itself returned `undefined` mid-suite under ESM/vitest after the first crash — surfacing the actual TypeError `Cannot convert undefined or null to object` at `tests/test_plugins.test.ts:52:22` on the `clearRenderers()` helper in the `clear_then_list_renderer_empty` case (rc.15 CI E2E run 27524114823 job 81351410565). Switched every helper to use the already-imported `native` binding (line 27) — single import, single reference, no per-call `require()`. The underlying native bridge `unsafe { transmute::<Object<'_>, Object<'static>>(js_obj) }` in alef's `src/backends/napi/templates/trait_bridge_constructor.jinja` is a separate, deeper issue (cross-handle-scope JS handle storage) tracked in memory `[[project_node_plugin_api_crash]]`; this test-side fix eliminates the symptom path on the green-path tests while the bridge refactor lands separately.
 
 ---
 
@@ -396,16 +396,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **`heic` is now part of the `formats` aggregate.** Previously `heic` was in no aggregate feature, so desktop builds via `full` (Linux/macOS) didn't expose `ImageOutputFormat::Heif` — breaking alef-generated binding crates that use `kreuzberg = { features = ["full"] }`, most visibly the Swift artifact bundle publish job (E0599 on `packages/swift/rust/src/lib.rs:13006`). HEIC is an image format and belongs in `formats` alongside `svg`; Mobile/iOS/Android/Windows continue to exclude HEIC via their own platform aggregates (`android-target`, `windows-target`) for libheif install reasons.
-- **Dart binding clippy `unexpected_cfgs` lint.** Bump alef pin 0.25.8 → 0.25.9. Dart codegen now emits a `check-cfg` allow-list in `packages/dart/rust/Cargo.toml` `[lints.rust]` covering every upstream feature name referenced by alef-emitted `#[cfg(feature = "X")]` arms in `From<CoreType>` impls. Previously every clippy run on `kreuzberg-dart` failed with 30 `unexpected_cfgs` errors, blocking CI Rust, CI Mobile, and CI Lint on rc.14 (run 27519131737). The From-impl arms remain — runtime safety is still handled by the existing `_ => unreachable!()` catch-all from alef 0.25.6.
+- **`heic` is now part of the `formats` aggregate.** Previously `heic` was in no aggregate feature, so desktop builds via `full` (Linux/macOS) didn't expose `ImageOutputFormat::Heif` — breaking alef-generated binding crates that use `xberg = { features = ["full"] }`, most visibly the Swift artifact bundle publish job (E0599 on `packages/swift/rust/src/lib.rs:13006`). HEIC is an image format and belongs in `formats` alongside `svg`; Mobile/iOS/Android/Windows continue to exclude HEIC via their own platform aggregates (`android-target`, `windows-target`) for libheif install reasons.
+- **Dart binding clippy `unexpected_cfgs` lint.** Bump alef pin 0.25.8 → 0.25.9. Dart codegen now emits a `check-cfg` allow-list in `packages/dart/rust/Cargo.toml` `[lints.rust]` covering every upstream feature name referenced by alef-emitted `#[cfg(feature = "X")]` arms in `From<CoreType>` impls. Previously every clippy run on `xberg-dart` failed with 30 `unexpected_cfgs` errors, blocking CI Rust, CI Mobile, and CI Lint on rc.14 (run 27519131737). The From-impl arms remain — runtime safety is still handled by the existing `_ => unreachable!()` catch-all from alef 0.25.6.
 - **alef cargo-install fallback fixed.** alef 0.25.9 also deletes the dead `emit_variant_cfg_open` helper in `src/backends/dart/gen_rust_crate/mirror.rs` (orphaned by 0.25.8's mirror-enum cfg-strip), unblocking the `cargo install --git ... --tag` fallback path the CI e2e jobs hit when the GitHub release tarball is missing.
 
 ## [5.0.0-rc.14] - 2026-06-15
 
 ### Fixed
 
-- **Publish: unblock minimumReleaseAge supply-chain gate.** Sets `minimumReleaseAge: 0` in `pnpm-workspace.yaml` so first-party `@kreuzberg/*` platform packages are no longer rejected by pnpm's default 24h supply-chain delay during the publish workflow's Build Node bindings stage. Replaces the per-rc `minimumReleaseAgeExclude` allowlist that was lagging behind every release. Matches the policy used by sibling liter-llm repo.
-- **Publish: version drift in root manifests.** Bumped `package.json` (root) and `crates/kreuzberg-py/src/pyproject.toml` from rc.12 to rc.13/rc.14; previously missed by alef `sync-versions`. Filed alef issue for the PEP 440 PyPI manifest and root `package.json` coverage gap.
+- **Publish: unblock minimumReleaseAge supply-chain gate.** Sets `minimumReleaseAge: 0` in `pnpm-workspace.yaml` so first-party `@xberg/*` platform packages are no longer rejected by pnpm's default 24h supply-chain delay during the publish workflow's Build Node bindings stage. Replaces the per-rc `minimumReleaseAgeExclude` allowlist that was lagging behind every release. Matches the policy used by sibling liter-llm repo.
+- **Publish: version drift in root manifests.** Bumped `package.json` (root) and `crates/xberg-py/src/pyproject.toml` from rc.12 to rc.13/rc.14; previously missed by alef `sync-versions`. Filed alef issue for the PEP 440 PyPI manifest and root `package.json` coverage gap.
 - **Mobile/ARM build: dart binding crate now compiles when upstream variants are cfg-gated.** Bumps alef pin to v0.25.8 which (a) emits `_ => unreachable!(...)` catch-all arms in alef-generated `From<CoreType>` impls so non-exhaustive matches are exhaustive when binding crate doesn't enable upstream features (e.g. `svg`, `heic`), and (b) strips variant-level `#[cfg(...)]` attrs from the mirror enum body so flutter_rust_bridge's unconditional variant references in `frb_generated.rs` resolve correctly. Previously failed CI Mobile cargo check (4× Android/iOS targets) and Rust CI ubuntu-24.04-arm with `error[E0004]` and `error[E0599]` in `packages/dart/rust/src/lib.rs`.
 
 ## [5.0.0-rc.13] - 2026-06-14
@@ -431,7 +431,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **New `windows-target` aggregate feature in `crates/kreuzberg/Cargo.toml`.**
+- **New `windows-target` aggregate feature in `crates/xberg/Cargo.toml`.**
   Mirrors the curated FFI-on-Windows list the publish workflow already used and drops `heic` along
   with the ORT-dependent capabilities (paddle-ocr, layout-detection, embeddings, reranker, ner-llm).
   The FFI and Dart Rust crates pick it up via per-crate
@@ -453,7 +453,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   all annotations fully contained within it are passed recursively into the node's
   children. This fixes `**bold link**` dropping the URL and `Visit **docs** here`
   dropping the link when only the inner word was bold.
-  ([#1086](https://github.com/xberg-io/kreuzberg/issues/1086))
+  ([#1086](https://github.com/xberg-io/xberg/issues/1086))
 
 - **CI / publish: source-build libheif 1.23.0 to satisfy `libheif-sys 5.3 >= 1.21`.** Ubuntu Noble's
   apt ships `libheif 1.17.6` and Alpine 3.21 ships `libheif 1.19.5` — both rejected by `libheif-sys`
@@ -474,7 +474,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     so Windows wheels pick up vcpkg-built libheif.
 
 - **Publish workflow: fixed dead-code warnings as errors on Windows / `reranker-presets`-only builds.**
-  `rerank_via_llm` and `extract_rerank_usage` in `crates/kreuzberg/src/llm/rerank.rs` were gated by
+  `rerank_via_llm` and `extract_rerank_usage` in `crates/xberg/src/llm/rerank.rs` were gated by
   `any(feature = "reranker-presets", feature = "reranker")`, but every caller was gated by
   `feature = "reranker"`. On the Windows feature combo (which uses `reranker-presets` + `liter-llm`
   without `reranker`), the functions compiled but had no callers — clippy `-D warnings` failed every
@@ -484,7 +484,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   rc.11 removal of `#[serde(skip_serializing_if = ...)]` on `content_layer`).
 
 - **Publish workflow: install libheif on Linux + macOS runners.** `libheif-sys` is a transitive
-  dependency of `kreuzberg-libheif` (gated behind the `heic` feature, included in `full`), and the
+  dependency of `xberg-libheif` (gated behind the `heic` feature, included in `full`), and the
   publish workflow's per-language build jobs (Swift / Zig / C-FFI / C# / Go / Java / Kotlin-Android /
   CLI / Node / Dart / Python wheels) invoked `xberg-io/actions/build-*` without first installing
   system dependencies. `libheif-sys`'s pkg-config probe then failed with `Package libheif was not
@@ -492,13 +492,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `scripts/ci/install-system-deps/install-linux.sh`, `brew install libheif` to
   `install-macos.sh`, and injected a `./.github/actions/install-system-deps` step before every
   `build-*` action invocation in `.github/workflows/publish.yaml` (17 sites + the `publish-crates`
-  job, since `kreuzberg-libheif` is also published from that job).
+  job, since `xberg-libheif` is also published from that job).
 
-- **Publish workflow: publish `kreuzberg-libheif` to crates.io.** The new path-only `kreuzberg-libheif`
-  crate is a build dependency of `kreuzberg` via the `heic` feature. Without publishing it first,
-  `cargo publish -p kreuzberg` aborts with `no matching package named 'kreuzberg-libheif' found
+- **Publish workflow: publish `xberg-libheif` to crates.io.** The new path-only `xberg-libheif`
+  crate is a build dependency of `xberg` via the `heic` feature. Without publishing it first,
+  `cargo publish -p xberg` aborts with `no matching package named 'xberg-libheif' found
   (location searched: crates.io index)`. Added it as the first entry in the `publish-crates`
-  invocation's `crates:` list so it lands on crates.io before `kreuzberg`.
+  invocation's `crates:` list so it lands on crates.io before `xberg`.
 
 - **Android (any arch) + iOS: widened libheif/ORT exclusion gate.** The C FFI crate's
   `target_dep_overrides` previously narrowed the `android-target` feature set to
@@ -514,11 +514,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   has no `## Embeddings` heading — `task docs:build:strict` aborted with exit code 1. Reworded the
   parenthetical to drop the link target.
 
-- **musl Docker builds: include `kreuzberg-libheif` crate + install `libheif-dev`.** The three
+- **musl Docker builds: include `xberg-libheif` crate + install `libheif-dev`.** The three
   `docker/Dockerfile.musl-{ffi,rustler,build}` images each copy a subset of workspace crates into
-  the build context; the new `kreuzberg-libheif` crate (required transitively when `kreuzberg` is
+  the build context; the new `xberg-libheif` crate (required transitively when `xberg` is
   built with the `full` features that include `heic`) was missing, so cargo aborted with
-  `failed to read /build/crates/kreuzberg-libheif/Cargo.toml`. Added the COPY entry to each
+  `failed to read /build/crates/xberg-libheif/Cargo.toml`. Added the COPY entry to each
   Dockerfile and added `libheif-dev` to the `apk add` list so libheif-sys's pkg-config probe finds
   Alpine's package.
 
@@ -538,8 +538,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   honor `target_dep_overrides`.
 
 - **Elixir cargo `cc` version conflict.** The native Rustler NIF lockfile at
-  `packages/elixir/native/kreuzberg_nif/Cargo.lock` pinned `cc 1.2.63`, while
-  `kreuzberg-tesseract` requires `cc ^1.2.64`. Cargo failed to resolve. Ran `cargo update -p cc`
+  `packages/elixir/native/xberg_nif/Cargo.lock` pinned `cc 1.2.63`, while
+  `xberg-tesseract` requires `cc ^1.2.64`. Cargo failed to resolve. Ran `cargo update -p cc`
   in that sub-project to lift it to `1.2.64`; this also picked up `html-to-markdown-rs 3.6.2`
   and `pdf_oxide 0.3.64` in both lockfiles to keep them in sync.
 
@@ -580,7 +580,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   a minimal `Display` impl.
 
 - **Dead-code `is_heif_container` and `extract_exif_data` under reranker-only builds.** The
-  `Live HF preset tests` CI job builds `kreuzberg` with `--features
+  `Live HF preset tests` CI job builds `xberg` with `--features
   "reranker,reranker-presets,tokio-runtime"`. The HEIF sniffer is always compiled by design
   (12-byte magic check, zero deps) and EXIF extraction stubs out when no ocr/ocr-wasm/heic
   feature is enabled, but with the reranker-only feature set every caller (in
@@ -590,9 +590,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`text::classification::classify_text` stub added.** The real implementation lives behind
   the `classification` feature; alef-generated bindings call
-  `kreuzberg::text::classification::classify_text` unconditionally, so the existing stub
+  `xberg::text::classification::classify_text` unconditionally, so the existing stub
   module needed a matching no-op for the path that returns
-  `Err(KreuzbergError::Other("classification feature not available on this target"))`.
+  `Err(XbergError::Other("classification feature not available on this target"))`.
   Required for the iOS / Android `android-target` builds, which drop the classification
   feature.
 
@@ -600,7 +600,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Both stubs previously listed an explicit Windows / wasm32 / `android+x86_64` triple cfg.
   With the binding crates now widening their target gates to `target_os = "android"` and
   `target_os = "ios"` (both arches), `aarch64-apple-ios` and `aarch64-linux-android` were
-  failing to compile against `kreuzberg::LlmBackend` / `kreuzberg::GlineBackend`. Simplified
+  failing to compile against `xberg::LlmBackend` / `xberg::GlineBackend`. Simplified
   the gate to `#[cfg(not(feature = "ner-llm"))]` and `#[cfg(not(feature = "ner-onnx"))]`
   respectively — any config that drops the feature now gets the stub regardless of target.
 
@@ -622,13 +622,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **`list_supported_formats()` is now part of the public crate root and
-  every language binding.** Returns every file extension Kreuzberg
+  every language binding.** Returns every file extension Xberg
   recognizes with its corresponding MIME type, so callers can derive
   ingestion policy from the library instead of maintaining their own
   extension whitelists. The function already backed the CLI
-  (`kreuzberg formats`), REST API (`GET /formats`), and MCP server; it
+  (`xberg formats`), REST API (`GET /formats`), and MCP server; it
   is now exported from the crate root and exposed in every binding via
-  the alef catalog. ([#1091](https://github.com/xberg-io/kreuzberg/issues/1091))
+  the alef catalog. ([#1091](https://github.com/xberg-io/xberg/issues/1091))
 
 - **[v5.0.0] reranking: cross-encoder reordering with optional liter-llm wiring.**
   New top-level `rerank` / `rerank_async` API, `RerankerConfig` with
@@ -693,7 +693,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   **Limitation:** `output_format = html` uses verbatim substring search on the HTML-escaped string.
   Pages whose text contains `&`, `<`, or `>` will not match (e.g. `"AT&T"` becomes `"AT&amp;T"`)
   and silently produce no provenance for that page.
-  ([#1105](https://github.com/xberg-io/kreuzberg/issues/1105))
+  ([#1105](https://github.com/xberg-io/xberg/issues/1105))
 
 - **`ocr_inline_images` now respects the configured OCR backend.** Previously,
   enabling `PdfConfig.ocr_inline_images` always routed through a hardcoded
@@ -705,20 +705,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   As a side effect, inline-image OCR now benefits from the registered backend's
   shared `OcrCache`; the previous path created a fresh `OcrProcessor` (and a cold
   cache) on every extraction call.
-  ([#1088](https://github.com/xberg-io/kreuzberg/issues/1088))
+  ([#1088](https://github.com/xberg-io/xberg/issues/1088))
 
 - **rendering: fixed panic when a non-`Item` block element appears directly under
   a `List` node before any `ListItem`.** The comrak AST builder now synthesises an
   implicit `Item` wrapper instead of falling back onto the bare `List`, which violated
   CommonMark's `List → Item-only` constraint and panicked in debug builds.
-  ([#1096](https://github.com/xberg-io/kreuzberg/issues/1096))
+  ([#1096](https://github.com/xberg-io/xberg/issues/1096))
 
 - **pdf: `result.pages[*].isBlank` now reflects OCR content for scanned/rasterized PDFs.**
   When OCR (including VLM) wrote text into existing `PageContent` entries, `is_blank` was
   never recalculated — it retained the stale value from native text extraction, which is
   always `Some(true)` for pages with no text layer. All four write sites in the OCR
   page-assembly block now call `is_page_text_blank` after every content mutation.
-  ([#1095](https://github.com/xberg-io/kreuzberg/issues/1095))
+  ([#1095](https://github.com/xberg-io/xberg/issues/1095))
 
 - **`ImagePreprocessingConfig` default `auto_rotate` changed from `true` to `false`; server
   no longer aborts (exit 133 / SIGTRAP) when `preprocessing` is set in the server config.**
@@ -728,7 +728,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   barrier shim now wraps the five most dangerous Tesseract C API calls on native builds so
   that any escaping exception is converted to a graceful error return instead of aborting the
   process. To keep auto-rotation, set `auto_rotate: true` explicitly.
-  ([#1089](https://github.com/xberg-io/kreuzberg/issues/1089))
+  ([#1089](https://github.com/xberg-io/xberg/issues/1089))
 
 - **reranker: `RerankError` migrated to `thiserror`.** Matches the rest
   of the library and `rust-conventions`.
@@ -765,9 +765,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `extraction.rs` that silently swallowed function-level errors are also
   replaced with `unwrap_or_else(|e| { tracing::warn!(...); Vec::new() })`
   so that a `page_count()` failure is equally visible.
-  ([#1097](https://github.com/xberg-io/kreuzberg/issues/1097))
+  ([#1097](https://github.com/xberg-io/xberg/issues/1097))
 
-- **publish.yaml `trigger-pubdev` job: explicit `permissions: actions: write`.** Since the `a8f8597e45` migration to the `kreuzberg-dev-publisher` App-token, the `gh workflow run publish-pubdev.yaml` step has 403'd with "Resource not accessible by integration" — the App's installation token didn't carry `actions: write`. Adding job-level `permissions: { actions: write, contents: read }` covers the case where GITHUB_TOKEN is used as a fallback, and documents that the App's permissions also need `actions: write` configured on github.com.
+- **publish.yaml `trigger-pubdev` job: explicit `permissions: actions: write`.** Since the `a8f8597e45` migration to the `xberg-dev-publisher` App-token, the `gh workflow run publish-pubdev.yaml` step has 403'd with "Resource not accessible by integration" — the App's installation token didn't carry `actions: write`. Adding job-level `permissions: { actions: write, contents: read }` covers the case where GITHUB_TOKEN is used as a fallback, and documents that the App's permissions also need `actions: write` configured on github.com.
 
 ### Changed
 
@@ -777,7 +777,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **swift e2e: removed erroneous `async = false` override on `extract_file` for swift.** `Kreuzberg.extractFile(_:_:_:)` is async in the Swift binding. The override in `alef.toml` forced `is_async = false` for fixtures that explicitly set `"call": "extract_file"` (e.g. `api_batch_bytes_async`), generating non-async test methods that called the async binding without `await` — compile errors. Fixtures without an explicit `call` fall through `resolve_call_for_fixture` to the global default and got `is_async = true` correctly, which is why `testApiExtractFileAsync` compiled but `testApiBatchBytesAsync` and 4 siblings did not. Dropping the override aligns both code paths.
+- **swift e2e: removed erroneous `async = false` override on `extract_file` for swift.** `Xberg.extractFile(_:_:_:)` is async in the Swift binding. The override in `alef.toml` forced `is_async = false` for fixtures that explicitly set `"call": "extract_file"` (e.g. `api_batch_bytes_async`), generating non-async test methods that called the async binding without `await` — compile errors. Fixtures without an explicit `call` fall through `resolve_call_for_fixture` to the global default and got `is_async = true` correctly, which is why `testApiExtractFileAsync` compiled but `testApiBatchBytesAsync` and 4 siblings did not. Dropping the override aligns both code paths.
 
 - **r**: fix macOS dylib rpath so ORT loads at R extension runtime. `packages/r/src/rust/build.rs` now adds `-Wl,-rpath,@loader_path` linker flag on macOS, enabling the final R extension `.so` to locate transitively-linked dylibs like `libonnxruntime.dylib` at load time. Without this, R's `dyn.load` via `library.dynam2` failed with `undefined symbol: OrtGetApiBase` in CI on arm64-apple-darwin, blocking all R e2e tests. This matches the pattern applied to C# FFI in commit b5bc5d7791.
 
@@ -797,19 +797,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   that exercise code-file extraction.
 
 - **Python sdist publish step now uses split-layout invocation.** `.github/workflows/publish.yaml`
-  passed `manifest-path: crates/kreuzberg-py/Cargo.toml` to `build-python-sdist@v1`. That input
+  passed `manifest-path: crates/xberg-py/Cargo.toml` to `build-python-sdist@v1`. That input
   routes the action into its single-tree branch, which cd's into the Rust crate directory and
-  runs `maturin sdist` — but the kreuzberg layout keeps `pyproject.toml` in `packages/python/`,
+  runs `maturin sdist` — but the xberg layout keeps `pyproject.toml` in `packages/python/`,
   so maturin failed with `Failed to build source distribution, pyproject.toml not found`. PyPI
   publish then skipped for rc.10. Dropped the `manifest-path` input so the action falls through
   to the default `package-dir: packages/python` split-layout fallback, which cd's into the
   package dir and lets maturin resolve `manifest-path` from pyproject.toml's `[tool.maturin]`
   section itself.
 
-- **Windows MSVC CRT mismatch in PHP and Elixir cdylibs.** Linking `kreuzberg_php.dll` /
-  `kreuzberg_nif.dll` on `x86_64-pc-windows-msvc` failed with
+- **Windows MSVC CRT mismatch in PHP and Elixir cdylibs.** Linking `xberg_php.dll` /
+  `xberg_nif.dll` on `x86_64-pc-windows-msvc` failed with
   `LNK1319: mismatch detected for 'RuntimeLibrary': MT_StaticRelease vs MD_DynamicRelease`.
-  `libkreuzberg_tesseract.rlib` is built by cmake-rs which defaults to `/MD`; `libesaxx_rs.rlib`
+  `libxberg_tesseract.rlib` is built by cmake-rs which defaults to `/MD`; `libesaxx_rs.rlib`
   (transitively pulled in by `gliner` → `tokenizers` → `esaxx-rs`) is built by cc-rs which fell
   back to `/MT`. `alef.toml` `[crates.scaffold.cargo.env]` now sets
   `CFLAGS_{x86_64,i686}_pc_windows_msvc = "/MD"` and the matching `CXXFLAGS_*`, propagated to
@@ -845,7 +845,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Publish and benchmark workflows now mint tokens via the `kreuzberg-dev-publisher` GitHub App.**
+- **Publish and benchmark workflows now mint tokens via the `xberg-dev-publisher` GitHub App.**
   All push/release/dispatch jobs in `.github/workflows/publish.yaml` and the release-creating job
   in `.github/workflows/benchmarks.yaml` swap `secrets.GITHUB_TOKEN` and `secrets.HOMEBREW_TOKEN`
   for short-lived app installation tokens generated by `actions/create-github-app-token@v2`,
@@ -864,9 +864,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **`@kreuzberg/node-linux-x64-musl` and `@kreuzberg/node-linux-arm64-musl` placeholder publishes.**
+- **`@xberg/node-linux-x64-musl` and `@xberg/node-linux-arm64-musl` placeholder publishes.**
   Both platform packages now exist on npm with trusted-publisher rules pointing at
-  `xberg-io/kreuzberg` `publish.yaml`. rc.8 publish hit `npm error 404` on the very first
+  `xberg-io/xberg` `publish.yaml`. rc.8 publish hit `npm error 404` on the very first
   publish for these two packages because npm trusted publishing requires the package to exist
   before the TP rule can bind to it. Placeholder version `5.0.0-placeholder.0` published under
   `placeholder` dist-tag; the rc.9 publish workflow ships real binaries via OIDC.
@@ -883,8 +883,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Zig bindings: surface NULL `to_json` pointers as `error.Serialization` instead of crashing.**
   alef 0.23.47 corrects the Zig null-guard error name in the named-JSON return block so
-  it's a member of the `KreuzbergError` set. Prior to this, the codegen used a made-up
-  `error.SerializationFailed` and broke 8 kreuzberg e2e suites (smoke, contract, code,
+  it's a member of the `XbergError` set. Prior to this, the codegen used a made-up
+  `error.SerializationFailed` and broke 8 xberg e2e suites (smoke, contract, code,
   async, embeddings, error, format_specific, summarization).
 - **PHP bindings: nullable params on non-tail-optional positions.** alef 0.23.46 emits
   `?T $param = null` when the parameter slot is optional but a later required slot follows.
@@ -912,7 +912,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **alef**: bumped to `0.23.35`. Regen brings (a) python e2e enum field codegen as lowercase string literals instead of `EnumType.VARIANT` (fixes `AttributeError: type object 'OutputFormat' has no attribute 'MARKDOWN'` for str-aliased enums); (b) kotlin e2e string-array argument emission as plain `listOf("a", "b")` instead of `String(Files.readAllBytes(...), "application/octet-stream")`; (c) swift `Usize → UInt` inbound protocol type mapping; (d) revert of the `napi::Reference<Object>` bridge change in 0.23.34 (the emitted code used napi-rs APIs available only behind the `compat-mode` feature, which kreuzberg-node does not enable — restored the prior `unsafe transmute` to `Object<'static>`); (e) napi service.ts preamble correctly splits type/value/native imports.
+- **alef**: bumped to `0.23.35`. Regen brings (a) python e2e enum field codegen as lowercase string literals instead of `EnumType.VARIANT` (fixes `AttributeError: type object 'OutputFormat' has no attribute 'MARKDOWN'` for str-aliased enums); (b) kotlin e2e string-array argument emission as plain `listOf("a", "b")` instead of `String(Files.readAllBytes(...), "application/octet-stream")`; (c) swift `Usize → UInt` inbound protocol type mapping; (d) revert of the `napi::Reference<Object>` bridge change in 0.23.34 (the emitted code used napi-rs APIs available only behind the `compat-mode` feature, which xberg-node does not enable — restored the prior `unsafe transmute` to `Object<'static>`); (e) napi service.ts preamble correctly splits type/value/native imports.
 
 ### Fixed
 
@@ -928,11 +928,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **csharp/ffi**: fix macOS arm64 dylib rpath and runtime dependency bundling. `libkreuzberg_ffi.dylib` referenced `@rpath/libonnxruntime.1.24.2.dylib` but had no LC_RPATH entries and ORT dylib was not bundled in the NuGet package, causing all C# FFI calls to fail with dyld errors on macOS arm64. Added `-Wl,-rpath,@loader_path` linker flag in build.rs and implemented `copy_macos_runtime_deps()` in the build-csharp-natives action to extract and bundle referenced dylibs alongside the main FFI library.
+- **csharp/ffi**: fix macOS arm64 dylib rpath and runtime dependency bundling. `libxberg_ffi.dylib` referenced `@rpath/libonnxruntime.1.24.2.dylib` but had no LC_RPATH entries and ORT dylib was not bundled in the NuGet package, causing all C# FFI calls to fail with dyld errors on macOS arm64. Added `-Wl,-rpath,@loader_path` linker flag in build.rs and implemented `copy_macos_runtime_deps()` in the build-csharp-natives action to extract and bundle referenced dylibs alongside the main FFI library.
 
 - **ci**: override `ImageOS` environment variable in Elixir NIF build step to work around `erlef/setup-beam` hardcoded OS allowlist. GitHub's new `ubuntu-24.04-arm` runner sets `ImageOS=ubuntu24-arm64`, but the action only recognizes `ubuntu24`. Explicit override allows the step to complete on ARM runners.
 
-- **python**: fix maturin sdist build failure by switching `kreuzberg-py` to workspace-inherited version. Hardcoded version `"5.0.0-rc.5"` prevented maturin from resolving workspace member `kreuzberg-tesseract` during vendoring; workspace inheritance ensures consistent version resolution across all workspace crates.
+- **python**: fix maturin sdist build failure by switching `xberg-py` to workspace-inherited version. Hardcoded version `"5.0.0-rc.5"` prevented maturin from resolving workspace member `xberg-tesseract` during vendoring; workspace inheritance ensures consistent version resolution across all workspace crates.
 
 - **java**: exclude alef-generated sources from CPD (Copy-Paste Detector) analysis in Maven PMD. Alef's template-based polyglot code generation naturally produces duplications across record types (builders, getters, factory methods); these are structural artifacts of generation and not maintainability issues. Only hand-written code under `src/main/java/` is now subject to CPD enforcement.
 
@@ -949,7 +949,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **core/wasm**: PDF OCR pipelines now cfg-fork on `feature = "tokio-runtime"` rather than `target_arch = "wasm32"`. The previous fork left `tokio::task::JoinSet` references active when `kreuzberg-wasm` was checked with the native host toolchain (which never sets `target_arch = "wasm32"`), producing `cannot find module or crate 'tokio' in this scope`.
+- **core/wasm**: PDF OCR pipelines now cfg-fork on `feature = "tokio-runtime"` rather than `target_arch = "wasm32"`. The previous fork left `tokio::task::JoinSet` references active when `xberg-wasm` was checked with the native host toolchain (which never sets `target_arch = "wasm32"`), producing `cannot find module or crate 'tokio' in this scope`.
 
 - **alef.toml**: exclude R from `batch_extract_files*`, `batch_extract_bytes*`, `detect_qr_codes`, `find_all`, and `scan_text`. extendr cannot emit `From<Vec<NamedStruct>>` for opaque types, `TryFrom<Robj>` for `Vec<EnumVariant>`, or `From<Result<Vec<T>>>` wrappers without manual list adapters; excluding these surfaces keeps the binding compiling pending a follow-up that adds list-based converters to alef.
 
@@ -957,7 +957,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **ci/dart**: drop `x86_64-apple-ios` from the iOS XCFramework build matrix. pyke ORT publishes no prebuilt for that triple (Intel iOS simulator, deprecated in favor of arm64 simulator on Apple Silicon). The XCFramework now contains only `aarch64-apple-ios` (device) and `aarch64-apple-ios-sim` (simulator), matching modern Flutter iOS development targets.
 
-- **ci/e2e/csharp**: stage `libkreuzberg_ffi.so` into `e2e/csharp/bin/Debug/net10.0/` as part of the C# e2e test matrix job so that .NET P/Invoke can locate the native library. On Linux, P/Invoke does not search `LD_LIBRARY_PATH` by default; instead it checks the assembly directory. This fixes the "libkreuzberg_ffi: cannot open shared object file" runtime failure in C# e2e tests.
+- **ci/e2e/csharp**: stage `libxberg_ffi.so` into `e2e/csharp/bin/Debug/net10.0/` as part of the C# e2e test matrix job so that .NET P/Invoke can locate the native library. On Linux, P/Invoke does not search `LD_LIBRARY_PATH` by default; instead it checks the assembly directory. This fixes the "libxberg_ffi: cannot open shared object file" runtime failure in C# e2e tests.
 
 - **ci/e2e/node**: invoke `@napi-rs/cli` via `pnpm exec napi` in alef.toml `[crates.test.node]` before hook; bare `napi` binary is not in CI PATH, causing Node e2e test job to fail immediately with "napi: not found".
 
@@ -965,11 +965,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **ci**: disable the `rustdoc-lint` hook pending a workspace-wide `-D missing-docs` cleanup pass (tracked separately).
 
-- **publish**: `docker/Dockerfile.musl-{ffi,build,rustler}` now strip `kreuzberg-jni` from the workspace member list in the same `sed` pass as the other excluded crates, restoring Alpine-based publish builds (Java/C# musl natives, CLI aarch64-musl).
+- **publish**: `docker/Dockerfile.musl-{ffi,build,rustler}` now strip `xberg-jni` from the workspace member list in the same `sed` pass as the other excluded crates, restoring Alpine-based publish builds (Java/C# musl natives, CLI aarch64-musl).
 
 - **ffi/windows**: add `transcription-types` to the Windows FFI feature set so `TranscriptionConfig`, `WhisperModel`, and `AudioMetadata` resolve in the generated bindings.
 
-- **ci/e2e**: stage `libonnxruntime.so*` into `target/release/` alongside `libkreuzberg_ffi.so` so the dynamic loader resolves ORT via `$ORIGIN`/dirname when loading the FFI library from test binaries. Fixes `libonnxruntime.so.1: cannot open shared object file` errors in rust, zig, elixir, and java e2e test execution on Linux even when `LD_LIBRARY_PATH` is correctly set.
+- **ci/e2e**: stage `libonnxruntime.so*` into `target/release/` alongside `libxberg_ffi.so` so the dynamic loader resolves ORT via `$ORIGIN`/dirname when loading the FFI library from test binaries. Fixes `libonnxruntime.so.1: cannot open shared object file` errors in rust, zig, elixir, and java e2e test execution on Linux even when `LD_LIBRARY_PATH` is correctly set.
 
 ## [5.0.0-rc.4] - 2026-06-06
 
@@ -985,7 +985,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **go**: refresh bundled C header to resolve cgo "could not determine what C.X refers to" errors for `LlmBackend` and `TokenCounter` types.
 
-- **ruby**: published `kreuzberg` gem now installs in frozen mode.
+- **ruby**: published `xberg` gem now installs in frozen mode.
 
 - **pdf**: per-page OCR fallback now targets only the specific pages that fail the native-text quality check instead of falling back to full-document OCR on the first failing page. This prevents abnormal memory growth when processing PDF pipelines containing a single scanned page.
 
@@ -1009,7 +1009,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **python (#937)**: `ExtractionConfig(cancel_token=…)` now accepts the kwarg at construction.
 
-- **php (#940)**: `composer require xberg-io/kreuzberg` now downloads the prebuilt binary instead of attempting to build from source.
+- **php (#940)**: `composer require xberg-io/xberg` now downloads the prebuilt binary instead of attempting to build from source.
 
 - **node (#1013)**: PDF chunks now carry `firstPage`/`lastPage` metadata.
 
@@ -1047,7 +1047,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **html/chunking**: nested mixed lists no longer duplicate content and chunker no longer panics on malformed output.
 
-- **kotlin-android**: JNI now uses typed `kreuzberg-ffi` paths instead of void pointers, catching and fixing three signature-drift bugs in the embedding and PDF rendering APIs.
+- **kotlin-android**: JNI now uses typed `xberg-ffi` paths instead of void pointers, catching and fixing three signature-drift bugs in the embedding and PDF rendering APIs.
 
 - **mime**: accept legacy `application/docx` MIME type for compatibility with existing integrations.
 
@@ -1061,9 +1061,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **api/openapi**: `FormatMetadata` discriminated union now emits a flat `oneOf` with direct `$ref` items and discriminator object, fixing deserialization failures in code generators.
 
-- **rust**: `Uri` struct renamed to `ExtractedUri` to avoid collision with `dart:core.Uri`. This is a breaking change; use `use kreuzberg::ExtractedUri` instead. All language bindings automatically inherit the new name.
+- **rust**: `Uri` struct renamed to `ExtractedUri` to avoid collision with `dart:core.Uri`. This is a breaking change; use `use xberg::ExtractedUri` instead. All language bindings automatically inherit the new name.
 
-- **kreuzberg-ffi**: crate-types extended with `rlib` so downstream Rust crates can depend on it directly.
+- **xberg-ffi**: crate-types extended with `rlib` so downstream Rust crates can depend on it directly.
 
 - **deps**: bump alef — fixes systemic trait-bridge stub regressions across all bindings (missing super-trait methods, wrong return types, missing PHP interface emission).
 
@@ -1091,7 +1091,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **docx/revisions**: DOCX extraction now populates `ExtractionResult.revisions` from track-changes markup with revision ID, author, date, and delta content.
 
-- **diff**: new optional `diff` Cargo feature exposes `kreuzberg::diff::compare(a, b, opts) -> ExtractionDiff` over two `ExtractionResult` values. Surfaces content hunks, table cell diffs, metadata changes, and recursive child changes.
+- **diff**: new optional `diff` Cargo feature exposes `xberg::diff::compare(a, b, opts) -> ExtractionDiff` over two `ExtractionResult` values. Surfaces content hunks, table cell diffs, metadata changes, and recursive child changes.
 
 - **transcription** (behind `transcription` feature): Foundation for audio/video speech-to-text support. Registers MIME types for mp3, mp4, m4a, wav, webm. All heavy dependencies optional and zero-impact when disabled.
 
@@ -1111,7 +1111,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed (breaking)
 
-- **ffi (ABI)**: `KreuzbergOcrBackendVTable.process_image` and `KreuzbergDocumentExtractorVTable.extract_bytes` now include `uintptr_t *_len` parameter immediately after the `*const uint8_t` pointer. Old signature caused silent truncation at first embedded NUL byte. Any pre-compiled C, Go, Java, or C# callback must be recompiled. Fixes #1056.
+- **ffi (ABI)**: `XbergOcrBackendVTable.process_image` and `XbergDocumentExtractorVTable.extract_bytes` now include `uintptr_t *_len` parameter immediately after the `*const uint8_t` pointer. Old signature caused silent truncation at first embedded NUL byte. Any pre-compiled C, Go, Java, or C# callback must be recompiled. Fixes #1056.
 
 - **types**: `ImageKind` gains new `PageRaster` variant. Exhaustive matches must add a `PageRaster` arm.
 
@@ -1155,19 +1155,19 @@ rc.2 was tagged + partially published (5/13 registries) on 2026-05-25 then super
 
 ### Changed
 
-- **deps**: bump alef pin to v0.19.10 (C# `KreuzbergLib.Register*`/`Unregister*` plugin forwarders + `*Bridge.Register*(impl)` static factories; C# trait-bridge stubs emit sync methods with real return types; Kotlin Android test-app switched to JUnit unit tests + correct Maven coordinate `dev.kreuzberg:kreuzberg-android`; Swift dead-code removal of legacy e2e helpers; PHP/Elixir `ahash` machete-ignore; Java output path aligned with pom.xml; Go test-app `go.mod` registry pin; pnpm-workspace allow-builds; Dart `FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR` env var support; homebrew + php-ext codegen generalized from kreuzberg-specific defaults).
+- **deps**: bump alef pin to v0.19.10 (C# `XbergLib.Register*`/`Unregister*` plugin forwarders + `*Bridge.Register*(impl)` static factories; C# trait-bridge stubs emit sync methods with real return types; Kotlin Android test-app switched to JUnit unit tests + correct Maven coordinate `dev.xberg:xberg-android`; Swift dead-code removal of legacy e2e helpers; PHP/Elixir `ahash` machete-ignore; Java output path aligned with pom.xml; Go test-app `go.mod` registry pin; pnpm-workspace allow-builds; Dart `FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR` env var support; homebrew + php-ext codegen generalized from xberg-specific defaults).
 
 ### Fixed
 
 - **publish (zig)**: mirror html-to-markdown's `check-zig` + `publish-zig` pattern (uses `registry: github-release` with full tarball asset name + `package-name` override matching alef-emitted test_app URL pattern + dependency on `check-zig` for idempotent reruns on already-published versions).
 - **publish (pub.dev)**: add `force_republish` check to `trigger-pubdev` condition matching html-to-markdown pattern so already-published versions reroll cleanly when needed.
-- **publish (ruby + elixir + r + dart)**: explicit `vendor_mode = "registry"` in `alef.toml` so `path = "../../crates/kreuzberg"` deps inside inner Rust crates are rewritten to crates.io version deps at publish time. rc.1 ruby gem failed at install with `failed to read .../kreuzberg/Cargo.toml` for exactly this reason.
+- **publish (ruby + elixir + r + dart)**: explicit `vendor_mode = "registry"` in `alef.toml` so `path = "../../crates/xberg"` deps inside inner Rust crates are rewritten to crates.io version deps at publish time. rc.1 ruby gem failed at install with `failed to read .../xberg/Cargo.toml` for exactly this reason.
 - **publish (pypi)**: verify non-strict (sdist/wheel allowlist mismatch was aborting publish in rc.1).
 - **publish (node-platform)**: verify non-strict (NAPI stub sub-packages don't contain `.node` binaries for unbuilt platforms; was aborting node publish in rc.1).
 - **publish (wasm)**: bound build timeout (90 min) + dedicated cache key to survive GitHub runner preemption that cancelled rc.1's WASM build at ~12 min.
 - **publish (elixir)**: NIF matrix expansion (Elixir NIF matrix `include` without standalone `os` key was silently overwriting and only producing the Windows NIF; now produces all 12 NIFs across linux + macOS + windows + arm).
 
-- **java**: align alef output path to pom.xml `<sourceDirectory>`. The alef backend appends `dev/kreuzberg/` to the configured output; the previous setting produced files at `packages/java/src/main/java/dev/kreuzberg/*.java` but pom.xml's `sourceDirectory=${project.basedir}` expects `packages/java/dev/kreuzberg/*.java`. This fixes Maven compilation failures where the rc.1 JAR was missing generated classes like `JsonUtil` and the plugin registration methods. (`alef.toml`) The alef backend appends the package path (`dev/kreuzberg/`) to the configured output, so `packages/java/src/main/java/` generated files to `packages/java/src/main/java/dev/kreuzberg/*.java`, but pom.xml's `sourceDirectory=${project.basedir}` expects files at `packages/java/dev/kreuzberg/*.java`. This fixes Maven compilation failures where the JAR was missing generated classes like `JsonUtil` and plugin registration methods. The pom.xml layout already matches the FFI-style bindings (Go, C#, Dart, etc.), so aligning Java to the same convention restores consistency. (`alef.toml`)
+- **java**: align alef output path to pom.xml `<sourceDirectory>`. The alef backend appends `dev/xberg/` to the configured output; the previous setting produced files at `packages/java/src/main/java/dev/xberg/*.java` but pom.xml's `sourceDirectory=${project.basedir}` expects `packages/java/dev/xberg/*.java`. This fixes Maven compilation failures where the rc.1 JAR was missing generated classes like `JsonUtil` and the plugin registration methods. (`alef.toml`) The alef backend appends the package path (`dev/xberg/`) to the configured output, so `packages/java/src/main/java/` generated files to `packages/java/src/main/java/dev/xberg/*.java`, but pom.xml's `sourceDirectory=${project.basedir}` expects files at `packages/java/dev/xberg/*.java`. This fixes Maven compilation failures where the JAR was missing generated classes like `JsonUtil` and plugin registration methods. The pom.xml layout already matches the FFI-style bindings (Go, C#, Dart, etc.), so aligning Java to the same convention restores consistency. (`alef.toml`)
 
 ### Changed
 
@@ -1179,72 +1179,72 @@ rc.2 was tagged + partially published (5/13 registries) on 2026-05-25 then super
 
 - **swift**: Regenerate `packages/swift/rust/src/lib.rs` and `packages/swift/rust/Cargo.toml` with alef v0.19.5 fixes for `AHashMap<Cow, _>` param types. The prior generated code for `calculate_quality_score` attempted `&serde_json::from_str::<HashMap<String, String>>(&metadata).expect("...")` on an `Option<String>` parameter, producing two compile errors: (1) `HashMap` does not implement `Deref` so `.as_deref()` was not available, and (2) the deserialized `HashMap<String, V>` did not match the core function's expected `Option<&AHashMap<Cow<'static, str>, Value>>`. Fixed by alef v0.19.5: the Swift shim now emits a pre-call `let __metadata_ahash` binding that deserializes the JSON string into `HashMap<String, String>`, converts to `AHashMap<Cow::Owned, Value::String>`, and passes `.as_ref()` to the core. Added unconditional `ahash = "0.8"` to `packages/swift/rust/Cargo.toml` so generated Swift crates reference `ahash::AHashMap` without manual additions. (`packages/swift/rust/src/lib.rs`, `packages/swift/rust/Cargo.toml`)
 
-- **ffi + dart**: Regenerate `crates/kreuzberg-ffi/src/lib.rs` and `packages/dart/rust/src/lib.rs` with alef v0.19.5 fixes for `AHashMap<Cow, _>` param types. In the FFI shim, the prior generated code emitted `serde_json::from_str::<HashMap<String, V>>` and `.as_deref()` for the `metadata` parameter of `kreuzberg_calculate_quality_score`, producing two compile errors: `HashMap` does not implement `Deref` (so `.as_deref()` fails) and the deserialized `HashMap<String, V>` did not match the core function's expected `Option<&AHashMap<Cow<'static, str>, Value>>`. In the Dart FRB bridge, the prior code attempted `&metadata` where `metadata: Option<HashMap<String, String>>`, which also fails to type-check against the core. Both are fixed by alef v0.19.5: the FFI emitter now deserializes into `ahash::AHashMap<Cow<'static, str>, Value>` and uses `.as_ref()`; the Dart bridge emits a pre-call `let __metadata_ahash` binding that converts `HashMap<String, String>` to `AHashMap<Cow, Value>` before borrowing. Added `ahash = "0.8"` to `crates/kreuzberg-ffi/Cargo.toml` and `packages/dart/rust/Cargo.toml` since both generated files reference `ahash::AHashMap` directly. (`crates/kreuzberg-ffi/src/lib.rs`, `crates/kreuzberg-ffi/Cargo.toml`, `packages/dart/rust/src/lib.rs`, `packages/dart/rust/Cargo.toml`)
+- **ffi + dart**: Regenerate `crates/xberg-ffi/src/lib.rs` and `packages/dart/rust/src/lib.rs` with alef v0.19.5 fixes for `AHashMap<Cow, _>` param types. In the FFI shim, the prior generated code emitted `serde_json::from_str::<HashMap<String, V>>` and `.as_deref()` for the `metadata` parameter of `xberg_calculate_quality_score`, producing two compile errors: `HashMap` does not implement `Deref` (so `.as_deref()` fails) and the deserialized `HashMap<String, V>` did not match the core function's expected `Option<&AHashMap<Cow<'static, str>, Value>>`. In the Dart FRB bridge, the prior code attempted `&metadata` where `metadata: Option<HashMap<String, String>>`, which also fails to type-check against the core. Both are fixed by alef v0.19.5: the FFI emitter now deserializes into `ahash::AHashMap<Cow<'static, str>, Value>` and uses `.as_ref()`; the Dart bridge emits a pre-call `let __metadata_ahash` binding that converts `HashMap<String, String>` to `AHashMap<Cow, Value>` before borrowing. Added `ahash = "0.8"` to `crates/xberg-ffi/Cargo.toml` and `packages/dart/rust/Cargo.toml` since both generated files reference `ahash::AHashMap` directly. (`crates/xberg-ffi/src/lib.rs`, `crates/xberg-ffi/Cargo.toml`, `packages/dart/rust/src/lib.rs`, `packages/dart/rust/Cargo.toml`)
 
-- **dart**: Regenerated `packages/dart/rust/src/frb_generated.rs` via `flutter_rust_bridge_codegen generate` to pick up type changes from alef v0.19.4 regen. The stale codegen file expected `Option<String>` for bbox fields (`DocumentNode.bbox`, `ElementMetadata.coordinates`, `ExtractedImage.bounding_box`, `GridCell.bbox`, `LayoutRegion.bounding_box`, `PdfAnnotation.bounding_box`, `Table.bounding_box`) and `Vec<String>` for attribute fields, but kreuzberg's recent type updates now expose `BoundingBox` as a concrete struct and attributes as nested vectors. The regenerated file now correctly type-checks against the current Rust core. Also fixed a type mismatch in the `calculate_quality_score` wrapper: the FFI-friendly signature takes `Option<HashMap<String, String>>` but the core function expects `Option<&AHashMap<Cow, Value>>`, so the wrapper now converts the Dart-friendly types to the Rust core format. Added `ahash = "0.8"` dependency to `packages/dart/rust/Cargo.toml` to support the conversion. Fixes macOS arm64 CI build failures. (`packages/dart/rust/src/frb_generated.rs`, `packages/dart/rust/src/lib.rs`, `packages/dart/rust/Cargo.toml`)
+- **dart**: Regenerated `packages/dart/rust/src/frb_generated.rs` via `flutter_rust_bridge_codegen generate` to pick up type changes from alef v0.19.4 regen. The stale codegen file expected `Option<String>` for bbox fields (`DocumentNode.bbox`, `ElementMetadata.coordinates`, `ExtractedImage.bounding_box`, `GridCell.bbox`, `LayoutRegion.bounding_box`, `PdfAnnotation.bounding_box`, `Table.bounding_box`) and `Vec<String>` for attribute fields, but xberg's recent type updates now expose `BoundingBox` as a concrete struct and attributes as nested vectors. The regenerated file now correctly type-checks against the current Rust core. Also fixed a type mismatch in the `calculate_quality_score` wrapper: the FFI-friendly signature takes `Option<HashMap<String, String>>` but the core function expects `Option<&AHashMap<Cow, Value>>`, so the wrapper now converts the Dart-friendly types to the Rust core format. Added `ahash = "0.8"` dependency to `packages/dart/rust/Cargo.toml` to support the conversion. Fixes macOS arm64 CI build failures. (`packages/dart/rust/src/frb_generated.rs`, `packages/dart/rust/src/lib.rs`, `packages/dart/rust/Cargo.toml`)
 
 - **ci**: `.github/workflows/ci-docs.yaml` `lint-docs` job pinned `alef-ref` to `v0.16.69`, so the docs linter ran against a stale alef while generated bindings were produced by the current version (v0.19.4). The version skew caused the docs validation to fail on the first regen push. Bumped to `v0.19.4` to match `alef.toml`. (`.github/workflows/ci-docs.yaml`)
 
-- **python**: `_to_rust_chunking_config` no longer passes `sizing=None` to the PyO3 `ChunkingConfig` constructor, which raised `TypeError: argument 'sizing': 'None' is not an instance of 'ChunkSizing'`. The constructor's PyO3 signature provides `ChunkSizing::default()` when `sizing` is omitted, so the Python wrapper now omits the key from kwargs when the user-facing field is `None`, allowing the Rust default to apply. Fixes `test_config_chunking_prepend_heading_context` in the Python e2e suite. (`packages/python/kreuzberg/api.py`)
+- **python**: `_to_rust_chunking_config` no longer passes `sizing=None` to the PyO3 `ChunkingConfig` constructor, which raised `TypeError: argument 'sizing': 'None' is not an instance of 'ChunkSizing'`. The constructor's PyO3 signature provides `ChunkSizing::default()` when `sizing` is omitted, so the Python wrapper now omits the key from kwargs when the user-facing field is `None`, allowing the Rust default to apply. Fixes `test_config_chunking_prepend_heading_context` in the Python e2e suite. (`packages/python/xberg/api.py`)
 
-- **bindings**: Expose `BoundingBox` in all alef-generated bindings (Java, C#, Go, Dart, Swift, Kotlin Android, etc.) by removing `#[cfg_attr(alef, alef(skip))]` from `crates/kreuzberg/src/types/extraction.rs`. The type appears as a field on `Table`, `OcrElement`, `ElementMetadata`, `Annotation`, and `Page`; with the type skipped alef fell back to opaque `String`/`Object` mappings, breaking Jackson/JSON deserialization (Java e2e `testConfigSecurityLimits` failed with `Cannot deserialize value of type 'java.lang.String' from Object value` for `Table.boundingBox`). Exposing the type generates a proper record/struct everywhere and unblocks the full Java e2e suite (88/88). (`crates/kreuzberg/src/types/extraction.rs`)
+- **bindings**: Expose `BoundingBox` in all alef-generated bindings (Java, C#, Go, Dart, Swift, Kotlin Android, etc.) by removing `#[cfg_attr(alef, alef(skip))]` from `crates/xberg/src/types/extraction.rs`. The type appears as a field on `Table`, `OcrElement`, `ElementMetadata`, `Annotation`, and `Page`; with the type skipped alef fell back to opaque `String`/`Object` mappings, breaking Jackson/JSON deserialization (Java e2e `testConfigSecurityLimits` failed with `Cannot deserialize value of type 'java.lang.String' from Object value` for `Table.boundingBox`). Exposing the type generates a proper record/struct everywhere and unblocks the full Java e2e suite (88/88). (`crates/xberg/src/types/extraction.rs`)
 
-- **embeddings**: Serialize concurrent first-time model downloads across processes. `hf-hub`'s own download lock is non-blocking and retries for only ~5s — far shorter than a 100MB+ sentence-transformer model download — so racing processes (e.g. parallel e2e workers) failed outright with `ApiError::LockAcquisition`. `download_model_files` now holds a blocking `flock(LOCK_EX)` on a kreuzberg-owned lock file (`<cache>/models--<repo>/.kbz-download.lock`) for the full download; other processes block until release, then find the model already cached. The lock is released on drop or by the OS on process exit. Non-unix targets fall back to the prior `hf-hub` behavior. (`crates/kreuzberg/src/embeddings/mod.rs`)
+- **embeddings**: Serialize concurrent first-time model downloads across processes. `hf-hub`'s own download lock is non-blocking and retries for only ~5s — far shorter than a 100MB+ sentence-transformer model download — so racing processes (e.g. parallel e2e workers) failed outright with `ApiError::LockAcquisition`. `download_model_files` now holds a blocking `flock(LOCK_EX)` on a xberg-owned lock file (`<cache>/models--<repo>/.kbz-download.lock`) for the full download; other processes block until release, then find the model already cached. The lock is released on drop or by the OS on process exit. Non-unix targets fall back to the prior `hf-hub` behavior. (`crates/xberg/src/embeddings/mod.rs`)
 
-- **core**: The global OCR backend registry now self-heals after `clear_ocr_backends`. `OcrBackendRegistry` is the only plugin registry seeded with built-in backends (Tesseract/PaddleOCR/VLM) at construction, and the image extractor looks them up by name with no fallback — so calling `clear_ocr_backends()` permanently broke OCR for the rest of the process. This caused a test-pollution failure in the cross-language e2e suites: the `ocr_backend_management` category (which runs `clear_ocr_backends`) sorts before `smoke`, so the OCR smoke test then failed with `OCR backend 'tesseract' not registered. Available backends: []`. The built-in registration logic is now factored into `OcrBackendRegistry::register_defaults`, and a new crate-internal `ensure_ocr_backends_initialized` re-seeds the registry when it is empty — mirroring the existing `extractors::ensure_initialized` self-heal for the document extractor registry. The image extractor calls it before every OCR dispatch. (`crates/kreuzberg/src/plugins/registry/ocr.rs`, `crates/kreuzberg/src/plugins/ocr.rs`, `crates/kreuzberg/src/plugins/mod.rs`, `crates/kreuzberg/src/extractors/image.rs`)
+- **core**: The global OCR backend registry now self-heals after `clear_ocr_backends`. `OcrBackendRegistry` is the only plugin registry seeded with built-in backends (Tesseract/PaddleOCR/VLM) at construction, and the image extractor looks them up by name with no fallback — so calling `clear_ocr_backends()` permanently broke OCR for the rest of the process. This caused a test-pollution failure in the cross-language e2e suites: the `ocr_backend_management` category (which runs `clear_ocr_backends`) sorts before `smoke`, so the OCR smoke test then failed with `OCR backend 'tesseract' not registered. Available backends: []`. The built-in registration logic is now factored into `OcrBackendRegistry::register_defaults`, and a new crate-internal `ensure_ocr_backends_initialized` re-seeds the registry when it is empty — mirroring the existing `extractors::ensure_initialized` self-heal for the document extractor registry. The image extractor calls it before every OCR dispatch. (`crates/xberg/src/plugins/registry/ocr.rs`, `crates/xberg/src/plugins/ocr.rs`, `crates/xberg/src/plugins/mod.rs`, `crates/xberg/src/extractors/image.rs`)
 
 - **pdf/chunking**: Fix `firstPage`/`lastPage` null on chunks extracted from multi-page PDFs (#1013). PDF text extraction produces page content with trailing spaces before `"\n\n"` paragraph separators (a PDF rendering artifact). `render_plain` trims each paragraph via `paragraph.trim()`, so `result.content` lacks those trailing spaces while `PageContent.content` retains them — causing every page's exact-match in `recompute_boundaries_from_pages` to fail. The first-line fallback then used `page.content.len()` (with trailing spaces) as `byte_end`, pushing `search_offset` past subsequent pages and causing a cascade of null-metadata chunks. Fix: normalise page content before searching by splitting on `"\n\n"`, trimming each segment, and rejoining — mirroring what `render_plain` does — so both the search target and the resulting `byte_end` are correct. Also stores `cleaned.into_owned()` in `PageContent.content` (so `is_blank` detection operates on cleaned text) and applies `fix_pdf_control_chars` on OCR-overwrite paths for consistency.
 
 - **kotlin-android**: Exclude trait bridge interfaces from code generation by adding `exclude_languages = ["kotlin_android"]` to all trait bridge definitions in `alef.toml` (`OcrBackend`, `PostProcessor`, `Validator`, `EmbeddingBackend`, `DocumentExtractor`, `Renderer`). The alef-backend-java emits trait bridge classes with Java Panama FFM imports (`java.lang.foreign.*`), which are not available on Android. Kotlin-Android is JNI-only (no trait bridge support yet) and doesn't need these interfaces. This prevents compilation errors in `packages/kotlin-android/src/main/java/` from missing Panama FFM API classes.
 
-- **swift**: Added `render_pdf_page_to_png` Swift call override in `alef.toml` with explicit argument definitions including optional `dpi` and `password` parameters, plus updated PDF fixtures to include null values for these fields. Resolved compilation errors in `e2e/swift_e2e/Tests/KreuzbergE2ETests/PdfTests.swift` where the generated function calls were missing the required named arguments. Also added `swift` to `skip_languages` for `embed_texts_async` call since async function naming conflicts prevent the binding from generating `embedTextsAsync()` — Callers should use the async wrapper from `embed_texts` instead. This resolves all 7 Swift compilation errors and reduces test failures to 1 (OCR backend registration runtime issue). (`alef.toml`, `fixtures/pdf/`, `e2e/swift_e2e/`)
+- **swift**: Added `render_pdf_page_to_png` Swift call override in `alef.toml` with explicit argument definitions including optional `dpi` and `password` parameters, plus updated PDF fixtures to include null values for these fields. Resolved compilation errors in `e2e/swift_e2e/Tests/XbergE2ETests/PdfTests.swift` where the generated function calls were missing the required named arguments. Also added `swift` to `skip_languages` for `embed_texts_async` call since async function naming conflicts prevent the binding from generating `embedTextsAsync()` — Callers should use the async wrapper from `embed_texts` instead. This resolves all 7 Swift compilation errors and reduces test failures to 1 (OCR backend registration runtime issue). (`alef.toml`, `fixtures/pdf/`, `e2e/swift_e2e/`)
 
-- **kotlin-android**: Added `crates/kreuzberg/src/types/internal.rs` to alef.toml sources list so `InternalDocument` is extracted and generated for Kotlin bindings. The type is used in trait bridge method signatures (e.g., `IRenderer::render(doc: InternalDocument)`) and must be available for the generated interface to compile. Previously the generated Kotlin code referenced `InternalDocument` but the type was never extracted (missing source file), causing "Unresolved reference" errors. The skip attribute was already removed in pass-2 (`bf80c2fce7`); this completes the fix by ensuring the type is extracted. (`alef.toml`)
+- **kotlin-android**: Added `crates/xberg/src/types/internal.rs` to alef.toml sources list so `InternalDocument` is extracted and generated for Kotlin bindings. The type is used in trait bridge method signatures (e.g., `IRenderer::render(doc: InternalDocument)`) and must be available for the generated interface to compile. Previously the generated Kotlin code referenced `InternalDocument` but the type was never extracted (missing source file), causing "Unresolved reference" errors. The skip attribute was already removed in pass-2 (`bf80c2fce7`); this completes the fix by ensuring the type is extracted. (`alef.toml`)
 
-- **kotlin-android**: Added `embed_texts_async` to `exclude_functions` in `alef.toml`. The function creates a naming conflict with the suspend wrapper of `embed_texts` — both generate `suspend fun embedTextsAsync()` in Kotlin, causing overload ambiguity. Callers should use the suspend function from `embed_texts` instead. This resolves duplicate function declaration errors in the generated `Kreuzberg.kt`. (`alef.toml`)
+- **kotlin-android**: Added `embed_texts_async` to `exclude_functions` in `alef.toml`. The function creates a naming conflict with the suspend wrapper of `embed_texts` — both generate `suspend fun embedTextsAsync()` in Kotlin, causing overload ambiguity. Callers should use the suspend function from `embed_texts` instead. This resolves duplicate function declaration errors in the generated `Xberg.kt`. (`alef.toml`)
 
 ### Changed
 
 - **alef**: bumped to v0.17.24. Regenerated all bindings and e2e tests. v0.17.24 includes: conditional `#[php(prop)]` for Prop-compatible types only (fixes E0277 errors for non-Prop fields), Kotlin/Android codegen fixes (named struct field default-construction, sealed-class field annotations, JNI single-param `is_optional` propagation), Dart pubspec single-caret version constraint, alef-e2e/zig module_name path fix, valid `build.zig.zon` declarations, scaffold wasm filename underscore conversion, alef-e2e/csharp synthetic chunk assertion inline predicates (`chunks_have_heading_context`, `first_chunk_starts_with_heading`), alef-e2e/python equivalent. Known regression: `e2e/csharp/tests/ContractTests.cs` is no longer emitted by the C# e2e generator; other languages still emit their contract test file (tracked for upstream fix). (`alef.toml`, ~935 regenerated files)
 
-- **ci**: Split pub.dev publishing into a dedicated `publish-pubdev.yaml` workflow. pub.dev OIDC trusted publishing rejects tokens from `release` events; only `push` and `workflow_dispatch` are accepted. The Dart package embeds platform-specific native binaries (Android JNI, iOS XCFramework, server libs), so the main workflow now assembles them into a `dart-package-assembled` artifact and dispatches `publish-pubdev.yaml` via `workflow_dispatch` with the run ID; that workflow downloads the artifact and publishes. One-time setup required: configure pub.dev → kreuzberg package → Admin → Automated publishing with workflow path `.github/workflows/publish-pubdev.yaml`.
+- **ci**: Split pub.dev publishing into a dedicated `publish-pubdev.yaml` workflow. pub.dev OIDC trusted publishing rejects tokens from `release` events; only `push` and `workflow_dispatch` are accepted. The Dart package embeds platform-specific native binaries (Android JNI, iOS XCFramework, server libs), so the main workflow now assembles them into a `dart-package-assembled` artifact and dispatches `publish-pubdev.yaml` via `workflow_dispatch` with the run ID; that workflow downloads the artifact and publishes. One-time setup required: configure pub.dev → xberg package → Admin → Automated publishing with workflow path `.github/workflows/publish-pubdev.yaml`.
 
 ### Fixed
 
-- **demo**: WASM extraction now runs in a per-file Web Worker, keeping the main thread unblocked throughout. Fixes page freeze on repeated use, stale output visible during a new extraction, and the 30s timeout that could never fire when the main-thread event loop was blocked. The `ArrayBuffer` is transferred (not copied) to halve peak memory on large files. Dead `importmap` entries (`tesseract-wasm`, `comlink`) and the top-level `initWasm`/`enableOcr` call were removed; WASM initialisation now happens inside the Worker. All `console.error` calls are replaced by the `[kreuzberg/wasm]`-prefixed `log` helper so DevTools filtering works. (`docs/demo.html`, #992)
+- **demo**: WASM extraction now runs in a per-file Web Worker, keeping the main thread unblocked throughout. Fixes page freeze on repeated use, stale output visible during a new extraction, and the 30s timeout that could never fire when the main-thread event loop was blocked. The `ArrayBuffer` is transferred (not copied) to halve peak memory on large files. Dead `importmap` entries (`tesseract-wasm`, `comlink`) and the top-level `initWasm`/`enableOcr` call were removed; WASM initialisation now happens inside the Worker. All `console.error` calls are replaced by the `[xberg/wasm]`-prefixed `log` helper so DevTools filtering works. (`docs/demo.html`, #992)
 
 - **e2e/csharp**: Added `nested_types` mappings and `options_via = "from_json"` overrides to `alef.toml` C# call configurations. When fixture values are sealed-union or complex config types (EmbeddingModelType, EmbeddingConfig, ChunkingConfig, KeywordConfig, etc.), the codegen now emits `JsonSerializer.Deserialize<T>(json, ConfigOptions)!` instead of raw string literals, eliminating type-mismatch compile errors. Top-level nested_types apply across all calls; per-call overrides refine for specific functions. Reduces e2e/csharp compile errors from 11 to 3 (remaining: `metadata.Format.Trim()` sealed-union bug and `chunks_have_heading_context` synthetic predicate routing — tracked for upstream alef codegen fixes).
 
 - **Taskfile**: `kotlin:e2e` now passes `--lang kotlin_android` to `alef test`, matching the language key declared in `alef.toml`. Previously the task invoked `alef test --e2e --lang kotlin` which produced `Language 'kotlin' not in config languages list or test configuration`. (`Taskfile.yml`)
 
-- **core**: `EmbeddingModelType::default()` now returns `Preset { name: "balanced" }` instead of `Preset { name: "" }`. Language binding mirror structs (Ruby, PHP, and others) have their own `EmbeddingModelType` with a derived or hand-written `Default` that calls `String::default()` (empty) for the `name` field; when that flows through `From<EmbeddingModelType>` into `kreuzberg::embed_texts_async`, `get_preset("")` returns `None`, causing "Unknown embedding preset: " errors. All defaults across the codebase converge on "balanced", so the `Default` impl is now consistent with `default_model()` and `EmbeddingConfig::default()`. Added a unit test `test_embedding_model_type_default_is_balanced` to lock this in. (`crates/kreuzberg/src/core/config/processing.rs`)
+- **core**: `EmbeddingModelType::default()` now returns `Preset { name: "balanced" }` instead of `Preset { name: "" }`. Language binding mirror structs (Ruby, PHP, and others) have their own `EmbeddingModelType` with a derived or hand-written `Default` that calls `String::default()` (empty) for the `name` field; when that flows through `From<EmbeddingModelType>` into `xberg::embed_texts_async`, `get_preset("")` returns `None`, causing "Unknown embedding preset: " errors. All defaults across the codebase converge on "balanced", so the `Default` impl is now consistent with `default_model()` and `EmbeddingConfig::default()`. Added a unit test `test_embedding_model_type_default_is_balanced` to lock this in. (`crates/xberg/src/core/config/processing.rs`)
 
 - **e2e/elixir**: Regenerated with alef v0.17.19, which fixes a keyword-opts threshold bug in the Elixir e2e codegen. When a call had 2+ trailing optional parameters (e.g., `mime_type`, `config`), the codegen now emits all optional args in keyword form (`mime_type: "...", config: "..."`), not mixed positional and keyword (`mime_type: "...", "{}"`). This respects Elixir's syntax requirement that all positional args come before keyword args. Fixes smoke_test and other e2e test compile errors. (`alef.toml`, `e2e/elixir/test/*_test.exs`)
 
 - **e2e/r**: Marked the `config` argument of `embed_texts_async` as `optional = true` in `alef.toml` so generated e2e tests for languages whose fixtures omit a config (R, Python, Node) no longer call the binding without it. Previously the R wrapper signature `function(texts, config)` had no default and the empty/happy fixtures failed with `argument "config" is missing, with no default`. Regenerated all per-language `embed_async_pending` test suites via `alef generate`. Brings R e2e from 155/158 PASS to 159/160 PASS; the only remaining failure (`test_smoke.R` tesseract OCR backend) is environmental. (`alef.toml`, `e2e/*/...embed_async_pending*`)
 
-- **deps**: Loosened `tar` requirement in `crates/kreuzberg/Cargo.toml` from `^0.4.46` back to `^0.4` so it remains compatible with `tree-sitter-language-pack v1.8.1`, which locks `tar` to `0.4.45`. The pinned floor prevented the e2e/rust crate from resolving a consistent version. (`crates/kreuzberg/Cargo.toml`)
+- **deps**: Loosened `tar` requirement in `crates/xberg/Cargo.toml` from `^0.4.46` back to `^0.4` so it remains compatible with `tree-sitter-language-pack v1.8.1`, which locks `tar` to `0.4.45`. The pinned floor prevented the e2e/rust crate from resolving a consistent version. (`crates/xberg/Cargo.toml`)
 
 ### Fixed (core: code_intelligence Go type mismatch)
 
-- **core**: Changed `ExtractionResult.code_intelligence` field type from `Option<crate::ProcessResult>` to `Option<serde_json::Value>`. The `ProcessResult` type lives in `tree_sitter_language_pack` — an external crate whose struct layout alef cannot resolve — so the Go backend emitted `*string`, causing `cannot unmarshal object into string` at runtime. Using `serde_json::Value` maps to `json.RawMessage` in Go, preserving full JSON fidelity while being opaque to alef. Updated `extraction/derive.rs` to serialize the `ProcessResult` before assignment; a `tracing::warn!` guards the rare serialization failure. (`crates/kreuzberg/src/types/extraction.rs`, `crates/kreuzberg/src/extraction/derive.rs`, `packages/go/v5/binding.go`)
+- **core**: Changed `ExtractionResult.code_intelligence` field type from `Option<crate::ProcessResult>` to `Option<serde_json::Value>`. The `ProcessResult` type lives in `tree_sitter_language_pack` — an external crate whose struct layout alef cannot resolve — so the Go backend emitted `*string`, causing `cannot unmarshal object into string` at runtime. Using `serde_json::Value` maps to `json.RawMessage` in Go, preserving full JSON fidelity while being opaque to alef. Updated `extraction/derive.rs` to serialize the `ProcessResult` before assignment; a `tracing::warn!` guards the rare serialization failure. (`crates/xberg/src/types/extraction.rs`, `crates/xberg/src/extraction/derive.rs`, `packages/go/v5/binding.go`)
 
 ### Fixed (core: chunk_size=0 panic)
 
-- **core**: `build_chunk_config` in `crates/kreuzberg/src/chunking/builder.rs` now clamps `max_characters == 0` to 1000 (the `default_chunk_size` value) instead of forwarding zero to `text-splitter`, which panics with `chunk size must be non-zero`. Binding mirror structs whose `serde(default)` zeroes the field no longer abort the host process. A `tracing::warn!` line logs the clamp. (`crates/kreuzberg/src/chunking/builder.rs`)
+- **core**: `build_chunk_config` in `crates/xberg/src/chunking/builder.rs` now clamps `max_characters == 0` to 1000 (the `default_chunk_size` value) instead of forwarding zero to `text-splitter`, which panics with `chunk size must be non-zero`. Binding mirror structs whose `serde(default)` zeroes the field no longer abort the host process. A `tracing::warn!` line logs the clamp. (`crates/xberg/src/chunking/builder.rs`)
 
 ### Fixed (core: null-tolerant serde for ChunkSizing, EmbeddingModelType, FormatMetadata::Image uppercase)
 
-- **core**: `ChunkingConfig.sizing` and `EmbeddingConfig.model` fields now tolerate explicit JSON `null` (in addition to missing fields). Language binding mirror structs emit `"sizing": null` / `"model": null` from zero-valued structs; the previous `#[serde(default)]` annotation handled a missing key but not an explicit null for internally-tagged enums. Added `deserialize_null_default<T>` and `deserialize_null_model` helpers in `processing.rs` and switched both fields to use them. (`crates/kreuzberg/src/core/config/processing.rs`)
-- **core**: `FormatMetadata::Image` `Display` impl now emits the format string in uppercase (e.g., `"PNG"` instead of `"png"`), matching the fixture assertion convention used across all language e2e suites. (`crates/kreuzberg/src/types/metadata.rs`)
+- **core**: `ChunkingConfig.sizing` and `EmbeddingConfig.model` fields now tolerate explicit JSON `null` (in addition to missing fields). Language binding mirror structs emit `"sizing": null` / `"model": null` from zero-valued structs; the previous `#[serde(default)]` annotation handled a missing key but not an explicit null for internally-tagged enums. Added `deserialize_null_default<T>` and `deserialize_null_model` helpers in `processing.rs` and switched both fields to use them. (`crates/xberg/src/core/config/processing.rs`)
+- **core**: `FormatMetadata::Image` `Display` impl now emits the format string in uppercase (e.g., `"PNG"` instead of `"png"`), matching the fixture assertion convention used across all language e2e suites. (`crates/xberg/src/types/metadata.rs`)
 
 ### Fixed (e2e/php: hermetic ini)
 
-- **scripts/setup-php-ext-ini.sh + alef.toml**: PHP e2e runs were failing system-wide because a sibling project (tree-sitter-language-pack) had left a stale `/opt/homebrew/etc/php/8.4/conf.d/ext-kreuzberg.ini` pointing at a non-existent `ts_pack_core_php.so`. The local `php -c php.ini` flag only overrides the main `php.ini` path, not the scan-dir, so the stale entry kept being loaded. Hardened the e2e launcher to set `PHP_INI_SCAN_DIR=` (disabling conf.d scanning entirely) and made the generated `e2e/php/php.ini` set `extension_dir` explicitly so the hermetic config still finds the built extension. PHP e2e is now reproducible without depending on the host's conf.d state.
+- **scripts/setup-php-ext-ini.sh + alef.toml**: PHP e2e runs were failing system-wide because a sibling project (tree-sitter-language-pack) had left a stale `/opt/homebrew/etc/php/8.4/conf.d/ext-xberg.ini` pointing at a non-existent `ts_pack_core_php.so`. The local `php -c php.ini` flag only overrides the main `php.ini` path, not the scan-dir, so the stale entry kept being loaded. Hardened the e2e launcher to set `PHP_INI_SCAN_DIR=` (disabling conf.d scanning entirely) and made the generated `e2e/php/php.ini` set `extension_dir` explicitly so the hermetic config still finds the built extension. PHP e2e is now reproducible without depending on the host's conf.d state.
 
 ### Fixed (R e2e: 159/160, only env tesseract failure remains)
 
-- **e2e/r**: Regenerated against alef with four R codegen fixes (no-arg-wrapper input leakage, empty `Vec<String>` → `character(0)`, R-side `extra_args` support, FormatMetadata tagged-enum collapse helper + `result_is_bytes`-aware length assertions). Added an R override on `render_pdf_page_to_png` with `extra_args = ["NULL", "NULL"]` to fill in the extendr-required `dpi`/`password` positionals when the fixture omits them. Combined, kreuzberg R e2e moves from 153/158 to 159/160 — the remaining failure (`test_smoke.R:9:3` PNG-with-OCR) is the pre-existing `tesseract not registered` env condition. (`alef.toml`, `e2e/r/`)
+- **e2e/r**: Regenerated against alef with four R codegen fixes (no-arg-wrapper input leakage, empty `Vec<String>` → `character(0)`, R-side `extra_args` support, FormatMetadata tagged-enum collapse helper + `result_is_bytes`-aware length assertions). Added an R override on `render_pdf_page_to_png` with `extra_args = ["NULL", "NULL"]` to fill in the extendr-required `dpi`/`password` positionals when the fixture omits them. Combined, xberg R e2e moves from 153/158 to 159/160 — the remaining failure (`test_smoke.R:9:3` PNG-with-OCR) is the pre-existing `tesseract not registered` env condition. (`alef.toml`, `e2e/r/`)
 
 ### Fixed (Zig e2e: all 88 tests passing)
 
@@ -1256,14 +1256,14 @@ rc.2 was tagged + partially published (5/13 registries) on 2026-05-25 then super
 
 ### Fixed (DrawingType alef-skip, zig binding ffi_path)
 
-- **core**: Annotate `DrawingType` enum in `crates/kreuzberg/src/extraction/docx/drawing.rs`
+- **core**: Annotate `DrawingType` enum in `crates/xberg/src/extraction/docx/drawing.rs`
   with `#[cfg_attr(alef, alef(skip))]`. The enclosing `Drawing` struct was already
   skipped but its inner enum was not, so alef R binding gen emitted
-  `impl From<kreuzberg::DrawingType> for ...` and broke `packages/r/src/rust/src/lib.rs`
-  with five `kreuzberg::DrawingType not found` errors.
+  `impl From<xberg::DrawingType> for ...` and broke `packages/r/src/rust/src/lib.rs`
+  with five `xberg::DrawingType not found` errors.
 - **packages/zig/build.zig**: Default `ffi_path` updated from `../../target/debug`
   to `../../target/release` so `zig build test` finds the FFI artifact built by the
-  alef test before-hook (`cargo build --release -p kreuzberg-ffi`). Mirrors the
+  alef test before-hook (`cargo build --release -p xberg-ffi`). Mirrors the
   alef-scaffold/zig fix.
 
 ### Fixed (FormatMetadata Display impl)
@@ -1278,7 +1278,7 @@ rc.2 was tagged + partially published (5/13 registries) on 2026-05-25 then super
 
 - **java e2e**: `clear_document_extractors()`, `clear_ocr_backends()`,
   `clear_embedding_backends()`, `clear_post_processors()`,
-  `clear_renderers()`, `clear_validators()` now generate in the `Kreuzberg`
+  `clear_renderers()`, `clear_validators()` now generate in the `Xberg`
   facade class. Root cause: `#[cfg_attr(alef, alef(skip))]` annotations on
   these functions prevented alef from picking them up during Rust API
   extraction. Removed the annotations from the 6 `clear_*()` functions (only;
@@ -1330,16 +1330,16 @@ rc.2 was tagged + partially published (5/13 registries) on 2026-05-25 then super
   the eager path with a `.take(limit)` guard; full inline-image support is tracked
   in #989.
 
-- **`kreuzberg::utils::pool` API simplified**: `Pool::acquire()` is now infallible
+- **`xberg::utils::pool` API simplified**: `Pool::acquire()` is now infallible
   — it returns `PoolGuard<T>` directly instead of `Result<PoolGuard<T>, PoolError>`.
   `PoolError` is removed. `parking_lot::Mutex` cannot poison, so the `Result`
   wrapper was dead code. `Pool`, `PoolGuard`, `Recyclable`, `StringBufferPool`, and
   `ByteBufferPool` are marked `#[doc(hidden)]` — they were technically reachable via
-  `kreuzberg::utils::pool` but were never part of the stable public API.
+  `xberg::utils::pool` but were never part of the stable public API.
 
 ### Added
 
-- **`kreuzberg` crate root**: plugin_api surface (`list_*`, `clear_*`, `register_*`,
+- **`xberg` crate root**: plugin_api surface (`list_*`, `clear_*`, `register_*`,
   `unregister_*` for all six plugin types; `detect_mime_type_from_bytes`,
   `get_extensions_for_mime`) was already present in the internal module tree but not
   wired up as top-level `pub use` items. The re-exports are now confirmed in place and
@@ -1348,25 +1348,25 @@ rc.2 was tagged + partially published (5/13 registries) on 2026-05-25 then super
 
 ### Fixed
 
-- **alef-backend-php**: emit reverse `From<binding> for kreuzberg::Core` impls for metadata DTOs
+- **alef-backend-php**: emit reverse `From<binding> for xberg::Core` impls for metadata DTOs
   (ArchiveMetadata, BibtexMetadata, DocxMetadata, EmailMetadata, EpubMetadata, ExcelMetadata,
   FictionBookMetadata, HtmlMetadata, ImageMetadata, JatsMetadata, OcrMetadata, PptxMetadata,
   PstMetadata, TextMetadata, XmlMetadata, CitationMetadata, CsvMetadata, DbfMetadata, TableGrid).
   Reverse From impls are required for flat enum binding→core conversion which calls `.into()` on
   optional variant fields. Previously only forward impls were generated.
 
-- **Java `UnsatisfiedLinkError` on `kreuzberg_list_embedding_presets` / `kreuzberg_get_embedding_preset` (#998)**:
-  the alef-generated FFI surface references `kreuzberg::EmbeddingPreset` unconditionally
-  in function return-type positions, so any build of `kreuzberg-ffi` that omitted the
+- **Java `UnsatisfiedLinkError` on `xberg_list_embedding_presets` / `xberg_get_embedding_preset` (#998)**:
+  the alef-generated FFI surface references `xberg::EmbeddingPreset` unconditionally
+  in function return-type positions, so any build of `xberg-ffi` that omitted the
   `embedding-presets` feature would silently drop these two C symbols — causing the Java
   static initialiser (which uses `.orElseThrow()`) to crash the entire JVM at class-load
   time. Added `#[cfg(not(feature = "embedding-presets"))]` stubs in
-  `crates/kreuzberg/src/lib.rs`: a no-op `EmbeddingPreset` struct and empty-return
+  `crates/xberg/src/lib.rs`: a no-op `EmbeddingPreset` struct and empty-return
   implementations of both functions. The stubs ensure the symbols are always present
   and callers degrade gracefully (empty list / `null` handle) instead of crashing.
 
 - **#962**: PDF text extracted one character per line on glyph-spaced documents
-  (programmatic reproducer in `crates/kreuzberg/tests/pdf_glyph_spacing_issue_962.rs`)
+  (programmatic reproducer in `crates/xberg/tests/pdf_glyph_spacing_issue_962.rs`)
   — when a Word-exported PDF places each glyph via its own `BT…ET` block with a
   sinusoidal y-jitter, pdf_oxide's ColumnAware reading order groups spans by y-level
   rather than reading order, yielding single-character spans out of sequence. Detection:
@@ -1377,7 +1377,7 @@ rc.2 was tagged + partially published (5/13 registries) on 2026-05-25 then super
   by x-ascending, insert spaces at word gaps (x-gap > `font_size × 0.5`). Heuristic
   constants live in `crate::pdf::structure::constants` with measurement justification;
   upstream fix shipped in pdf_oxide v0.3.51 (issue #518, closed 2026-05-19);
-  heuristic removable when kreuzberg upgrades to ≥ 0.3.51. Dutch word `relatie` (from
+  heuristic removable when xberg upgrades to ≥ 0.3.51. Dutch word `relatie` (from
   "relatie-id" in the Word broken-image placeholder string) added to `.typos.toml`.
 
 ### Changed
@@ -1404,7 +1404,7 @@ rc.2 was tagged + partially published (5/13 registries) on 2026-05-25 then super
 - **Migrated `alef.toml [crates.exclude]` to source-level annotations**: 100+
   type/function/method entries previously listed in `alef.toml`'s global
   exclude block now carry `#[cfg_attr(alef, alef(skip))]` at their definition
-  sites in `crates/kreuzberg/src/**`. Behaviour-neutral migration — the same
+  sites in `crates/xberg/src/**`. Behaviour-neutral migration — the same
   items remain excluded, but the exclusion declaration lives next to the
   defined item and stays in sync across refactors instead of drifting away from
   the source. `alef.toml [crates.exclude]` now retains only the ~20 entries
@@ -1415,22 +1415,22 @@ rc.2 was tagged + partially published (5/13 registries) on 2026-05-25 then super
   impl methods like `From::from` / `Display::fmt` / `Deref::deref` auto-emitted
   by derive).
 
-- **`kreuzberg::CacheStats` now refers to `cache::core::CacheStats`** (was
+- **`xberg::CacheStats` now refers to `cache::core::CacheStats`** (was
   previously aliased to `paddle_ocr::CacheStats`). The paddle-OCR variant is
-  renamed to `ModelCacheStats` and re-exported as `kreuzberg::ModelCacheStats`.
+  renamed to `ModelCacheStats` and re-exported as `xberg::ModelCacheStats`.
   Breaking change for Python/TypeScript/Ruby/PHP/Go/Java/C#/Elixir/Dart/Swift
-  bindings — consumers of the previous `kreuzberg.CacheStats` (paddle model
-  cache variant) must migrate to `kreuzberg.ModelCacheStats`.
+  bindings — consumers of the previous `xberg.CacheStats` (paddle model
+  cache variant) must migrate to `xberg.ModelCacheStats`.
 
-- **`kreuzberg::extraction::image::ImageMetadata` renamed to
+- **`xberg::extraction::image::ImageMetadata` renamed to
   `ExtractedImageMetadata`** to disambiguate from
-  `kreuzberg::types::metadata::ImageMetadata`. Internal use only; no public
+  `xberg::types::metadata::ImageMetadata`. Internal use only; no public
   binding surface impact.
 
 ### Removed
 
-- **Orphan `kreuzberg::types::formats::CacheStats`** (unused duplicate of
-  `kreuzberg::cache::core::CacheStats`; superseded by the canonical re-export
+- **Orphan `xberg::types::formats::CacheStats`** (unused duplicate of
+  `xberg::cache::core::CacheStats`; superseded by the canonical re-export
   at the crate root).
 
 ### Added
@@ -1449,10 +1449,10 @@ rc.2 was tagged + partially published (5/13 registries) on 2026-05-25 then super
   `register_document_extractor`, their `unregister_*` siblings, and
   `clear_*` group counterparts. Bindings previously hid these because the
   alef codegen emitted duplicate definitions; alef ≥ v0.16.65 auto-deduplicates
-  trait-bridge registrations, so the kreuzberg `alef.toml` global function
+  trait-bridge registrations, so the xberg `alef.toml` global function
   exclusions are dropped.
 
-- **`kreuzberg-ffi` `register_ocr_backend` / `unregister_ocr_backend` are now
+- **`xberg-ffi` `register_ocr_backend` / `unregister_ocr_backend` are now
   callable from C, Go, Java, C#**. The previous `*const c_void` Send issue was
   resolved by the alef-backend-ffi Jinja migration; the binding now compiles
   with `unsafe impl Send + Sync` on the bridge struct.
@@ -1539,7 +1539,7 @@ rc.2 was tagged + partially published (5/13 registries) on 2026-05-25 then super
 
 ### Removed
 
-- **Gleam binding** (`kreuzberg_gleam` Hex package): dropped entirely. Gleam targets the BEAM and Gleam consumers can keep using the Elixir binding via Erlang interop, so the dedicated package added negligible audience reach at a real maintenance cost (regen on every alef bump, dedicated CI workflow, Hex publish job, e2e fixtures, 92 doc snippets). Existing published versions of `kreuzberg_gleam` on Hex remain available for anyone still pinning them — no further releases will be made.
+- **Gleam binding** (`xberg_gleam` Hex package): dropped entirely. Gleam targets the BEAM and Gleam consumers can keep using the Elixir binding via Erlang interop, so the dedicated package added negligible audience reach at a real maintenance cost (regen on every alef bump, dedicated CI workflow, Hex publish job, e2e fixtures, 92 doc snippets). Existing published versions of `xberg_gleam` on Hex remain available for anyone still pinning them — no further releases will be made.
 - **`PageContent.images: Vec<Arc<ExtractedImage>>` (#777)**: removed and replaced by
   `PageContent.image_indices: Vec<u32>`. All image data lives once in
   `ExtractionResult.images`; pages and chunks now carry indices into that collection.
@@ -1642,7 +1642,7 @@ rc.2 was tagged + partially published (5/13 registries) on 2026-05-25 then super
   pages, and stale native text is cleared on secondary pages when a VLM
   returns a single whole-document string.
 - **LLM base URL normalization**: fixed a regression where a custom
-  `KREUZBERG_LLM_BASE_URL` with a trailing slash caused authentication (401)
+  `XBERG_LLM_BASE_URL` with a trailing slash caused authentication (401)
   or 404 errors due to double-slash path construction (e.g. `/v1//chat/completions`).
   The LLM client now automatically trims trailing slashes from the base URL.
 - **PDF layout-classify regression on text-heavy structure-tree PDFs**:
@@ -1664,12 +1664,12 @@ rc.2 was tagged + partially published (5/13 registries) on 2026-05-25 then super
     delta `+0.5pt → +1.0pt` in three call sites of `classify.rs`.
 - **PDF Markdown / Djot / Plain quality gates now run by default**:
   `test_pdf_quality_gate`, `test_pdf_djot_quality_gate`, and
-  `test_pdf_plain_quality_gate` in `crates/kreuzberg/tests/pdf_markdown_regression.rs`
+  `test_pdf_plain_quality_gate` in `crates/xberg/tests/pdf_markdown_regression.rs`
   no longer carry `#[ignore = "TODO: pdf_oxide upstream"]`. The
   upstream issue (#484) hasn't been demonstrated to currently trigger
   these failures, and the calibrated `PDFIUM_GROUND_TRUTH` thresholds
   are the binding contract for layout-pipeline changes.
-- **#911**: `extraction_timeout_secs` now explicitly returns a `KreuzbergError::Validation` error when configured in non-tokio or WASM builds. Previously, timeouts in these environments were silently ignored, leading to unexpected hangs.
+- **#911**: `extraction_timeout_secs` now explicitly returns a `XbergError::Validation` error when configured in non-tokio or WASM builds. Previously, timeouts in these environments were silently ignored, leading to unexpected hangs.
 - **swift e2e command**: `[crates.test.swift].e2e` now runs from
   `packages/swift` (was `e2e/swift`). The generated XCTest cases live inside
   `packages/swift/Tests/<Module>Tests/` because SwiftPM 6.0 forbids
@@ -1681,7 +1681,7 @@ contain a buildable target.` on every `task swift:e2e` invocation.
   `checkLastError()` call inside try-catch, resolving an unreported `Throwable`
   exception that blocked Java e2e test compilation.
 - **alef.toml**: `TesseractWasmBackend` added to `[crates.exclude].types`
-  so non-WASM bindings (kreuzberg-py, kreuzberg-nif, etc.) no longer
+  so non-WASM bindings (xberg-py, xberg-nif, etc.) no longer
   reference the WASM-only OCR backend (which is
   `#[cfg(feature = "ocr-wasm")]`-gated) and break the build under
   default features.
@@ -1691,8 +1691,8 @@ contain a buildable target.` on every `task swift:e2e` invocation.
   arguments rather than empty parameter lists.
 - **e2e/gleam**: regenerated against alef gleam codegen with
   `contains_any` OR logic + `gleam/list` import; full FFI shim
-  (`packages/gleam/src/kreuzberg_gleam_ffi.erl`) wraps the
-  `Elixir.Kreuzberg.Native` `*_sync` NIFs and converts the Erlang map
+  (`packages/gleam/src/xberg_gleam_ffi.erl`) wraps the
+  `Elixir.Xberg.Native` `*_sync` NIFs and converts the Erlang map
   results into Gleam-typed tagged tuples (`extraction_result`,
   `metadata`, `document_structure`, `format_metadata`, `excel_metadata`).
 - **e2e/zig**: regenerated for Zig 0.16 API (allocator + IO surface) and
@@ -1708,7 +1708,7 @@ contain a buildable target.` on every `task swift:e2e` invocation.
   future syncs.
 - **#853**: HWP structured extraction now returns an error instead of silently returning an empty document when no BodyText sections are found. Fixes a regression introduced in the structured extraction refactor.
 - **#619 follow-up**: `POST /extract-async` handler no longer panics on mutex poison — returns HTTP 500 and marks the job as Failed instead.
-- Fixed dead conditional-import warning on `KreuzbergError` in `plugins/registry/ocr.rs` under non-OCR feature sets.
+- Fixed dead conditional-import warning on `XbergError` in `plugins/registry/ocr.rs` under non-OCR feature sets.
 - **Zig e2e tests**: Added `default_extraction_config` constant and `extract_file_sync_default`, `extract_bytes_sync_default` overloads for e2e test generation. Configured alef codegen to emit these default variants.
 
 ## [5.0.0-rc.1] - 2026-05-05
@@ -1724,7 +1724,7 @@ contain a buildable target.` on every `task swift:e2e` invocation.
   `sheet_count` / `sheet_names` mirror fields are gone; access them via
   `metadata.format.excel.sheet_count` / `.sheet_names`. Affects REST,
   MCP, CLI (`--output-format json`), and every binding.
-- **Go module path changed from `v4` to `v5`**: Import path is now `github.com/xberg-io/kreuzberg/v5`. Update your `go.mod` and all import statements.
+- **Go module path changed from `v4` to `v5`**: Import path is now `github.com/xberg-io/xberg/v5`. Update your `go.mod` and all import statements.
 - **PHP binding parameter names are now lowerCamelCase**: Function parameters such as `$mime_type` are now `$mimeType`, `$page_index` → `$pageIndex`, etc., matching PHP naming conventions.
 - **Python `_to_rust_extraction_config` dict-coercion refactored**: The `isinstance(value, dict)` branch now delegates to `_coerce_dict_extraction_config()`. No public API change; internal helper is not part of the public surface.
 
@@ -1735,7 +1735,7 @@ contain a buildable target.` on every `task swift:e2e` invocation.
 
 ### Changed
 
-- **Inlined `text-splitter` into `crates/kreuzberg/src/chunking/text_splitter/`.** The upstream crate pins `tokenizers = "0.22"`, which conflicted with kreuzberg's direct `tokenizers 0.23` dependency and produced a duplicate copy of `tokenizers` in the build graph plus a `Tokenizer: ChunkSizer` trait-bound failure in `chunking::core`. The inlined fork drops the unused `code` (tree-sitter) and `tiktoken-rs` features and rebuilds against `tokenizers 0.23`. Kreuzberg's own tree-sitter–based code splitter is unaffected. See `ATTRIBUTIONS.md` for full provenance and license terms.
+- **Inlined `text-splitter` into `crates/xberg/src/chunking/text_splitter/`.** The upstream crate pins `tokenizers = "0.22"`, which conflicted with xberg's direct `tokenizers 0.23` dependency and produced a duplicate copy of `tokenizers` in the build graph plus a `Tokenizer: ChunkSizer` trait-bound failure in `chunking::core`. The inlined fork drops the unused `code` (tree-sitter) and `tiktoken-rs` features and rebuilds against `tokenizers 0.23`. Xberg's own tree-sitter–based code splitter is unaffected. See `ATTRIBUTIONS.md` for full provenance and license terms.
 
 ### Added
 
@@ -1749,7 +1749,7 @@ contain a buildable target.` on every `task swift:e2e` invocation.
 
 - **#799**: Extract images nested inside PDF Form XObjects across XObject references — recursive Form XObject descent (depth-limited to 8) now follows indirect references through the resource chain, with cycle detection via a visited-set so self-referential XObject DAGs no longer hang. Both the lopdf and pdfium image-decoding paths benefit.
 - **#824**: Robust PDF image extraction across XObject references — fixes silent image drops when documents reference XObjects through indirect chains. Combined with the depth limit and cycle guard from #799 to harden the recursive walker against malformed structures.
-- **#826**: WASM loading on Next.js / Turbopack — `@kreuzberg/wasm` now bundles cleanly under webpack 5, Turbopack, and Next.js's app router. Dynamic imports of Node built-ins and the pdfium-js subsystem carry `/* webpackIgnore: true */` markers so bundlers stop trying to inline platform-specific binaries.
+- **#826**: WASM loading on Next.js / Turbopack — `@xberg/wasm` now bundles cleanly under webpack 5, Turbopack, and Next.js's app router. Dynamic imports of Node built-ins and the pdfium-js subsystem carry `/* webpackIgnore: true */` markers so bundlers stop trying to inline platform-specific binaries.
 - **#834**: DOCX `inject_placeholders` flag honored end-to-end — image placeholders now appear in markdown/plain/djot output when `ImageExtractionConfig.inject_placeholders = true`, and the DOCX OCR pipeline runs before rendering so OCR text reaches the final document. Adds extractor-level security regression tests for LaTeX, EPUB, ODT, Jupyter, RST, and RTF inputs (deeply nested envs, unclosed math, oversized control words, entity bombs, depth bombs, large item lists).
 - **#836**: Prevent base64 image data leaking into structured PDF output when image extraction is disabled. The structure pipeline now suppresses `populate_images_from_pdfium` and `inject_placeholders` whenever neither `ImageExtractionConfig.extract_images` nor `pdf_options.extract_images` is enabled, so disabled-by-default users no longer see embedded raster blobs in their results.
 - **#838**: OCR `elements` are now propagated through the extraction pipeline — image and PDF OCR backends populate `ExtractionResult.ocr_elements` consistently, fixing downstream consumers that relied on per-token bounding boxes.
@@ -1758,7 +1758,7 @@ contain a buildable target.` on every `task swift:e2e` invocation.
 - **#782**: `result_format = "element_based"` now classifies headings and image placeholders correctly. `process_hierarchy` maps `h1` → `ElementType::Title` and `h2..h6` → `ElementType::Heading`, with the numeric level stored as `metadata.additional["heading_level"]`. `process_content` detects single-line markdown ATX headings (`# Title`, `## Section`, …) and emits them as `Title`/`Heading` instead of `NarrativeText`. `[Image: …]` placeholder lines are now emitted as `ElementType::Image` carrying the description in `metadata.additional["image_description"]`. `process_images` writes `metadata.additional["image_index"]` so consumers can join elements back to the `ExtractionResult.images` array by index.
 - **#844**: Python wrapper `extract_*` functions no longer crash on every call. Picked up upstream alef 0.11.24+ codegen fixes (xberg-io/alef#44): `#[serde(skip)]` is propagated to wrapper structs (no more `unknown field 'cancel_token'`), `api.py` wrappers forward arguments by keyword (no more `extract_file` mime*type/config arg-reorder `TypeError`), async pyo3 functions emit `async def` + `await`, and trait-bridge `register*\*`helpers are re-exported through`api.py`/`**init**.py` `**all**`.
 - **`force_ocr_pages` now reliably yields `ExtractionMethod::Mixed`** even when `pages` config is not explicitly set. The PDF text path now synthesizes a default `PageConfig` when force-ocr-pages is non-empty so byte boundaries are always available for splicing OCR text into the right ranges.
-- **PDF page extraction strategy enum renamed `ExtractionMethod` → `PageExtractionMethod`** in `kreuzberg-pdfium-render` to disambiguate from `kreuzberg::ExtractionMethod` (the new native/ocr/mixed strategy enum from #761). The pdfium variant remains exported via `pdfium_render::prelude` under the new name.
+- **PDF page extraction strategy enum renamed `ExtractionMethod` → `PageExtractionMethod`** in `xberg-pdfium-render` to disambiguate from `xberg::ExtractionMethod` (the new native/ocr/mixed strategy enum from #761). The pdfium variant remains exported via `pdfium_render::prelude` under the new name.
 
 ### Changed
 
@@ -1771,18 +1771,18 @@ Cycle 4 of the alef-backed publish-pipeline iteration. Cycle 3 surfaced fourteen
 
 ### Fixed
 
-- **Elixir native libs build now uses the actual NIF directory name (`kreuzberg_nif`).** The publish workflow had references to `packages/elixir/native/kreuzberg_rustler` that never existed in this repo (the crate is named `kreuzberg_nif`). All five Elixir matrix targets failed in cycle 3 with `start process … working directory … invalid`. Replaced 16 `kreuzberg_rustler` references in `.github/workflows/publish.yaml`.
-- **Ruby gem build now declares its `async-trait` dependency.** `packages/ruby/ext/kreuzberg_rb/src/lib.rs` (alef-generated) imports `async_trait::async_trait` for trait bridges, but the matching `Cargo.toml` was missing the dep. Both Ruby gem matrix targets failed in cycle 3 with `unresolved import async_trait`.
+- **Elixir native libs build now uses the actual NIF directory name (`xberg_nif`).** The publish workflow had references to `packages/elixir/native/xberg_rustler` that never existed in this repo (the crate is named `xberg_nif`). All five Elixir matrix targets failed in cycle 3 with `start process … working directory … invalid`. Replaced 16 `xberg_rustler` references in `.github/workflows/publish.yaml`.
+- **Ruby gem build now declares its `async-trait` dependency.** `packages/ruby/ext/xberg_rb/src/lib.rs` (alef-generated) imports `async_trait::async_trait` for trait bridges, but the matching `Cargo.toml` was missing the dep. Both Ruby gem matrix targets failed in cycle 3 with `unresolved import async_trait`.
 - **Ruby `batch_reduce_tokens`, `chunk_text`, `chunk_texts_batch`, `chunk_semantic` are now excluded from the alef-generated Magnus binding.** alef's Magnus codegen referenced undeclared local bindings (`texts_refs`, `page_boundaries_core`) for these functions; the codegen fix is tracked upstream.
-- **`task php:build` now exists** (`cargo build --release -p kreuzberg-php`). The publish workflow invoked this task name; without it both PHP PIE matrix targets failed in cycle 3 with `task: Task "php:build" does not exist`.
+- **`task php:build` now exists** (`cargo build --release -p xberg-php`). The publish workflow invoked this task name; without it both PHP PIE matrix targets failed in cycle 3 with `task: Task "php:build" does not exist`.
 - **Python wheel build on `linux-aarch64` symlinks `aarch64-linux-gnu-gcc` to `gcc`** when running natively in the manylinux container. The repo's `.cargo/config.toml` pins `aarch64-unknown-linux-gnu`'s linker to the cross-compiler binary name, but that binary doesn't exist in the `manylinux_2_28` container on a native ARM runner. Added a symlink in the cibuildwheel `before-script-linux` step.
 - **C# native assets `linux-musl-arm64` build no longer trips on `packages/dart/rust`.** `docker/Dockerfile.musl-ffi`'s sed pattern was missing the dart/swift workspace-member exclusions (added in earlier cycles to other Dockerfiles); cargo failed with `failed to load manifest for workspace member /build/packages/dart/rust`.
-- **Node bindings build uses a path-based pnpm filter** (`pnpm --filter ./crates/kreuzberg-node`) instead of the never-resolved `pnpm --filter @kreuzberg/node`. `crates/kreuzberg-node/package.json`'s name is `kreuzberg`, so the scoped filter never matched. Updated three sites (workflow + two scripts).
+- **Node bindings build uses a path-based pnpm filter** (`pnpm --filter ./crates/xberg-node`) instead of the never-resolved `pnpm --filter @xberg/node`. `crates/xberg-node/package.json`'s name is `xberg`, so the scoped filter never matched. Updated three sites (workflow + two scripts).
 - **alef bumped to v0.11.7.** Carries two codegen fixes the regenerated bindings depend on: (1) optional `string`/`bytes` arguments in Rust e2e tests now bind to a typed `Option<String>`/`Option<Vec<u8>>` and pass via `.as_deref()` so signatures expecting `Option<&str>` no longer receive `&Option<_>`; (2) PHP backend correctly threads `data_enum_names` through the type mapper for tagged data enums.
 
 ## [4.10.0-rc.2] - 2026-04-28
 
-Cycle 2 of the alef-backed publish-pipeline iteration. RC1 surfaced two failures: the `actions/check-registry@v1` and `actions/prepare-release-metadata@v1` shims now require alef ≥ 0.11.0 for the `check-registry` and `release-metadata` subcommands, but `alef.toml`'s top-level `version` field still pinned 0.10.4 (which `install-alef@v1` resolves "latest" against). Bump the alef pin to 0.11.0 so all kreuzberg jobs install an alef binary that has the new subcommands. Also fix the `release-metadata.json` artifact upload that was being wiped by the `prepare` job's re-checkout step (stash to /tmp before re-checkout, restore after).
+Cycle 2 of the alef-backed publish-pipeline iteration. RC1 surfaced two failures: the `actions/check-registry@v1` and `actions/prepare-release-metadata@v1` shims now require alef ≥ 0.11.0 for the `check-registry` and `release-metadata` subcommands, but `alef.toml`'s top-level `version` field still pinned 0.10.4 (which `install-alef@v1` resolves "latest" against). Bump the alef pin to 0.11.0 so all xberg jobs install an alef binary that has the new subcommands. Also fix the `release-metadata.json` artifact upload that was being wiped by the `prepare` job's re-checkout step (stash to /tmp before re-checkout, restore after).
 
 ## [4.10.0-rc.1] - 2026-04-28
 
@@ -1796,13 +1796,13 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Fixed
 
-- **C FFI, PHP, Ruby, R bindings shipped 40+ stub functions that returned `Not implemented` at runtime**. Every batch API (`batch_extract_file_sync`, `batch_extract_bytes_sync`, plus async variants), `extract_file`, `extract_file_sync`, and most of the Ruby gem's surface (21 functions) silently failed with error code 99. Root cause was in the alef binding generator: bare `Path` was misresolved to `Named("Path")` and sanitized to `String`; sanitized batch-tuple params (`Vec<(PathBuf, Option<FileExtractionConfig>)>`) were never handled by the PHP/Magnus/FFI codegen even though the IR carried the original type for JSON-roundtrip; Magnus rejected every extraction function via an over-strict `is_named_ref_param` check; and the R backend panicked on every async function. Fixed in alef and regenerated all bindings — Python, Node, FFI all build clean. Only `kreuzberg_get_preset` remains stubbed (return-type sanitization edge case; tracked separately).
+- **C FFI, PHP, Ruby, R bindings shipped 40+ stub functions that returned `Not implemented` at runtime**. Every batch API (`batch_extract_file_sync`, `batch_extract_bytes_sync`, plus async variants), `extract_file`, `extract_file_sync`, and most of the Ruby gem's surface (21 functions) silently failed with error code 99. Root cause was in the alef binding generator: bare `Path` was misresolved to `Named("Path")` and sanitized to `String`; sanitized batch-tuple params (`Vec<(PathBuf, Option<FileExtractionConfig>)>`) were never handled by the PHP/Magnus/FFI codegen even though the IR carried the original type for JSON-roundtrip; Magnus rejected every extraction function via an over-strict `is_named_ref_param` check; and the R backend panicked on every async function. Fixed in alef and regenerated all bindings — Python, Node, FFI all build clean. Only `xberg_get_preset` remains stubbed (return-type sanitization edge case; tracked separately).
 - **#788**: Extract images nested inside PDF Form XObjects — `lopdf::get_page_images` only scanned the page-level `Resources` dictionary and silently skipped images stored inside `Subtype=Form` XObjects, which is the structure used by technical drawings composed of tiled raster tiles. PDF image extraction now recursively descends into Form XObjects (up to 8 levels deep) in both the lopdf and pdfium code paths, so all constituent images are collected.
-- **Security limits actually enforce now**. `SecurityLimits` config fields (`max_nesting_depth`, `max_entity_length`, `max_content_size`, `max_iterations`, `max_xml_depth`, `max_table_cells`) and the matching `SecurityError` variants previously advertised protection that no extractor invoked — the validator helpers were `#[cfg(test)]`-gated and removed in commit `c58069201` as dead code, leaving only the config knobs. Five internal validators (`StringGrowthValidator`, `IterationValidator`, `DepthValidator`, `EntityValidator`, `TableValidator`) are restored and now run on every extraction path that ingests user-controlled bytes — XML-class formats (DOCX/PPTX/XLSX/ODT/EPUB/SVG/JATS/DocBook/FictionBook/OPML), HTML, JSON/YAML/TOML, tabular extraction (CSV/Excel/HTML tables/DOCX cells), and final text accumulation for plain-text formats (Markdown/Org/RST/LaTeX/Jupyter/RTF). Hostile inputs (billion-laughs entity expansion, depth bombs, cell bombs, quadratic string growth, iteration bombs) now fail with a structured `KreuzbergError::Security` instead of OOMing or hanging. The validators are internal core-only types; bindings observe the protection through the new unified `Security` error variant returned from every `extract_*` entry point. Defaults relaxed where the previous values false-positived on legitimate documents: `max_nesting_depth` 100 → 1024, `max_xml_depth` 100 → 1024, `max_entity_length` 32 → 1 048 576 (per-token cap; cumulative size remains bounded by `max_content_size`).
+- **Security limits actually enforce now**. `SecurityLimits` config fields (`max_nesting_depth`, `max_entity_length`, `max_content_size`, `max_iterations`, `max_xml_depth`, `max_table_cells`) and the matching `SecurityError` variants previously advertised protection that no extractor invoked — the validator helpers were `#[cfg(test)]`-gated and removed in commit `c58069201` as dead code, leaving only the config knobs. Five internal validators (`StringGrowthValidator`, `IterationValidator`, `DepthValidator`, `EntityValidator`, `TableValidator`) are restored and now run on every extraction path that ingests user-controlled bytes — XML-class formats (DOCX/PPTX/XLSX/ODT/EPUB/SVG/JATS/DocBook/FictionBook/OPML), HTML, JSON/YAML/TOML, tabular extraction (CSV/Excel/HTML tables/DOCX cells), and final text accumulation for plain-text formats (Markdown/Org/RST/LaTeX/Jupyter/RTF). Hostile inputs (billion-laughs entity expansion, depth bombs, cell bombs, quadratic string growth, iteration bombs) now fail with a structured `XbergError::Security` instead of OOMing or hanging. The validators are internal core-only types; bindings observe the protection through the new unified `Security` error variant returned from every `extract_*` entry point. Defaults relaxed where the previous values false-positived on legitimate documents: `max_nesting_depth` 100 → 1024, `max_xml_depth` 100 → 1024, `max_entity_length` 32 → 1 048 576 (per-token cap; cumulative size remains bounded by `max_content_size`).
 - **#789**: PDF image extraction would hang indefinitely on documents with thousands of image objects on a single page (observed: 2487 images). The `max_images_per_page` cap was added to `ImageExtractionConfig` in #766 but only wired to the structure pipeline's position counting, never to the byte-decoding path; pages exceeding the cap are now skipped with a `WARN` log before the FlateDecode loop runs. Both `extract_images_from_pdf` and the pdfium fallback now run inside `tokio::task::spawn_blocking`, so `extraction_timeout_secs` can interrupt them. (#800)
-- **#794**: Fix Helm chart default install broken by two conflicts: (1) the cache init container ran as `root` while `podSecurityContext.runAsNonRoot: true` is the default, causing kubelet to reject the pod; (2) Kubernetes service discovery injects `KREUZBERG_PORT=tcp://...` when the release is named `kreuzberg`, which the binary parses as a `u16` and panics. Fixed by adding `runAsNonRoot: false` to the init container's `securityContext`, a new `cache.initChown` toggle (default `true`, set to `false` on fsGroup-aware storage to skip the init container entirely), and defaulting `enableServiceLinks: false` in the pod spec. (#822)
-- **#825**: `kreuzberg cache manifest` no longer fails with `E0282` when `kreuzberg-cli` is built without `paddle-ocr` or `layout-detection` (e.g. `--no-default-features --features bundled-pdfium`). The command now bails with a clear actionable error if invoked at runtime in such a build.
-- **`@kreuzberg/node` prebuilt bindings fail to load on RHEL 8 / AlmaLinux 8 / Rocky 8 / RHEL 9**: the Linux x64/arm64 GNU prebuilds are now built via `cargo-zigbuild`, which caps the glibc floor at link time. Fixes the `GLIBC_2.38 not found` / `GLIBCXX_3.4.31 not found` / `undefined symbol: __isoc23_strtoll` load errors on RHEL 8, AlmaLinux 8, Rocky 8 (glibc 2.28) and RHEL 9 (glibc 2.34). Verified locally: the prebuilt `.node` drops from `GLIBC_2.38` / `GLIBCXX_3.4.31` down to `GLIBC_2.28` / no `GLIBCXX` dependency. `kreuzberg-tesseract/build.rs` auto-detects the zigbuild toolchain and (1) disables tesseract's AVX512 codepath (zig/clang requires an explicit `evex512` feature that tesseract's CMake doesn't pass) and (2) skips linking `stdc++fs` (zig's libstdc++ has `std::filesystem` inline). The publish pipeline now (a) runs `objdump -T` against each linux-gnu prebuild and rejects any artifact requiring `GLIBC_*` > 2.28, any `GLIBCXX_*` symbol, or any `__isoc23_*` symbol, and (b) loads the prebuilt `.node` inside `redhat/ubi8` (glibc 2.28) and exercises the napi surface before publishing to npm. Refs #352.
+- **#794**: Fix Helm chart default install broken by two conflicts: (1) the cache init container ran as `root` while `podSecurityContext.runAsNonRoot: true` is the default, causing kubelet to reject the pod; (2) Kubernetes service discovery injects `XBERG_PORT=tcp://...` when the release is named `xberg`, which the binary parses as a `u16` and panics. Fixed by adding `runAsNonRoot: false` to the init container's `securityContext`, a new `cache.initChown` toggle (default `true`, set to `false` on fsGroup-aware storage to skip the init container entirely), and defaulting `enableServiceLinks: false` in the pod spec. (#822)
+- **#825**: `xberg cache manifest` no longer fails with `E0282` when `xberg-cli` is built without `paddle-ocr` or `layout-detection` (e.g. `--no-default-features --features bundled-pdfium`). The command now bails with a clear actionable error if invoked at runtime in such a build.
+- **`@xberg/node` prebuilt bindings fail to load on RHEL 8 / AlmaLinux 8 / Rocky 8 / RHEL 9**: the Linux x64/arm64 GNU prebuilds are now built via `cargo-zigbuild`, which caps the glibc floor at link time. Fixes the `GLIBC_2.38 not found` / `GLIBCXX_3.4.31 not found` / `undefined symbol: __isoc23_strtoll` load errors on RHEL 8, AlmaLinux 8, Rocky 8 (glibc 2.28) and RHEL 9 (glibc 2.34). Verified locally: the prebuilt `.node` drops from `GLIBC_2.38` / `GLIBCXX_3.4.31` down to `GLIBC_2.28` / no `GLIBCXX` dependency. `xberg-tesseract/build.rs` auto-detects the zigbuild toolchain and (1) disables tesseract's AVX512 codepath (zig/clang requires an explicit `evex512` feature that tesseract's CMake doesn't pass) and (2) skips linking `stdc++fs` (zig's libstdc++ has `std::filesystem` inline). The publish pipeline now (a) runs `objdump -T` against each linux-gnu prebuild and rejects any artifact requiring `GLIBC_*` > 2.28, any `GLIBCXX_*` symbol, or any `__isoc23_*` symbol, and (b) loads the prebuilt `.node` inside `redhat/ubi8` (glibc 2.28) and exercises the napi surface before publishing to npm. Refs #352.
 - **#781**: Fix DOCX OCR pipeline integration — reordered the extraction pipeline to ensure OCR processing runs before document rendering. Markdown, Plain, and Djot renderers now correctly receive and inject OCR text output instead of dropping it or omitting images.
 - **#823**: Fix WASM loading in Next.js / Turbopack by adding `/* webpackIgnore: true */` to dynamic imports of Node.js built-ins and resolving bundling issues in the pdfium-js subsystem.
 
@@ -1812,7 +1812,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Changed
 
-- Fix `use use` duplicate-import syntax error in alef-generated elixir NIF binding (`kreuzberg_nif/src/lib.rs`).
+- Fix `use use` duplicate-import syntax error in alef-generated elixir NIF binding (`xberg_nif/src/lib.rs`).
 - Apply `cargo fmt` uniformly across all workspace crates (formatting only, no logic changes).
 - Fix typo `entrys` → `entries` in auto-generated API reference docs.
 
@@ -1822,7 +1822,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Changed
 
-- Fix `use use` duplicate-import syntax error in alef-generated elixir NIF binding (`kreuzberg_nif/src/lib.rs`).
+- Fix `use use` duplicate-import syntax error in alef-generated elixir NIF binding (`xberg_nif/src/lib.rs`).
 - Apply `cargo fmt` uniformly across all workspace crates (formatting only, no logic changes).
 - Fix typo `entrys` → `entries` in auto-generated API reference docs.
 
@@ -1832,11 +1832,11 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Fixed
 
-- **#790**: Fix GPU acceleration — kreuzberg now bundles CPU-only ONNX Runtime by default (zero-config). When a GPU execution provider (`cuda`, `tensorrt`, `coreml`) is explicitly requested via `AccelerationConfig` but unavailable, kreuzberg returns an error with setup instructions instead of silently falling back to CPU. `Auto` mode gracefully falls back to CPU with an info log. For GPU support, set `ORT_DYLIB_PATH` to a GPU-enabled ONNX Runtime.
+- **#790**: Fix GPU acceleration — xberg now bundles CPU-only ONNX Runtime by default (zero-config). When a GPU execution provider (`cuda`, `tensorrt`, `coreml`) is explicitly requested via `AccelerationConfig` but unavailable, xberg returns an error with setup instructions instead of silently falling back to CPU. `Auto` mode gracefully falls back to CPU with an info log. For GPU support, set `ORT_DYLIB_PATH` to a GPU-enabled ONNX Runtime.
 - **#791**: Fix DOCX OCR extraction — OCR now runs on embedded images before document rendering, and OCR text is injected into the rendered output. Previously, OCR results were discarded and replaced with placeholder text.
 - **#783**: PaddleOCR backend not utilizing GPU (CUDA) despite `AccelerationConfig` — `AccelerationConfig` from `ExtractionConfig` was never reaching PaddleOCR ONNX sessions, silently falling back to CPU. Acceleration is now propagated through `OcrConfig` to all OCR call sites (image extractor, PDF OCR).
 - **#779**: Expose `PaddleOcrConfig` in Python bindings and update `OcrConfig` for backward compatibility.
-- **#792**: Fix Ruby gem packaging — exclude staged `libpdfium.dylib` from gem artifacts by narrowing the native extension glob to only include the compiled `kreuzberg_rb.*` extension.
+- **#792**: Fix Ruby gem packaging — exclude staged `libpdfium.dylib` from gem artifacts by narrowing the native extension glob to only include the compiled `xberg_rb.*` extension.
 
 ### Added
 
@@ -1849,7 +1849,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Fixed
 
-- **Ruby gem build failure** — add missing `max_images_per_page` field to `ImageExtractionConfig` initializer in Ruby binding (`kreuzberg-rb`), fixing compilation error E0063 on all platforms.
+- **Ruby gem build failure** — add missing `max_images_per_page` field to `ImageExtractionConfig` initializer in Ruby binding (`xberg-rb`), fixing compilation error E0063 on all platforms.
 - **Node binding build failure on Linux** — stop removing `/usr/local/lib/node_modules` in CI disk cleanup script; npm was being deleted before `pnpm/action-setup` could use it, causing `spawn npm ENOENT`.
 - **Homebrew formula publish failure** — grant `contents: write` permission to the `publish-homebrew` job so `gh release upload` can attach bottle artifacts (was `contents: read`).
 - **#783**: PaddleOCR now correctly utilises the GPU (CUDA) when `AccelerationConfig(provider="cuda")` is set. Previously `self.acceleration` on `PaddleOcrBackend` was always `None` (hardcoded at construction time), so the ONNX session builder never received the requested execution provider and silently fell back to CPU. `AccelerationConfig` is now threaded from `ExtractionConfig` into the ephemeral `OcrConfig` at each `process_image` call site (image extractor and both PDF OCR paths), and `PaddleOcrBackend::process_image` sets the module-level thread-local before the engine-pool slow path — so ONNX sessions are created with the correct provider on first use.
@@ -1868,7 +1868,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 - **#779**: Fix `PaddleOcrConfig` not bound in Python API — exposed `PaddleOcrConfig` as a first-class class in the Python bindings. Updated `OcrConfig` to accept both `PaddleOcrConfig` objects and raw dictionaries for backward compatibility. Added `paddle_ocr_config` property (getter/setter) to `OcrConfig`.
 - **#770**: DOCX page extraction (`extract_pages=True`) now works correctly — `result.pages` and `result.get_page_count()` are no longer always `None`/`0`. Two bugs fixed: (1) computed `PageContent` blocks were never stored on `InternalDocument.prebuilt_pages`, so the derivation pipeline always fell back to `None`; (2) page-break markers inside table cells were incorrectly added to the top-level element list, creating phantom page boundaries before tables and corrupting `table_page_numbers`. Page breaks (`w:br[w:type="page"]` and `w:lastRenderedPageBreak`) in body text are stored as `DocumentElement::PageBreak` and mapped to precise character offsets; breaks inside table cells are intentionally ignored at document level (tables spanning multiple pages remain a known limitation).
-- **#773**: `serve` and `mcp` CLI subcommands now correctly apply `KREUZBERG_*` environment variable overrides. Previously, variables such as `KREUZBERG_OCR_LANGUAGE`, `KREUZBERG_LLM_MODEL`, and `KREUZBERG_LLM_API_KEY` were silently ignored when starting the API or MCP server — only the `extract` command honoured them. Also fixes the provider env-var fallback in the LLM client: `MISTRAL_API_KEY` is now picked up for bare `mistral-*` model names (e.g. `mistral-large-latest`), not only for the `mistral/` prefix form.
+- **#773**: `serve` and `mcp` CLI subcommands now correctly apply `XBERG_*` environment variable overrides. Previously, variables such as `XBERG_OCR_LANGUAGE`, `XBERG_LLM_MODEL`, and `XBERG_LLM_API_KEY` were silently ignored when starting the API or MCP server — only the `extract` command honoured them. Also fixes the provider env-var fallback in the LLM client: `MISTRAL_API_KEY` is now picked up for bare `mistral-*` model names (e.g. `mistral-large-latest`), not only for the `mistral/` prefix form.
 - **#774**: Tagged-PDF structure tree dropped paragraph body text when a block had both own text and children, and wrapped numbered section headings in an invalid `List → Heading` AST (panics comrak in debug, emits malformed markdown in release). `flatten_blocks` now emits parent text alongside children; text-pattern list detection in `element_to_paragraph` is gated on `heading_level.is_none()`.
 - **Semantic chunker fallback path now respects `max_characters`** — previously the non-embedding fallback hardcoded a 4000-char ceiling and silently ignored the caller's `max_characters`. A warning is also emitted when `chunker_type='semantic'` is used without an `EmbeddingConfig` so the fallback mode is discoverable. The `ChunkerType::Semantic` docstring has been corrected to describe both paths accurately.
 - **OCR backend dispatch**: `OcrConfig(backend=...)` with a non-default backend no longer silently falls back to paddleocr when the chosen backend errors — auto-fallback is limited to the default tesseract backend; users who want multi-backend fallback configure it via `OcrConfig.pipeline` (unchanged).
@@ -1877,7 +1877,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 - **Broken wasm-deno/wasm-workers e2e tasks** — removed non-functional deno and workers e2e generate/lint/test tasks that referenced invalid generator lang values.
 - **oxlint path in node e2e lint** — `oxlint --fix typescript` changed to `oxlint --fix .` (was looking for nonexistent `typescript/` directory).
 - **Clippy warnings in benchmark-harness** — `sort_by` replaced with `sort_by_key` + `Reverse`.
-- **Clippy warnings and compilation errors across workspace** — added missing `max_images_per_page` field to `ImageExtractionConfig` in node and Python bindings; added missing `vlm_prompt` argument to VLM OCR test calls; collapsed nested `if-let` in WASM embeddings; added `embeddings` and `tree-sitter` passthrough features to `kreuzberg-ffi` to silence `unexpected_cfgs` warnings.
+- **Clippy warnings and compilation errors across workspace** — added missing `max_images_per_page` field to `ImageExtractionConfig` in node and Python bindings; added missing `vlm_prompt` argument to VLM OCR test calls; collapsed nested `if-let` in WASM embeddings; added `embeddings` and `tree-sitter` passthrough features to `xberg-ffi` to silence `unexpected_cfgs` warnings.
 - **Cancellation token not wired in oxide segment structure pipeline** — `cancel_token` was passed into `SegmentStructureConfig` but never checked, meaning cancellation/timeout had no effect during pdf-oxide table extraction or paragraph building. Added cancellation checks at table page prep, heuristic table extraction loops, and a pre-flight guard before parallel paragraph extraction.
 - **#771**: `OcrConfig.vlm_prompt` is now correctly honored in VLM OCR requests. Previously, it was documented but never forwarded to the underlying VLM calls, causing the default template to be used regardless of configuration.
 - **#762**: PDF image links are no longer silently dropped from markdown output. Image extraction now correctly preserves correspondence between pdfium objects and lopdf data, and respects the `inject_placeholders` configuration.
@@ -1901,7 +1901,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 - Fix cancellation token not checked in WASM (non-tokio) path for Excel, DOC, PPT, Pages, Keynote, and Numbers extractors — cancellation was silently ignored in WASM builds
 - Propagate `Cancelled` error code (9) to all bindings — Go, C FFI, Python, TypeScript, and C API docs now include the new code
-- Fix PHP e2e embed tests calling instance methods statically — use procedural `\Kreuzberg\embed()` functions
+- Fix PHP e2e embed tests calling instance methods statically — use procedural `\Xberg\embed()` functions
 - Fix TypeScript e2e embed tests using wrong field names (`type`/`name` → `modelType`/`value`) for embedding model config
 - Fix Elixir e2e embed tests calling non-existent `embed_async/2` — use sync `embed/2`
 - Fix TypeScript e2e generator missing `html_output` config mapping for styled HTML tests
@@ -1927,9 +1927,9 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 ### Fixed
 
 - **#588**: Suppress C23 glibc symbols (`__isoc23_strtoll` etc.) in manylinux wheels — added CMake flag propagation and CI verification step to prevent incompatible symbols on glibc < 2.38 (Debian 12, Ubuntu 22.04)
-- **#748**: Remove `kreuzberg-cli` from Python wheel to fix `libonnxruntime.so.1` loading failure — CLI is available as standalone release
+- **#748**: Remove `xberg-cli` from Python wheel to fix `libonnxruntime.so.1` loading failure — CLI is available as standalone release
 - **#749**: Add cancellation token support — cancelled extractions no longer block subsequent calls via `PDFIUM_OPERATION_LOCK`; wired across Python, Node.js, Ruby, WASM, and C FFI bindings
-- **#750**: Fix `kreuzberg[easyocr]` extra silently installing nothing on Python 3.14+; clean up stale `[paddleocr]` references in docs
+- **#750**: Fix `xberg[easyocr]` extra silently installing nothing on Python 3.14+; clean up stale `[paddleocr]` references in docs
 - **#752**: Fix ~1000x slowdown on Ghostscript-produced PDFs with structured output — replace O(N²) `Vec::contains` with O(1) `AHashSet` lookup, add minimum dimension filter for tiny inline images
 - **#753**: Fix `llm_usage` returning `None` when using VLM-based OCR — propagate usage through PDF OCR, image OCR, and `force_ocr_pages` paths
 
@@ -1939,7 +1939,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Changed
 
-- **Breaking**: `kreuzberg-cli` binary is no longer bundled in the Python wheel — install the standalone CLI from GitHub releases
+- **Breaking**: `xberg-cli` binary is no longer bundled in the Python wheel — install the standalone CLI from GitHub releases
 
 ---
 
@@ -1976,7 +1976,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 - **DOCX tables assigned wrong page numbers** — tables were numbered by index instead of by their actual document position based on page breaks. (#718)
 - **`ocr.enabled=false` config ignored** — OCR ran even when explicitly disabled; also dropped trailing newline in `--format text` output. (#715)
 - **Go module tag push fallback** — added `git push` fallback when tag push fails.
-- **Go E2E `LlmUsage` type mismatch** — generated Go test helper used `[]interface{}{}` instead of `[]kreuzberg.LlmUsage{}`.
+- **Go E2E `LlmUsage` type mismatch** — generated Go test helper used `[]interface{}{}` instead of `[]xberg.LlmUsage{}`.
 - **Rust E2E `extractMetadata` field name** — html_options fixture used camelCase `extractMetadata` instead of snake_case `extract_metadata` expected by html-to-markdown-rs v3.2.
 - **R package documentation stale** — 14 exported functions lacked `.Rd` man pages and `extraction_config.Rd` was missing 13 parameters added in v4.8.0–4.8.5. Regenerated all roxygen2 documentation.
 
@@ -1998,7 +1998,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 - **Helm chart icon 404 on Artifact Hub** — `Chart.yaml` referenced `logo.png` but the file is `logo.svg`.
 - **Python wheel manylinux compliance failure** — bumped manylinux from `2_38` to `2_39` to allow `GLIBCXX_3.4.31` symbols from the build toolchain, matching the v4.6.x baseline that worked.
 - **Python wheel requires glibc ≥ 2.38 (breaks Debian 12, Ubuntu 22.04)** — GCC 14 in the `manylinux_2_39` build container emitted C23-versioned glibc symbols (`__isoc23_strtoll`, `__isoc23_sscanf`, etc.), making the wheel uninstallable on systems with glibc < 2.38. Downgraded to `manylinux_2_28` and added `-std=gnu11`/`-std=gnu++17` CFLAGS to suppress C23 symbol emission. (#588)
-- **FFI memory leak** — `kreuzberg_free_result` was not freeing `djot_content_json`, `structured_output_json`, and `llm_usage_json` pointers.
+- **FFI memory leak** — `xberg_free_result` was not freeing `djot_content_json`, `structured_output_json`, and `llm_usage_json` pointers.
 - **R e2e embed tests fail** — generated R embedding config was missing the `type` discriminator field required by Rust's tagged enum deserialization.
 - **Elixir parity test fails** — `ExtractionConfig` struct was missing the `:html_output` field.
 - **Go LLM e2e tests fail** — `EmbeddingModelType` struct was missing `Llm` nested config, `ExtractionConfig` was missing `StructuredExtraction` field.
@@ -2059,9 +2059,9 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Changed
 
-- **Vendored yake-rust 1.0.3** into kreuzberg core, removing external dependency
+- **Vendored yake-rust 1.0.3** into xberg core, removing external dependency
   - Fixes #676: `BacktrackLimitExceeded` panic on large files (10+ MB) by replacing regex-based sentence splitting with memchr-based approach
-  - Expanded YAKE stopwords from 34 to 64 languages using kreuzberg's unified stopwords module
+  - Expanded YAKE stopwords from 34 to 64 languages using xberg's unified stopwords module
   - Removed 6 transitive dependencies (yake-rust, segtok, fancy-regex, streaming-stats, hashbrown, levenshtein)
 - Styled HTML renderer included in the `html` feature (no separate `html-styled` feature gate)
 
@@ -2086,11 +2086,11 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
   - **VLM OCR**: Vision language models as OCR backend (OpenAI GPT-4o, Anthropic Claude, Google Gemini, etc.). Superior accuracy for low-quality scans, handwriting, Arabic/Farsi, and complex layouts. Configure via `ocr.backend = "vlm"` with `ocr.vlm_config`.
   - **Structured Extraction**: Extract structured JSON data from documents using a JSON schema constraint. Users provide a schema and optional Jinja2 prompt template; the LLM returns conforming data. Supports strict mode (OpenAI) with automatic schema sanitization for cross-provider compatibility.
   - **VLM Embeddings**: Provider-hosted embedding models (e.g., `openai/text-embedding-3-small`, `mistral/mistral-embed`) as alternative to local ONNX models. Works through existing `/embed` API, `embed_text` MCP tool, and `embed` CLI command.
-- **New CLI command**: `kreuzberg extract-structured` for schema-guided LLM extraction
+- **New CLI command**: `xberg extract-structured` for schema-guided LLM extraction
 - **New API endpoint**: `POST /extract-structured` with multipart file upload
 - **New MCP tool**: `extract_structured` for AI assistant integration
 - **Minijinja template engine** for customizable LLM prompts — structured extraction supports `{{ content }}`, `{{ schema }}`, `{{ schema_name }}`, `{{ schema_description }}`; VLM OCR supports `{{ language }}`
-- **5 new environment variables**: `KREUZBERG_LLM_MODEL`, `KREUZBERG_LLM_API_KEY`, `KREUZBERG_LLM_BASE_URL`, `KREUZBERG_VLM_OCR_MODEL`, `KREUZBERG_VLM_EMBEDDING_MODEL`
+- **5 new environment variables**: `XBERG_LLM_MODEL`, `XBERG_LLM_API_KEY`, `XBERG_LLM_BASE_URL`, `XBERG_VLM_OCR_MODEL`, `XBERG_VLM_EMBEDDING_MODEL`
 - `LlmConfig` and `StructuredExtractionConfig` types exposed in Python, Node.js, and PHP bindings
 - `structured_output` field on `ExtractionResult` across all languages
 - `structured_output_json` field in C FFI `CExtractionResult` struct
@@ -2100,7 +2100,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Changed
 
-- **License changed from MIT to Elastic License 2.0 (ELv2)** — copyright holder changed to Kreuzberg, Inc. Forked upstream crates (kreuzberg-paddle-ocr, kreuzberg-tesseract, kreuzberg-pdfium-render) retain their original MIT licenses.
+- **License changed from MIT to Elastic License 2.0 (ELv2)** — copyright holder changed to Xberg, Inc. Forked upstream crates (xberg-paddle-ocr, xberg-tesseract, xberg-pdfium-render) retain their original MIT licenses.
 - All `ExtractionResult` constructors refactored to use `..Default::default()` for forward compatibility
 - Embed CLI command extended with `--provider llm` and `--model` flags
 - Embed MCP tool extended with `model` and `api_key` parameters
@@ -2152,8 +2152,8 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 - **Archive extraction SIGBUS crash on macOS ARM64** — ZIP, 7Z, TAR, and GZIP archive extraction crashed with SIGBUS (signal 10) in release builds due to miscompilation of unsafe code in `sevenz-rust2` and `zip` crates under `opt-level=3`. Reduced optimization level to 2 for these crates. This also fixes Elixir, R, Go, and C benchmark crashes when processing archive files.
 - **Native-text PDF extraction fails when OCR backend unavailable** (#646) — PDFs with extractable native text hard-failed with `ParsingError: All OCR pipeline backends failed` when no OCR backend (PaddleOCR/Tesseract) was installed, even though pdfium already extracted text successfully. The automatic OCR quality-enhancement pass now gracefully falls back to the native extraction result when OCR backends are unavailable, emitting a warning instead of failing.
-- **Elixir Logger pollutes stdout** — Elixir benchmark scripts produced `[debug] Initialized Kreuzberg.Plugin.Registry` on stdout, corrupting JSON output. Logger default handler now configured to write to stderr via `config :logger, :default_handler`.
-- **WASM benchmark module resolution** — WASM benchmark script failed to load `@kreuzberg/wasm` through pnpm virtual store due to `import.meta.url` resolution issues in tsx. Changed to direct import from local build path.
+- **Elixir Logger pollutes stdout** — Elixir benchmark scripts produced `[debug] Initialized Xberg.Plugin.Registry` on stdout, corrupting JSON output. Logger default handler now configured to write to stderr via `config :logger, :default_handler`.
+- **WASM benchmark module resolution** — WASM benchmark script failed to load `@xberg/wasm` through pnpm virtual store due to `import.meta.url` resolution issues in tsx. Changed to direct import from local build path.
 - **CI: FFI-dependent tests fail when FFI build skipped** — Go, Elixir, R, C FFI, and CLI test jobs ran and failed when `build-ffi` was skipped by paths-filter. Added `needs.build-ffi.result == 'success'` guard.
 - **Rust cannot catch foreign exceptions crash** (#606) — C++ exceptions from Tesseract or Leptonica (e.g. on corrupted images or edge-case inputs) propagated across the FFI boundary unhandled, causing `fatal runtime error: Rust cannot catch foreign exceptions, aborting`. All Tesseract/Leptonica FFI declarations now use `extern "C-unwind"` to allow foreign exceptions to unwind safely, and OCR processing is wrapped with `catch_unwind` to convert them to recoverable errors.
 
@@ -2163,11 +2163,11 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Added
 
-- **E2E generator published mode** — `cargo run -p kreuzberg-e2e-generator -- generate --mode published --version <V>` generates standalone test apps against published registry versions (PyPI, npm, Maven, NuGet, crates.io, Hex, RubyGems). All 12 language generators now also produce their project/dependency files (pyproject.toml, package.json, composer.json, etc.).
+- **E2E generator published mode** — `cargo run -p xberg-e2e-generator -- generate --mode published --version <V>` generates standalone test apps against published registry versions (PyPI, npm, Maven, NuGet, crates.io, Hex, RubyGems). All 12 language generators now also produce their project/dependency files (pyproject.toml, package.json, composer.json, etc.).
 
 ### Changed
 
-- **Global model cache** (#641) — Models now download to platform-appropriate global cache (`~/.cache/kreuzberg/` on Linux, `~/Library/Caches/kreuzberg/` on macOS, `%LOCALAPPDATA%/kreuzberg/` on Windows) instead of per-directory `.kreuzberg/` folders. Override with `KREUZBERG_CACHE_DIR` env var. Consolidates 7 duplicate cache-dir resolution implementations into a single `cache_dir::resolve_cache_dir()` function.
+- **Global model cache** (#641) — Models now download to platform-appropriate global cache (`~/.cache/xberg/` on Linux, `~/Library/Caches/xberg/` on macOS, `%LOCALAPPDATA%/xberg/` on Windows) instead of per-directory `.xberg/` folders. Override with `XBERG_CACHE_DIR` env var. Consolidates 7 duplicate cache-dir resolution implementations into a single `cache_dir::resolve_cache_dir()` function.
 
 ### Fixed
 
@@ -2192,7 +2192,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Added
 
-- **Tree-sitter grammar management CLI** — New `kreuzberg tree-sitter` subcommand with `download`, `list`, `cache-dir`, and `clean` sub-commands for managing tree-sitter grammar parsers. Supports downloading by language name, group (`--groups web,systems,scripting`), or all (`--all`). Reads `[tree_sitter]` config from `kreuzberg.toml` with `--from-config`.
+- **Tree-sitter grammar management CLI** — New `xberg tree-sitter` subcommand with `download`, `list`, `cache-dir`, and `clean` sub-commands for managing tree-sitter grammar parsers. Supports downloading by language name, group (`--groups web,systems,scripting`), or all (`--all`). Reads `[tree_sitter]` config from `xberg.toml` with `--from-config`.
 - **Tree-sitter grammar management API** — New REST endpoints: `POST /grammars/download`, `GET /grammars/list`, `GET /grammars/cache`, `DELETE /grammars/cache` for programmatic grammar management.
 - **Tree-sitter grammar management MCP tools** — New MCP tools: `download_grammars`, `list_grammars`, `grammar_cache_info`, `clean_grammar_cache` for AI assistant-driven grammar management.
 - **Tree-sitter config startup initialization** — API and MCP servers auto-download tree-sitter grammars on startup when `[tree_sitter]` config specifies `languages` or `groups`.
@@ -2207,10 +2207,10 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 - **hOCR parser depth tracking** — Fixed paragraph boundary detection in the hOCR parser that used a generic depth counter for `<p>`, `<span>`, and `<div>` tags. Closing tags from inner word spans could prematurely terminate a paragraph, causing content after that point to be silently dropped. Now uses tag-name-specific depth tracking.
 - **hOCR multi-page content loss** — Per-page hOCR documents from tesseract always report `ppageno=0` (page=1), but the paragraph conversion filtered by the actual page index, silently dropping all content on pages 2+. Removed the per-page filter since each hOCR document is independently extracted per page.
 - **OCR batch parallelization** — OCR page processing was hardcoded to 4 concurrent pages regardless of available CPUs. Now uses `resolve_thread_budget()` (auto-detects CPUs, capped at 8) for significantly faster multi-page document processing.
-- **Benchmark workflow** — Removed reference to deleted `kreuzberg-extract` binary target.
+- **Benchmark workflow** — Removed reference to deleted `xberg-extract` binary target.
 - **Ruby OCR backend** — Added missing `ocr_internal_document` field to `ExtractionResult` construction.
 - **Keyword extraction tests** — Updated test assertions to use new `extracted_keywords` field instead of deprecated `metadata.additional["keywords"]`.
-- **PaddleOCR cache dir test** — Fixed test failure when `KREUZBERG_CACHE_DIR` environment variable is set by CI setup actions.
+- **PaddleOCR cache dir test** — Fixed test failure when `XBERG_CACHE_DIR` environment variable is set by CI setup actions.
 - **API `pdf_password` handler** — Added `#[cfg(feature = "pdf")]` gate to prevent compile error when `api` feature is enabled without `pdf`.
 - **Chunking page boundary regression** (#636): Page boundaries were computed against raw extractor text but `result.content` uses rendered text with different byte lengths. Chunks now recompute boundaries from per-page content, fixing `first_page`/`last_page` being null and the "Page boundary byte_end exceeds text length" validation warning.
 - **HF Hub environment variables** (#634): Use `ApiBuilder::from_env()` instead of `ApiBuilder::new()` for Hugging Face model downloads, respecting `HF_HOME` and `HF_ENDPOINT` environment variables. Fixes permission errors on Kubernetes when running as non-root.
@@ -2261,7 +2261,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 - **Benchmark quality scoring improvements**: Content normalization for HTML blocks in markdown scoring, Image↔Paragraph and Table↔ListItem type compatibility, `correct` field in `QualityMetrics`, HTML detection in ground truth validation.
 - **Benchmark harness overhaul**: Per-format SF1/TF1 aggregation, noise detection (10 heuristics for HTML remnants, garbled text, broken tables, page artifacts), diagnostic diff mode (`--diagnose`), JSON output (`--json-output`), ground truth validation subcommand (`validate-gt`). Comprehensive tracing across all extractors and the rendering layer.
 - **Markdown ground truth for 23 formats**: 350+ benchmark fixtures across CSV, DOCX, HTML, EPUB, LaTeX, RST, RTF, PPTX, ODT, XLSX, XLS, OPML, ORG, JATS, IPYNB, FictionBook, DocBook, Typst, DOC, PPT, and more. GT generated via pandoc and verified against source documents.
-- **OpenWebUI integration**: Kreuzberg serves as a document extraction backend for Open WebUI chat interfaces.
+- **OpenWebUI integration**: Xberg serves as a document extraction backend for Open WebUI chat interfaces.
 - **URI extraction**: New `Uri` type with `UriKind` classification (Hyperlink, Image, Anchor, Citation, Reference, Email) extracted from 20+ document formats. URIs are always-on, deduplicated by (url, kind) pair, and capped at 100k per document. Available in `ExtractionResult.uris`.
 - **Recursive email attachment extraction**: EML/MSG/PST attachments are now recursively extracted as `ArchiveEntry` children using the same pattern as archive extractors. Nested `message/rfc822` parts also extracted as children. Respects `max_archive_depth`.
 - **PDF embedded file extraction**: PDF file attachments (portfolios) are now recursively extracted as `ArchiveEntry` children via lopdf. Includes filename sanitization, decompression size limits, and name tree depth guards.
@@ -2274,7 +2274,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 - **Apple iWork extractor improvements**: Numbers outputs tables instead of paragraphs, Keynote has improved slide structure, Pages has heading detection. All three extract metadata from ZIP plist.
 - **`code_intelligence` field on ExtractionResult**: Top-level access to tree-sitter `ProcessResult` with full structure, imports, exports, chunks, symbols, diagnostics, and docstrings. Previously only available inside `FormatMetadata::Code` metadata.
 - **`CodeContentMode` config**: Control code extraction content mode -- `chunks` (semantic TSLP chunks, default), `raw` (source as-is), `structure` (headings + docstrings only). Configured via `TreeSitterProcessConfig.content_mode`.
-- **TSLP semantic chunking for code**: Code files bypass the text-splitter entirely. TSLP's `CodeChunks` (function/class-aware) map directly to kreuzberg `Chunk`s with semantic types and heading context.
+- **TSLP semantic chunking for code**: Code files bypass the text-splitter entirely. TSLP's `CodeChunks` (function/class-aware) map directly to xberg `Chunk`s with semantic types and heading context.
 - **Cross-format output parity tests**: 36 tests verifying Markdown, HTML, Djot, and Plain produce equivalent text content. GFM lint validation, bracket escaping checks, structural block comparison.
 - **HTML input markdown passthrough**: HTML files extracted as Markdown now use html-to-markdown output directly via `pre_rendered_content`, bypassing the lossy InternalDocument to comrak round-trip.
 
@@ -2343,9 +2343,9 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 - **EPUB test compilation**: Added `InternalDocument::content()` method and fixed `epub_spine_semantics_tests` to use it instead of removed `.content` field.
 - **HTML extraction rewrite**: Replaced ~400-line manual HTML tag parser with html-to-markdown v3's `DocumentStructure` mapping. Single-pass conversion eliminates CSS/script content leakage and `[image: X]` placeholder artifacts.
 - **Chunking heading context with plain output**: Fixed `heading_context` always returning `None` when using plain text output format. The markdown chunker now receives the original markdown for heading map building even when content is rendered as plain text.
-- **WASM build compatibility**: Inlined workspace-inherited fields (`version`, `edition`, `authors`) in kreuzberg-wasm Cargo.toml because wasm-pack 0.14.0 cannot resolve `field.workspace = true` references.
-- **Pre-commit hooks**: Fixed rumdl hook config (use `rumdl-fmt` from official repo), wasm build (feature-gate layout config access), kreuzberg-node build (missing `formatted_content` field), broken relative links in READMEs and CHANGELOG.
-- **Binding compilation**: Added missing `formatted_content` field to kreuzberg-py and kreuzberg-php binding crates.
+- **WASM build compatibility**: Inlined workspace-inherited fields (`version`, `edition`, `authors`) in xberg-wasm Cargo.toml because wasm-pack 0.14.0 cannot resolve `field.workspace = true` references.
+- **Pre-commit hooks**: Fixed rumdl hook config (use `rumdl-fmt` from official repo), wasm build (feature-gate layout config access), xberg-node build (missing `formatted_content` field), broken relative links in READMEs and CHANGELOG.
+- **Binding compilation**: Added missing `formatted_content` field to xberg-py and xberg-php binding crates.
 - **PDF heading body_size_guard**: Narrowed guard range from `≤ body+0.5` to `body±1.5pt` so headings well below body font size (e.g., 8pt in 12pt body) pass through.
 - **RTF table extraction**: Fixed critical bug where table cell content was written to both result string and TableState, causing cells to appear as individual lines instead of proper markdown tables.
 - **DOCX merged cells**: Repeat content across gridSpan (horizontal) and vMerge (vertical) spans. Added `source_path` field to `ExtractedImage` for DOCX image relationship paths.
@@ -2359,14 +2359,14 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 ### Changed
 
 - **PDF text extraction**: Full rewrite from segment-indexed assembly to `page.text().all()` + char-indexed font metadata. Produces cleaner text with correct word spacing.
-- **hOCR table reconstruction vendored**: `HocrWord`, `reconstruct_table`, `table_to_markdown` moved from `html-to-markdown-rs::hocr` to `kreuzberg::table_core` module.
+- **hOCR table reconstruction vendored**: `HocrWord`, `reconstruct_table`, `table_to_markdown` moved from `html-to-markdown-rs::hocr` to `xberg::table_core` module.
 - **CLI format flags**: `--format` (`-f`) now supports `text`, `json`, and `toon` wire formats. `--output-format` renamed to `--content-format` (deprecated alias kept with warning). `OutputFormat` enum gains `Custom(String)` variant for extensible format plugins.
 - **html-to-markdown-rs v3.0.0**: Switched from git dependency to crates.io release.
 - **License policy**: MPL-2.0 and LGPL-2.1 no longer globally allowed — pinned to specific crate exceptions (cbindgen, option-ext, r-efi). Unicode-DFS-2016 allowed for comrak dependency.
 
 ### Removed
 
-- **`max_upload_mb` server config field**: Use `max_multipart_field_bytes` (in bytes) instead. The `KREUZBERG_MAX_UPLOAD_SIZE_MB` environment variable is also removed — use `KREUZBERG_MAX_MULTIPART_FIELD_BYTES`.
+- **`max_upload_mb` server config field**: Use `max_multipart_field_bytes` (in bytes) instead. The `XBERG_MAX_UPLOAD_SIZE_MB` environment variable is also removed — use `XBERG_MAX_MULTIPART_FIELD_BYTES`.
 - **`metadata.additional` legacy insertions**: Pipeline features (chunking, embeddings, language detection, keywords) no longer insert error/status keys into `metadata.additional`. Errors are available via `processing_warnings`. Keywords are in `extracted_keywords`. Embedding status is derivable from chunk embeddings.
 - **`derive_content_string` function**: Replaced by `render_plain()` in the rendering module.
 
@@ -2377,7 +2377,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 ### Added
 
 - **Tower service layer** (`service` module): Composable `ExtractionService` implementing `tower::Service` with configurable middleware layers (tracing, metrics, timeout, concurrency limit). New `tower-service` feature flag, auto-enabled by `api` and `mcp`. `ExtractionServiceBuilder` provides ergonomic layer composition.
-- **Semantic OpenTelemetry conventions** (`telemetry` module): Formal `kreuzberg.*` attribute namespace with 30+ span attributes, metric names, and operation/stage constants. Documented conventions for document extraction, pipeline stages, OCR, and model inference telemetry.
+- **Semantic OpenTelemetry conventions** (`telemetry` module): Formal `xberg.*` attribute namespace with 30+ span attributes, metric names, and operation/stage constants. Documented conventions for document extraction, pipeline stages, OCR, and model inference telemetry.
 - **Extraction metrics**: 11 OTel metric instruments (counters, histograms, gauge) covering extraction totals, durations, cache hits/misses, pipeline stages, OCR, and concurrent extractions. Feature-gated behind `otel`.
 - **InstrumentedExtractor wrapper**: Automatic per-extractor tracing spans and metrics without per-extractor annotations. Injected at registry dispatch when `otel` feature is enabled.
 
@@ -2391,7 +2391,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 ### Changed
 
 - **Removed per-extractor `#[instrument]` annotations**: 29 manual `#[cfg_attr(feature = "otel", tracing::instrument(...))]` annotations replaced by the automatic `InstrumentedExtractor` wrapper.
-- **Span attribute names migrated to `kreuzberg.*` namespace**: `extraction.filename` -> `kreuzberg.document.filename`, `extraction.mime_type` -> `kreuzberg.document.mime_type`, etc.
+- **Span attribute names migrated to `xberg.*` namespace**: `extraction.filename` -> `xberg.document.filename`, `extraction.mime_type` -> `xberg.document.mime_type`, etc.
 
 ### Fixed
 
@@ -2419,7 +2419,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 - **OCR elements report `page_number: 1` for all pages** (#582): Tesseract resets page numbers per single-page render. Page numbers are now correctly stamped after OCR in the batch loop.
 - **Rust E2E tests missing PDF feature**: Added `pdf` feature to the e2e-generator Rust template, fixing 41 `UnsupportedFormat("application/pdf")` failures.
 - **HWP styled extraction empty on ARM**: Added `skip_on_platform` support to Python and Java e2e generators, skipping the `hwp_styled` fixture on `aarch64-unknown-linux-gnu`.
-- **WASM CI build failure**: Made `kreuzberg-node` prepare script resilient to missing native addon, preventing `ENOENT: dist/cli.js` during pnpm workspace install.
+- **WASM CI build failure**: Made `xberg-node` prepare script resilient to missing native addon, preventing `ENOENT: dist/cli.js` during pnpm workspace install.
 - **Go C header stale at 4.5.0**: Synced header and `DefaultVersion` constant to match current version.
 - **Ruby gem missing ONNX Runtime**: Added `ort-bundled` feature to Ruby native Cargo.toml.
 - **Elixir doctest failures**: Updated `ExtractionConfig.to_map/1` doctests for `force_ocr_pages` field.
@@ -2438,7 +2438,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Added
 
-- **Per-file batch extraction timeouts** (#546): New `extraction_timeout_secs` on `ExtractionConfig` (batch-level default) and `timeout_secs` on `FileExtractionConfig` (per-file override). Timeouts apply after semaphore acquisition. New `KreuzbergError::Timeout` variant with `elapsed_ms` and `limit_ms` fields. All binding layers updated.
+- **Per-file batch extraction timeouts** (#546): New `extraction_timeout_secs` on `ExtractionConfig` (batch-level default) and `timeout_secs` on `FileExtractionConfig` (per-file override). Timeouts apply after semaphore acquisition. New `XbergError::Timeout` variant with `elapsed_ms` and `limit_ms` fields. All binding layers updated.
 - **Page-level OCR overrides** (#432): New `force_ocr_pages` option (1-indexed) on both `ExtractionConfig` and `FileExtractionConfig`. Enables selective OCR on specific pages of mixed-quality PDFs while preserving native text on others.
 - **PST extraction support** (#502): Extract emails from Microsoft Outlook PST archives via the `outlook-pst` crate. Iterative depth-first folder traversal with depth cap of 50. Feature-gated under `email`.
 - **JSONL/NDJSON extraction** (#575): Native `.jsonl`/`.ndjson` extraction via `StructuredExtractor`. Registered as `application/x-ndjson` MIME type.
@@ -2523,7 +2523,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 - **Unused `table_model` variable warning**: Fixed cfg-gating in `pipeline.rs` so `table_model` parameter is properly handled when `layout-detection` feature is disabled.
 - **Clippy `too_many_arguments` on `recognize_tables_slanet`**: Added allow attribute for the 8-parameter function in `table_recognition.rs`.
 - **Ruby binding missing `table_model` field**: Added `table_model` parsing to `LayoutDetectionConfig` initializer in Ruby native extension.
-- **WASM module resolution in Supabase/Deno edge functions** (#551): Added explicit `package.json` exports for `pkg/kreuzberg_wasm.js` and WASM binary. Extended `wasm-loader.ts` with Deno detection and clear error messaging for restricted edge runtimes.
+- **WASM module resolution in Supabase/Deno edge functions** (#551): Added explicit `package.json` exports for `pkg/xberg_wasm.js` and WASM binary. Extended `wasm-loader.ts` with Deno detection and clear error messaging for restricted edge runtimes.
 - **`zip` dependency pinned below 7.4**: Avoids let-chain build failures on some stable Rust toolchains (#549).
 - **Vendored HWP text extraction**: Replaced external `hwpers` crate with vendored subset (~1,650 lines). Eliminates `zip 2.x` transitive dependency that caused WASM and CI Validate build failures.
 
@@ -2563,13 +2563,13 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 - **Cache namespace deletion**: `delete_namespace()` removes all cache entries under a namespace. `get_stats_filtered()` returns per-namespace statistics.
 - **Multi-worker cleanup safety**: Cache cleanup no longer triggers excessively when multiple worker pods share the same cache directory.
 - **Bundled eng.traineddata**: English OCR works out of the box with zero runtime configuration (~4MB bundled at build time).
-- **Tessdata in `cache warm`**: `kreuzberg-cli cache warm` now downloads all tessdata_fast language files (~120 languages) to `KREUZBERG_CACHE_DIR/tessdata/`, giving full Tesseract language support without system packages.
-- **Tessdata in `cache manifest`**: `kreuzberg-cli cache manifest` now includes all tessdata files with source URLs, enabling `--sync-cache` to download tessdata alongside models.
-- **`KREUZBERG_CACHE_DIR/tessdata` resolution**: `resolve_tessdata_path()` now checks `KREUZBERG_CACHE_DIR/tessdata` and the bundled build path before falling back to system paths. Resolution order: `TESSDATA_PREFIX` env → `KREUZBERG_CACHE_DIR/tessdata` → bundled tessdata → system paths.
-- **CLI `embed` command**: Generate vector embeddings from text via `kreuzberg embed --text "..." --preset balanced`. Supports stdin, multiple texts, JSON/text output. Feature-gated on `embeddings`.
-- **CLI `chunk` command**: Split text into chunks via `kreuzberg chunk --text "..." --chunk-size 512`. Configurable size, overlap, chunker type, tokenizer model.
-- **CLI `completions` command**: Generate shell completions for bash, zsh, fish, powershell via `kreuzberg completions <shell>`.
-- **CLI `--log-level` global flag**: Override `RUST_LOG` via `kreuzberg --log-level debug extract doc.pdf`.
+- **Tessdata in `cache warm`**: `xberg-cli cache warm` now downloads all tessdata_fast language files (~120 languages) to `XBERG_CACHE_DIR/tessdata/`, giving full Tesseract language support without system packages.
+- **Tessdata in `cache manifest`**: `xberg-cli cache manifest` now includes all tessdata files with source URLs, enabling `--sync-cache` to download tessdata alongside models.
+- **`XBERG_CACHE_DIR/tessdata` resolution**: `resolve_tessdata_path()` now checks `XBERG_CACHE_DIR/tessdata` and the bundled build path before falling back to system paths. Resolution order: `TESSDATA_PREFIX` env → `XBERG_CACHE_DIR/tessdata` → bundled tessdata → system paths.
+- **CLI `embed` command**: Generate vector embeddings from text via `xberg embed --text "..." --preset balanced`. Supports stdin, multiple texts, JSON/text output. Feature-gated on `embeddings`.
+- **CLI `chunk` command**: Split text into chunks via `xberg chunk --text "..." --chunk-size 512`. Configurable size, overlap, chunker type, tokenizer model.
+- **CLI `completions` command**: Generate shell completions for bash, zsh, fish, powershell via `xberg completions <shell>`.
+- **CLI `--log-level` global flag**: Override `RUST_LOG` via `xberg --log-level debug extract doc.pdf`.
 - **CLI extraction overrides**: 27 flags exposed via `ExtractionOverrides` struct with `#[command(flatten)]`. New flags: `--layout-preset`, `--layout-confidence`, `--acceleration`, `--extract-pages`, `--page-markers`, `--extract-images`, `--target-dpi`, `--pdf-extract-images`, `--pdf-extract-metadata`, `--token-reduction`, `--include-structure`, `--max-concurrent`, `--max-threads`, `--msg-codepage`, `--ocr-auto-rotate`.
 - **CLI colored output**: Text output uses `anstyle` for colored headers, labels, success values, and dim separators. Respects `NO_COLOR` env var.
 - **API `POST /detect`**: MIME type detection endpoint via multipart file upload.
@@ -2608,7 +2608,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 - **Java FFI `CBatchResult` struct layout mismatch**: The `count` and `results` fields were swapped in the Java Panama FFM layout, causing all batch extraction operations to fail with memory access errors.
 - **Go FFI stale C header**: The `CExtractionResult` struct field order in the Go binding's C header did not match the Rust `#[repr(C)]` layout (reordered alphabetically in 4.5.0, added `djot_content_json`). Go read fields at wrong offsets, causing `pages_json` to deserialize `metadata_json` instead.
-- **FFI `LayoutDetectionConfig` not feature-gated**: The FFI crate unconditionally imported `LayoutDetectionConfig` and exposed `kreuzberg_config_builder_set_layout`, causing compilation failures on targets without the `layout-detection` feature (e.g., `x86_64-pc-windows-gnu`).
+- **FFI `LayoutDetectionConfig` not feature-gated**: The FFI crate unconditionally imported `LayoutDetectionConfig` and exposed `xberg_config_builder_set_layout`, causing compilation failures on targets without the `layout-detection` feature (e.g., `x86_64-pc-windows-gnu`).
 - **Python wheel builds on Linux aarch64**: OpenSSL library path was hardcoded to `x86_64-linux-gnu` in the manylinux build script, failing on aarch64 runners. Now detects architecture via `uname -m`.
 - **R batch function signature mismatch**: R wrapper functions were missing the `file_configs` parameter when calling native Rust functions, causing "Expected Scalar, got Language" errors on all batch operations.
 - **R package ORT linking**: The R build configuration (`config.R`) did not link against ONNX Runtime when `ORT_LIB_LOCATION` was set, causing `undefined symbol: OrtGetApiBase` at load time.
@@ -2675,7 +2675,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 - **OCR Picture regions suppressing text**: Layout-detected Picture regions now preserve embedded text as plain paragraphs instead of silently dropping it.
 - **Non-transitive sort comparators**: Spatial reading-order sorts now use discrete row buckets instead of tolerance-based grouping, ensuring correct and stable ordering.
 - **Page furniture over-stripping**: Added bulk and per-paragraph guards to prevent aggressive furniture stripping from removing legitimate content.
-- **`KREUZBERG_CACHE_DIR` not respected by all caches**: Embeddings, OCR result cache, and document extraction cache now honor the environment variable.
+- **`XBERG_CACHE_DIR` not respected by all caches**: Embeddings, OCR result cache, and document extraction cache now honor the environment variable.
 - **MSG PT_STRING8 encoding**: MSG files now correctly decode ANSI string properties using the declared Windows code page instead of UTF-8 lossy conversion.
 - **SLANet-Plus ONNX model**: Re-exported with shape fix, resolving inference failures that caused all SLANet table extractions to silently fail on macOS CoreML.
 - **TATR model panic in batch processing**: Model unavailability in parallel closures caused crashes in FFI callers (Java, C#). Now falls back gracefully to heuristic table extraction.
@@ -2711,13 +2711,13 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 - **PDF markdown garbles positioned text (#431)**: PDFs with positioned/tabular text (CVs, addresses, data tables) had their line breaks destroyed during paragraph grouping. Added page-level positioned text detection: when fewer than 30% of lines on a page reach the right margin, short lines are split into separate paragraphs to preserve the document's visual structure.
 - **Node worker pool password bug**: `extractFileInWorker` was passing the `password` argument as `mime_type` to `extract_file_sync`, meaning passwords were never applied and MIME detection could break. Password is now correctly injected into `config.pdf_options.passwords`.
-- **Unused import in kreuzberg-node**: Removed unused `use serde_json::Value` import in `result.rs` that caused clippy warnings.
+- **Unused import in xberg-node**: Removed unused `use serde_json::Value` import in `result.rs` that caused clippy warnings.
 - **WASM Deno OCR test hang**: OCR tests hung indefinitely on WASM Deno because Tesseract synchronous initialization blocks the single-threaded runtime. OCR fixtures are now skipped for the wasm-deno target.
 - **WASM camelCase config deserialization**: JS consumers send camelCase config keys (e.g. `includeDocumentStructure`) but `serde` expects snake_case. Added `camel_to_snake` transform in `parse_config()` so config fields are properly deserialized. Fixes document structure extraction returning empty results via WASM.
 - **PHP 8.5 array coercion on macOS**: On PHP 8.5 + macOS, ext-php-rs coerces `#[php_class]` return values to arrays instead of objects. Added `normalizeExtractionResult()` wrapper that transparently converts arrays via `ExtractionResult::fromArray()`.
 - **PHP 8.5 support**: Upgraded ext-php-rs to 0.15.6 for PHP 8.5 compatibility.
-- **Vendoring scripts missing path deps**: Ruby and R vendoring scripts failed when workspace dependencies use `path` instead of `version`. Added path field handling to `format_dependency()` and kreuzberg-ffi fixup block to the Ruby vendoring script.
-- **pdfium-render clippy lints**: Fixed clippy warnings in kreuzberg-pdfium-render crate.
+- **Vendoring scripts missing path deps**: Ruby and R vendoring scripts failed when workspace dependencies use `path` instead of `version`. Added path field handling to `format_dependency()` and xberg-ffi fixup block to the Ruby vendoring script.
+- **pdfium-render clippy lints**: Fixed clippy warnings in xberg-pdfium-render crate.
 
 ### Added
 
@@ -2730,7 +2730,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Changed
 
-- **All binding crates linted in pre-commit**: Removed clippy exclusions for kreuzberg-php, kreuzberg-node, and kreuzberg-wasm from pre-commit config.
+- **All binding crates linted in pre-commit**: Removed clippy exclusions for xberg-php, xberg-node, and xberg-wasm from pre-commit config.
 - **golangci-lint v2.11.3**: Upgraded from v2.9.0 across Taskfile, CI workflows, and install scripts.
 
 ## [4.4.4]
@@ -2754,11 +2754,11 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Fixed
 
-- **Token reduction not applied** ([#436](https://github.com/xberg-io/kreuzberg/issues/436)): Token reduction config was accepted but never executed during extraction. The pipeline now applies `reduce_tokens()` when `token_reduction.mode` is configured.
+- **Token reduction not applied** ([#436](https://github.com/xberg-io/xberg/issues/436)): Token reduction config was accepted but never executed during extraction. The pipeline now applies `reduce_tokens()` when `token_reduction.mode` is configured.
 - **Nested HTML table extraction**: Nested HTML tables now extract correctly with proper cell data and markdown rendering, using the visitor-based table extraction API from html-to-markdown-rs.
 - **hOCR plain text output**: hOCR conversion now correctly produces plain text when `OutputFormat::Plain` is requested, instead of silently falling back to Markdown.
-- **PDF garbled text for positioned/tabular content** ([#431](https://github.com/xberg-io/kreuzberg/issues/431)): PDF text extraction now detects X-position gaps between consecutive characters and inserts spaces when the gap exceeds `0.8 × avg_font_size`. Previously, characters placed at specific coordinates without explicit space characters were concatenated without spaces.
-- **Chunk page metadata drift with overlap** ([#439](https://github.com/xberg-io/kreuzberg/issues/439)): Chunk byte offsets are now computed via pointer arithmetic from the source text, fixing cumulative drift that caused chunks to report incorrect page numbers when overlap is enabled.
+- **PDF garbled text for positioned/tabular content** ([#431](https://github.com/xberg-io/xberg/issues/431)): PDF text extraction now detects X-position gaps between consecutive characters and inserts spaces when the gap exceeds `0.8 × avg_font_size`. Previously, characters placed at specific coordinates without explicit space characters were concatenated without spaces.
+- **Chunk page metadata drift with overlap** ([#439](https://github.com/xberg-io/xberg/issues/439)): Chunk byte offsets are now computed via pointer arithmetic from the source text, fixing cumulative drift that caused chunks to report incorrect page numbers when overlap is enabled.
 - **Node.js metadata casing**: Standardized all `Metadata` and `EmailMetadata` fields to `camelCase` (e.g., `pageCount`, `creationDate`, `fromEmail`) in the Node.js/TypeScript bindings. Also corrected pluralization for `authors` and `keywords`.
 - **WASM build failure on Windows CI**: CMake try-compile checks on Windows used the host MSVC compiler (`cl.exe`), which rejected GCC/Clang flags like `-Wno-implicit-function-declaration`. Added `CMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY` to both `build_leptonica_wasm` and `build_tesseract_wasm` to skip linking during cross-compilation checks.
 - **WASM OCR build panic when `git`/`patch` unavailable**: The tesseract WASM patch (`tesseract.diff`) application panicked when both `git apply` and `patch` commands failed. Added programmatic C++ source fixups as a fallback, applying all necessary changes (CPUID guard, pixa*debug* unique_ptr conversion, source list trimming) via string replacement when the diff patch cannot be applied.
@@ -2791,15 +2791,15 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Changed
 
-- **CLI includes all features**: `kreuzberg-cli` now depends on `kreuzberg` with the `full` feature set instead of a separate `cli` subset. The `cli` feature group has been removed from `kreuzberg`. This ensures the CLI supports all formats including archives (7z, tar, gz, zip).
+- **CLI includes all features**: `xberg-cli` now depends on `xberg` with the `full` feature set instead of a separate `cli` subset. The `cli` feature group has been removed from `xberg`. This ensures the CLI supports all formats including archives (7z, tar, gz, zip).
 
 ### Fixed
 
-- **Alpine/musl CLI Docker image**: Fixed "Dynamic loading not supported" error when running `kreuzberg-cli` in Alpine containers. The CLI binary is now dynamically linked against musl libc, enabling runtime library loading for PDF processing.
+- **Alpine/musl CLI Docker image**: Fixed "Dynamic loading not supported" error when running `xberg-cli` in Alpine containers. The CLI binary is now dynamically linked against musl libc, enabling runtime library loading for PDF processing.
 - **R package Windows installation**: Improved Python detection in configure script for Windows environments (added `py` launcher and `RETICULATE_PYTHON` support). Symlink extraction errors during source package installation are now handled gracefully.
 - **PHP 8.5 precompiled extension binaries**: Added PHP 8.5 support alongside existing PHP 8.4 in CI and release workflows.
 - **OCR DPI normalization**: The `normalize_image_dpi()` preprocessing logic is now integrated into the OCR pipeline. Images are normalized to the configured target DPI before being passed to Tesseract, and the calculated DPI is set via `set_source_resolution()`. This eliminates the "Estimating resolution as ..." warning and improves OCR accuracy for images with non-standard DPI.
-- **HTML metadata extraction with Plain output**: Fixed HTML metadata (headers, links, images, structured data) not being collected when using `OutputFormat::Plain` (the default). The underlying library's plain text fast path skips metadata extraction; kreuzberg now uses Markdown format internally for metadata collection and converts to plain text separately.
+- **HTML metadata extraction with Plain output**: Fixed HTML metadata (headers, links, images, structured data) not being collected when using `OutputFormat::Plain` (the default). The underlying library's plain text fast path skips metadata extraction; xberg now uses Markdown format internally for metadata collection and converts to plain text separately.
 - **PPTX text run spacing**: Adjacent text runs within paragraphs are now joined with smart spacing instead of being concatenated directly ("HelloWorld" → "Hello World").
 - **CSV Shift-JIS/cp932 encoding detection**: `encoding_rs` is now a non-optional dependency. CSV files with Shift-JIS encoding are correctly decoded instead of producing mojibake. Fallback encoding detection tries common encodings (Shift-JIS, cp932, windows-1252, iso-8859-1, gb18030, big5).
 - **EML multipart body extraction**: All text/html body parts are now extracted by iterating over all indices instead of only index 0. Nested `message/rfc822` parts in multipart/digest are recursively extracted.
@@ -2847,15 +2847,15 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Added
 
-- **R language bindings** — Added kreuzberg R package via extendr with full extraction API (sync/async, batch, bytes), typed error conditions, S3 result class with accessors, config discovery, OCR/chunking configuration, plugin system, and 32 documentation snippets.
+- **R language bindings** — Added xberg R package via extendr with full extraction API (sync/async, batch, bytes), typed error conditions, S3 result class with accessors, config discovery, OCR/chunking configuration, plugin system, and 32 documentation snippets.
 - **PHP async extraction**: Non-blocking extraction via `DeferredResult` pattern with Tokio thread pool. Includes `extractFileAsync()`, `extractBytesAsync()`, `batchExtractFilesAsync()`, `batchExtractBytesAsync()` across OOP, procedural, and static APIs. Framework bridges for Amp v3+ (`AmpBridge`) and ReactPHP (`ReactBridge`).
-- **WASM native OCR** (`ocr-wasm` feature): Tesseract OCR compiled directly into the WASM binary via `kreuzberg-tesseract`, enabling OCR in all environments (Browser, Node.js, Deno, Bun) without browser-specific APIs. Supports 43 languages with tessdata downloaded from CDN into memory.
-- **WASM Node.js/Deno PDFium support**: PDFium initialization now works in Node.js and Deno by loading the WASM module from the filesystem. Configurable via `KREUZBERG_PDFIUM_PATH` environment variable.
+- **WASM native OCR** (`ocr-wasm` feature): Tesseract OCR compiled directly into the WASM binary via `xberg-tesseract`, enabling OCR in all environments (Browser, Node.js, Deno, Bun) without browser-specific APIs. Supports 43 languages with tessdata downloaded from CDN into memory.
+- **WASM Node.js/Deno PDFium support**: PDFium initialization now works in Node.js and Deno by loading the WASM module from the filesystem. Configurable via `XBERG_PDFIUM_PATH` environment variable.
 - **WASM full-feature build**: OCR, Excel, and archive extraction are now enabled by default in the WASM package. All `wasm-pack build` targets include the `ocr-wasm` feature.
 - **WASM Excel extraction** (`excel-wasm` feature): Calamine-based Excel/spreadsheet extraction available in WASM without requiring Tokio runtime.
 - **WASM archive extraction**: ZIP, TAR, 7z, and GZIP archive extraction now available in WASM via synchronous extractor implementations.
 - **WASM PDF annotations**: PDF annotations (text notes, highlights, links, stamps) are now exposed in the WASM TypeScript API via the `annotations` field on `ExtractionResult`.
-- **C FFI distribution**: Official C shared library (`libkreuzberg`) with cbindgen-generated header, cmake packaging (`find_package(kreuzberg)`), pkg-config support, and prebuilt binaries for Linux x86_64/aarch64, macOS arm64, and Windows x86_64. Includes 10 test files, benchmark harness integration, and full API reference documentation.
+- **C FFI distribution**: Official C shared library (`libxberg`) with cbindgen-generated header, cmake packaging (`find_package(xberg)`), pkg-config support, and prebuilt binaries for Linux x86_64/aarch64, macOS arm64, and Windows x86_64. Includes 10 test files, benchmark harness integration, and full API reference documentation.
 - **Go FFI bindings**: Go package (`packages/go/v4`) consuming the C FFI shared library with prebuilt binaries published as GitHub release assets for all four platforms.
 - **C as 12th e2e test language**: The e2e-generator now produces C test files exercising the FFI API, with 15 passing test cases.
 - **R distribution via r-universe**: Switched R package distribution from CRAN to r-universe for faster release cycles and easier native compilation. Includes vendoring script for offline builds.
@@ -2902,7 +2902,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 ### Added
 
 - **MDX format support** (`mdx` feature): Extract text from `.mdx` files, stripping JSX/import/export syntax while preserving markdown content, frontmatter, tables, and code fences
-- **List supported formats API** (#404): Query all supported file extensions and MIME types via `list_supported_formats()` in Rust, `GET /formats` REST endpoint, `list_formats` MCP tool, or `kreuzberg formats` CLI subcommand
+- **List supported formats API** (#404): Query all supported file extensions and MIME types via `list_supported_formats()` in Rust, `GET /formats` REST endpoint, `list_formats` MCP tool, or `xberg formats` CLI subcommand
 
 ### Fixed
 
@@ -2969,7 +2969,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 - **Tesseract TSV level mapping off-by-one**: OCR element hierarchy levels were incorrectly mapped — levels are 1=Page, 2=Block, 3=Paragraph, 4=Line, 5=Word. Fixed `parse_tsv_to_elements` to include word-level entries.
 - **OCR elements dropped in image OCR path**: `image_ocr.rs` hardcoded `ocr_elements` to `None` instead of passing through the elements parsed from Tesseract TSV output.
 - **DOCX extractor panic on multi-byte UTF-8 page boundaries (#401)**: Page break insertion used byte-index slicing on multi-byte UTF-8 content, causing panics. Fixed with char-boundary-safe insertion.
-- **Node.js `djot_content` field missing**: `JsExtractionResult` in kreuzberg-node was not mapping the `djot_content` field from Rust results, always returning `undefined`.
+- **Node.js `djot_content` field missing**: `JsExtractionResult` in xberg-node was not mapping the `djot_content` field from Rust results, always returning `undefined`.
 - **E2e generator missing `mapPageConfig` and `mapHtmlOptions`**: TypeScript e2e test generator did not map page extraction or HTML formatting options from fixture configs, causing tests with those options to use defaults.
 - **Pipeline test race conditions**: Replaced manual `REGISTRY_TEST_GUARD` mutex with `#[serial]` from `serial_test`, fixing flaky failures in `test_pipeline_with_quality_processing`, `test_pipeline_with_all_features`, and `test_postprocessor_runs_before_validator` caused by global registry state pollution between parallel tests.
 - **`test_pipeline_with_keyword_extraction` permanently ignored**: Test was marked `#[ignore]` due to test isolation issues. Fixed the underlying problem — `Lazy` static prevented re-registration after `shutdown_all()` — by clearing the processor cache after re-registration.
@@ -2988,8 +2988,8 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 - **PDF markdown output format**: Native PDF text extraction now supports `output_format: Markdown`, producing structured markdown with headings (via font-size clustering), paragraphs, inline bold/italic markup, and list detection — instead of flat text with visual line breaks.
 - **Multi-column PDF layout detection**: Histogram-based column gutter detection identifies 2+ column layouts (academic papers, magazines) and processes each column independently, preventing text interleaving across columns.
 - **Bold/italic detection via font name fallback**: When PDF font descriptor flags don't indicate bold/italic, the extractor checks font names for "Bold"/"Italic"/"Oblique" substrings and font weight >= 700 as secondary signals.
-- **musl/Alpine Linux native builds for Elixir, Java, and C#**: New Docker-based CI jobs build native libraries (`libkreuzberg_rustler.so`, `libkreuzberg_ffi.so`) targeting `x86_64-unknown-linux-musl` and `aarch64-unknown-linux-musl`. Enables instant install on Alpine Linux and musl-based distributions without compiling from source.
-- **Pre-compiled platform-specific Ruby gems**: The publish workflow now ships pre-compiled native gems for `x86_64-linux`, `aarch64-linux`, `arm64-darwin`, and `x64-mingw-ucrt`, eliminating the 30+ minute compile-from-source on `gem install kreuzberg`. A fallback source gem is still published for unsupported platforms.
+- **musl/Alpine Linux native builds for Elixir, Java, and C#**: New Docker-based CI jobs build native libraries (`libxberg_rustler.so`, `libxberg_ffi.so`) targeting `x86_64-unknown-linux-musl` and `aarch64-unknown-linux-musl`. Enables instant install on Alpine Linux and musl-based distributions without compiling from source.
+- **Pre-compiled platform-specific Ruby gems**: The publish workflow now ships pre-compiled native gems for `x86_64-linux`, `aarch64-linux`, `arm64-darwin`, and `x64-mingw-ucrt`, eliminating the 30+ minute compile-from-source on `gem install xberg`. A fallback source gem is still published for unsupported platforms.
 - **`bounding_box: Option<BoundingBox>` field on `Table` struct**: Added spatial positioning data for table extraction, enabling precise table layout reconstruction. Computed from character positions during PDF table detection.
 - **`bounding_box: Option<BoundingBox>` field on `ExtractedImage` struct**: Added spatial positioning data for extracted images, enabling image layout reconstruction in document pipelines.
 - **Inline table embedding in PDF markdown output**: Tables are inserted at correct vertical position within markdown content instead of being appended at the end. Position determined by bounding box `y0` coordinate.
@@ -3001,12 +3001,12 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 ### Fixed
 
 - **Pipeline test flakiness**: Disabled post-processing in pipeline tests that don't test post-processing, fixing `test_pipeline_without_chunking` and related tests that failed due to global processor cache poisoning in parallel execution.
-- **PHP FFI bridge missing `bounding_box`**: The PHP Rust bridge (`kreuzberg-php`) was not passing `bounding_box` through for `Table` or `ExtractedImage`, causing the field to always be null despite being defined in the PHP user-facing types.
+- **PHP FFI bridge missing `bounding_box`**: The PHP Rust bridge (`xberg-php`) was not passing `bounding_box` through for `Table` or `ExtractedImage`, causing the field to always be null despite being defined in the PHP user-facing types.
 
 - **PaddleOCR dict index offset causing wrong character recognition (#395)**: `read_keys_from_file()` was missing the CTC blank token (`#`) at index 0 and the space token at the end, causing off-by-one character mapping errors. Now matches the `get_keys()` layout used for embedded models.
 - **PaddleOCR angle classifier misfiring on short text (#395)**: Changed `use_angle_cls` default from `true` to `false`. The angle classifier can misfire on short text regions (e.g., 2-3 character table cells), rotating crops incorrectly before recognition. Users can re-enable via `PaddleOcrConfig::with_angle_cls(true)` for rotated documents.
 - **PaddleOCR excessive padding including table gridlines (#395)**: Reduced default detection padding from 50px to 10px and made it configurable via `PaddleOcrConfig::with_padding()`. Large padding on small images caused table gridlines to be included in text crops.
-- **Ruby CI Bundler gems destroyed by vendoring script**: The `vendor-kreuzberg-core.py` script was deleting the entire `vendor/` directory including `vendor/bundle/` (Bundler's gem installation). Now only cleans crate subdirectories, preserving Bundler state.
+- **Ruby CI Bundler gems destroyed by vendoring script**: The `vendor-xberg-core.py` script was deleting the entire `vendor/` directory including `vendor/bundle/` (Bundler's gem installation). Now only cleans crate subdirectories, preserving Bundler state.
 - **PDF document loaded twice for markdown rendering**: Eliminated redundant Pdfium initialization and document parsing by rendering markdown speculatively during the first document load, saving 25-40ms per PDF.
 - **NaN panics in PDF text clustering and block merging**: Replaced `expect()` calls on `partial_cmp` with `unwrap_or(Ordering::Equal)` across clustering, extraction, and markdown modules to handle corrupt PDF coordinates gracefully.
 - **PDF heading detection false positives**: Added distance threshold to font-size centroid matching — decorative elements with extreme font sizes no longer receive heading levels.
@@ -3024,10 +3024,10 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 - **PaddleOCR recognition height mismatch (#390)**: Changed `CRNN_DST_HEIGHT` from 32 to 48 pixels to match PP-OCRv4/v5 model input shape `[batch, 3, 48, width]`. The previous value caused ONNX Runtime dimension errors on all platforms.
 - **Go binding: `ChunkingConfig` missing `Embedding` field**: Added `Embedding *EmbeddingConfig` to Go's `ChunkingConfig` struct to match the Rust canonical type. Previously, embedding configuration nested inside chunking was silently dropped during JSON round-trip, causing embedding-enabled extractions to run without embeddings.
-- **Go binding: `extracted_keywords`, `quality_score`, `processing_warnings` always nil**: The vendored C header (`packages/go/v4/internal/ffi/kreuzberg.h`) was missing the three new `CExtractionResult` fields, and `convertCResult()` never decoded them. Updated the header and added the missing `decodeJSONCString` calls.
+- **Go binding: `extracted_keywords`, `quality_score`, `processing_warnings` always nil**: The vendored C header (`packages/go/v4/internal/ffi/xberg.h`) was missing the three new `CExtractionResult` fields, and `convertCResult()` never decoded them. Updated the header and added the missing `decodeJSONCString` calls.
 - **`extraction_duration_ms` missing from Go, Java, PHP, C# bindings**: The `Metadata.extraction_duration_ms` field was present in Rust, TypeScript, and Elixir but absent from four bindings. Added the field with proper serialization/deserialization to all four.
 - **C# `Metadata.Additional` not marked obsolete**: The deprecated `additional` map (superseded by typed fields) was not marked `[Obsolete]` in C#. Added `[Obsolete]` attribute matching the Rust deprecation. Also added `@Deprecated` in Java and `// Deprecated:` doc comment in Go.
-- **Ruby RBS type signatures incomplete**: `packages/ruby/sig/kreuzberg.rbs` lacked struct definitions for all T::Struct types (`ExtractedKeyword`, `ProcessingWarning`, `BoundingBox`, `DocumentNode`, etc.) and inner result classes (`Table`, `Chunk`, `OcrElement`, etc.). Rewrote with comprehensive type definitions matching `types.rb` and `result.rb`.
+- **Ruby RBS type signatures incomplete**: `packages/ruby/sig/xberg.rbs` lacked struct definitions for all T::Struct types (`ExtractedKeyword`, `ProcessingWarning`, `BoundingBox`, `DocumentNode`, etc.) and inner result classes (`Table`, `Chunk`, `OcrElement`, etc.). Rewrote with comprehensive type definitions matching `types.rb` and `result.rb`.
 - **Python `.pyi` stub missing `extraction_duration_ms`**: Added `extraction_duration_ms: int | None` to the `Metadata` TypedDict in `_internal_bindings.pyi`.
 
 ### Changed
@@ -3037,8 +3037,8 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 - **PaddleOCR recognition models upgraded to PP-OCRv5**: Upgraded arabic, devanagari, tamil, and telugu recognition models from PP-OCRv3 to PP-OCRv5 for improved accuracy. All 11 script families now use PP-OCRv5 models.
 - **PDFium upgraded to chromium/7678**: Upgraded PDFium binary version from 7578 to the latest release (chromium/7678, Feb 2026) across all CI workflows, Docker images, and task configuration. C API is fully backward-compatible with existing bindings.
-- **kreuzberg-pdfium-render trimmed to single version**: Removed support for 22 legacy PDFium API versions (5961-7350 + future), deleting ~328k lines of dead code including bindgen files, C headers, and ~4,256 version-conditional compilation blocks. Removed XFA, V8, Skia, and Win32 feature-gated code paths.
-- **Workspace dependency consolidation**: Moved `wasm-bindgen`, `wasm-bindgen-futures`, `js-sys`, `web-sys`, `console_error_panic_hook`, and `log` to workspace-level dependency management, deduplicating versions across `kreuzberg-pdfium-render`, `kreuzberg-wasm`, and `kreuzberg-ffi`.
+- **xberg-pdfium-render trimmed to single version**: Removed support for 22 legacy PDFium API versions (5961-7350 + future), deleting ~328k lines of dead code including bindgen files, C headers, and ~4,256 version-conditional compilation blocks. Removed XFA, V8, Skia, and Win32 feature-gated code paths.
+- **Workspace dependency consolidation**: Moved `wasm-bindgen`, `wasm-bindgen-futures`, `js-sys`, `web-sys`, `console_error_panic_hook`, and `log` to workspace-level dependency management, deduplicating versions across `xberg-pdfium-render`, `xberg-wasm`, and `xberg-ffi`.
 - **Docker full image: pre-download all PaddleOCR models**: Replaced broken single-language model download with all 11 recognition script families (english, chinese, latin, korean, eslav, thai, greek, arabic, devanagari, tamil, telugu) plus dictionaries. Fixed incorrect HuggingFace URLs and cache paths. Added retry logic with backoff for transient HuggingFace 502 errors.
 - **Docker test suite: PaddleOCR verification**: Added `test_paddle_ocr_extraction` to the full variant Docker tests to verify pre-loaded models work end-to-end.
 - **E2E tests updated for typed extraction fields**: End-to-end tests now validate typed `extracted_keywords`, `quality_score`, and `processing_warnings` fields instead of reading from `metadata.additional` dictionary.
@@ -3078,7 +3078,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 #### PaddleOCR Multi-Language Support (#388)
 
 - **80+ language support via 11 script families**: PaddleOCR recognition models now cover english, chinese (simplified+traditional+japanese), latin, korean, east slavic (cyrillic), thai, greek, arabic, devanagari, tamil, and telugu script families.
-- **Per-family recognition model architecture**: Shared detection/classification models with per-family recognition models and dictionaries, downloaded on demand from HuggingFace (`Kreuzberg/paddleocr-onnx-models`).
+- **Per-family recognition model architecture**: Shared detection/classification models with per-family recognition models and dictionaries, downloaded on demand from HuggingFace (`Xberg/paddleocr-onnx-models`).
 - **Engine pool for concurrent multi-language OCR**: Replaced single-engine architecture with a per-family engine pool (`HashMap<String, Arc<Mutex<OcrLite>>>`), enabling concurrent OCR across different languages.
 - **Backend-agnostic `--ocr-language` CLI flag**: Works with all OCR backends (tesseract, paddle-ocr, easyocr). Tesseract expects ISO 639-3 codes (eng, fra, deu); PaddleOCR accepts flexible codes (en, ch, french, korean) via `map_language_code()`.
 - **SHA256 checksum verification**: All model downloads verified against embedded checksums for integrity.
@@ -3150,7 +3150,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Elixir Package Checksums (#383)
 
-- **Fixed checksum mismatch for Elixir 4.3.0 Hex package**: Updated `checksum-Elixir.Kreuzberg.Native.exs` with correct SHA256 checksums for all 8 precompiled NIF binaries (NIF 2.16/2.17 across aarch64-apple-darwin, aarch64-unknown-linux-gnu, x86_64-unknown-linux-gnu, x86_64-pc-windows-gnu). The 4.3.0 release shipped with outdated 4.2.10 checksums, causing installation failures.
+- **Fixed checksum mismatch for Elixir 4.3.0 Hex package**: Updated `checksum-Elixir.Xberg.Native.exs` with correct SHA256 checksums for all 8 precompiled NIF binaries (NIF 2.16/2.17 across aarch64-apple-darwin, aarch64-unknown-linux-gnu, x86_64-unknown-linux-gnu, x86_64-pc-windows-gnu). The 4.3.0 release shipped with outdated 4.2.10 checksums, causing installation failures.
 
 #### Dependency Updates
 
@@ -3159,7 +3159,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### WASM Compatibility
 
-- **Fixed WASM build failures**: Added explicit `getrandom 0.3.4` dependency with `wasm_js` feature to `kreuzberg-wasm` crate to ensure transitive dependencies (ahash, lopdf, rand_core) have WebAssembly support enabled.
+- **Fixed WASM build failures**: Added explicit `getrandom 0.3.4` dependency with `wasm_js` feature to `xberg-wasm` crate to ensure transitive dependencies (ahash, lopdf, rand_core) have WebAssembly support enabled.
 
 #### Dependency Pins
 
@@ -3177,9 +3177,9 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### PaddleOCR Backend
 
-- **PaddleOCR backend via ONNX Runtime**: New OCR backend (`kreuzberg-paddle-ocr`) using PaddlePaddle's PP-OCRv4 models converted to ONNX format, run via ONNX Runtime. Supports 6 languages (English, Chinese, Japanese, Korean, German, French) with automatic model downloading and caching. Provides superior CJK recognition compared to Tesseract.
+- **PaddleOCR backend via ONNX Runtime**: New OCR backend (`xberg-paddle-ocr`) using PaddlePaddle's PP-OCRv4 models converted to ONNX format, run via ONNX Runtime. Supports 6 languages (English, Chinese, Japanese, Korean, German, French) with automatic model downloading and caching. Provides superior CJK recognition compared to Tesseract.
 - **PaddleOCR support in all bindings**: Available across Python, Rust, TypeScript/Node.js, Go, Java, PHP, Ruby, C#, and Elixir bindings via the `paddle-ocr` feature flag.
-- **PaddleOCR CLI support**: The `kreuzberg-cli` binary supports `--ocr-backend paddle-ocr` for PaddleOCR extraction.
+- **PaddleOCR CLI support**: The `xberg-cli` binary supports `--ocr-backend paddle-ocr` for PaddleOCR extraction.
 
 #### Unified OCR Element Output
 
@@ -3210,7 +3210,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Rotated PDF Text Extraction
 
-- Fixed text extraction returning empty content for PDFs with 90° or 270° page rotation. Kreuzberg now strips `/Rotate` entries from page dictionaries before loading, restoring correct text extraction for all rotation angles.
+- Fixed text extraction returning empty content for PDFs with 90° or 270° page rotation. Xberg now strips `/Rotate` entries from page dictionaries before loading, restoring correct text extraction for all rotation angles.
 
 #### CSV and Excel Extraction Quality
 
@@ -3255,7 +3255,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Ruby Bindings
 
-- Fixed `kreuzberg-pdfium-render` vendored crate not included in gemspec, causing gem build failures.
+- Fixed `xberg-pdfium-render` vendored crate not included in gemspec, causing gem build failures.
 - Fixed PaddleOCR config and element config not being parsed in Ruby binding config layer.
 - Fixed `ocr_elements` missing from Ruby extraction result conversion.
 
@@ -3271,8 +3271,8 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 - Fixed `document`, `elements`, and `ocrElements` properties inaccessible on `ExtractionResult` — these fields were not exposed through the `__get` handler.
 - Fixed `ExtractionConfig::toArray()` not serializing `include_document_structure`, causing document structure extraction to be silently ignored.
-- Fixed wrapper function names for document extractor management (`kreuzberg_*_document_extractors` → `kreuzberg_*_extractors`).
-- Added missing OCR backend management functions (`kreuzberg_list_ocr_backends`, `kreuzberg_clear_ocr_backends`, `kreuzberg_unregister_ocr_backend`).
+- Fixed wrapper function names for document extractor management (`xberg_*_document_extractors` → `xberg_*_extractors`).
+- Added missing OCR backend management functions (`xberg_list_ocr_backends`, `xberg_clear_ocr_backends`, `xberg_unregister_ocr_backend`).
 - Fixed `page_count` metadata key mismatch between serialization (`pageCount`) and deserialization (`page_count`).
 
 #### Elixir Bindings
@@ -3296,7 +3296,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### LibreOffice Dependency
 
-- **LibreOffice is no longer required**: Legacy .doc and .ppt files are now extracted natively via OLE/CFB parsing. LibreOffice has been removed from Docker images, CI pipelines, and system dependency requirements, reducing the full Docker image size by ~500-800MB. Users on Kreuzberg <4.3 still need LibreOffice for these formats.
+- **LibreOffice is no longer required**: Legacy .doc and .ppt files are now extracted natively via OLE/CFB parsing. LibreOffice has been removed from Docker images, CI pipelines, and system dependency requirements, reducing the full Docker image size by ~500-800MB. Users on Xberg <4.3 still need LibreOffice for these formats.
 
 #### `msg_parser` Dependency
 
@@ -3304,7 +3304,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Guten OCR Backend
 
-- Removed all references to the unused Guten OCR backend from Node.js and PHP bindings. Renamed `KREUZBERG_DEBUG_GUTEN` env var to `KREUZBERG_DEBUG_OCR`.
+- Removed all references to the unused Guten OCR backend from Node.js and PHP bindings. Renamed `XBERG_DEBUG_GUTEN` env var to `XBERG_DEBUG_OCR`.
 
 ---
 
@@ -3314,7 +3314,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Agent Skill for AI Coding Assistants
 
-- **Agent Skill for document extraction**: Added `skills/kreuzberg/SKILL.md` following the [Agent Skills](https://agentskills.io) open standard, with comprehensive instructions for Python, Node.js, Rust, and CLI usage. Includes 8 detailed reference files covering API signatures, configuration, supported formats, plugins, and all language bindings. Works with Claude Code, Codex, Gemini CLI, Cursor, VS Code, Amp, Goose, Roo Code, and any compatible tool.
+- **Agent Skill for document extraction**: Added `skills/xberg/SKILL.md` following the [Agent Skills](https://agentskills.io) open standard, with comprehensive instructions for Python, Node.js, Rust, and CLI usage. Includes 8 detailed reference files covering API signatures, configuration, supported formats, plugins, and all language bindings. Works with Claude Code, Codex, Gemini CLI, Cursor, VS Code, Amp, Goose, Roo Code, and any compatible tool.
 
 #### MIME Type Mappings
 
@@ -3348,7 +3348,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Pre-built CLI Binary Missing MCP Command
 
-- Pre-built standalone CLI binaries were built without the `mcp` feature flag, causing the `kreuzberg mcp` command to be unavailable. The build script now enables all features (`--features all`) to match the Python, Node, and Homebrew builds. Fixes #369.
+- Pre-built standalone CLI binaries were built without the `mcp` feature flag, causing the `xberg mcp` command to be unavailable. The build script now enables all features (`--features all`) to match the Python, Node, and Homebrew builds. Fixes #369.
 
 #### PDF Error Handling Regression
 
@@ -3564,7 +3564,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Java Bindings
 
-- Fixed ARM64 SIGBUS crash in `kreuzberg_get_error_details` by returning a heap-allocated pointer instead of struct-by-value.
+- Fixed ARM64 SIGBUS crash in `xberg_get_error_details` by returning a heap-allocated pointer instead of struct-by-value.
 
 #### Ruby Bindings
 
@@ -3572,7 +3572,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### FFI
 
-- Added `kreuzberg_free_error_details()` to properly free heap-allocated `CErrorDetails` structs.
+- Added `xberg_free_error_details()` to properly free heap-allocated `CErrorDetails` structs.
 
 ---
 
@@ -3587,7 +3587,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### OCR
 
-- Added `KREUZBERG_OCR_LANGUAGE="all"` support to auto-detect and use all installed Tesseract languages. (#344)
+- Added `XBERG_OCR_LANGUAGE="all"` support to auto-detect and use all installed Tesseract languages. (#344)
 
 ### Fixed
 
@@ -3753,7 +3753,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### C# Bindings
 
-- Fixed file-not-found errors to throw `KreuzbergIOException` instead of `KreuzbergValidationException`.
+- Fixed file-not-found errors to throw `XbergIOException` instead of `XbergValidationException`.
 
 #### WASM / Cloudflare Workers
 
@@ -3801,7 +3801,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Elixir Bindings
 
-- Fixed `force_build: true` causing production installs to fail; now only builds from source in development. ([#333](https://github.com/xberg-io/kreuzberg/issues/333))
+- Fixed `force_build: true` causing production installs to fail; now only builds from source in development. ([#333](https://github.com/xberg-io/xberg/issues/333))
 
 #### Docker Images
 
@@ -3817,7 +3817,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Rust Core
 
-- Fixed XLSX out-of-memory with Excel Solver files that declare extreme cell dimensions. ([#331](https://github.com/xberg-io/kreuzberg/issues/331))
+- Fixed XLSX out-of-memory with Excel Solver files that declare extreme cell dimensions. ([#331](https://github.com/xberg-io/xberg/issues/331))
 
 ---
 
@@ -3827,8 +3827,8 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Rust Core
 
-- Fixed PPTX image page numbers being reversed due to unsorted slide paths. ([#329](https://github.com/xberg-io/kreuzberg/issues/329))
-- Added comprehensive error logging for silent plugin failures. ([#328](https://github.com/xberg-io/kreuzberg/issues/328))
+- Fixed PPTX image page numbers being reversed due to unsorted slide paths. ([#329](https://github.com/xberg-io/xberg/issues/329))
+- Added comprehensive error logging for silent plugin failures. ([#328](https://github.com/xberg-io/xberg/issues/328))
 - Extended `VALID_OUTPUT_FORMATS` to include all valid aliases (`plain`, `text`, `markdown`, `md`, `djot`, `html`).
 - Fixed `validate_file_exists()` to return `Io` error instead of `Validation` error for file-not-found.
 
@@ -3860,7 +3860,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Documentation
 
-- Added Kubernetes deployment guide with health check configuration and troubleshooting. ([#328](https://github.com/xberg-io/kreuzberg/issues/328))
+- Added Kubernetes deployment guide with health check configuration and troubleshooting. ([#328](https://github.com/xberg-io/xberg/issues/328))
 
 ---
 
@@ -3931,7 +3931,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Environment Variables (backward compatible)
 
-- `KREUZBERG_CONTENT_FORMAT` deprecated in favor of `KREUZBERG_OUTPUT_FORMAT`.
+- `XBERG_CONTENT_FORMAT` deprecated in favor of `XBERG_OUTPUT_FORMAT`.
 
 ---
 
@@ -3994,11 +3994,11 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Python
 
-- Fixed missing type exports (`Element`, `ElementMetadata`, `ElementType`, `BoundingBox`, `HtmlImageMetadata`) in `kreuzberg.types.__all__`.
+- Fixed missing type exports (`Element`, `ElementMetadata`, `ElementType`, `BoundingBox`, `HtmlImageMetadata`) in `xberg.types.__all__`.
 
 #### Elixir
 
-- Fixed `FunctionClauseError` when extracting DOCX files with keywords metadata. ([#309](https://github.com/xberg-io/kreuzberg/issues/309))
+- Fixed `FunctionClauseError` when extracting DOCX files with keywords metadata. ([#309](https://github.com/xberg-io/xberg/issues/309))
 
 ---
 
@@ -4008,7 +4008,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Docker
 
-- Migrated from Docker Hub to GitHub Container Registry (`ghcr.io/xberg-io/kreuzberg`).
+- Migrated from Docker Hub to GitHub Container Registry (`ghcr.io/xberg-io/xberg`).
 
 ### Fixed
 
@@ -4018,7 +4018,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Python
 
-- Fixed missing `_internal_bindings.pyi` type stub file in Python wheels. ([#298](https://github.com/xberg-io/kreuzberg/issues/298))
+- Fixed missing `_internal_bindings.pyi` type stub file in Python wheels. ([#298](https://github.com/xberg-io/xberg/issues/298))
 
 #### Homebrew
 
@@ -4046,7 +4046,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Go Module
 
-- Added automated FFI library installer that downloads the correct platform-specific library from GitHub releases. ([#281](https://github.com/xberg-io/kreuzberg/issues/281))
+- Added automated FFI library installer that downloads the correct platform-specific library from GitHub releases. ([#281](https://github.com/xberg-io/xberg/issues/281))
 
 ### Fixed
 
@@ -4062,7 +4062,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Docker
 
-- Fixed `MissingDependencyError` when extracting legacy MS Office formats in Docker; added LibreOffice symlinks and missing runtime dependencies. ([#288](https://github.com/xberg-io/kreuzberg/issues/288))
+- Fixed `MissingDependencyError` when extracting legacy MS Office formats in Docker; added LibreOffice symlinks and missing runtime dependencies. ([#288](https://github.com/xberg-io/xberg/issues/288))
 
 ---
 
@@ -4072,21 +4072,21 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### HTML Configuration Support
 
-- Full `html_options` configuration now available from config files and all language bindings. ([#282](https://github.com/xberg-io/kreuzberg/issues/282))
+- Full `html_options` configuration now available from config files and all language bindings. ([#282](https://github.com/xberg-io/xberg/issues/282))
 
 ### Fixed
 
 #### Go Module
 
-- Fixed header include path so `go get` users no longer get compilation errors about missing headers. ([#280](https://github.com/xberg-io/kreuzberg/issues/280))
+- Fixed header include path so `go get` users no longer get compilation errors about missing headers. ([#280](https://github.com/xberg-io/xberg/issues/280))
 
 #### C# SDK
 
-- Fixed `JsonException` when using keyword extraction; keywords now properly deserialized as `ExtractedKeyword` objects. ([#285](https://github.com/xberg-io/kreuzberg/issues/285))
+- Fixed `JsonException` when using keyword extraction; keywords now properly deserialized as `ExtractedKeyword` objects. ([#285](https://github.com/xberg-io/xberg/issues/285))
 
 #### Distribution
 
-- Made Homebrew tap repository public to enable `brew install xberg-io/tap/kreuzberg`. ([#283](https://github.com/xberg-io/kreuzberg/issues/283))
+- Made Homebrew tap repository public to enable `brew install xberg-io/tap/xberg`. ([#283](https://github.com/xberg-io/xberg/issues/283))
 
 ---
 
@@ -4096,7 +4096,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Go Module
 
-- Fixed Go module tag format so `go get` works correctly. ([#264](https://github.com/xberg-io/kreuzberg/issues/264))
+- Fixed Go module tag format so `go get` works correctly. ([#264](https://github.com/xberg-io/xberg/issues/264))
 
 #### Elixir
 
@@ -4110,11 +4110,11 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 #### Elixir
 
-- Fixed NIF binaries not uploaded to GitHub releases, breaking `rustler_precompiled`. ([#279](https://github.com/xberg-io/kreuzberg/issues/279))
+- Fixed NIF binaries not uploaded to GitHub releases, breaking `rustler_precompiled`. ([#279](https://github.com/xberg-io/xberg/issues/279))
 
 #### Python
 
-- Fixed `kreuzberg-tesseract` missing from PyPI source distributions, causing builds from source to fail. ([#277](https://github.com/xberg-io/kreuzberg/issues/277))
+- Fixed `xberg-tesseract` missing from PyPI source distributions, causing builds from source to fail. ([#277](https://github.com/xberg-io/xberg/issues/277))
 
 #### Homebrew
 
@@ -4134,7 +4134,7 @@ First release candidate of v4.10.0. The release pipeline itself is the headline 
 
 ### Highlights
 
-First stable release of Kreuzberg v4, a complete rewrite with a Rust core and polyglot bindings for Python, TypeScript, Ruby, PHP, Java, Go, C#, Elixir, and WebAssembly.
+First stable release of Xberg v4, a complete rewrite with a Rust core and polyglot bindings for Python, TypeScript, Ruby, PHP, Java, Go, C#, Elixir, and WebAssembly.
 
 ### Added
 
@@ -4168,7 +4168,7 @@ First stable release of Kreuzberg v4, a complete rewrite with a Rust core and po
 
 #### API Server
 
-- Added `POST /embed` endpoint for generating embeddings from text. ([#266](https://github.com/xberg-io/kreuzberg/issues/266))
+- Added `POST /embed` endpoint for generating embeddings from text. ([#266](https://github.com/xberg-io/xberg/issues/266))
 - Added `ServerConfig` type for file-based server configuration (TOML/YAML/JSON) with environment variable overrides.
 
 #### Observability
@@ -4286,7 +4286,7 @@ First stable release of Kreuzberg v4, a complete rewrite with a Rust core and po
 
 ### Added
 
-- CLI test app for validating kreuzberg-cli published to crates.io.
+- CLI test app for validating xberg-cli published to crates.io.
 
 ---
 
@@ -4303,7 +4303,7 @@ First stable release of Kreuzberg v4, a complete rewrite with a Rust core and po
 ### Added
 
 - Homebrew bottle support for faster macOS installation.
-- Environment variable configuration for API size limits (`KREUZBERG_MAX_REQUEST_BODY_BYTES`, `KREUZBERG_MAX_MULTIPART_FIELD_BYTES`).
+- Environment variable configuration for API size limits (`XBERG_MAX_REQUEST_BODY_BYTES`, `XBERG_MAX_MULTIPART_FIELD_BYTES`).
 - Config file caching for TOML/YAML/JSON loading.
 
 ### Fixed
@@ -4328,7 +4328,7 @@ First stable release of Kreuzberg v4, a complete rewrite with a Rust core and po
 
 ### Removed
 
-- Removed deprecated backward compatibility: TypeScript `KREUZBERG_LEGACY_SERIALIZATION`, Go legacy error codes, Ruby `Ocr = OCR` alias, Rust `Metadata.date` field, Cargo legacy feature aliases.
+- Removed deprecated backward compatibility: TypeScript `XBERG_LEGACY_SERIALIZATION`, Go legacy error codes, Ruby `Ocr = OCR` alias, Rust `Metadata.date` field, Cargo legacy feature aliases.
 
 ### Security
 
@@ -4340,7 +4340,7 @@ First stable release of Kreuzberg v4, a complete rewrite with a Rust core and po
 
 ### Fixed
 
-- Fixed Ruby gem missing kreuzberg-ffi crate in vendored dependencies.
+- Fixed Ruby gem missing xberg-ffi crate in vendored dependencies.
 - Fixed Ruby gem macOS linker errors.
 - Fixed Python wheels macOS ImportError from hardcoded dylib paths.
 
@@ -4443,7 +4443,7 @@ First stable release of Kreuzberg v4, a complete rewrite with a Rust core and po
 
 - PDFium feature names changed: `pdf-static` -> `static-pdfium`, `pdf-bundled` -> `bundled-pdfium`, `pdf-system` -> `system-pdfium`.
 - Default PDFium linking changed to `bundled-pdfium`.
-- Go module path moved to `github.com/xberg-io/kreuzberg/packages/go/v4`.
+- Go module path moved to `github.com/xberg-io/xberg/packages/go/v4`.
 
 ### Fixed
 
@@ -4557,7 +4557,7 @@ First stable release of Kreuzberg v4, a complete rewrite with a Rust core and po
 
 ### Breaking Changes
 
-- TypeScript/Node.js package renamed from `kreuzberg` to `@kreuzberg/node`.
+- TypeScript/Node.js package renamed from `xberg` to `@xberg/node`.
 
 ### Added
 
@@ -4609,7 +4609,7 @@ Complete architectural rewrite from Python-only to Rust-core with polyglot bindi
 
 - Python 3.10+, Node.js 18+, Rust 1.75+ required.
 - Binary wheels only.
-- TypeScript/Node.js package renamed to `@kreuzberg/node`.
+- TypeScript/Node.js package renamed to `@xberg/node`.
 - `char_start`/`char_end` -> `byte_start`/`byte_end`.
 
 See the [API Reference](https://docs.xberg.io/reference/api-python/) for details.
@@ -4995,130 +4995,130 @@ See the [API Reference](https://docs.xberg.io/reference/api-python/) for details
 - [Format Support](https://docs.xberg.io/reference/formats/) - Supported file formats
 - [Extraction Guide](https://docs.xberg.io/guides/extraction/) - Extraction examples
 
-[4.10.0-rc.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.10.0-rc.4
-[4.10.0-rc.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.10.0-rc.2
-[4.10.0-rc.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.10.0-rc.1
-[4.9.5]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.9.5
-[4.9.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.9.4
-[4.9.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.9.3
-[4.9.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.9.2
-[4.9.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.9.1
-[4.9.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.9.0
-[4.8.6]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.8.6
-[4.8.5]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.8.5
-[4.8.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.8.4
-[4.8.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.8.3
-[4.8.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.8.2
-[4.8.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.8.1
-[4.8.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.8.0
-[4.7.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.7.4
-[4.7.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.7.3
-[4.7.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.7.2
-[4.7.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.7.1
-[4.7.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.7.0
-[4.6.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.6.3
-[4.6.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.6.2
-[4.6.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.6.1
-[4.6.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.6.0
-[4.5.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.5.4
-[4.5.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.5.3
-[4.5.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.5.2
-[4.5.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.5.1
-[4.5.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.5.0
-[4.4.6]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.4.6
-[4.4.5]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.4.5
-[4.4.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.4.4
-[4.4.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.4.3
-[4.4.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.4.2
-[4.4.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.4.1
-[4.4.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.4.0
-[4.3.8]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.3.8
-[4.3.7]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.3.7
-[4.3.6]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.3.6
-[4.3.5]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.3.5
-[4.3.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.3.4
-[4.3.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.3.3
-[4.3.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.3.2
-[4.3.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.3.1
-[4.3.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.3.0
-[4.2.15]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.15
-[4.2.14]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.14
-[4.2.13]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.13
-[4.2.12]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.12
-[4.2.11]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.11
-[4.2.10]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.10
-[4.2.9]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.9
-[4.2.8]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.8
-[4.2.7]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.7
-[4.2.6]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.6
-[4.2.5]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.5
-[4.2.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.4
-[4.2.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.3
-[4.2.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.2
-[4.2.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.1
-[4.2.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.2.0
-[4.1.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.1.2
-[4.1.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.1.1
-[4.1.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.1.0
-[4.0.8]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.8
-[4.0.6]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.6
-[4.0.5]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.5
-[4.0.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.4
-[4.0.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.3
-[4.0.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.2
-[4.0.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.1
-[4.0.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0
-[4.0.0-rc.29]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.29
-[4.0.0-rc.28]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.28
-[4.0.0-rc.27]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.27
-[4.0.0-rc.26]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.26
-[4.0.0-rc.25]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.25
-[4.0.0-rc.24]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.24
-[4.0.0-rc.23]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.23
-[4.0.0-rc.22]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.22
-[4.0.0-rc.21]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.21
-[4.0.0-rc.20]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.20
-[4.0.0-rc.19]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.19
-[4.0.0-rc.18]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.18
-[4.0.0-rc.17]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.17
-[4.0.0-rc.16]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.16
-[4.0.0-rc.15]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.15
-[4.0.0-rc.14]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.14
-[4.0.0-rc.13]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.13
-[4.0.0-rc.12]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.12
-[4.0.0-rc.11]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.11
-[4.0.0-rc.10]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.10
-[4.0.0-rc.9]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.9
-[4.0.0-rc.8]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.8
-[4.0.0-rc.7]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.7
-[4.0.0-rc.6]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.6
-[4.0.0-rc.5]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.5
-[4.0.0-rc.4]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.4
-[4.0.0-rc.3]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.3
-[4.0.0-rc.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v4.0.0-rc.2
-[3.22.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.22.0
-[3.21.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.21.0
-[3.20.2]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.20.2
-[3.20.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.20.1
-[3.20.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.20.0
-[3.19.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.19.1
-[3.19.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.19.0
-[3.18.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.18.0
-[3.17.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.17.0
-[3.16.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.16.0
-[3.15.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.15.0
-[3.14.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.14.0
-[3.13.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.13.0
-[3.12.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.12.0
-[3.11.1]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.11.1
-[3.11.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.11.0
-[3.10.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.10.0
-[3.9.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.9.0
-[3.7.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.7.0
-[3.6.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.6.0
-[3.5.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.5.0
-[3.4.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.4.0
-[3.3.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.3.0
-[3.2.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.2.0
-[3.1.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.1.0
-[3.0.0]: https://github.com/xberg-io/kreuzberg/releases/tag/v3.0.0
+[4.10.0-rc.4]: https://github.com/xberg-io/xberg/releases/tag/v4.10.0-rc.4
+[4.10.0-rc.2]: https://github.com/xberg-io/xberg/releases/tag/v4.10.0-rc.2
+[4.10.0-rc.1]: https://github.com/xberg-io/xberg/releases/tag/v4.10.0-rc.1
+[4.9.5]: https://github.com/xberg-io/xberg/releases/tag/v4.9.5
+[4.9.4]: https://github.com/xberg-io/xberg/releases/tag/v4.9.4
+[4.9.3]: https://github.com/xberg-io/xberg/releases/tag/v4.9.3
+[4.9.2]: https://github.com/xberg-io/xberg/releases/tag/v4.9.2
+[4.9.1]: https://github.com/xberg-io/xberg/releases/tag/v4.9.1
+[4.9.0]: https://github.com/xberg-io/xberg/releases/tag/v4.9.0
+[4.8.6]: https://github.com/xberg-io/xberg/releases/tag/v4.8.6
+[4.8.5]: https://github.com/xberg-io/xberg/releases/tag/v4.8.5
+[4.8.4]: https://github.com/xberg-io/xberg/releases/tag/v4.8.4
+[4.8.3]: https://github.com/xberg-io/xberg/releases/tag/v4.8.3
+[4.8.2]: https://github.com/xberg-io/xberg/releases/tag/v4.8.2
+[4.8.1]: https://github.com/xberg-io/xberg/releases/tag/v4.8.1
+[4.8.0]: https://github.com/xberg-io/xberg/releases/tag/v4.8.0
+[4.7.4]: https://github.com/xberg-io/xberg/releases/tag/v4.7.4
+[4.7.3]: https://github.com/xberg-io/xberg/releases/tag/v4.7.3
+[4.7.2]: https://github.com/xberg-io/xberg/releases/tag/v4.7.2
+[4.7.1]: https://github.com/xberg-io/xberg/releases/tag/v4.7.1
+[4.7.0]: https://github.com/xberg-io/xberg/releases/tag/v4.7.0
+[4.6.3]: https://github.com/xberg-io/xberg/releases/tag/v4.6.3
+[4.6.2]: https://github.com/xberg-io/xberg/releases/tag/v4.6.2
+[4.6.1]: https://github.com/xberg-io/xberg/releases/tag/v4.6.1
+[4.6.0]: https://github.com/xberg-io/xberg/releases/tag/v4.6.0
+[4.5.4]: https://github.com/xberg-io/xberg/releases/tag/v4.5.4
+[4.5.3]: https://github.com/xberg-io/xberg/releases/tag/v4.5.3
+[4.5.2]: https://github.com/xberg-io/xberg/releases/tag/v4.5.2
+[4.5.1]: https://github.com/xberg-io/xberg/releases/tag/v4.5.1
+[4.5.0]: https://github.com/xberg-io/xberg/releases/tag/v4.5.0
+[4.4.6]: https://github.com/xberg-io/xberg/releases/tag/v4.4.6
+[4.4.5]: https://github.com/xberg-io/xberg/releases/tag/v4.4.5
+[4.4.4]: https://github.com/xberg-io/xberg/releases/tag/v4.4.4
+[4.4.3]: https://github.com/xberg-io/xberg/releases/tag/v4.4.3
+[4.4.2]: https://github.com/xberg-io/xberg/releases/tag/v4.4.2
+[4.4.1]: https://github.com/xberg-io/xberg/releases/tag/v4.4.1
+[4.4.0]: https://github.com/xberg-io/xberg/releases/tag/v4.4.0
+[4.3.8]: https://github.com/xberg-io/xberg/releases/tag/v4.3.8
+[4.3.7]: https://github.com/xberg-io/xberg/releases/tag/v4.3.7
+[4.3.6]: https://github.com/xberg-io/xberg/releases/tag/v4.3.6
+[4.3.5]: https://github.com/xberg-io/xberg/releases/tag/v4.3.5
+[4.3.4]: https://github.com/xberg-io/xberg/releases/tag/v4.3.4
+[4.3.3]: https://github.com/xberg-io/xberg/releases/tag/v4.3.3
+[4.3.2]: https://github.com/xberg-io/xberg/releases/tag/v4.3.2
+[4.3.1]: https://github.com/xberg-io/xberg/releases/tag/v4.3.1
+[4.3.0]: https://github.com/xberg-io/xberg/releases/tag/v4.3.0
+[4.2.15]: https://github.com/xberg-io/xberg/releases/tag/v4.2.15
+[4.2.14]: https://github.com/xberg-io/xberg/releases/tag/v4.2.14
+[4.2.13]: https://github.com/xberg-io/xberg/releases/tag/v4.2.13
+[4.2.12]: https://github.com/xberg-io/xberg/releases/tag/v4.2.12
+[4.2.11]: https://github.com/xberg-io/xberg/releases/tag/v4.2.11
+[4.2.10]: https://github.com/xberg-io/xberg/releases/tag/v4.2.10
+[4.2.9]: https://github.com/xberg-io/xberg/releases/tag/v4.2.9
+[4.2.8]: https://github.com/xberg-io/xberg/releases/tag/v4.2.8
+[4.2.7]: https://github.com/xberg-io/xberg/releases/tag/v4.2.7
+[4.2.6]: https://github.com/xberg-io/xberg/releases/tag/v4.2.6
+[4.2.5]: https://github.com/xberg-io/xberg/releases/tag/v4.2.5
+[4.2.4]: https://github.com/xberg-io/xberg/releases/tag/v4.2.4
+[4.2.3]: https://github.com/xberg-io/xberg/releases/tag/v4.2.3
+[4.2.2]: https://github.com/xberg-io/xberg/releases/tag/v4.2.2
+[4.2.1]: https://github.com/xberg-io/xberg/releases/tag/v4.2.1
+[4.2.0]: https://github.com/xberg-io/xberg/releases/tag/v4.2.0
+[4.1.2]: https://github.com/xberg-io/xberg/releases/tag/v4.1.2
+[4.1.1]: https://github.com/xberg-io/xberg/releases/tag/v4.1.1
+[4.1.0]: https://github.com/xberg-io/xberg/releases/tag/v4.1.0
+[4.0.8]: https://github.com/xberg-io/xberg/releases/tag/v4.0.8
+[4.0.6]: https://github.com/xberg-io/xberg/releases/tag/v4.0.6
+[4.0.5]: https://github.com/xberg-io/xberg/releases/tag/v4.0.5
+[4.0.4]: https://github.com/xberg-io/xberg/releases/tag/v4.0.4
+[4.0.3]: https://github.com/xberg-io/xberg/releases/tag/v4.0.3
+[4.0.2]: https://github.com/xberg-io/xberg/releases/tag/v4.0.2
+[4.0.1]: https://github.com/xberg-io/xberg/releases/tag/v4.0.1
+[4.0.0]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0
+[4.0.0-rc.29]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.29
+[4.0.0-rc.28]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.28
+[4.0.0-rc.27]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.27
+[4.0.0-rc.26]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.26
+[4.0.0-rc.25]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.25
+[4.0.0-rc.24]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.24
+[4.0.0-rc.23]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.23
+[4.0.0-rc.22]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.22
+[4.0.0-rc.21]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.21
+[4.0.0-rc.20]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.20
+[4.0.0-rc.19]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.19
+[4.0.0-rc.18]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.18
+[4.0.0-rc.17]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.17
+[4.0.0-rc.16]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.16
+[4.0.0-rc.15]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.15
+[4.0.0-rc.14]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.14
+[4.0.0-rc.13]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.13
+[4.0.0-rc.12]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.12
+[4.0.0-rc.11]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.11
+[4.0.0-rc.10]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.10
+[4.0.0-rc.9]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.9
+[4.0.0-rc.8]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.8
+[4.0.0-rc.7]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.7
+[4.0.0-rc.6]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.6
+[4.0.0-rc.5]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.5
+[4.0.0-rc.4]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.4
+[4.0.0-rc.3]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.3
+[4.0.0-rc.2]: https://github.com/xberg-io/xberg/releases/tag/v4.0.0-rc.2
+[3.22.0]: https://github.com/xberg-io/xberg/releases/tag/v3.22.0
+[3.21.0]: https://github.com/xberg-io/xberg/releases/tag/v3.21.0
+[3.20.2]: https://github.com/xberg-io/xberg/releases/tag/v3.20.2
+[3.20.1]: https://github.com/xberg-io/xberg/releases/tag/v3.20.1
+[3.20.0]: https://github.com/xberg-io/xberg/releases/tag/v3.20.0
+[3.19.1]: https://github.com/xberg-io/xberg/releases/tag/v3.19.1
+[3.19.0]: https://github.com/xberg-io/xberg/releases/tag/v3.19.0
+[3.18.0]: https://github.com/xberg-io/xberg/releases/tag/v3.18.0
+[3.17.0]: https://github.com/xberg-io/xberg/releases/tag/v3.17.0
+[3.16.0]: https://github.com/xberg-io/xberg/releases/tag/v3.16.0
+[3.15.0]: https://github.com/xberg-io/xberg/releases/tag/v3.15.0
+[3.14.0]: https://github.com/xberg-io/xberg/releases/tag/v3.14.0
+[3.13.0]: https://github.com/xberg-io/xberg/releases/tag/v3.13.0
+[3.12.0]: https://github.com/xberg-io/xberg/releases/tag/v3.12.0
+[3.11.1]: https://github.com/xberg-io/xberg/releases/tag/v3.11.1
+[3.11.0]: https://github.com/xberg-io/xberg/releases/tag/v3.11.0
+[3.10.0]: https://github.com/xberg-io/xberg/releases/tag/v3.10.0
+[3.9.0]: https://github.com/xberg-io/xberg/releases/tag/v3.9.0
+[3.7.0]: https://github.com/xberg-io/xberg/releases/tag/v3.7.0
+[3.6.0]: https://github.com/xberg-io/xberg/releases/tag/v3.6.0
+[3.5.0]: https://github.com/xberg-io/xberg/releases/tag/v3.5.0
+[3.4.0]: https://github.com/xberg-io/xberg/releases/tag/v3.4.0
+[3.3.0]: https://github.com/xberg-io/xberg/releases/tag/v3.3.0
+[3.2.0]: https://github.com/xberg-io/xberg/releases/tag/v3.2.0
+[3.1.0]: https://github.com/xberg-io/xberg/releases/tag/v3.1.0
+[3.0.0]: https://github.com/xberg-io/xberg/releases/tag/v3.0.0

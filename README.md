@@ -84,8 +84,6 @@
   </a>
 </div>
 
-> **Note:** Xberg is the continuation of Kreuzberg, starting with version 1.0.0-rc.1. The previous Kreuzberg v5.0.0-rc.36 remains documented at [docs.kreuzberg.dev](https://docs.kreuzberg.dev).
-
 Extract text, metadata, transcripts, and code intelligence from 96 file formats and 306 programming languages at native speeds without needing a GPU.
 
 ## What and Why?

@@ -3199,7 +3199,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "kreuzberg"
+name = "xberg"
 version = "5.0.0-rc.32"
 dependencies = [
  "ahash 0.8.12",
@@ -3241,10 +3241,10 @@ dependencies = [
  "jotdown",
  "jsonschema",
  "kreuzberg-gliner-rs",
- "kreuzberg-libheif",
+ "xberg-libheif",
  "kreuzberg-orp",
- "kreuzberg-paddle-ocr",
- "kreuzberg-tesseract",
+ "xberg-paddle-ocr",
+ "xberg-tesseract",
  "libc",
  "liter-llm",
  "lofty",
@@ -3332,7 +3332,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "kreuzberg-libheif"
+name = "xberg-libheif"
 version = "5.0.0-rc.32"
 dependencies = [
  "cfg-if",
@@ -3354,7 +3354,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "kreuzberg-paddle-ocr"
+name = "xberg-paddle-ocr"
 version = "5.0.0-rc.32"
 dependencies = [
  "geo-clipper",
@@ -3368,19 +3368,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "kreuzberg-r"
+name = "xberg-r"
 version = "5.0.0-rc.32"
 dependencies = [
  "async-trait",
  "extendr-api",
- "kreuzberg",
+ "xberg",
  "serde",
  "serde_json",
  "tokio",
 ]
 
 [[package]]
-name = "kreuzberg-tesseract"
+name = "xberg-tesseract"
 version = "5.0.0-rc.32"
 dependencies = [
  "cc",

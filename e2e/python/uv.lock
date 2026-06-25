@@ -42,7 +42,7 @@ wheels = [
 ]
 
 [[package]]
-name = "kreuzberg"
+name = "xberg"
 version = "5.0.0rc12"
 source = { directory = "../../packages/python" }
 
@@ -55,11 +55,11 @@ dev = [
 ]
 
 [[package]]
-name = "kreuzberg-e2e"
+name = "xberg-e2e"
 version = "0.0.0"
 source = { editable = "." }
 dependencies = [
-    { name = "kreuzberg" },
+    { name = "xberg" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-timeout" },
@@ -67,7 +67,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "kreuzberg", directory = "../../packages/python" },
+    { name = "xberg", directory = "../../packages/python" },
     { name = "pytest", specifier = ">=7.4" },
     { name = "pytest-asyncio", specifier = ">=0.23" },
     { name = "pytest-timeout", specifier = ">=2.1" },

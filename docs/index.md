@@ -6,10 +6,6 @@ description: "Xberg – Extract text, tables, metadata, and audio transcripts fr
 
 Document intelligence with a Rust core and polyglot SDKs. Extract text, tables, metadata, and audio transcripts from 96 formats with optional OCR — usable as an SDK, CLI, REST API, MCP server, or Docker image.
 
-!!! note "Project formerly named Kreuzberg"
-
-    Xberg is the continuation of Kreuzberg, starting fresh with version 1.0.0-rc.1. The previous version 5.0.0-rc.36 remains available at [docs.kreuzberg.dev](https://docs.kreuzberg.dev).
-
 <div class="hero-badges" markdown>
 
 [:material-play-circle: Live Demo](demo.html){ .md-button .md-button--primary }
@@ -63,7 +59,7 @@ Document intelligence with a Rust core and polyglot SDKs. Extract text, tables, 
 | **TypeScript (Native)** | `npm install @xberg/node`                  | [API Reference](reference/api-typescript.md) |
 | **TypeScript (WASM)**   | `npm install @xberg/wasm`                  | [API Reference](reference/api-wasm.md)       |
 | **Rust**                | `cargo add xberg`                          | [API Reference](reference/api-rust.md)       |
-| **Go**                  | `go get github.com/xberg-io/xberg/v1` | [API Reference](reference/api-go.md)         |
+| **Go**                  | `go get github.com/xberg-io/xberg` | [API Reference](reference/api-go.md)         |
 | **Java / Kotlin JVM**   | Maven Central `dev.xberg:xberg`        | [API Reference](reference/api-java.md)       |
 | **Kotlin Android**      | Maven Central `dev.xberg:xberg-android` | [API Reference](reference/api-kotlin-android.md) |
 | **C#**                  | `dotnet add package Xberg`                 | [API Reference](reference/api-csharp.md)     |
