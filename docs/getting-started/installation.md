@@ -125,7 +125,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```gradle
-  implementation 'io.xberg:xberg:5.0.0-rc.17'
+  implementation 'io.xberg:xberg:1.0.0-rc.1'
   ```
 
   [API Reference](../reference/api-java.md){ .install-api-link }
@@ -136,7 +136,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```kotlin
-  implementation("io.xberg:xberg-android:5.0.0-rc.17")
+  implementation("io.xberg:xberg-android:1.0.0-rc.1")
   ```
 
   [API Reference](../reference/api-kotlin-android.md){ .install-api-link }
@@ -158,7 +158,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```swift
-  .package(url: "https://github.com/xberg-io/xberg.git", from: "5.0.0-rc.17")
+  .package(url: "https://github.com/xberg-io/xberg.git", from: "1.0.0-rc.1")
   ```
 
   [API Reference](../reference/api-swift.md){ .install-api-link }
@@ -191,7 +191,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```elixir
-  {:xberg, "~> 5.0.0-rc.17"}
+  {:xberg, "~> 1.0.0-rc.1"}
   ```
 
   [API Reference](../reference/api-elixir.md){ .install-api-link }
@@ -236,7 +236,7 @@ No SDK, no code — just your terminal.
   ***
 
   ```bash
-  zig fetch --save https://github.com/xberg-io/xberg/archive/refs/tags/v5.0.0-rc.17.tar.gz
+  zig fetch --save https://github.com/xberg-io/xberg/archive/refs/tags/v1.0.0-rc.1.tar.gz
   ```
 
   [API Reference](../reference/api-zig.md){ .install-api-link }
@@ -391,14 +391,14 @@ Both work with **pnpm** (`pnpm add`) and **Yarn** (`yarn add`) as well.
     <dependency>
         <groupId>io.xberg</groupId>
         <artifactId>xberg</artifactId>
-        <version>5.0.0-rc.17</version>
+        <version>1.0.0-rc.1</version>
     </dependency>
     ```
 
 === "Gradle"
 
     ```gradle
-    implementation 'io.xberg:xberg:5.0.0-rc.17'
+    implementation 'io.xberg:xberg:1.0.0-rc.1'
     ```
 
 Requires Java 25+ (FFM/Panama API). Native libraries are bundled in the JAR.
@@ -410,7 +410,7 @@ Add to `mix.exs`:
 ```elixir
 def deps do
   [
-    {:xberg, "~> 5.0.0-rc.17"}
+    {:xberg, "~> 1.0.0-rc.1"}
   ]
 end
 ```

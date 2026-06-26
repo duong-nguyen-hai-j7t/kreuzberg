@@ -8,9 +8,9 @@ Xberg uses a high-performance Rust core with one registry-backed extraction path
 
 - **Native Rust Extractors**: Fast, memory-efficient extractors for all supported formats
 
-PDF extraction uses the pdf_oxide provider <span class="version-badge">v4.0</span>. Legacy `.doc` and `.ppt` extraction no longer requires LibreOffice <span class="version-badge">v4.3</span>; those formats are parsed through native OLE/CFB extractors.
+PDF extraction uses the pdf_oxide provider. Legacy `.doc` and `.ppt` extraction no longer requires LibreOffice; those formats are parsed through native OLE/CFB extractors.
 
-Call `list_supported_formats()` in SDKs or the REST/API layer to inspect the runtime registry, including extensions and MIME types <span class="version-badge">v5.0</span>.
+Call `list_supported_formats()` in SDKs or the REST/API layer to inspect the runtime registry, including extensions and MIME types.
 
 All formats support async/await and batch processing. Image formats and PDFs support optional OCR when configured.
 
@@ -84,11 +84,11 @@ All image formats support OCR when configured with `ocr` parameter in `Extractio
 | JBIG2      | `.jbig2`, `.jb2`               | `image/x-jbig2`                                    | Native Rust (hayro-jbig2)    | Yes         | OCR: Pure Rust bi-level decoder, commonly found in scanned PDFs                                                             |
 | PNM Family | `.pnm`, `.pbm`, `.pgm`, `.ppm` | `image/x-portable-anymap`, and so on.              | Native Rust (image-rs)       | Yes         | NetPBM formats                                                                                                              |
 | HEIC / HEIF | `.heic`, `.heics`, `.heif`    | `image/heic`, `image/heif`, `image/heic-sequence`  | Native libheif binding       | Yes         | Pixel decoding requires `heic` and libheif; EXIF metadata is pure Rust                                                       |
-| AVIF / AVCS | `.avif`, `.avcs`              | `image/avif`, `image/avcs`                         | Native libheif binding       | Yes         | Available through the HEIC-family aggregate <span class="version-badge">v5.0</span>                                         |
+| AVIF / AVCS | `.avif`, `.avcs`              | `image/avif`, `image/avcs`                         | Native libheif binding       | Yes         | Available through the HEIC-family aggregate                                         |
 
 ### Audio and Video
 
-Audio/video formats use Whisper ONNX transcription when the `transcription` Cargo feature is enabled and a `transcription` config block is present <span class="version-badge">v5.0</span>. Video containers extract the audio track only.
+Audio/video formats use Whisper ONNX transcription when the `transcription` Cargo feature is enabled and a `transcription` config block is present. Video containers extract the audio track only.
 
 | Format          | Extensions       | MIME Type    | Extraction Method       | OCR Support | Special Features                         |
 | --------------- | ---------------- | ------------ | ----------------------- | ----------- | ---------------------------------------- |
@@ -223,16 +223,16 @@ Xberg uses Cargo feature flags to enable optional format and processing support.
 | `hwp` / `hwpx` | Hangul Word Processor formats |
 | `iwork`      | Apple Pages, Numbers, and Keynote |
 | `email`      | EML, MSG, and PST-backed Outlook metadata |
-| `html`       | HTML/XHTML conversion with metadata extraction <span class="version-badge">v4.0</span> |
+| `html`       | HTML/XHTML conversion with metadata extraction |
 | `xml`        | XML and XML-derived document parsing |
 | `archives`   | ZIP, TAR, Gzip, and 7-Zip archives |
 | `mdx`        | MDX documents |
-| `svg`        | SVG parse/sanitize/rasterize and normalized image output <span class="version-badge">v5.0</span> |
-| `heic`       | HEIC/HEIF/AVIF/AVCS pixel decoding through libheif <span class="version-badge">v5.0</span> |
-| `transcription-types` | Audio/video transcription config and DTOs without ONNX Runtime <span class="version-badge">v5.0</span> |
-| `transcription` | Whisper ONNX audio/video transcription extractor <span class="version-badge">v5.0</span> |
+| `svg`        | SVG parse/sanitize/rasterize and normalized image output |
+| `heic`       | HEIC/HEIF/AVIF/AVCS pixel decoding through libheif |
+| `transcription-types` | Audio/video transcription config and DTOs without ONNX Runtime |
+| `transcription` | Whisper ONNX audio/video transcription extractor |
 | `formats`    | Aggregate for document/image/archive format extractors |
-| `wasm-target` / `android-target` / `windows-target` | Platform-specific pure-Rust or reduced-native feature sets <span class="version-badge">v5.0</span> |
+| `wasm-target` / `android-target` / `windows-target` | Platform-specific pure-Rust or reduced-native feature sets |
 
 To enable specific features:
 

@@ -82,6 +82,8 @@
 
 Extract text, metadata, transcripts, and code intelligence from 96 file formats and 306 programming languages at native speeds without needing a GPU.
 
+> **Xberg is the next iteration of [Kreuzberg](https://github.com/kreuzberg-dev/kreuzberg-v4-lts).** Same document-intelligence engine, rebuilt and rebranded under a fresh v1 line.
+
 ## What and Why?
 
 Xberg is a document-intelligence framework with a Rust core and native bindings for 16 languages. It turns documents, images, audio, and source code into clean, structured text — extracting tables, metadata, transcripts, and code intelligence from 96 file formats and 306 programming languages.
@@ -212,7 +214,7 @@ See [PHP README](https://github.com/xberg-io/xberg/tree/main/packages/php) for f
 <details>
 <summary><strong>Elixir</strong></summary>
 
-Add `{:xberg, "~> 5.0"}` to your `mix.exs` dependencies. See [Elixir README](https://github.com/xberg-io/xberg/tree/main/packages/elixir) for full documentation.
+Add `{:xberg, "~> 1.0"}` to your `mix.exs` dependencies. See [Elixir README](https://github.com/xberg-io/xberg/tree/main/packages/elixir) for full documentation.
 
 </details>
 

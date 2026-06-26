@@ -79,7 +79,6 @@ Xberg provides async/sync APIs, text chunking, language detection, keyword extra
 ## Migration
 
 - [From Unstructured](https://docs.xberg.io/migration/from-unstructured/): Migrate from the Unstructured library
-- [v5 Image Indices](https://docs.xberg.io/migration/v5.0-image-indices/): Update page and chunk image references to use `image_indices`
 
 ## Optional
 

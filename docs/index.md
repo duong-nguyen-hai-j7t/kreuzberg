@@ -15,6 +15,8 @@ Document intelligence with a Rust core and polyglot SDKs. Extract text, tables, 
 
 </div>
 
+> Xberg is the next iteration of [Kreuzberg](https://github.com/kreuzberg-dev/kreuzberg-v4-lts) — the same document-intelligence engine, rebuilt and rebranded under a fresh v1 line.
+
 ---
 
 ## Why Xberg
@@ -91,17 +93,20 @@ Homebrew 6.0+ requires explicit trust for third-party taps. Run `brew trust xber
     ```python
     from xberg import ExtractInput, extract
 
-    result = await extract(ExtractInput.file("document.pdf"))
-    print(result.content)
+    output = await extract(ExtractInput(kind="uri", uri="document.pdf"))
+    print(output.results[0].content)
     ```
 
 === "TypeScript"
 
     ```typescript
-    import { ExtractInput, extract } from "@xberg-io/xberg";
+    import { ExtractInputKind, extract } from "@xberg-io/xberg";
 
-    const result = await extract(ExtractInput.file("document.pdf"));
-    console.log(result.content);
+    const output = await extract({
+      kind: ExtractInputKind.Uri,
+      uri: "document.pdf",
+    });
+    console.log(output.results[0].content);
     ```
 
 === "Rust"
@@ -110,8 +115,8 @@ Homebrew 6.0+ requires explicit trust for third-party taps. Run `brew trust xber
     use xberg::{extract, ExtractInput, ExtractionConfig};
 
     let config = ExtractionConfig::default();
-    let result = extract(ExtractInput::file("document.pdf"), &config).await?;
-    println!("{}", result.content);
+    let output = extract(ExtractInput::uri("document.pdf"), &config).await?;
+    println!("{}", output.results[0].content);
     ```
 
 ---
@@ -182,10 +187,9 @@ Xberg is the document intelligence core in the [Xberg.io](https://xberg.io) ecos
 
 - :material-swap-horizontal:{ .lg .middle } **Migration**
 
-  Migrate from Unstructured or other document extraction libraries, including the v5 image-index change.
+  Migrate from Unstructured or other document extraction libraries.
 
   [:octicons-arrow-right-24: Migration Guides](migration/from-unstructured.md)
-  [:octicons-arrow-right-24: v5 Image Indices](migration/v5.0-image-indices.md)
 
 </div>
 

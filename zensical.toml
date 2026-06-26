@@ -110,8 +110,6 @@ nav = [
     ] },
     { "Migration" = [
       { "From Unstructured" = "migration/from-unstructured.md" },
-      { "v4.0 Font Changes" = "migration/v4.0-fonts.md" },
-      { "v4.0 HTML Metadata" = "migration/v4.0-html-metadata.md" },
     ] },
     { "Changelog" = "CHANGELOG.md" },
     { "Contributing" = "contributing.md" },

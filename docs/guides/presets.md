@@ -1,7 +1,5 @@
 # Presets
 
-<span class="version-badge new">v5.0</span>
-
 Presets define structured extraction schemas with system prompts, merge strategies, and call-mode hints for the LLM pipeline.
 
 ## Overview
@@ -174,7 +172,7 @@ Preset functionality is behind the `presets` feature. Enable it in `Cargo.toml`:
 
 ```toml
 [dependencies]
-xberg = { version = "5.0", features = ["presets"] }
+xberg = { version = "1.0", features = ["presets"] }
 ```
 
 ## Best Practices
