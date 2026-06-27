@@ -263,10 +263,6 @@ impl InternalDocumentExtractor for ZipExtractor {
     fn priority(&self) -> i32 {
         50
     }
-
-    fn as_sync_extractor(&self) -> Option<&dyn SyncExtractor> {
-        Some(self)
-    }
 }
 
 impl SyncExtractor for ZipExtractor {
@@ -372,10 +368,6 @@ impl InternalDocumentExtractor for TarExtractor {
     fn priority(&self) -> i32 {
         50
     }
-
-    fn as_sync_extractor(&self) -> Option<&dyn SyncExtractor> {
-        Some(self)
-    }
 }
 
 impl SyncExtractor for TarExtractor {
@@ -468,10 +460,6 @@ impl InternalDocumentExtractor for SevenZExtractor {
     fn priority(&self) -> i32 {
         50
     }
-
-    fn as_sync_extractor(&self) -> Option<&dyn SyncExtractor> {
-        Some(self)
-    }
 }
 
 impl SyncExtractor for SevenZExtractor {
@@ -561,10 +549,6 @@ impl InternalDocumentExtractor for GzipExtractor {
 
     fn priority(&self) -> i32 {
         50
-    }
-
-    fn as_sync_extractor(&self) -> Option<&dyn SyncExtractor> {
-        Some(self)
     }
 }
 

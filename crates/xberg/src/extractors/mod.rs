@@ -4,23 +4,42 @@
 //! All extractors implement the `DocumentExtractor` plugin trait.
 
 use crate::Result;
+#[cfg(any(
+    feature = "archives",
+    feature = "email",
+    feature = "excel",
+    feature = "excel-wasm",
+    feature = "html",
+    feature = "transcription",
+    feature = "tree-sitter",
+    feature = "xml",
+))]
 use crate::core::config::ExtractionConfig;
 use crate::plugins::registry::get_document_extractor_registry;
 
+#[cfg(any(
+    feature = "archives",
+    feature = "email",
+    feature = "excel",
+    feature = "excel-wasm",
+    feature = "html",
+    feature = "transcription",
+    feature = "tree-sitter",
+    feature = "xml",
+))]
 use crate::types::internal::InternalDocument;
 use once_cell::sync::OnceCell;
 use std::sync::Arc;
 
-/// Trait for extractors that can work synchronously (WASM-compatible).
+/// Trait for extractors that share a blocking parser implementation.
 ///
-/// This trait defines the synchronous extraction interface for WASM targets and other
-/// environments where async/tokio runtimes are not available or desirable.
+/// This trait defines a synchronous extraction interface for formats whose async
+/// extractor can delegate to a local blocking parser.
 ///
 /// # Implementation
 ///
-/// Extractors that need to support WASM should implement this trait in addition to
-/// the async `DocumentExtractor` trait. This allows the same extractor to work in both
-/// environments by delegating to the sync implementation.
+/// Extractors can implement this trait in addition to
+/// `InternalDocumentExtractor` when their parser does not need an async runtime.
 ///
 /// # MIME Type Validation
 ///
@@ -30,25 +49,26 @@ use std::sync::Arc;
 ///
 /// ```rust,ignore
 /// impl SyncExtractor for PlainTextExtractor {
-///     fn extract_sync(&self, content: &[u8], config: &ExtractionConfig) -> Result<ExtractedDocument> {
+///     fn extract_sync(&self, content: &[u8], mime_type: &str, config: &ExtractionConfig) -> Result<InternalDocument> {
 ///         let text = String::from_utf8_lossy(content).to_string();
-///         Ok(ExtractedDocument {
-///             content: text,
-///             mime_type: "text/plain".to_string(),
-///             metadata: Metadata::default(),
-///             tables: vec![],
-///             detected_languages: None,
-///             chunks: None,
-///             images: None,
-///         })
+///         Ok(InternalDocument::from_text(text, mime_type))
 ///     }
 /// }
 /// ```
+#[cfg(any(
+    feature = "archives",
+    feature = "email",
+    feature = "excel",
+    feature = "excel-wasm",
+    feature = "html",
+    feature = "transcription",
+    feature = "tree-sitter",
+    feature = "xml",
+))]
 pub(crate) trait SyncExtractor {
     /// Extract content from a byte array synchronously.
     ///
     /// This method performs extraction without requiring an async runtime.
-    /// It is called by `extract_bytes_sync()` when the `tokio-runtime` feature is disabled.
     ///
     /// # Arguments
     ///

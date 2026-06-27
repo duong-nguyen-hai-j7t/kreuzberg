@@ -130,10 +130,6 @@ impl InternalDocumentExtractor for RegisteredDocumentExtractor {
     fn can_handle(&self, path: &Path, mime_type: &str) -> bool {
         self.plugin().can_handle(path, mime_type)
     }
-
-    fn as_sync_extractor(&self) -> Option<&dyn crate::extractors::SyncExtractor> {
-        self.internal.as_ref()?.as_sync_extractor()
-    }
 }
 
 #[cfg_attr(alef, alef(skip))]

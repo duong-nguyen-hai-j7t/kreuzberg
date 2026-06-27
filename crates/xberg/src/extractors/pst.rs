@@ -192,10 +192,6 @@ impl InternalDocumentExtractor for PstExtractor {
     fn priority(&self) -> i32 {
         50
     }
-
-    fn as_sync_extractor(&self) -> Option<&dyn crate::extractors::SyncExtractor> {
-        Some(self)
-    }
 }
 
 #[cfg(test)]

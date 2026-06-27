@@ -123,7 +123,6 @@ pub trait DocumentExtractor: Plugin {
     fn can_handle(&self, _path: &Path, _mime_type: &str) -> bool {
         true
     }
-
 }
 
 /// Crate-private extraction capability used by native Rust extractors.
@@ -166,11 +165,6 @@ pub(crate) trait InternalDocumentExtractor: Plugin {
     /// Check if this extractor can handle a specific path and MIME type.
     fn can_handle(&self, _path: &Path, _mime_type: &str) -> bool {
         true
-    }
-
-    /// Attempt to get a synchronous extraction implementation.
-    fn as_sync_extractor(&self) -> Option<&dyn crate::extractors::SyncExtractor> {
-        None
     }
 }
 
@@ -220,5 +214,4 @@ where
     fn can_handle(&self, path: &Path, mime_type: &str) -> bool {
         InternalDocumentExtractor::can_handle(self, path, mime_type)
     }
-
 }

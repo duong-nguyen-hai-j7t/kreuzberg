@@ -462,10 +462,6 @@ impl InternalDocumentExtractor for ExcelExtractor {
     fn priority(&self) -> i32 {
         50
     }
-
-    fn as_sync_extractor(&self) -> Option<&dyn SyncExtractor> {
-        Some(self)
-    }
 }
 
 #[cfg(test)]

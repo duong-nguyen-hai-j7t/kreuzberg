@@ -130,10 +130,6 @@ impl InternalDocumentExtractor for InstrumentedExtractor {
     fn can_handle(&self, path: &Path, mime_type: &str) -> bool {
         self.inner.can_handle(path, mime_type)
     }
-
-    fn as_sync_extractor(&self) -> Option<&dyn crate::extractors::SyncExtractor> {
-        self.inner.as_sync_extractor()
-    }
 }
 
 // ---------------------------------------------------------------------------

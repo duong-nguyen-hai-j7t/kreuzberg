@@ -189,10 +189,6 @@ impl InternalDocumentExtractor for CodeExtractor {
     fn priority(&self) -> i32 {
         50
     }
-
-    fn as_sync_extractor(&self) -> Option<&dyn SyncExtractor> {
-        Some(self)
-    }
 }
 
 impl SyncExtractor for CodeExtractor {
