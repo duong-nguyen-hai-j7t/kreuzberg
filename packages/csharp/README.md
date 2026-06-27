@@ -126,8 +126,7 @@ var config = new ExtractionConfig
     EnableQualityProcessing = true
 };
 
-var output = await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config);
-var result = output.Results[0];
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config)).Results[0];
 
 Console.WriteLine(result.Content);
 Console.WriteLine($"MIME Type: {result.MimeType}");
@@ -157,8 +156,7 @@ var config = new ExtractionConfig
     }
 };
 
-var output = await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config);
-var result = output.Results[0];
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config)).Results[0];
 Console.WriteLine(result.Content);
 ```
 
@@ -231,8 +229,7 @@ class Program
     {
         try
         {
-            var output = await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), ExtractionConfig.Default());
-            var result = output.Results[0];
+            var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), ExtractionConfig.Default())).Results[0];
 
             Console.WriteLine($"Content length: {result.Content.Length}");
             Console.WriteLine($"MIME type: {result.MimeType}");
@@ -384,8 +381,7 @@ var config = new ExtractionConfig
     }
 };
 
-var output = await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config);
-var result = output.Results[0];
+var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), config)).Results[0];
 Console.WriteLine(result.Content);
 ```
 
@@ -402,8 +398,7 @@ class Program
     {
         try
         {
-            var output = await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), ExtractionConfig.Default());
-            var result = output.Results[0];
+            var result = (await XbergConverter.ExtractAsync(ExtractInput.FromUri("document.pdf"), ExtractionConfig.Default())).Results[0];
 
             Console.WriteLine($"Content length: {result.Content.Length}");
             Console.WriteLine($"MIME type: {result.MimeType}");

@@ -128,7 +128,6 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use Xberg\Xberg;
 
-
 $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
@@ -138,9 +137,9 @@ echo $result->content . "\n\n";
 
 echo "Metadata:\n";
 echo "=========\n";
-echo "Title: " . ($result->metadata->title ?? 'N/A') . "\n";
-echo "Authors: " . (isset($result->metadata->authors) ? implode(', ', $result->metadata->authors) : 'N/A') . "\n";
-echo "Pages: " . ($result->metadata->pageCount ?? 'N/A') . "\n";
+echo "Title: " . ($result->metadata?->title ?? 'N/A') . "\n";
+echo "Authors: " . (isset($result->metadata?->authors) ? implode(', ', $result->metadata?->authors) : 'N/A') . "\n";
+echo "Pages: " . ($result->metadata?->pdf?->page_count ?? 'N/A') . "\n";
 echo "Format: " . $result->mimeType . "\n\n";
 
 if (count($result->tables) > 0) {
@@ -214,7 +213,6 @@ $imageConfig = new ExtractionConfig(
     )
 );
 
-
 $imageFormats = ['png', 'jpg', 'tiff'];
 foreach ($imageFormats as $format) {
     $file = "scan.$format";
@@ -249,7 +247,6 @@ foreach ($languages as $lang => $description) {
             )
         );
 
-        $xberg = new Xberg($config);
         $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
@@ -273,7 +270,7 @@ $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('scanned.pdf'), $co
 $result = $output->results[0];
 
 $contentLength = strlen($result->content);
-$pageCount = $result->metadata->pageCount ?? 1;
+$pageCount = $result->metadata?->pdf?->page_count ?? 1;
 $avgCharsPerPage = $contentLength / $pageCount;
 
 echo "\nOCR Quality Assessment:\n";
@@ -493,7 +490,6 @@ $imageConfig = new ExtractionConfig(
     )
 );
 
-
 $imageFormats = ['png', 'jpg', 'tiff'];
 foreach ($imageFormats as $format) {
     $file = "scan.$format";
@@ -528,7 +524,6 @@ foreach ($languages as $lang => $description) {
             )
         );
 
-        $xberg = new Xberg($config);
         $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
@@ -552,7 +547,7 @@ $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('scanned.pdf'), $co
 $result = $output->results[0];
 
 $contentLength = strlen($result->content);
-$pageCount = $result->metadata->pageCount ?? 1;
+$pageCount = $result->metadata?->pdf?->page_count ?? 1;
 $avgCharsPerPage = $contentLength / $pageCount;
 
 echo "\nOCR Quality Assessment:\n";

@@ -118,7 +118,7 @@ async function main() {
   const bytes = new Uint8Array(buffer);
 
   const output = await extract({
-    kind: ExtractInputKind.Bytes,
+    kind: "bytes",
     bytes,
     mimeType: "application/pdf",
     filename: "document.pdf",
@@ -159,7 +159,7 @@ async function extractWithOcr() {
 
   const output = await extract(
     {
-      kind: ExtractInputKind.Bytes,
+      kind: "bytes",
       bytes,
       mimeType: "image/png",
       filename: "scanned-page.png",
@@ -186,7 +186,7 @@ See [Configuration Guide](https://docs.xberg.io/guides/configuration/) for table
 #### Processing Multiple Files
 
 ```ts
-import { ExtractInputKind, extractBatch, initWasm } from "@xberg-io/xberg-wasm";
+import { extractBatch, initWasm } from "@xberg-io/xberg-wasm";
 
 interface DocumentJob {
   name: string;
@@ -203,7 +203,7 @@ async function _processBatch(documents: DocumentJob[], concurrency: number = 3) 
     const batch = documents.slice(index, index + concurrency);
     const output = await extractBatch(
       batch.map((doc) => ({
-        kind: ExtractInputKind.Bytes,
+        kind: "bytes",
         bytes: doc.bytes,
         mimeType: doc.mimeType,
         filename: doc.name,
@@ -234,7 +234,7 @@ async function extractDocuments(files: Uint8Array[], mimeTypes: string[]) {
   await initWasm();
 
   const results = await Promise.all(
-    files.map((bytes, index) => extract(bytes, mimeTypes[index])),
+    files.map((bytes, index) => extract({ kind: "bytes", bytes, mimeType: mimeTypes[index] })),
   );
 
   return results.map((r) => ({
@@ -374,7 +374,7 @@ async function extractWithOcr() {
 
   const output = await extract(
     {
-      kind: ExtractInputKind.Bytes,
+      kind: "bytes",
       bytes,
       mimeType: "image/png",
       filename: "scanned-page.png",
@@ -410,7 +410,7 @@ async function extractDocuments(files: Uint8Array[], mimeTypes: string[]) {
   await initWasm();
 
   const results = await Promise.all(
-    files.map((bytes, index) => extract(bytes, mimeTypes[index])),
+    files.map((bytes, index) => extract({ kind: "bytes", bytes, mimeType: mimeTypes[index] })),
   );
 
   return results.map((r) => ({
@@ -438,7 +438,7 @@ For detailed plugin documentation, visit [Plugin System Guide](https://docs.xber
 Process multiple documents efficiently:
 
 ```ts
-import { ExtractInputKind, extractBatch, initWasm } from "@xberg-io/xberg-wasm";
+import { extractBatch, initWasm } from "@xberg-io/xberg-wasm";
 
 interface DocumentJob {
   name: string;
@@ -455,7 +455,7 @@ async function _processBatch(documents: DocumentJob[], concurrency: number = 3) 
     const batch = documents.slice(index, index + concurrency);
     const output = await extractBatch(
       batch.map((doc) => ({
-        kind: ExtractInputKind.Bytes,
+        kind: "bytes",
         bytes: doc.bytes,
         mimeType: doc.mimeType,
         filename: doc.name,

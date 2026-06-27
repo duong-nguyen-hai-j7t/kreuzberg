@@ -126,7 +126,7 @@ const config = {
 
 const output = await extract(
   {
-    kind: ExtractInputKind.Uri,
+    kind: "uri",
     uri: "document.pdf",
   },
   config,
@@ -159,7 +159,7 @@ const config = {
 
 const output = await extract(
   {
-    kind: ExtractInputKind.Uri,
+    kind: "uri",
     uri: "document.pdf",
   },
   config,
@@ -174,7 +174,7 @@ console.log(output.results[0].content);
 import { ExtractInputKind, extract } from "@xberg-io/xberg";
 
 const output = await extract({
-  kind: ExtractInputKind.Uri,
+  kind: "uri",
   uri: "document.pdf",
 });
 
@@ -188,12 +188,12 @@ output.results[0].tables?.forEach((table) => {
 #### Processing Multiple Files
 
 ```typescript title="TypeScript"
-import { ExtractInputKind, extractBatch } from "@xberg-io/xberg";
+import { extractBatch } from "@xberg-io/xberg";
 
 const output = await extractBatch([
-  { kind: ExtractInputKind.Uri, uri: "document.pdf" },
+  { kind: "uri", uri: "document.pdf" },
   {
-    kind: ExtractInputKind.Bytes,
+    kind: "bytes",
     bytes: Buffer.from("Hello from memory"),
     mimeType: "text/plain",
     filename: "note.txt",
@@ -213,7 +213,7 @@ For non-blocking document processing:
 import { ExtractInputKind, extract } from "@xberg-io/xberg";
 
 const output = await extract({
-  kind: ExtractInputKind.Uri,
+  kind: "uri",
   uri: "document.pdf",
 });
 
@@ -228,7 +228,7 @@ import { ExtractInputKind, ExtractionConfig, extract } from "@xberg-io/xberg";
 
 const config = ExtractionConfig.discover();
 const input = {
-  kind: ExtractInputKind.Uri,
+  kind: "uri",
   uri: "document.pdf",
 };
 
@@ -263,10 +263,10 @@ This binding uses NAPI-RS to provide native Node.js bindings with:
 
 ### Threading Model
 
-- Single documents are processed synchronously or asynchronously in a dedicated thread
+- Single documents are processed by Promise-based extraction APIs in the native thread pool
 - Batch operations distribute work across available CPU cores
 - Thread count is configurable but defaults to system CPU count
-- Long-running extractions block the event loop unless using async APIs
+- Long-running extractions resolve asynchronously without blocking the JavaScript event loop
 
 ### Memory Management
 
@@ -391,7 +391,7 @@ const config = {
 
 const output = await extract(
   {
-    kind: ExtractInputKind.Uri,
+    kind: "uri",
     uri: "document.pdf",
   },
   config,
@@ -408,7 +408,7 @@ This binding provides full async/await support for non-blocking document process
 import { ExtractInputKind, extract } from "@xberg-io/xberg";
 
 const output = await extract({
-  kind: ExtractInputKind.Uri,
+  kind: "uri",
   uri: "document.pdf",
 });
 
@@ -433,12 +433,12 @@ Generate vector embeddings for extracted text using the built-in ONNX Runtime su
 Process multiple documents efficiently:
 
 ```typescript title="TypeScript"
-import { ExtractInputKind, extractBatch } from "@xberg-io/xberg";
+import { extractBatch } from "@xberg-io/xberg";
 
 const output = await extractBatch([
-  { kind: ExtractInputKind.Uri, uri: "document.pdf" },
+  { kind: "uri", uri: "document.pdf" },
   {
-    kind: ExtractInputKind.Bytes,
+    kind: "bytes",
     bytes: Buffer.from("Hello from memory"),
     mimeType: "text/plain",
     filename: "note.txt",
