@@ -5,6 +5,7 @@
 [build]
 incremental = true
 jobs = 4
+rustc-wrapper = ".cargo/rustc-wrapper.sh"
 
 [net]
 git-fetch-with-cli = true
