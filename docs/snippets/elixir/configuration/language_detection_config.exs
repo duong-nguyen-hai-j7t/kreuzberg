@@ -15,7 +15,7 @@ config = %ExtractionConfig{
   use_cache: true
 }
 
-{:ok, output} = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "multilingual.pdf"}, config)
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "multilingual.pdf"}, config: config)
 
 result = List.first(output.results)
 IO.puts("Detected Languages:")

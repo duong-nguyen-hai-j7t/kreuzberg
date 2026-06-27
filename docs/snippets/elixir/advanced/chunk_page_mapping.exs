@@ -4,7 +4,7 @@ config = %Xberg.ExtractionConfig{
   track_page_boundaries: true
 }
 
-{:ok, output} = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config)
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config: config)
 
 result = List.first(output.results)
 # Map each chunk to its source page

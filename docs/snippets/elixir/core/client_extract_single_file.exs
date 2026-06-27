@@ -32,7 +32,7 @@ defmodule DocumentClient do
     mime_type = Keyword.get(opts, :mime_type, nil)
     config = Keyword.get(opts, :config, nil)
 
-    case Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: path, mime_type: mime_type}, config) do
+    case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: path, mime_type: mime_type}, config: config) do
       {:ok, output} ->
         result = List.first(output.results)
         IO.debug("Successfully extracted file: #{path}")
@@ -54,8 +54,13 @@ defmodule DocumentClient do
     mime_type = Keyword.get(opts, :mime_type, nil)
     config = Keyword.get(opts, :config, nil)
 
-    output = Xberg.extract!(path, mime_type, config)
-    List.first(output.results)
+    case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: path, mime_type: mime_type}, config: config) do
+      {:ok, output} ->
+        List.first(output.results)
+
+      {:error, reason} ->
+        raise "Extraction failed: #{reason}"
+    end
   end
 
   @doc """

@@ -20,7 +20,7 @@ defmodule PDFMetadataExtractor do
       use_cache: true
     }
 
-    case Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: file_path}, config) do
+    case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: file_path}, config: config) do
       {:ok, output} ->
         result = List.first(output.results)
         process_metadata(result.metadata || %{})

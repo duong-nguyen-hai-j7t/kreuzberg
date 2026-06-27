@@ -312,7 +312,7 @@ defmodule XbergDiskCache do
       :miss ->
         Logger.info("Cache miss: #{file_path}")
 
-        case Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: file_path}, nil) do
+        case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: file_path}, config: nil) do
           {:ok, output} ->
             result = List.first(output.results)
             new_cache = Cache.put(cache, cache_key, result)

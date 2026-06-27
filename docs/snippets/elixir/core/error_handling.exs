@@ -1,6 +1,6 @@
 ```elixir title="Elixir"
 # Example: Handling extraction errors
-case Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, nil) do
+case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config: nil) do
   {:ok, output} ->
     result = List.first(output.results)
     IO.puts("Successfully extracted content")
@@ -11,7 +11,7 @@ case Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, nil) do
 end
 
 # Example: Handling with custom error message
-result = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "nonexistent.pdf"}, nil)
+result = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "nonexistent.pdf"}, config: nil)
 
 case result do
   {:ok, output} ->
@@ -22,7 +22,7 @@ case result do
 end
 
 # Example: Extract with pattern matching
-case Xberg.extract(%Xberg.ExtractInput{kind: :bytes, bytes: <<>>, mime_type: "application/pdf"}, nil) do
+case Xberg.extract(input: %Xberg.ExtractInput{kind: :bytes, bytes: <<>>, mime_type: "application/pdf"}, config: nil) do
   {:ok, output} ->
     result = List.first(output.results)
     IO.puts("Content: #{result.content}")

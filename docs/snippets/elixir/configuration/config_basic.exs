@@ -9,7 +9,7 @@ config = %ExtractionConfig{
   force_ocr: false
 }
 
-{:ok, output} = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config)
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config: config)
 
 result = List.first(output.results)
 IO.puts("Content length: #{byte_size(result.content)} characters")

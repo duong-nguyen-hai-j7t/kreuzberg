@@ -12,7 +12,7 @@ config = %ExtractionConfig{
   }
 }
 
-{:ok, output} = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config)
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config: config)
 
 result = List.first(output.results)
 # Access chunks
@@ -36,7 +36,7 @@ config2 = %ExtractionConfig{
   }
 }
 
-{:ok, output2} = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "document.md"}, config2)
+{:ok, output2} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.md"}, config: config2)
 
 result2 = List.first(output2.results)
 if result2.chunks do
@@ -67,7 +67,7 @@ config3 = %ExtractionConfig{
   }
 }
 
-{:ok, output3} = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "document.md"}, config3)
+{:ok, output3} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.md"}, config: config3)
 
 result3 = List.first(output3.results)
 if result3.chunks do

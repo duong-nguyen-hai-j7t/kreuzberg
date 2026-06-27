@@ -237,7 +237,7 @@ config = %Xberg.ExtractionConfig{
   chunking: %{"enabled" => true, "max_characters" => 1000}
 }
 
-{:ok, output} = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "multipage_doc.pdf"}, config)
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "multipage_doc.pdf"}, config: config)
 
 result = List.first(output.results)
 chunks = result.chunks || []

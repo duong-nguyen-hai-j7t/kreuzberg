@@ -10,7 +10,7 @@ config = %ExtractionConfig{
   }
 }
 
-{:ok, output} = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "research_paper.pdf"}, config)
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "research_paper.pdf"}, config: config)
 
 result = List.first(output.results)
 if result.extracted_keywords do

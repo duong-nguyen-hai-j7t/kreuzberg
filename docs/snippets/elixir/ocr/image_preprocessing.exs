@@ -51,7 +51,7 @@ defmodule ImagePreprocessor do
       use_cache: false  # Disable caching for preprocessing runs
     }
 
-    Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: file_path}, config)
+    Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: file_path}, config: config)
   end
 
   @doc """
@@ -88,7 +88,7 @@ defmodule ImagePreprocessor do
       use_cache: false
     }
 
-    {:ok, output_standard} = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: file_path}, config_standard)
+    {:ok, output_standard} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: file_path}, config: config_standard)
 
     result_standard = List.first(output_standard.results)
     # Extract with preprocessing

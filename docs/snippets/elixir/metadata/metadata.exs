@@ -198,7 +198,7 @@ config = %Xberg.ExtractionConfig{
   chunking: %{"enabled" => true, "max_characters" => 1000}
 }
 
-{:ok, output} = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config)
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config: config)
 
 result = List.first(output.results)
 IO.puts("=== Standard Metadata ===")

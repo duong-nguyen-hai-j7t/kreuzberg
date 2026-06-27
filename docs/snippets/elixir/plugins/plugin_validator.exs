@@ -24,7 +24,7 @@ Xberg.Plugin.register_validator(MyApp.MinLengthValidator)
 
 # Use with extraction
 input = %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}
-{:ok, output} = Xberg.extract(input, nil)
+{:ok, output} = Xberg.extract(input: input, config: nil)
 result = List.first(output.results)
 
 IO.puts("Content length: #{String.length(result.content)}")

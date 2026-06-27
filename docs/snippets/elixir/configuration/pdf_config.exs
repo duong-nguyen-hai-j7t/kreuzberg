@@ -16,7 +16,7 @@ config = %ExtractionConfig{
   use_cache: true
 }
 
-{:ok, output} = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "form_document.pdf"}, config)
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "form_document.pdf"}, config: config)
 
 result = List.first(output.results)
 IO.puts("PDF Extraction Complete:")

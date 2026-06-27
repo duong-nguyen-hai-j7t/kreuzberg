@@ -9,7 +9,7 @@ config = %ExtractionConfig{
   }
 }
 
-case Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "article.pdf"}, config) do
+case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "article.pdf"}, config: config) do
   {:ok, output} ->
     result = List.first(output.results)
     IO.puts("=== Keyword Extraction ===\n")

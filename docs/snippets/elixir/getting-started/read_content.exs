@@ -2,7 +2,7 @@
 # Access different parts of result
 # Content, metadata, tables, images
 
-{:ok, output} = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, nil)
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config: nil)
 
 result = List.first(output.results)
 # Access main content

@@ -27,7 +27,7 @@ Xberg.Plugin.register_post_processor(MyApp.WordCountProcessor)
 
 # Use with extraction
 input = %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}
-{:ok, output} = Xberg.extract(input, nil)
+{:ok, output} = Xberg.extract(input: input, config: nil)
 result = List.first(output.results)
 
 IO.puts("Word count: #{result.metadata["word_count"]}")

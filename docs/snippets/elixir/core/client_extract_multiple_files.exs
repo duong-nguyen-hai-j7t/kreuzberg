@@ -39,7 +39,7 @@ defmodule BatchDocumentClient do
 
     inputs = Enum.map(paths, fn path -> %Xberg.ExtractInput{kind: :uri, uri: path, mime_type: mime_type} end)
 
-    case Xberg.extract_batch(inputs, config) do
+    case Xberg.extract_batch(inputs: inputs, config: config) do
       {:ok, output} ->
         results = output.results
         IO.debug("Successfully extracted #{length(results)} files")
