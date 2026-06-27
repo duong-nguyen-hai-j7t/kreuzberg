@@ -1,7 +1,7 @@
 ```php title="Element-Based Output (PHP)"
 <?php
 use Xberg\ExtractionConfig;
-use Xberg\Xberg;
+use Xberg\XbergApi;
 
 // Configure element-based output
 $config = ExtractionConfig::default();

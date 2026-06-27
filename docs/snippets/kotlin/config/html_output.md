@@ -16,7 +16,7 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "document.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
-    println(result.content()) // HTML with kb-* classes
+    val result = resultOutput.results.first()
+    println(result.content) // HTML with kb-* classes
 }
 ```

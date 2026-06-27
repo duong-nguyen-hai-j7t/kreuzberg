@@ -40,23 +40,14 @@ int main(void) {
         return 1;
     }
 
-    XBERGMetadata *metadata = xberg_extraction_result_metadata(result);
-    if (metadata) {
-        char *language = xberg_metadata_language(metadata);
-        if (language) {
-            printf("Metadata language: %s\n", language);
-            xberg_free_string(language);
-        }
-        xberg_metadata_free(metadata);
+    char *results = xberg_extraction_result_results(result);
+    if (results) {
+        printf("Extraction results (includes detected languages): %s\n", results);
+        xberg_free_string(results);
     }
 
-    char *detected_languages_json = xberg_extraction_result_detected_languages(result);
-    if (detected_languages_json) {
-        printf("Detected languages: %s\n", detected_languages_json);
-        xberg_free_string(detected_languages_json);
-    } else {
-        printf("No languages detected\n");
-    }
+    // Note: detected_languages is available on individual XBERGExtractedDocument
+    // objects within the results array via xberg_extracted_document_detected_languages()
 
     xberg_extract_input_free(input);
 

@@ -22,7 +22,7 @@ class StatefulPlugin : IPostProcessor {
 
     override fun process(result: ExtractedDocument, config: ExtractionConfig) {
         val count = callCount.incrementAndGet()
-        cache["last_mime"] = result.mimeType()
+        cache["last_mime"] = result.mimeType
         cache["last_call"] = count.toString()
     }
 

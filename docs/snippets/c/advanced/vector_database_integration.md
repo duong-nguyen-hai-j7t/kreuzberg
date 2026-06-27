@@ -51,7 +51,7 @@ int main(void) {
     /* The chunks JSON array carries content + embedding + metadata for each
        chunk. Pass this directly to your vector database client (pgvector,
        Qdrant, Pinecone, etc.) along with the document_id as a metadata field. */
-    char *chunks_json = xberg_extraction_result_chunks(result);
+    char *chunks_json = xberg_extraction_result_results(result);
     printf("document_id: %s\n", document_id);
     printf("chunks (JSON, ready to upsert into a vector DB):\n%s\n",
            chunks_json ? chunks_json : "[]");

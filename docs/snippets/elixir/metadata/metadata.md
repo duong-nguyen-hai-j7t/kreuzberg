@@ -1,7 +1,7 @@
 ```elixir title="Elixir"
 config = Jason.encode!(%{})
 
-case Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config) do
+case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config: config) do
   {:ok, output} ->
     result = List.first(output.results)
     pdf_meta = result.metadata || %{}
@@ -33,7 +33,7 @@ case Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config)
     IO.puts("Error: #{reason}")
 end
 
-case Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "page.html"}, config) do
+case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "page.html"}, config: config) do
   {:ok, output} ->
     result = List.first(output.results)
     html_meta = result.metadata || %{}

@@ -16,7 +16,7 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "verbose_document.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
-    println("Reduced content length: ${result.content().length}")
+    val result = resultOutput.results.first()
+    println("Reduced content length: ${result.content.length}")
 }
 ```

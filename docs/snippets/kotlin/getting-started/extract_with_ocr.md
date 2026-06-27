@@ -17,8 +17,8 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "scanned.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
-    println(result.content())
-    result.detectedLanguages()?.let { println("Detected languages: $it") }
+    val result = resultOutput.results.first()
+    println(result.content)
+    result.detectedLanguages?.let { println("Detected languages: $it") }
 }
 ```

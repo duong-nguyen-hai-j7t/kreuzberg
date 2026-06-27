@@ -1,7 +1,7 @@
 ```typescript title="WASM - Fixed-Size Chunks"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   chunking: {
@@ -22,9 +22,9 @@ result.chunks?.forEach((chunk, idx) => {
 ```
 
 ```typescript title="WASM - Markdown-Aware Chunking"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   chunking: {
@@ -47,9 +47,9 @@ result.chunks?.forEach((chunk) => {
 ```
 
 ```typescript title="WASM - Semantic Chunking with Topic Threshold"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   chunking: {

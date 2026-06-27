@@ -66,7 +66,7 @@ Instead of registering a post-processor plugin, process the extraction result di
 
 declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\Types\ExtractedDocument;
 
 function postProcessResult(ExtractedDocument $result): ExtractedDocument
@@ -85,7 +85,7 @@ function postProcessResult(ExtractedDocument $result): ExtractedDocument
     );
 }
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 $processed = postProcessResult($result);
 ```
@@ -101,7 +101,7 @@ declare(strict_types=1);
 
 use Xberg\ExtractionConfig;
 use Xberg\OcrConfig;
-use Xberg\Xberg;
+use Xberg\XbergApi;
 
 $config = new ExtractionConfig(
     ocr: new OcrConfig(
@@ -110,7 +110,7 @@ $config = new ExtractionConfig(
     ),
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('scanned.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('scanned.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 ```
 
@@ -137,7 +137,7 @@ function validateResult(ExtractedDocument $result): void
     }
 }
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 validateResult($result);
 ```
@@ -154,7 +154,7 @@ declare(strict_types=1);
 
 use Xberg\ExtractInput;
 use Xberg\ExtractionConfig;
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\Types\ExtractedDocument;
 
 final class CustomXberg

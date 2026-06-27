@@ -37,7 +37,7 @@ fun registerGenericValidator() {
         pluginName = "non-empty-content",
         pluginPriority = 200,
     ) { result, _ ->
-        require(result.content().isNotBlank()) { "Extracted content is blank" }
+        require(result.content.isNotBlank()) { "Extracted content is blank" }
     }
     ValidatorBridge.registerValidator(validator)
 }

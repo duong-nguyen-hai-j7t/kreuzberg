@@ -1,7 +1,7 @@
 ```typescript title="WASM"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const data = new Uint8Array(await fetch("scanned.pdf").then((r) => r.arrayBuffer()));
 

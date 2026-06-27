@@ -1,7 +1,7 @@
 ```typescript title="WASM - Detect and Process Multilingual Content"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   languageDetection: {
@@ -67,9 +67,9 @@ chunksByLanguage.forEach((chunks, lang) => {
 ```
 
 ```typescript title="WASM - Language-Specific Text Processing"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   languageDetection: {
@@ -122,9 +122,9 @@ sentences.slice(0, 3).forEach((sent, idx) => {
 ```
 
 ```typescript title="WASM - Multilingual Chunking Strategy"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 interface LanguageChunkConfig {
   maxChars: number;

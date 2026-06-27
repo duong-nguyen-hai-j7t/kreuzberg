@@ -39,7 +39,7 @@ int main(void) {
         return 1;
     }
 
-    char *chunks_json = xberg_extraction_result_chunks(result);
+    char *chunks_json = xberg_extraction_result_results(result);
     printf("chunks (JSON): %s\n", chunks_json ? chunks_json : "[]");
     xberg_free_string(chunks_json);
 

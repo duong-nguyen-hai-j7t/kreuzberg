@@ -16,7 +16,7 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "multilingual.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
-    println(result.content())
+    val result = resultOutput.results.first()
+    println(result.content)
 }
 ```

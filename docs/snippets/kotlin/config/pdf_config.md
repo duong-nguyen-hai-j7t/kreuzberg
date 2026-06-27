@@ -22,8 +22,8 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "encrypted.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
-    println("Title: ${result.metadata().title()}")
-    println("Authors: ${result.metadata().authors()}")
+    val result = resultOutput.results.first()
+    println("Title: ${result.metadata.title}")
+    println("Authors: ${result.metadata.authors}")
 }
 ```

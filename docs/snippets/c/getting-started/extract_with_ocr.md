@@ -43,7 +43,7 @@ int main(void) {
     printf("%s\n", content ? content : "(empty)");
     xberg_free_string(content);
 
-    char *detected_languages = xberg_extraction_result_detected_languages(result);
+    char *detected_languages = xberg_extraction_result_results(result);
     printf("detected languages: %s\n",
            detected_languages ? detected_languages : "(none)");
     xberg_free_string(detected_languages);

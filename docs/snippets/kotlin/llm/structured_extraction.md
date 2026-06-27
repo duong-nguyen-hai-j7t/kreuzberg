@@ -35,7 +35,7 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "paper.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
-    result.structuredOutput()?.let { println(it) }
+    val result = resultOutput.results.first()
+    result.structuredOutput?.let { println(it) }
 }
 ```

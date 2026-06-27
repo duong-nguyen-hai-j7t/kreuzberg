@@ -12,7 +12,7 @@ fun extractText(bytes: ByteArray, mimeType: String): String {
         filename = "document.pdf",
     )
     val output = Xberg.extract(input, config)
-    return output.results().first().content()
+    return output.results.first().content
 }
 
 fun main() {

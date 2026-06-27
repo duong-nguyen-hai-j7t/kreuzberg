@@ -1,7 +1,7 @@
 ```php title="PHP"
 <?php declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\ExtractionConfig;
 
 $resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri("document.pdf"), \Xberg\ExtractionConfig::default());

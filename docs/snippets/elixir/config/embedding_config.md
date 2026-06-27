@@ -17,7 +17,7 @@ config_json = Jason.encode!(%{
 })
 
 input = %Xberg.ExtractInput{kind: :uri, uri: "document.pdf", mime_type: "application/pdf"}
-{:ok, output} = Xberg.extract(input, config_json)
+{:ok, output} = Xberg.extract(input: input, config: config_json)
 
 result = List.first(output.results)
 chunks_count = if result.chunks, do: length(result.chunks), else: 0

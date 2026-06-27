@@ -127,7 +127,7 @@ Extract text, metadata, and structure from any supported document format:
 # Basic document extraction workflow
 # Load file -> extract -> access results
 
-{:ok, output} = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, nil)
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config: nil)
 
 result = List.first(output.results)
 IO.puts("Extracted Content:")
@@ -155,7 +155,7 @@ config = %ExtractionConfig{
   ocr: %{"enabled" => true, "backend" => "tesseract"}
 }
 
-{:ok, output} = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "scanned_document.pdf"}, config)
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "scanned_document.pdf"}, config: config)
 
 result = List.first(output.results)
 content = result.content
@@ -183,7 +183,7 @@ inputs = [
   }
 ]
 
-{:ok, output} = Xberg.extract_batch(inputs, nil)
+{:ok, output} = Xberg.extract_batch(inputs: inputs, config: nil)
 
 Enum.each(output.results, fn result ->
   IO.puts(result.content)
@@ -313,7 +313,7 @@ config = %ExtractionConfig{
   ocr: %{"enabled" => true, "backend" => "tesseract"}
 }
 
-{:ok, output} = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "scanned_document.pdf"}, config)
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "scanned_document.pdf"}, config: config)
 
 result = List.first(output.results)
 content = result.content
@@ -439,7 +439,7 @@ inputs = [
   }
 ]
 
-{:ok, output} = Xberg.extract_batch(inputs, nil)
+{:ok, output} = Xberg.extract_batch(inputs: inputs, config: nil)
 
 Enum.each(output.results, fn result ->
   IO.puts(result.content)

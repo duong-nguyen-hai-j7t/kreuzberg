@@ -1,7 +1,7 @@
 ```typescript title="WASM - Token Reduction Configuration"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   tokenReduction: {
@@ -23,9 +23,9 @@ console.log(`Preview: ${result.content.substring(0, 100)}...`);
 ```
 
 ```typescript title="WASM - Token Reduction Modes"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 interface TokenReductionResult {
   mode: string;

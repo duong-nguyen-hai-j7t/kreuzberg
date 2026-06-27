@@ -30,21 +30,21 @@ fun extractAndVectorize(documentPath: String, documentId: String): List<VectorRe
         ExtractInput(kind = ExtractInputKind.URI, uri = documentPath),
         config,
     )
-    val result = resultOutput.results().first()
+    val result = resultOutput.results.first()
 
     val records = mutableListOf<VectorRecord>()
-    val chunks = result.chunks().orEmpty()
+    val chunks = result.chunks.orEmpty()
     for ((index, chunk) in chunks.withIndex()) {
-        val vector = chunk.embedding()
+        val vector = chunk.embedding
         if (vector != null) {
             val metadata = mapOf(
                 "document_id" to documentId,
                 "chunk_index" to index.toString(),
-                "content_length" to chunk.content().length.toString()
+                "content_length" to chunk.content.length.toString()
             )
             records += VectorRecord(
                 id = "${documentId}_chunk_$index",
-                content = chunk.content(),
+                content = chunk.content,
                 embedding = vector,
                 metadata = metadata
             )

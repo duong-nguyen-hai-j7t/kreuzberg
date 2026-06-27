@@ -1,7 +1,7 @@
 ```typescript title="WASM"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // Note: WASM has no native batch API; use Promise.all with per-item error handling
 const files = document.getElementById("files") as HTMLInputElement;

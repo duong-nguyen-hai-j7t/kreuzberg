@@ -44,7 +44,7 @@ int main(void) {
         return 1;
     }
 
-    char *chunks_json = xberg_extraction_result_chunks(result);
+    char *chunks_json = xberg_extraction_result_results(result);
     printf("chunks (JSON, each item includes content, embedding, and metadata.chunk_index/total_chunks/byte_start/byte_end):\n%s\n",
            chunks_json ? chunks_json : "[]");
     xberg_free_string(chunks_json);

@@ -28,11 +28,11 @@ int main(void) {
 
     XBERGExtractionResult *result = xberg_extract(input, config);
     if (result) {
-        char *content = xberg_extraction_result_content(result);
-        if (content) {
-            printf("%s\n", content);
+        char *results = xberg_extraction_result_results(result);
+        if (results) {
+            printf("%s\n", results);
         }
-        xberg_free_string(content);
+        xberg_free_string(results);
     } else {
         fprintf(stderr, "extraction failed (code %d): %s\n",
                 xberg_last_error_code(),

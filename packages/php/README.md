@@ -126,9 +126,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
-
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 echo "Extracted Content:\n";
@@ -174,7 +172,6 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
 use Xberg\ExtractionConfig;
 use Xberg\OcrConfig;
 
@@ -185,7 +182,7 @@ $config = new ExtractionConfig(
     )
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('scanned_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('scanned_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 echo "OCR Extraction Results:\n";
@@ -199,7 +196,7 @@ $multilingualConfig = new ExtractionConfig(
     )
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('multilingual_scan.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('multilingual_scan.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 echo "Multilingual OCR:\n";
@@ -218,7 +215,7 @@ foreach ($imageFormats as $format) {
     $file = "scan.$format";
     if (file_exists($file)) {
         echo "Processing $file...\n";
-        $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
+        $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
         echo "Extracted " . strlen($result->content) . " characters\n";
         echo "Preview: " . substr($result->content, 0, 100) . "...\n\n";
@@ -247,7 +244,7 @@ foreach ($languages as $lang => $description) {
             )
         );
 
-        $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
+        $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
         echo "$description ($lang):\n";
@@ -259,14 +256,14 @@ $config = new ExtractionConfig(
     ocr: new OcrConfig(backend: 'tesseract', language: 'eng')
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('invoice_scan.pdf'), $config);
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('invoice_scan.pdf'), $config);
 $result = $output->results[0];
 
 echo "Invoice OCR:\n";
 echo str_repeat('=', 60) . "\n";
 echo $result->content . "\n";
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('scanned.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('scanned.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 $contentLength = strlen($result->content);
@@ -305,7 +302,6 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use Xberg\ExtractInput;
 use Xberg\ExtractionConfig;
-use Xberg\Xberg;
 
 $inputs = [
     ExtractInput::fromUri('document1.pdf'),
@@ -451,7 +447,6 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
 use Xberg\ExtractionConfig;
 use Xberg\OcrConfig;
 
@@ -462,7 +457,7 @@ $config = new ExtractionConfig(
     )
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('scanned_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('scanned_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 echo "OCR Extraction Results:\n";
@@ -476,7 +471,7 @@ $multilingualConfig = new ExtractionConfig(
     )
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('multilingual_scan.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('multilingual_scan.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 echo "Multilingual OCR:\n";
@@ -495,7 +490,7 @@ foreach ($imageFormats as $format) {
     $file = "scan.$format";
     if (file_exists($file)) {
         echo "Processing $file...\n";
-        $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
+        $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
         echo "Extracted " . strlen($result->content) . " characters\n";
         echo "Preview: " . substr($result->content, 0, 100) . "...\n\n";
@@ -524,7 +519,7 @@ foreach ($languages as $lang => $description) {
             )
         );
 
-        $output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
+        $output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri($file), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
         echo "$description ($lang):\n";
@@ -536,14 +531,14 @@ $config = new ExtractionConfig(
     ocr: new OcrConfig(backend: 'tesseract', language: 'eng')
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('invoice_scan.pdf'), $config);
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('invoice_scan.pdf'), $config);
 $result = $output->results[0];
 
 echo "Invoice OCR:\n";
 echo str_repeat('=', 60) . "\n";
 echo $result->content . "\n";
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('scanned.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('scanned.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 $contentLength = strlen($result->content);
@@ -592,7 +587,6 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use Xberg\ExtractInput;
 use Xberg\ExtractionConfig;
-use Xberg\Xberg;
 
 $inputs = [
     ExtractInput::fromUri('document1.pdf'),

@@ -16,8 +16,8 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "document.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
-    println("Chunks: ${result.chunks()?.size ?: 0}")
+    val result = resultOutput.results.first()
+    println("Chunks: ${result.chunks?.size ?: 0}")
 }
 ```
 
@@ -38,8 +38,8 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "document.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
-    println("Chunks: ${result.chunks()?.size ?: 0}")
+    val result = resultOutput.results.first()
+    println("Chunks: ${result.chunks?.size ?: 0}")
 }
 ```
 
@@ -63,7 +63,7 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "document.md"),
         config,
     )
-    val result = resultOutput.results().first()
-    println("Chunks: ${result.chunks()?.size ?: 0}")
+    val result = resultOutput.results.first()
+    println("Chunks: ${result.chunks?.size ?: 0}")
 }
 ```

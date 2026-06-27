@@ -1,7 +1,7 @@
 ```typescript title="WASM - Assess Text Quality"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 interface TextQualityMetrics {
   contentLength: number;
@@ -59,9 +59,9 @@ console.log(`  Xberg quality score: ${result.qualityScore?.toFixed(3) || "N/A"}`
 ```
 
 ```typescript title="WASM - Quality-Based Content Filtering"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   enableQualityProcessing: true,
@@ -112,9 +112,9 @@ keptChunks.slice(0, 3).forEach((c) => {
 ```
 
 ```typescript title="WASM - Content Encoding Validation"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   enableQualityProcessing: true,

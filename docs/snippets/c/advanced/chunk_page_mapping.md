@@ -43,12 +43,12 @@ int main(void) {
         return 1;
     }
 
-    char *chunks_json = xberg_extraction_result_chunks(result);
+    char *chunks_json = xberg_extraction_result_results(result);
     printf("chunks (JSON, includes per-chunk first_page/last_page metadata):\n%s\n",
            chunks_json ? chunks_json : "[]");
     xberg_free_string(chunks_json);
 
-    char *pages_json = xberg_extraction_result_pages(result);
+    char *pages_json = xberg_extraction_result_results(result);
     printf("pages (JSON): %s\n", pages_json ? pages_json : "[]");
     xberg_free_string(pages_json);
 

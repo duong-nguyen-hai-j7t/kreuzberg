@@ -11,8 +11,8 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "document.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
-    val document = result.document()
+    val result = resultOutput.results.first()
+    val document = result.document
     if (document != null) {
         for (node in document.nodes()) {
             println(node)

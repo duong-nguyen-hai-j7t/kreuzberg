@@ -7,8 +7,8 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "document.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
-    println(result.content())
-    println("MIME type: ${result.mimeType()}")
+    val result = resultOutput.results.first()
+    println(result.content)
+    println("MIME type: ${result.mimeType}")
 }
 ```

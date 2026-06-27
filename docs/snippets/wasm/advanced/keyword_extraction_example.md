@@ -1,7 +1,7 @@
 ```typescript title="WASM - Extract and Score Keywords"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   outputFormat: "markdown",
@@ -53,9 +53,9 @@ topKeywords.forEach((kw) => {
 ```
 
 ```typescript title="WASM - Keyword Context Window"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   outputFormat: "markdown",

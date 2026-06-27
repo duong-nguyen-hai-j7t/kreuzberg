@@ -15,7 +15,7 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "document.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
-    println("Extracted images: ${result.images()?.size ?: 0}")
+    val result = resultOutput.results.first()
+    println("Extracted images: ${result.images?.size ?: 0}")
 }
 ```

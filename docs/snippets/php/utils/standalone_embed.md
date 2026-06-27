@@ -1,6 +1,6 @@
 ```php
 <?php
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\EmbeddingConfig;
 use Xberg\EmbeddingModelType;
 

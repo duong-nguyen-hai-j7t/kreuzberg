@@ -3,9 +3,9 @@
 Register a post-processor that computes word count and other text statistics.
 
 ```typescript title="WASM"
-import init, { registerPostProcessor, extract } from "xberg-wasm";
+import { initWasm, registerPostProcessor, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // Define a word count post-processor
 const wordCountProcessor = {

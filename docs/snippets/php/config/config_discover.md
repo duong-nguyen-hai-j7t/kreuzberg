@@ -2,7 +2,7 @@
 <?php
 declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 
 // Discover configuration from file system
 $config = ExtractionConfig::discover() ?? ExtractionConfig::default();

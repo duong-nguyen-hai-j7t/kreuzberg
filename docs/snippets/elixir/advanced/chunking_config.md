@@ -11,7 +11,7 @@ config_json = Jason.encode!(%{
 })
 
 input = %Xberg.ExtractInput{kind: :uri, uri: "document.pdf", mime_type: "application/pdf"}
-{:ok, output} = Xberg.extract(input, config_json)
+{:ok, output} = Xberg.extract(input: input, config: config_json)
 
 result = List.first(output.results)
 chunks = result.chunks || []
@@ -36,7 +36,7 @@ config_json = Jason.encode!(%{
 })
 
 input = %Xberg.ExtractInput{kind: :uri, uri: "document.md", mime_type: "text/markdown"}
-{:ok, output} = Xberg.extract(input, config_json)
+{:ok, output} = Xberg.extract(input: input, config: config_json)
 
 result = List.first(output.results)
 if result.chunks do

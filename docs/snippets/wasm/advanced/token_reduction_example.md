@@ -1,7 +1,7 @@
 ```typescript title="WASM - Token Counting and Cost Estimation"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   tokenReduction: {
@@ -45,9 +45,9 @@ console.log(`  Total cost (est.): $${costEstimate.totalEstimate.toFixed(6)}`);
 ```
 
 ```typescript title="WASM - Token Reduction for Context Windows"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 interface ContextWindowFit {
   contentLength: number;
@@ -96,9 +96,9 @@ if (!contextFit.fitsInWindow) {
 ```
 
 ```typescript title="WASM - Selective Token Preservation"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   tokenReduction: {

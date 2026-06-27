@@ -2,7 +2,7 @@
 <?php
 declare(strict_types=1);
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 
 $resultOutput = Xberg::extract(\Xberg\ExtractInput::fromUri('document.pdf'), \Xberg\ExtractionConfig::default());
 

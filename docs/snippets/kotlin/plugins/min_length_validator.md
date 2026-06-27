@@ -6,7 +6,7 @@ class MinLengthValidator(private val minLength: Int) : IValidator {
     override fun version(): String = "1.0.0"
 
     override fun validate(result: ExtractedDocument, config: ExtractionConfig) {
-        val length = result.content().length
+        val length = result.content.length
         if (length < minLength) {
             throw IllegalStateException(
                 "Content too short: $length < $minLength characters",

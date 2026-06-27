@@ -1,8 +1,8 @@
 ```typescript title="WASM"
-import init, { extract } from "xberg-wasm";
-import { PageConfig, ExtractionConfig } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
+import { PageConfig, ExtractionConfig } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const fileBuffer = new Uint8Array(/* your file bytes */);
 const mimeType = "application/pdf";

@@ -58,9 +58,9 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "document.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
-    println("Content: ${result.content()}")
-    result.detectedLanguages()?.let { println("Languages: $it") }
-    println("Chunks: ${result.chunks()?.size ?: 0}")
+    val result = resultOutput.results.first()
+    println("Content: ${result.content}")
+    result.detectedLanguages?.let { println("Languages: $it") }
+    println("Chunks: ${result.chunks?.size ?: 0}")
 }
 ```

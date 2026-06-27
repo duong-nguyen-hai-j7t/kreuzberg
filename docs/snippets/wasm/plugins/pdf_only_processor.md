@@ -3,9 +3,9 @@
 Register a post-processor that only processes PDF documents and filters others.
 
 ```typescript title="WASM"
-import init, { extract, registerPostProcessor } from "xberg-wasm";
+import { initWasm, extract, registerPostProcessor } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // Define a PDF-only post-processor
 const pdfOnlyProcessor = {

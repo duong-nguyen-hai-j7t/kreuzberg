@@ -17,7 +17,7 @@ class GenericExtractorClient {
             mimeType = mimeType,
         ),
         config,
-    ).results().first()
+    ).results.first()
 
     suspend fun extract(
         path: Path,
@@ -30,13 +30,13 @@ class GenericExtractorClient {
             mimeType = mimeType,
         ),
         config,
-    ).results().first()
+    ).results.first()
 }
 
 suspend fun extractCustomPayload() {
     val client = GenericExtractorClient()
     val bytes = Files.readAllBytes(Path.of("payload.json"))
     val result = client.extract(bytes, mimeType = "application/json")
-    println("Extracted ${result.content().length} chars")
+    println("Extracted ${result.content.length} chars")
 }
 ```

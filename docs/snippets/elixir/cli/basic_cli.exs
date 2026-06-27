@@ -98,7 +98,7 @@ defmodule XbergCLI do
       IO.puts(:stderr, "Error: Directory not found: #{dir}")
       :error
     else
-      batch_extract(dir, opts)
+      extract_batch(dir, opts)
     end
   end
 
@@ -137,7 +137,7 @@ defmodule XbergCLI do
     end
   end
 
-  defp batch_extract(dir, opts) do
+  defp extract_batch(dir, opts) do
     verbose = Map.get(opts, :verbose, false)
     config = build_config(opts)
 

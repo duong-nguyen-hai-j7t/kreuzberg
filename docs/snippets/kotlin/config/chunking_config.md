@@ -16,11 +16,11 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "document.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
-    val chunks = result.chunks().orEmpty()
+    val result = resultOutput.results.first()
+    val chunks = result.chunks.orEmpty()
     println("Chunks: ${chunks.size}")
     for (chunk in chunks) {
-        println("Length: ${chunk.content().length}")
+        println("Length: ${chunk.content.length}")
     }
 }
 ```
@@ -47,14 +47,14 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "document.md"),
         config,
     )
-    val result = resultOutput.results().first()
-    for (chunk in result.chunks().orEmpty()) {
-        chunk.metadata()?.headingContext()?.let { ctx ->
+    val result = resultOutput.results.first()
+    for (chunk in result.chunks.orEmpty()) {
+        chunk.metadata?.headingContext()?.let { ctx ->
             for (heading in ctx.headings()) {
-                println("Heading L${heading.level()}: ${heading.text()}")
+                println("Heading L${heading.level}: ${heading.text}")
             }
         }
-        val text = chunk.content()
+        val text = chunk.content
         println("Content: ${text.take(100)}...")
     }
 }
@@ -80,10 +80,10 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "document.md"),
         config,
     )
-    val result = resultOutput.results().first()
-    for (chunk in result.chunks().orEmpty()) {
+    val result = resultOutput.results.first()
+    for (chunk in result.chunks.orEmpty()) {
         // Each chunk's content is prefixed with its heading breadcrumb
-        val text = chunk.content()
+        val text = chunk.content
         println("Content: ${text.take(100)}...")
     }
 }

@@ -8,8 +8,8 @@ fun main() {
             ExtractInput(kind = ExtractInputKind.URI, uri = "document.pdf"),
             config,
         )
-        val result = resultOutput.results().first()
-        println(result.content())
+        val result = resultOutput.results.first()
+        println(result.content)
     } catch (e: XbergRsException) {
         System.err.println("Extraction failed: ${e.message}")
         System.err.println("Error code: ${e.code}")

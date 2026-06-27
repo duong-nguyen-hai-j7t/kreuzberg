@@ -21,10 +21,10 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "scanned.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
+    val result = resultOutput.results.first()
 
-    result.ocrElements()?.forEach { element ->
-        println("Text: ${element.text()}")
+    result.ocrElements?.forEach { element ->
+        println("Text: ${element.text}")
         println("Confidence: ${element.confidence().recognition()}")
         println("Geometry: ${element.geometry()}")
         element.rotation()?.let { println("Rotation: ${it}") }

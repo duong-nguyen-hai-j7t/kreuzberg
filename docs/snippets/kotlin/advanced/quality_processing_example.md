@@ -11,9 +11,9 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "scanned_document.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
+    val result = resultOutput.results.first()
 
-    val score = result.qualityScore()
+    val score = result.qualityScore
     if (score != null) {
         if (score < 0.5) {
             println("Warning: Low quality extraction (%.2f)".format(score))

@@ -16,7 +16,7 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "document.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
-    println("Extracted text: ${result.content()}")
+    val result = resultOutput.results.first()
+    println("Extracted text: ${result.content}")
 }
 ```

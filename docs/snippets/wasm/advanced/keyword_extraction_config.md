@@ -1,7 +1,7 @@
 ```typescript title="WASM - Keyword Extraction Setup"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // Note: Keyword extraction requires the 'keywords' feature,
 // which may not be available in all WASM builds.
@@ -35,9 +35,9 @@ console.log(`Extracted keywords: ${Array.from(keywords).slice(0, 10).join(", ")}
 ```
 
 ```typescript title="WASM - Keyword Filtering"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   outputFormat: "markdown",

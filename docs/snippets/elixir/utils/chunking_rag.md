@@ -14,7 +14,7 @@ config_json =
     }
   })
 
-{:ok, output} = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "research_paper.pdf"}, config_json)
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "research_paper.pdf"}, config: config_json)
 
 result = List.first(output.results)
 chunks_with_embeddings =

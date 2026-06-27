@@ -12,8 +12,8 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "document.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
-    println("Quality score: ${result.qualityScore()}")
-    println("Warnings: ${result.processingWarnings()?.size ?: 0}")
+    val result = resultOutput.results.first()
+    println("Quality score: ${result.qualityScore}")
+    println("Warnings: ${result.processingWarnings?.size ?: 0}")
 }
 ```

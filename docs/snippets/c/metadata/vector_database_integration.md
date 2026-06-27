@@ -44,22 +44,18 @@ int main(void) {
         return 1;
     }
 
-    char *chunks_json = xberg_extraction_result_chunks(result);
-    if (chunks_json) {
-        printf("Chunks with embeddings (JSON): %s\n", chunks_json);
-        xberg_free_string(chunks_json);
+    char *results = xberg_extraction_result_results(result);
+    if (results) {
+        printf("Extraction results with chunks and embeddings (JSON): %s\n", results);
+        xberg_free_string(results);
     } else {
-        printf("No chunks produced\n");
+        printf("No results produced\n");
     }
 
-    XBERGMetadata *metadata = xberg_extraction_result_metadata(result);
-    if (metadata) {
-        char *title = xberg_metadata_title(metadata);
-        if (title) {
-            printf("Document title: %s\n", title);
-            xberg_free_string(title);
-        }
-        xberg_metadata_free(metadata);
+    XBERGExtractionSummary *summary = xberg_extraction_result_summary(result);
+    if (summary) {
+        // Access document metadata from summary using xberg_extraction_summary_* accessors
+        xberg_extraction_summary_free(summary);
     }
 
     xberg_extract_input_free(input);

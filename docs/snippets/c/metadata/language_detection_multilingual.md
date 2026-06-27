@@ -40,7 +40,7 @@ int main(void) {
         return 1;
     }
 
-    char *detected_languages_json = xberg_extraction_result_detected_languages(result);
+    char *detected_languages_json = xberg_extraction_result_results(result);
     if (detected_languages_json) {
         printf("Detected languages (JSON array): %s\n", detected_languages_json);
         xberg_free_string(detected_languages_json);

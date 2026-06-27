@@ -4,7 +4,7 @@ defmodule ExtractWithOcr do
     # Build configuration with OCR settings as JSON string
     config = ~s({"ocr": {"backend": "tesseract", "language": "eng"}})
 
-    case Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "scanned.pdf"}, config) do
+    case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "scanned.pdf"}, config: config) do
       {:ok, output} ->
         result = List.first(output.results)
         IO.puts("Extracted via OCR:")

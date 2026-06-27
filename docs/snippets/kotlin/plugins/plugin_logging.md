@@ -17,8 +17,8 @@ class LoggingPostProcessor : IPostProcessor {
     }
 
     override fun process(result: ExtractedDocument, config: ExtractionConfig) {
-        log.info("Processing ${result.mimeType()} (${result.content().length} chars)")
-        if (result.content().isEmpty()) {
+        log.info("Processing ${result.mimeType} (${result.content.length} chars)")
+        if (result.content.isEmpty()) {
             log.warning("Extraction resulted in empty content")
         }
     }

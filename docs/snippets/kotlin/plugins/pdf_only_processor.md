@@ -8,8 +8,8 @@ class PdfOnlyProcessor : IPostProcessor {
     override fun process(result: ExtractedDocument, config: ExtractionConfig) {
         // Guard inside process() in addition to should_process() — the gate
         // saves the JSON roundtrip when this returns false.
-        if (result.mimeType() != "application/pdf") return
-        println("[pdf-only] processing PDF (${result.content().length} chars)")
+        if (result.mimeType != "application/pdf") return
+        println("[pdf-only] processing PDF (${result.content.length} chars)")
     }
 
     override fun processing_stage(): ProcessingStage = ProcessingStage.Middle
@@ -17,7 +17,7 @@ class PdfOnlyProcessor : IPostProcessor {
     override fun should_process(
         _result: ExtractedDocument,
         _config: ExtractionConfig,
-    ): Boolean = _result.mimeType() == "application/pdf"
+    ): Boolean = _result.mimeType == "application/pdf"
 
     override fun estimated_duration_ms(_result: ExtractedDocument): Long = 5L
 

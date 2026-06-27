@@ -1,7 +1,7 @@
 ```php title="Document Structure Config (PHP)"
 <?php
 use Xberg\ExtractionConfig;
-use Xberg\Xberg;
+use Xberg\XbergApi;
 
 $config = new ExtractionConfig(includeDocumentStructure: true);
 

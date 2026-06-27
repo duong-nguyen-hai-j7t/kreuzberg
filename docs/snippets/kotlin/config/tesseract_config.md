@@ -23,7 +23,7 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "scanned.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
-    println("OCR text: ${result.content()}")
+    val result = resultOutput.results.first()
+    println("OCR text: ${result.content}")
 }
 ```

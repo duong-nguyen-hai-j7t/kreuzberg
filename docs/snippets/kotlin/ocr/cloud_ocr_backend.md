@@ -12,7 +12,7 @@ class CloudOcrBackend(
     override fun version(): String = "1.0.0"
 
     override fun process_image(image_bytes: ByteArray, config: OcrConfig): ExtractedDocument {
-        val text = callCloudApi(image_bytes, config.language())
+        val text = callCloudApi(image_bytes, config.language)
         return ExtractedDocument.builder()
             .withContent(text)
             .withMimeType("text/plain")

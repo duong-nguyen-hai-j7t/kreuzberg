@@ -9,7 +9,7 @@ config_json =
     }
   })
 
-{:ok, output} = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config_json)
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config: config_json)
 
 result = List.first(output.results)
 IO.puts("Content length: #{String.length(result.content || "")}")

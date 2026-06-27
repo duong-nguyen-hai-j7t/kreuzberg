@@ -3,7 +3,7 @@
 ```elixir
 config_json = Jason.encode!(%{"enable_quality_processing" => true})
 
-{:ok, output} = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "scanned_document.pdf"}, config_json)
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "scanned_document.pdf"}, config: config_json)
 
 result = List.first(output.results)
 quality_score = result.quality_score || 0.0

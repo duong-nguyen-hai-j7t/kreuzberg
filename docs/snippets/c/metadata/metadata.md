@@ -20,17 +20,17 @@ int main(void) {
         return 1;
     }
 
-    char *content = xberg_extraction_result_content(result);
-    if (content) {
-        printf("Content: %s\n", content);
+    char *results_json = xberg_extraction_result_results(result);
+    if (results_json) {
+        printf("Results: %s\n", results_json);
     }
-    xberg_free_string(content);
+    xberg_free_string(results_json);
 
-    char *metadata_json = xberg_extraction_result_metadata(result);
-    if (metadata_json) {
-        printf("Metadata: %s\n", metadata_json);
+    char *full_json = xberg_extraction_result_to_json(result);
+    if (full_json) {
+        printf("Full result: %s\n", full_json);
     }
-    xberg_free_string(metadata_json);
+    xberg_free_string(full_json);
 
     xberg_extract_input_free(input);
     xberg_extraction_result_free(result);

@@ -6,10 +6,10 @@ class WordCountProcessor : IPostProcessor {
     override fun version(): String = "1.0.0"
 
     override fun process(result: ExtractedDocument, config: ExtractionConfig) {
-        val wordCount = result.content().split(Regex("\\s+")).count { it.isNotEmpty() }
+        val wordCount = result.content.split(Regex("\\s+")).count { it.isNotEmpty() }
         // ExtractedDocument is an immutable record on the Java side; observe
         // and report rather than mutate.
-        println("[word-count] ${result.mimeType()} -> $wordCount words")
+        println("[word-count] ${result.mimeType} -> $wordCount words")
     }
 
     override fun processing_stage(): ProcessingStage = ProcessingStage.Early
@@ -17,7 +17,7 @@ class WordCountProcessor : IPostProcessor {
     override fun should_process(
         _result: ExtractedDocument,
         _config: ExtractionConfig,
-    ): Boolean = _result.content().isNotEmpty()
+    ): Boolean = _result.content.isNotEmpty()
 
     override fun estimated_duration_ms(_result: ExtractedDocument): Long = 1L
 

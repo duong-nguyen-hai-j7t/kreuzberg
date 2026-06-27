@@ -22,8 +22,8 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "document.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
-    val pages = result.pages().orEmpty()
+    val result = resultOutput.results.first()
+    val pages = result.pages.orEmpty()
     println("Pages: ${pages.size}")
 }
 ```

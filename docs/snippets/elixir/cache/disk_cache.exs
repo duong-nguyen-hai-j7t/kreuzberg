@@ -327,7 +327,7 @@ defmodule XbergDiskCache do
   @doc """
   Extract multiple files with batch caching.
   """
-  def batch_extract_with_cache(file_paths, cache_dir, opts \\ []) do
+  def extract_batch_with_cache(file_paths, cache_dir, opts \\ []) do
     cache = Cache.new(cache_dir, opts)
 
     results =
@@ -409,7 +409,7 @@ IO.puts("-" <> String.duplicate("-", 40) <> "\n")
 
 documents = ["doc1.pdf", "doc2.pdf", "doc3.pdf"]
 
-{results, stats} = XbergDiskCache.batch_extract_with_cache(documents, cache_dir)
+{results, stats} = XbergDiskCache.extract_batch_with_cache(documents, cache_dir)
 
 successful = Enum.count(results, &match?({:ok, _, _}, &1))
 IO.puts("Batch results:")

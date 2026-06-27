@@ -17,9 +17,9 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "multilingual_document.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
+    val result = resultOutput.results.first()
 
-    val detected = result.detectedLanguages() ?: emptyList()
+    val detected = result.detectedLanguages ?: emptyList()
     println("Detected languages: $detected")
     for (language in detected) {
         println("  - $language")

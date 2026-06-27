@@ -16,8 +16,8 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "scanned.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
-    println("Content length: ${result.content().length}")
-    println("Tables detected: ${result.tables()?.size ?: 0}")
+    val result = resultOutput.results.first()
+    println("Content length: ${result.content.length}")
+    println("Tables detected: ${result.tables?.size ?: 0}")
 }
 ```

@@ -3,9 +3,9 @@
 Demonstrate the pattern for using registered plugins during document extraction.
 
 ```typescript title="WASM"
-import init, { extract, registerPostProcessor } from "xberg-wasm";
+import { initWasm, extract, registerPostProcessor } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 // Register a custom post-processor
 const customProcessor = {

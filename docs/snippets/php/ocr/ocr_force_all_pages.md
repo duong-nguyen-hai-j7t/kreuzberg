@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Xberg\Xberg;
+use Xberg\XbergApi;
 use Xberg\ExtractionConfig;
 use Xberg\OcrConfig;
 
@@ -19,7 +19,7 @@ $config = new ExtractionConfig(
     forceOcr: true
 );
 
-$output = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('mixed_scanned_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
+$output = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('mixed_scanned_document.pdf'), $config ?? \Xberg\ExtractionConfig::default());
 $result = $output->results[0];
 
 echo "Force OCR Results:\n";
@@ -37,7 +37,7 @@ $nativeConfig = new ExtractionConfig(
     forceOcr: false  // Default: use native text extraction when available
 );
 
-$resultNative = \Xberg\Xberg::extract(\Xberg\ExtractInput::fromUri('mixed_scanned_document.pdf'), $nativeConfig)->results[0];
+$resultNative = \Xberg\XbergApi::extract(\Xberg\ExtractInput::fromUri('mixed_scanned_document.pdf'), $nativeConfig)->results[0];
 
 echo "\nNative Text Extraction (no force):\n";
 echo "Characters extracted: " . strlen($resultNative->content) . "\n";

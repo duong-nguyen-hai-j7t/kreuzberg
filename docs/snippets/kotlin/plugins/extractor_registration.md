@@ -16,7 +16,7 @@ fun useRegisteredExtractors() {
         ),
         config,
     )
-    val result: ExtractedDocument = output.results().first()
-    println("Extracted ${result.content().length} characters via ${result.mimeType()}")
+    val result: ExtractedDocument = output.results.first()
+    println("Extracted ${result.content.length} characters via ${result.mimeType}")
 }
 ```

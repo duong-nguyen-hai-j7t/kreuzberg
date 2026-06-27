@@ -1,7 +1,7 @@
 ```typescript title="WASM - Basic Language Detection"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   languageDetection: {
@@ -19,9 +19,9 @@ console.log(`Detected languages: ${result.detectedLanguages?.join(", ")}`);
 ```
 
 ```typescript title="WASM - Multi-Language Detection"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   languageDetection: {
@@ -45,9 +45,9 @@ if (result.detectedLanguages && result.detectedLanguages.length > 1) {
 ```
 
 ```typescript title="WASM - Language-Specific Extraction"
-import init, { extract } from "xberg-wasm";
+import { initWasm, extract } from "@xberg-io/xberg-wasm";
 
-await init();
+await initWasm();
 
 const config = {
   languageDetection: {

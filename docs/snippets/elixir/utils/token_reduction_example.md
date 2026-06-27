@@ -9,7 +9,7 @@ config_json =
     }
   })
 
-{:ok, output} = Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "verbose_document.pdf"}, config_json)
+{:ok, output} = Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "verbose_document.pdf"}, config: config_json)
 
 result = List.first(output.results)
 metadata = result.metadata || %{}

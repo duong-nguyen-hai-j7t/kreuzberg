@@ -5,7 +5,7 @@ defmodule Example do
          {:read, {:ok, content}} <- {:read, File.read(path)},
          {:mime, {:ok, mime_type}} <- {:mime, detect_mime_type(content)},
          input = %Xberg.ExtractInput{kind: :bytes, bytes: content, mime_type: mime_type},
-         {:extract, {:ok, output}} <- {:extract, Xberg.extract(input, nil)} do
+         {:extract, {:ok, output}} <- {:extract, Xberg.extract(input: input, config: nil)} do
       result = List.first(output.results)
       {:ok, result}
     else

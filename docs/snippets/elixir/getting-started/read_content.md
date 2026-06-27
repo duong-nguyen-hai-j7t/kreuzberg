@@ -2,7 +2,7 @@
 defmodule ReadContent do
   def process_extracted_content do
     # Extract content and iterate over lines
-    case Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, nil) do
+    case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "document.pdf"}, config: nil) do
       {:ok, output} ->
         result = List.first(output.results)
         IO.puts("Processing extracted content:")

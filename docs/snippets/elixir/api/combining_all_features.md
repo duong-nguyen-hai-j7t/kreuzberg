@@ -26,7 +26,7 @@ defmodule Example do
       }
     })
 
-    case Xberg.extract(%Xberg.ExtractInput{kind: :uri, uri: "report.pdf"}, config_json) do
+    case Xberg.extract(input: %Xberg.ExtractInput{kind: :uri, uri: "report.pdf"}, config: config_json) do
       {:ok, output} ->
         result = List.first(output.results)
         IO.puts("Extraction successful")

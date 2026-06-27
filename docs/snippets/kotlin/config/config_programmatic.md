@@ -29,7 +29,7 @@ fun main() {
         ExtractInput(kind = ExtractInputKind.URI, uri = "document.pdf"),
         config,
     )
-    val result = resultOutput.results().first()
-    println("Content length: ${result.content().length}")
+    val result = resultOutput.results.first()
+    println("Content length: ${result.content.length}")
 }
 ```
