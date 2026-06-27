@@ -6,6 +6,7 @@ config = Xberg::ExtractionConfig.new(
   force_ocr: true
 )
 
-result = Xberg.extract('document.pdf', config: config)
-puts result.content
+input = Xberg::ExtractInput.new(uri: 'document.pdf')
+result = Xberg.extract(input, config)
+puts result.results.first.content
 ```
