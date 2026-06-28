@@ -374,7 +374,7 @@ fn copy_compiled_library() {
                         .and_then(|p| p.parent())
                         .map(|p| p.to_string_lossy().to_string())
                 })
-                .ok_or_else(|| std::env::VarError::NotPresent)
+                .ok_or(std::env::VarError::NotPresent)
         })
         .unwrap_or_else(|_| "target".to_string());
 
@@ -393,11 +393,11 @@ fn copy_compiled_library() {
             PathBuf::from(&manifest_dir).join("../lib/src/xberg_bridge_generated")
         });
 
-    if !dest_dir.exists() {
-        if let Err(e) = fs::create_dir_all(&dest_dir) {
-            println!("cargo:warning=failed to create destination directory for library copy: {e}");
-            return;
-        }
+    if !dest_dir.exists()
+        && let Err(e) = fs::create_dir_all(&dest_dir)
+    {
+        println!("cargo:warning=failed to create destination directory for library copy: {e}");
+        return;
     }
 
     let dest = dest_dir.join(&lib_name);
