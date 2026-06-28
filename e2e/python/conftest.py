@@ -95,6 +95,21 @@ def mock_server() -> Generator[str, None, None]:
     proc.wait()
 
 
+@pytest.fixture(scope="session", autouse=True)
+def _chdir_test_documents() -> Generator[None, None, None]:
+    """Run from the test-documents dir so relative file URIs (e.g. ``text/report.txt``) resolve.
+
+    Mirrors the other language suites, which chdir into ``test_documents`` before running.
+    """
+    docs_dir = os.environ.get("XBERG_TEST_DOCUMENTS_DIR") or str(_E2E_DIR.parent / "test_documents")
+    previous = os.getcwd()
+    os.chdir(docs_dir)
+    try:
+        yield
+    finally:
+        os.chdir(previous)
+
+
 def _make_request(method: str, path: str, **kwargs: object) -> object:
     """Make an HTTP request to the mock server."""
     import urllib.request  # noqa: PLC0415

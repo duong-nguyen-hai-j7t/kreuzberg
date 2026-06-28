@@ -29,8 +29,9 @@ def _coerce_enum(enum_cls: type[_E], value: object) -> _E:
     if isinstance(value, enum_cls):
         return value
     if value is None:
-        msg = f"unknown {getattr(enum_cls, '__name__', enum_cls)!s} value: {value!r}"
-        raise ValueError(msg)
+        # Optional enum fields are left unset (None) by callers; pass the None through
+        # so the Rust binding receives its Option default rather than a hard error.
+        return cast(_E, None)
     s = str(value).replace("-", "_").replace(" ", "_")
     snake = _pascal_to_snake(s)
     candidates = (
@@ -1154,6 +1155,13 @@ def _coerce_dict_file_extraction_config(value: dict[str, Any]) -> FileExtraction
     for _k, _cls in _data_enum_coercions.items():
         if _k in value and value[_k] is not None and not isinstance(value[_k], _cls):
             value[_k] = _cls(value[_k])
+    # The core `FileExtractionConfig` uses `#[serde(default)]` without
+    # `deny_unknown_fields`, so unknown keys (e.g. top-level `ExtractionConfig`
+    # fields nested here) are ignored rather than rejected. Mirror that leniency.
+    import inspect  # noqa: PLC0415
+
+    _allowed = set(inspect.signature(FileExtractionConfig).parameters)
+    value = {_k: _v for _k, _v in value.items() if _k in _allowed}
     return FileExtractionConfig(**value)
 @overload
 def _to_rust_file_extraction_config(value: None) -> None: ...

@@ -20820,7 +20820,7 @@ impl xberg::DocumentExtractor for PyDocumentExtractorBridge {
                 let ctx = caller_ctx.map_err(|e| xberg::XbergError::Other(format!("Plugin '{}' method 'extract' failed: {}", cached_name, e)))?.into_bound(py);
 
                 let bound_method = obj.getattr("extract").map_err(|e| xberg::XbergError::Other(format!("Plugin '{}' method 'extract' failed: {}", cached_name, e)))?;
-                let py_result = ctx.call_method1("run", (bound_method, input, ExtractionConfig::from(config_owned.clone())))
+                let py_result = ctx.call_method1("run", (bound_method, ExtractInput::from(input.clone()), ExtractionConfig::from(config_owned.clone())))
                     .map_err(|e| xberg::XbergError::Other(format!("Plugin '{}' method 'extract' failed: {}", cached_name, e)))?;        // Native fast-path: the host returned the binding's result object. Extract it and convert
                 // via `From<ExtractedDocument>` for the core type, skipping the JSON round-trip. Fall
                 // through to the mapping path below when the host returned a plain dict/mapping instead.
@@ -23509,49 +23509,43 @@ impl From<xberg::Entity> for Entity {
 #[allow(clippy::redundant_closure, clippy::useless_conversion)]
 impl From<ExtractedDocument> for xberg::ExtractedDocument {
     fn from(val: ExtractedDocument) -> Self {
-        Self {
-            content: val.content,
-            mime_type: val.mime_type.into(),
-            metadata: val.metadata.into(),
-            extraction_method: val.extraction_method.map(Into::into),
-            tables: val.tables.into_iter().map(Into::into).collect(),
-            detected_languages: val.detected_languages.map(|v| v.into_iter().collect()),
-            chunks: val.chunks.map(|v| v.into_iter().map(Into::into).collect()),
-            images: val.images.map(|v| v.into_iter().map(Into::into).collect()),
-            pages: val.pages.map(|v| v.into_iter().map(Into::into).collect()),
-            elements: val.elements.map(|v| v.into_iter().map(Into::into).collect()),
-            djot_content: val.djot_content.map(Into::into),
-            ocr_elements: val.ocr_elements.map(|v| v.into_iter().map(Into::into).collect()),
-            document: val.document.map(Into::into),
-            extracted_keywords: val.extracted_keywords.map(|v| v.into_iter().map(Into::into).collect()),
-            quality_score: val.quality_score,
-            processing_warnings: val.processing_warnings.into_iter().map(Into::into).collect(),
-            annotations: val.annotations.map(|v| v.into_iter().map(Into::into).collect()),
-            children: val.children.map(|v| v.into_iter().map(Into::into).collect()),
-            uris: val.uris.map(|v| v.into_iter().map(Into::into).collect()),
-            revisions: val.revisions.map(|v| v.into_iter().map(Into::into).collect()),
-            structured_output: val
-                .structured_output
-                .as_ref()
-                .and_then(|s| serde_json::from_str(s).ok()),
-            code_intelligence: val
-                .code_intelligence
-                .as_ref()
-                .and_then(|s| serde_json::from_str(s).ok()),
-            llm_usage: val.llm_usage.map(|v| v.into_iter().map(Into::into).collect()),
-            entities: val.entities.map(|v| v.into_iter().map(Into::into).collect()),
-            summary: val.summary.map(Into::into),
-            extraction_confidence: val.extraction_confidence.map(Into::into),
-            translation: val.translation.map(Into::into),
-            page_classifications: val
-                .page_classifications
-                .map(|v| v.into_iter().map(Into::into).collect()),
-            redaction_report: val.redaction_report.map(Into::into),
-            formulas: val.formulas.into_iter().map(Into::into).collect(),
-            form_fields: val.form_fields.into_iter().map(Into::into).collect(),
-            formatted_content: val.formatted_content,
-            ..Default::default()
-        }
+        // `xberg::ExtractedDocument` has private fields (`internal_document`,
+        // `ocr_internal_document`), so it cannot be built with a struct literal from this
+        // crate. Start from `Default` and assign the public fields.
+        let mut out = <xberg::ExtractedDocument>::default();
+        out.content = val.content;
+        out.mime_type = val.mime_type.into();
+        out.metadata = val.metadata.into();
+        out.extraction_method = val.extraction_method.map(Into::into);
+        out.tables = val.tables.into_iter().map(Into::into).collect();
+        out.detected_languages = val.detected_languages.map(|v| v.into_iter().collect());
+        out.chunks = val.chunks.map(|v| v.into_iter().map(Into::into).collect());
+        out.images = val.images.map(|v| v.into_iter().map(Into::into).collect());
+        out.pages = val.pages.map(|v| v.into_iter().map(Into::into).collect());
+        out.elements = val.elements.map(|v| v.into_iter().map(Into::into).collect());
+        out.djot_content = val.djot_content.map(Into::into);
+        out.ocr_elements = val.ocr_elements.map(|v| v.into_iter().map(Into::into).collect());
+        out.document = val.document.map(Into::into);
+        out.extracted_keywords = val.extracted_keywords.map(|v| v.into_iter().map(Into::into).collect());
+        out.quality_score = val.quality_score;
+        out.processing_warnings = val.processing_warnings.into_iter().map(Into::into).collect();
+        out.annotations = val.annotations.map(|v| v.into_iter().map(Into::into).collect());
+        out.children = val.children.map(|v| v.into_iter().map(Into::into).collect());
+        out.uris = val.uris.map(|v| v.into_iter().map(Into::into).collect());
+        out.revisions = val.revisions.map(|v| v.into_iter().map(Into::into).collect());
+        out.structured_output = val.structured_output.as_ref().and_then(|s| serde_json::from_str(s).ok());
+        out.code_intelligence = val.code_intelligence.as_ref().and_then(|s| serde_json::from_str(s).ok());
+        out.llm_usage = val.llm_usage.map(|v| v.into_iter().map(Into::into).collect());
+        out.entities = val.entities.map(|v| v.into_iter().map(Into::into).collect());
+        out.summary = val.summary.map(Into::into);
+        out.extraction_confidence = val.extraction_confidence.map(Into::into);
+        out.translation = val.translation.map(Into::into);
+        out.page_classifications = val.page_classifications.map(|v| v.into_iter().map(Into::into).collect());
+        out.redaction_report = val.redaction_report.map(Into::into);
+        out.formulas = val.formulas.into_iter().map(Into::into).collect();
+        out.form_fields = val.form_fields.into_iter().map(Into::into).collect();
+        out.formatted_content = val.formatted_content;
+        out
     }
 }
 
