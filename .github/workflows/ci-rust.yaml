@@ -14,6 +14,7 @@ on:
       - "Cargo.lock"
       - "rust-toolchain.toml"
       - ".github/workflows/ci-rust.yaml"
+      - "scripts/ci/rust/**"
   pull_request:
     branches: [main]
     paths:
@@ -27,6 +28,7 @@ on:
       - "Cargo.lock"
       - "rust-toolchain.toml"
       - ".github/workflows/ci-rust.yaml"
+      - "scripts/ci/rust/**"
   workflow_dispatch:
 
 concurrency:
