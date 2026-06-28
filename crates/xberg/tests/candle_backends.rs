@@ -65,6 +65,14 @@ fn require_models() -> bool {
 /// - If the env var is set: return the path.
 /// - If unset and `XBERG_REQUIRE_MODELS` is truthy: panic with a helpful message.
 /// - If unset and `XBERG_REQUIRE_MODELS` is falsy: return None (for graceful skip).
+///
+/// Only the local-weight models call this; gate it so single-model feature
+/// builds (e.g. the per-model GPU matrix) don't see it as dead code.
+#[cfg(any(
+    feature = "candle-hunyuan-ocr",
+    feature = "candle-deepseek-ocr",
+    feature = "candle-paddleocr-vl"
+))]
 fn check_local_model_path(env_var: &str, model_name: &str) -> Option<String> {
     match std::env::var(env_var) {
         Ok(p) => Some(p),
