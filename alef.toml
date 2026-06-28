@@ -186,6 +186,7 @@ sources = [
   "crates/xberg/src/plugins/processor/trait.rs",
   "crates/xberg/src/plugins/processor/mod.rs",
 ]
+
 features = [
   "full",
   "pdf",
@@ -236,6 +237,18 @@ features = [
   "structured",
   "url-ingestion",
 ]
+
+[[crates.source_crates]]
+name = "crawlberg"
+sources = [
+  "../crawlberg/crates/crawlberg/src/types/config.rs",
+  "../crawlberg/crates/crawlberg/src/types/discovery.rs",
+  "../crawlberg/crates/crawlberg/src/net/ssrf.rs",
+]
+roots = ["crawlberg::CrawlConfig"]
+
+[crates.extra_dependencies]
+crawlberg = { workspace = true }
 
 [crates.python]
 module_name = "_xberg"
@@ -421,6 +434,7 @@ default_features = false
 
 [crates.wasm]
 package_name = "@xberg-io/xberg-wasm"
+features = ["wasm-target", "url-ingestion"]
 exclude_types = [
   # ORT/runtime-only types not available in the wasm-target feature set
   "OcrFallbackDecision",
@@ -514,7 +528,6 @@ exclude_functions = [
   "batch_extract_files",
   "batch_extract_files_sync",
 ]
-features = ["wasm-target"]
 
 [crates.wasm.extra_dependencies]
 async-trait = "0.1"
@@ -1150,7 +1163,8 @@ exclude_functions = [
 
 [crates.r]
 package_name = "xberg"
-features = ["wasm-target"]
+features = ["wasm-target", "url-ingestion"]
+default_features = false
 exclude_types = [
   # ORT/runtime-only types not available in the wasm-target feature set
   "OcrFallbackDecision",
@@ -3535,6 +3549,7 @@ authors = ["Na'aman Hirschfeld <naaman@xberg.io>"]
 keywords = ["document", "extraction", "pdf", "ocr", "text"]
 
 [crates.scaffold.cargo]
+rustc_wrapper = ".cargo/rustc-wrapper.sh"
 
 # Force dynamic CRT (/MD) for cc-rs MSVC builds. xberg-tesseract uses
 # cmake-rs which picks /MD, but cc-rs builds (e.g. esaxx-rs via gliner via

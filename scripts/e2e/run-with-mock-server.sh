@@ -39,16 +39,16 @@ mock_servers_json=""
 for _ in $(seq 1 20); do
   if IFS= read -r -t 1 line <&4; then
     case "$line" in
-      MOCK_SERVER_URL=*)
-        mock_server_url="${line#MOCK_SERVER_URL=}"
-        ;;
-      MOCK_SERVERS=*)
-        mock_servers_json="${line#MOCK_SERVERS=}"
-        break
-        ;;
-      *)
-        printf '%s\n' "$line" >&2
-        ;;
+    MOCK_SERVER_URL=*)
+      mock_server_url="${line#MOCK_SERVER_URL=}"
+      ;;
+    MOCK_SERVERS=*)
+      mock_servers_json="${line#MOCK_SERVERS=}"
+      break
+      ;;
+    *)
+      printf '%s\n' "$line" >&2
+      ;;
     esac
   fi
 done

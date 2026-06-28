@@ -78,8 +78,8 @@ public final class PostProcessorBridge implements AutoCloseable {
 
     private void initStubName(long offset) throws ReflectiveOperationException {
         var stubName = LINKER.upcallStub(LOOKUP.bind(this, "handleName",
-            MethodType.methodType(int.class, MemorySegment.class)),
-            FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS),
+            MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
+            FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubName);
     }
@@ -87,7 +87,7 @@ public final class PostProcessorBridge implements AutoCloseable {
     private void initStubVersion(long offset) throws ReflectiveOperationException {
         var stubVersion = LINKER.upcallStub(LOOKUP.bind(this, "handleVersion",
             MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
-            FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
+            FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubVersion);
     }
@@ -95,7 +95,7 @@ public final class PostProcessorBridge implements AutoCloseable {
     private void initStubInitialize(long offset) throws ReflectiveOperationException {
         var stubInitialize = LINKER.upcallStub(LOOKUP.bind(this, "handleInitialize",
             MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class)),
-            FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
+            FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubInitialize);
     }
@@ -103,16 +103,18 @@ public final class PostProcessorBridge implements AutoCloseable {
     private void initStubShutdown(long offset) throws ReflectiveOperationException {
         var stubShutdown = LINKER.upcallStub(LOOKUP.bind(this, "handleShutdown",
             MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class)),
-            FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
+            FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubShutdown);
     }
 
     private void initStubProcess(long offset) throws ReflectiveOperationException {
         var stubProcess = LINKER.upcallStub(LOOKUP.bind(this, "handleProcess",
-            MethodType.methodType(long.class, MemorySegment.class, MemorySegment.class)),
+            MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
             FunctionDescriptor.of(
                 ValueLayout.JAVA_LONG,
+                ValueLayout.ADDRESS,
+                ValueLayout.ADDRESS,
                 ValueLayout.ADDRESS,
                 ValueLayout.ADDRESS
             ),
@@ -123,7 +125,7 @@ public final class PostProcessorBridge implements AutoCloseable {
     private void initStubProcessingStage(long offset) throws ReflectiveOperationException {
         var stubProcessingStage = LINKER.upcallStub(LOOKUP.bind(this, "handleProcessingStage",
             MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
-            FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
+            FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubProcessingStage);
     }
@@ -134,10 +136,14 @@ public final class PostProcessorBridge implements AutoCloseable {
                 int.class,
                 MemorySegment.class,
                 MemorySegment.class,
+                MemorySegment.class,
+                MemorySegment.class,
                 MemorySegment.class
             )),
             FunctionDescriptor.of(
-                ValueLayout.JAVA_INT,
+                ValueLayout.JAVA_LONG,
+                ValueLayout.ADDRESS,
+                ValueLayout.ADDRESS,
                 ValueLayout.ADDRESS,
                 ValueLayout.ADDRESS,
                 ValueLayout.ADDRESS
@@ -150,7 +156,7 @@ public final class PostProcessorBridge implements AutoCloseable {
         var stubEstimatedDurationMs = LINKER.upcallStub(LOOKUP.bind(this, "handleEstimatedDurationMs",
             MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
             FunctionDescriptor.of(
-                ValueLayout.JAVA_INT,
+                ValueLayout.JAVA_LONG,
                 ValueLayout.ADDRESS,
                 ValueLayout.ADDRESS,
                 ValueLayout.ADDRESS,
@@ -163,7 +169,7 @@ public final class PostProcessorBridge implements AutoCloseable {
     private void initStubPriority(long offset) throws ReflectiveOperationException {
         var stubPriority = LINKER.upcallStub(LOOKUP.bind(this, "handlePriority",
             MethodType.methodType(int.class, MemorySegment.class, MemorySegment.class, MemorySegment.class)),
-            FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
+            FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS),
             arena);
         vtable.set(ValueLayout.ADDRESS, offset, stubPriority);
     }
@@ -244,7 +250,9 @@ public final class PostProcessorBridge implements AutoCloseable {
     private int handleShouldProcess(
         MemorySegment userData,
         MemorySegment _result_in,
-        MemorySegment _config_in
+        MemorySegment _config_in,
+        MemorySegment outResult,
+        MemorySegment outError
     ) {
         try {
             String _result_json = _result_in.reinterpret(Long.MAX_VALUE).getString(0);
@@ -252,25 +260,47 @@ public final class PostProcessorBridge implements AutoCloseable {
             String _config_json = _config_in.reinterpret(Long.MAX_VALUE).getString(0);
             ExtractionConfig _config = JSON.readValue(_config_json, ExtractionConfig.class);
             boolean callbackResult = impl.should_process(_result, _config);
-            return callbackResult ? 1 : 0;
-        } catch (Throwable e) { return 0; }
+            String json = JSON.writeValueAsString(callbackResult);
+            MemorySegment jsonCs = arena.allocateFrom(json);
+            outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
+            return 0;
+        } catch (Throwable e) {
+            writeError(outError, e);
+            return 1;
+        }
     }
 
-    private long handleEstimatedDurationMs(
+    private int handleEstimatedDurationMs(
         MemorySegment userData,
-        MemorySegment _result_in
+        MemorySegment _result_in,
+        MemorySegment outResult,
+        MemorySegment outError
     ) {
         try {
             String _result_json = _result_in.reinterpret(Long.MAX_VALUE).getString(0);
             ExtractedDocument _result = JSON.readValue(_result_json, ExtractedDocument.class);
-            return impl.estimated_duration_ms(_result);
-        } catch (Throwable e) { return 0L; }
+            long callbackResult = impl.estimated_duration_ms(_result);
+            String json = JSON.writeValueAsString(callbackResult);
+            MemorySegment jsonCs = arena.allocateFrom(json);
+            outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
+            return 0;
+        } catch (Throwable e) {
+            writeError(outError, e);
+            return 1;
+        }
     }
 
-    private int handlePriority(MemorySegment userData) {
+    private int handlePriority(MemorySegment userData, MemorySegment outResult, MemorySegment outError) {
         try {
-            return impl.priority();
-        } catch (Throwable e) { return 0; }
+            int callbackResult = impl.priority();
+            String json = JSON.writeValueAsString(callbackResult);
+            MemorySegment jsonCs = arena.allocateFrom(json);
+            outResult.set(ValueLayout.ADDRESS, 0, jsonCs);
+            return 0;
+        } catch (Throwable e) {
+            writeError(outError, e);
+            return 1;
+        }
     }
 
     private void writeError(MemorySegment outError, Throwable e) {
@@ -301,7 +331,7 @@ public final class PostProcessorBridge implements AutoCloseable {
             try (var nameArena = Arena.ofShared()) {
                 var nameCs = nameArena.allocateFrom(impl.name());
                 MemorySegment outErr = nameArena.allocate(ValueLayout.ADDRESS);
-                int rc = (int) NativeLib.XBERG_REGISTER_POST_PROCESSOR.invoke(
+                int rc = (int) (long) NativeLib.XBERG_REGISTER_POST_PROCESSOR.invoke(
                     nameCs,
                     bridge.vtableSegment(),
                     MemorySegment.NULL,
@@ -330,7 +360,7 @@ public final class PostProcessorBridge implements AutoCloseable {
             try (var nameArena = Arena.ofShared()) {
                 var nameCs = nameArena.allocateFrom(name);
                 MemorySegment outErr = nameArena.allocate(ValueLayout.ADDRESS);
-                int rc = (int) NativeLib.XBERG_UNREGISTER_POST_PROCESSOR.invoke(nameCs, outErr);
+                int rc = (int) (long) NativeLib.XBERG_UNREGISTER_POST_PROCESSOR.invoke(nameCs, outErr);
                 if (rc != 0) {
                     MemorySegment errPtr = outErr.get(ValueLayout.ADDRESS, 0);
                     String msg = errPtr.equals(MemorySegment.NULL)
@@ -354,7 +384,7 @@ public final class PostProcessorBridge implements AutoCloseable {
         try {
             try (var arena = Arena.ofShared()) {
                 MemorySegment outErr = arena.allocate(ValueLayout.ADDRESS);
-                int rc = (int) NativeLib.XBERG_CLEAR_POST_PROCESSOR.invoke(outErr);
+                int rc = (int) (long) NativeLib.XBERG_CLEAR_POST_PROCESSOR.invoke(outErr);
                 if (rc != 0) {
                     MemorySegment errPtr = outErr.get(ValueLayout.ADDRESS, 0);
                     String msg = errPtr.equals(MemorySegment.NULL)

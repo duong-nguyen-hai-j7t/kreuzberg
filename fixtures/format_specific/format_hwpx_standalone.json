@@ -1,32 +1,28 @@
 {
-  "id": "format_hwpx_standalone",
-  "category": "format_specific",
-  "description": "Standalone HWPX extraction using extract",
-  "tags": [
-    "format_specific",
-    "hwpx",
-    "text_extraction"
-  ],
-  "call": "extract",
-  "input": {
-    "kind": "uri",
-    "uri": "hwpx/simple.hwpx",
-    "mime_type": "application/haansofthwpx",
-    "filename": "simple.hwpx"
-  },
-  "assertions": [
-    {
-      "type": "not_error"
-    },
-    {
-      "type": "min_length",
-      "field": "results[0].content",
-      "value": 20
-    },
-    {
-      "type": "contains",
-      "field": "results[0].content",
-      "value": "Hello from HWPX"
-    }
-  ]
+	"id": "format_hwpx_standalone",
+	"category": "format_specific",
+	"description": "Standalone HWPX extraction using extract",
+	"tags": ["format_specific", "hwpx", "text_extraction"],
+	"call": "extract",
+	"input": {
+		"kind": "uri",
+		"uri": "hwpx/simple.hwpx",
+		"mime_type": "application/haansofthwpx",
+		"filename": "simple.hwpx"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "results[0].content",
+			"value": 20
+		},
+		{
+			"type": "contains",
+			"field": "results[0].content",
+			"value": "Hello from HWPX"
+		}
+	]
 }

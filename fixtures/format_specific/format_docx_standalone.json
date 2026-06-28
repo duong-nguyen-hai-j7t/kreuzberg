@@ -1,27 +1,23 @@
 {
-  "id": "format_docx_standalone",
-  "category": "format_specific",
-  "description": "Standalone DOCX extraction using extract",
-  "tags": [
-    "format_specific",
-    "docx",
-    "text_extraction"
-  ],
-  "call": "extract",
-  "input": {
-    "kind": "uri",
-    "uri": "docx/fake.docx",
-    "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "filename": "fake.docx"
-  },
-  "assertions": [
-    {
-      "type": "not_error"
-    },
-    {
-      "type": "min_length",
-      "field": "results[0].content",
-      "value": 20
-    }
-  ]
+	"id": "format_docx_standalone",
+	"category": "format_specific",
+	"description": "Standalone DOCX extraction using extract",
+	"tags": ["format_specific", "docx", "text_extraction"],
+	"call": "extract",
+	"input": {
+		"kind": "uri",
+		"uri": "docx/fake.docx",
+		"mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+		"filename": "fake.docx"
+	},
+	"assertions": [
+		{
+			"type": "not_error"
+		},
+		{
+			"type": "min_length",
+			"field": "results[0].content",
+			"value": 20
+		}
+	]
 }
