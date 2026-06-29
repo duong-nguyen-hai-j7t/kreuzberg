@@ -368,6 +368,17 @@ pub struct ExtractionConfig {
     #[serde(skip)]
     #[cfg_attr(alef, alef(skip))]
     pub cancel_token: Option<crate::cancellation::CancellationToken>,
+
+    /// Transient source-filename hint for extension-based language detection.
+    ///
+    /// Set internally during extraction (from `ExtractInput::filename` or a
+    /// downloaded document's filename) so extractors such as the tree-sitter
+    /// code extractor can fall back to extension-based detection when
+    /// content-based detection (e.g. shebang) is inconclusive. Excluded from
+    /// serialization and bindings — it is not a user-facing configuration value.
+    #[serde(skip)]
+    #[cfg_attr(alef, alef(skip))]
+    pub(crate) source_name: Option<String>,
 }
 
 impl Default for ExtractionConfig {
@@ -424,6 +435,7 @@ impl Default for ExtractionConfig {
             captioning: None,
             qr_codes: None,
             cancel_token: None,
+            source_name: None,
         }
     }
 }

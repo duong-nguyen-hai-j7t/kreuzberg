@@ -194,3 +194,77 @@ async fn url_markdown_page_runs_through_pipeline() {
     assert_eq!(result.metadata.output_format.as_deref(), Some("plain"));
     assert_eq!(result.uris.as_ref().map(Vec::len), Some(1));
 }
+
+// ── end-to-end: .py file extraction via local URI ──────────────────────────
+// Proves that the tree-sitter extractor is selected for .py files end-to-end.
+// This covers the extractor-selection half of the fix; the mime-refinement half
+// (octet-stream + filename → text/x-source-code) is covered below.
+
+#[cfg(feature = "tree-sitter")]
+#[tokio::test]
+async fn extract_py_local_uri_returns_source_code_mime() {
+    use crate::core::config::TreeSitterConfig;
+
+    let dir = tempdir().unwrap();
+    let path = dir.path().join("hello.py");
+    File::create(&path)
+        .unwrap()
+        .write_all(b"def greet(name):\n    return f'Hello, {name}!'\n")
+        .unwrap();
+
+    let mut config = ExtractionConfig::default();
+    config.tree_sitter = Some(TreeSitterConfig::default());
+
+    let output = extract(ExtractInput::from_uri(path.to_string_lossy()), &config)
+        .await
+        .unwrap();
+
+    assert_eq!(output.results.len(), 1, "expected one result");
+    assert_eq!(
+        output.results[0].mime_type, "text/x-source-code",
+        "Python file must extract as text/x-source-code"
+    );
+    assert!(output.results[0].content.len() >= 5, "content must be non-trivial");
+}
+
+// ── refine_downloaded_mime_type unit tests ──────────────────────────────────
+
+#[cfg(feature = "url-ingestion")]
+#[test]
+fn refine_downloaded_mime_type_passthrough_non_octet_stream() {
+    // Explicit MIME types from the server must never be overridden, even when
+    // the filename extension suggests something different.
+    let refined = refine_downloaded_mime_type("application/pdf", Some("document.py"), "http://example.com/document.py");
+    assert_eq!(
+        refined, "application/pdf",
+        "explicit server MIME type must not be overridden by filename"
+    );
+}
+
+#[cfg(all(feature = "url-ingestion", feature = "tree-sitter"))]
+#[test]
+fn refine_downloaded_mime_type_py_extension_resolves_to_source_code() {
+    // A .py filename served with Content-Type: application/octet-stream must
+    // be refined to text/x-source-code via tree-sitter extension detection.
+    let refined = refine_downloaded_mime_type(
+        "application/octet-stream",
+        Some("hello.py"),
+        "http://example.com/code/hello.py",
+    );
+    assert_eq!(
+        refined, "text/x-source-code",
+        "octet-stream with .py filename must resolve to text/x-source-code"
+    );
+}
+
+#[cfg(feature = "url-ingestion")]
+#[test]
+fn refine_downloaded_mime_type_no_filename_returns_octet_stream() {
+    // Without a filename hint, fall back to application/octet-stream so
+    // extract_bytes can apply content sniffing.
+    let refined = refine_downloaded_mime_type("application/octet-stream", None, "http://example.com/download");
+    assert_eq!(
+        refined, "application/octet-stream",
+        "no filename means no refinement; extract_bytes handles sniffing"
+    );
+}
