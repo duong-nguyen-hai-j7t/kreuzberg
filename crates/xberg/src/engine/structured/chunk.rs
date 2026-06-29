@@ -67,9 +67,13 @@ pub fn batch_pages(pages: Vec<PageImage>, user_text: Option<String>, config: &Ch
         }];
     }
 
+    // Guard the divisor: `chars_per_token` is a caller-settable field, and a 0
+    // would panic the integer divisions below. Clamp to at least 1.
+    let chars_per_token = config.chars_per_token.max(1);
+
     let user_text_tokens = user_text
         .as_ref()
-        .map(|t| (t.len() / config.chars_per_token).max(1) as u32)
+        .map(|t| (t.len() / chars_per_token).max(1) as u32)
         .unwrap_or(0);
 
     let mut batches = Vec::new();
@@ -78,7 +82,7 @@ pub fn batch_pages(pages: Vec<PageImage>, user_text: Option<String>, config: &Ch
     let mut is_first_batch = true;
 
     for page in pages {
-        let page_tokens = (page.png_bytes.len() / config.chars_per_token).max(1) as u32 + config.avg_tokens_per_image;
+        let page_tokens = (page.png_bytes.len() / chars_per_token).max(1) as u32 + config.avg_tokens_per_image;
         let new_total = current_text_tokens + page_tokens;
 
         if !current_batch.is_empty() && new_total > config.max_input_tokens {
@@ -249,5 +253,21 @@ mod tests {
         assert!(batches.len() >= 2);
         assert_eq!(batches[0].pages.len(), 1);
         assert_eq!(batches[1].pages.len(), 1);
+    }
+
+    #[test]
+    fn zero_chars_per_token_does_not_panic() {
+        // `chars_per_token` is a public, caller-settable field; a 0 must not
+        // panic the internal `len / chars_per_token` divisions.
+        let config = ChunkerConfig {
+            max_input_tokens: 100_000,
+            avg_tokens_per_image: 1500,
+            chars_per_token: 0,
+        };
+        let pages = vec![stub_page(1, 5000), stub_page(2, 5000)];
+        let batches = batch_pages(pages, Some("user context".to_string()), &config);
+        // The divisor clamps to 1, so packing proceeds normally rather than panicking.
+        assert!(!batches.is_empty());
+        assert!(batches[0].user_text.is_some());
     }
 }

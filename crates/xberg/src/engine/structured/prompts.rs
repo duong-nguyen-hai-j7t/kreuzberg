@@ -24,6 +24,23 @@ fn fence_nonce() -> String {
     format!("{hi:016x}{lo:016x}")
 }
 
+/// Truncate `text` to at most `max_bytes` bytes, backing off to the nearest
+/// UTF-8 char boundary so the slice never panics on multi-byte input.
+///
+/// `max_bytes` is a byte budget (it bounds the excerpt's serialized size); when
+/// the cut point lands inside a multi-byte character the excerpt is shortened to
+/// the preceding boundary rather than panicking.
+fn truncate_to_char_boundary(text: &str, max_bytes: usize) -> &str {
+    if text.len() <= max_bytes {
+        return text;
+    }
+    let mut end = max_bytes;
+    while end > 0 && !text.is_char_boundary(end) {
+        end -= 1;
+    }
+    &text[..end]
+}
+
 /// Built prompt components ready to send to the vision model.
 #[derive(Debug, Clone)]
 pub struct BuiltPrompt {
@@ -71,11 +88,7 @@ pub fn build_prompt(
                 content.push_str(&rendered);
             }
 
-            let excerpt = if extracted_text_excerpt.len() > max_excerpt_chars {
-                &extracted_text_excerpt[..max_excerpt_chars]
-            } else {
-                extracted_text_excerpt
-            };
+            let excerpt = truncate_to_char_boundary(extracted_text_excerpt, max_excerpt_chars);
 
             if !content.is_empty() && !excerpt.is_empty() {
                 content.push_str("\n\n---\n\n");
@@ -121,11 +134,7 @@ pub fn build_vision_fallback_prompt(
         content.push_str(&rendered);
     }
 
-    let excerpt = if extracted_text_excerpt.len() > max_excerpt_chars {
-        &extracted_text_excerpt[..max_excerpt_chars]
-    } else {
-        extracted_text_excerpt
-    };
+    let excerpt = truncate_to_char_boundary(extracted_text_excerpt, max_excerpt_chars);
 
     let nonce = fence_nonce();
 
@@ -534,5 +543,48 @@ mod tests {
         // The fenced excerpt is capped; full 300k input never appears verbatim.
         assert!(!user_text.contains(&"b".repeat(300_000)));
         assert!(user_text.contains(&"b".repeat(1000)));
+    }
+
+    #[test]
+    fn multibyte_excerpt_truncation_does_not_panic() {
+        // '世' is 3 bytes in UTF-8; a byte budget of 100 lands mid-character
+        // (100 % 3 == 1), so a naive byte slice would panic. The excerpt is
+        // truncated to the preceding char boundary instead.
+        let multibyte = "世".repeat(200); // 600 bytes
+        let max_bytes = 100usize;
+
+        let prompt = build_prompt(
+            "system",
+            None,
+            &multibyte,
+            None,
+            StructuredCallMode::TextOnly,
+            None,
+            max_bytes,
+        );
+        let user_text = prompt.user_text.expect("text-only mode yields user text");
+        // Truncated at a char boundary: at most `max_bytes` bytes, all valid UTF-8.
+        assert!(user_text.len() <= max_bytes);
+        assert!(user_text.chars().all(|c| c == '世'));
+
+        // Same for the vision-fallback assembly.
+        let confidence = ExtractionConfidence {
+            text_coverage: 1.0,
+            ocr_aggregate: None,
+            schema_compliance: SchemaCompliance::AllValid,
+            combined: 1.0,
+        };
+        let fallback = build_vision_fallback_prompt(
+            "system",
+            None,
+            &multibyte,
+            None,
+            &serde_json::json!({}),
+            &confidence,
+            None,
+            max_bytes,
+        );
+        // Did not panic and produced a valid prompt.
+        assert!(fallback.user_text.expect("fallback user text").contains('世'));
     }
 }
