@@ -513,7 +513,10 @@ jobs:
           # 1.95-x86_64-pc-windows-msvc explicitly AND set RUSTUP_TOOLCHAIN env var so
           # cargo bypasses the toolchain.toml override (env var > toml in rustup precedence).
           cibw-before-build-windows: "rustup install 1.95-x86_64-pc-windows-msvc --profile minimal --component rust-src --component rustfmt --component clippy && rustup target add x86_64-pc-windows-msvc --toolchain 1.95-x86_64-pc-windows-msvc && pip install maturin uv && set PATH=%USERPROFILE%\\.cargo\\bin;%PATH%"
-          cibw-environment-windows: 'MATURIN_BUILD_ARGS="--target x86_64-pc-windows-msvc" RUSTUP_TOOLCHAIN="1.95-x86_64-pc-windows-msvc"'
+          # RUSTC_WRAPPER= disables the Alef-scaffolded `.cargo/rustc-wrapper.sh`
+          # sccache shim on Windows, where cargo cannot exec a .sh wrapper
+          # ("%1 is not a valid Win32 application", os error 193).
+          cibw-environment-windows: 'MATURIN_BUILD_ARGS="--target x86_64-pc-windows-msvc" RUSTUP_TOOLCHAIN="1.95-x86_64-pc-windows-msvc" RUSTC_WRAPPER='
 
       - name: Upload wheels
         uses: actions/upload-artifact@v7
@@ -1611,6 +1614,14 @@ jobs:
         if: contains(matrix.target, '-linux-gnu')
         shell: bash
         run: command -v cargo-zigbuild || cargo install --locked cargo-zigbuild
+      - name: Disable sccache wrapper on Windows
+        # cargo cannot exec the Alef-scaffolded `.cargo/rustc-wrapper.sh` on
+        # Windows ("%1 is not a valid Win32 application"). Empty RUSTC_WRAPPER
+        # disables the shim for this build only.
+        if: contains(matrix.target, 'windows')
+        shell: bash
+        run: echo "RUSTC_WRAPPER=" >> "$GITHUB_ENV"
+
       - name: Build Dart server native
         shell: bash
         run: |
