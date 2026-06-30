@@ -50,6 +50,9 @@ pub struct CitationOutput {
 /// * `ocr_elements` - Array of extracted OCR elements (as `serde_json::Value`)
 /// * `element_metadata` - Array of extracted element metadata (as `serde_json::Value`)
 /// * `emit_citations` - Whether to produce citation envelopes
+/// * `match_threshold` - Minimum text-similarity score (`0.0`–`1.0`) for an OCR
+///   element to be accepted as the source of a field value
+/// * `fused_confidence` - Confidence recorded on a successfully fused field
 ///
 /// # Returns
 /// - `structured_output`: Citation-wrapped envelope if `emit_citations=true`, else original `merged`
@@ -59,12 +62,15 @@ pub struct CitationOutput {
 /// `ocr_elements` and `element_metadata` are taken as `&[serde_json::Value]` because
 /// their concrete types are opaque to this module. The citation logic does fuzzy text
 /// matching on the stringified field values against OCR text, so the exact schema of the
-/// source data is not needed.
+/// source data is not needed. `match_threshold` and `fused_confidence` are caller
+/// parameters: the mechanism imposes no default, matching the rest of this module.
 pub fn fuse(
     merged: serde_json::Value,
     ocr_elements: &[serde_json::Value],
     element_metadata: &[serde_json::Value],
     emit_citations: bool,
+    match_threshold: f64,
+    fused_confidence: f64,
 ) -> CitationOutput {
     if !emit_citations {
         return CitationOutput {
@@ -73,7 +79,13 @@ pub fn fuse(
         };
     }
 
-    let structured_output = envelope_with_citations(&merged, ocr_elements, element_metadata);
+    let structured_output = envelope_with_citations(
+        &merged,
+        ocr_elements,
+        element_metadata,
+        match_threshold,
+        fused_confidence,
+    );
     let structured_output_flat = flatten_cited(&structured_output);
 
     CitationOutput {
@@ -87,19 +99,24 @@ fn envelope_with_citations(
     value: &serde_json::Value,
     ocr_elements: &[serde_json::Value],
     element_metadata: &[serde_json::Value],
+    match_threshold: f64,
+    fused_confidence: f64,
 ) -> serde_json::Value {
     match value {
         serde_json::Value::Object(obj) => {
             let mut result = serde_json::Map::new();
             for (k, v) in obj {
-                result.insert(k.clone(), envelope_with_citations(v, ocr_elements, element_metadata));
+                result.insert(
+                    k.clone(),
+                    envelope_with_citations(v, ocr_elements, element_metadata, match_threshold, fused_confidence),
+                );
             }
             serde_json::Value::Object(result)
         }
         serde_json::Value::Array(arr) => {
             let result: Vec<_> = arr
                 .iter()
-                .map(|v| envelope_with_citations(v, ocr_elements, element_metadata))
+                .map(|v| envelope_with_citations(v, ocr_elements, element_metadata, match_threshold, fused_confidence))
                 .collect();
             serde_json::Value::Array(result)
         }
@@ -108,7 +125,8 @@ fn envelope_with_citations(
             if is_citation_envelope(leaf) {
                 leaf.clone()
             } else {
-                let cited = try_fuse_with_extracted(leaf, ocr_elements, element_metadata);
+                let cited =
+                    try_fuse_with_extracted(leaf, ocr_elements, element_metadata, match_threshold, fused_confidence);
                 serde_json::to_value(&cited).unwrap_or(leaf.clone())
             }
         }
@@ -130,6 +148,8 @@ fn try_fuse_with_extracted(
     value: &serde_json::Value,
     ocr_elements: &[serde_json::Value],
     _element_metadata: &[serde_json::Value],
+    match_threshold: f64,
+    fused_confidence: f64,
 ) -> CitedField {
     let value_str = match value {
         serde_json::Value::String(s) => s.clone(),
@@ -143,14 +163,14 @@ fn try_fuse_with_extracted(
             let ocr_lower = text.to_lowercase();
             let ocr_text = ocr_lower.trim();
 
-            if text_similarity(value_trimmed, ocr_text) > 0.8 {
+            if text_similarity(value_trimmed, ocr_text) > match_threshold {
                 let page = ocr.get("page_number").and_then(|p| p.as_u64()).map(|p| p as u32);
                 let bbox = extract_bbox(ocr);
                 return CitedField {
                     value: value.clone(),
                     page,
                     bbox,
-                    confidence: Some(0.95),
+                    confidence: Some(fused_confidence),
                     source: CitationSource::Fused,
                 };
             }
@@ -229,7 +249,7 @@ mod tests {
     #[test]
     fn emit_citations_false_returns_passthrough() {
         let merged = serde_json::json!({"name": "Alice", "age": 30});
-        let result = fuse(merged.clone(), &[], &[], false);
+        let result = fuse(merged.clone(), &[], &[], false, 0.8, 0.95);
 
         assert_eq!(result.structured_output, merged);
         assert_eq!(result.structured_output_flat, merged);
@@ -246,14 +266,14 @@ mod tests {
             }
         });
 
-        let result = fuse(merged.clone(), &[], &[], true);
+        let result = fuse(merged.clone(), &[], &[], true, 0.8, 0.95);
         assert!(result.structured_output.get("name").is_some());
     }
 
     #[test]
     fn scalar_value_without_match_sets_source_none() {
         let merged = serde_json::json!({"field": "unknown_value"});
-        let result = fuse(merged, &[], &[], true);
+        let result = fuse(merged, &[], &[], true, 0.8, 0.95);
 
         let field = result.structured_output.get("field").unwrap();
         if let Ok(cited) = serde_json::from_value::<CitedField>(field.clone()) {
@@ -271,7 +291,7 @@ mod tests {
             "bbox": [10.0, 20.0, 100.0, 30.0]
         });
 
-        let result = fuse(merged, &[ocr], &[], true);
+        let result = fuse(merged, &[ocr], &[], true, 0.8, 0.95);
         let field = result.structured_output.get("field").unwrap();
 
         if let Ok(cited) = serde_json::from_value::<CitedField>(field.clone()) {
@@ -322,7 +342,7 @@ mod tests {
             "bbox": [11.0, 22.0, 110.0, 33.0]
         });
 
-        let result = fuse(merged, &[ocr], &[], true);
+        let result = fuse(merged, &[ocr], &[], true, 0.8, 0.95);
         let field = result.structured_output.get("field").unwrap();
 
         let cited: CitedField = serde_json::from_value(field.clone()).expect("field should deserialize as CitedField");
@@ -343,7 +363,7 @@ mod tests {
             }
         });
 
-        let result = fuse(merged, &[], &[], true);
+        let result = fuse(merged, &[], &[], true, 0.8, 0.95);
         assert!(result.structured_output.get("person").is_some());
         assert!(
             result
