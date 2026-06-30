@@ -73,7 +73,7 @@ COPY crates/xberg-libheif/ crates/xberg-libheif/
 # with the quoted `"crates/xberg-wasm"` form so the broad header match does
 # NOT delete the `[profile.release.package.xberg-wasm]` line out from under
 # the range delete below (which would orphan its body keys → "duplicate key").
-RUN sed -i '/xberg-py/d; /xberg_rb/d; /xberg-cli/d; /xberg-jni/d; /xberg-php/d; /xberg_rustler/d; /xberg_nif/d; /packages\/dart\/rust/d; /packages\/swift\/rust/d; /"crates\/xberg-wasm"/d; /^\[profile\.release\.package\.xberg-wasm\]$/,$d; /benchmark-harness/d; /e2e-generator/d; /snippet-runner/d; /e2e\/rust/d' Cargo.toml
+RUN sed -i '/xberg-py/d; /xberg_rb/d; /xberg-cli/d; /xberg-jni/d; /xberg-php/d; /xberg-rag/d; /xberg_rustler/d; /xberg_nif/d; /packages\/dart\/rust/d; /packages\/swift\/rust/d; /"crates\/xberg-wasm"/d; /^\[profile\.release\.package\.xberg-wasm\]$/,$d; /benchmark-harness/d; /e2e-generator/d; /snippet-runner/d; /e2e\/rust/d' Cargo.toml
 
 # napi build passes an explicit --target, so cargo treats it as a cross-compile
 # and looks for a triple-prefixed linker (aarch64-linux-musl-gcc /
