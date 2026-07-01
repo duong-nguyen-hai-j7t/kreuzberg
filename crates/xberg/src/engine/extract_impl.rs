@@ -605,9 +605,19 @@ fn file_uri_to_path(uri: &str) -> Result<PathBuf> {
         )));
     }
 
-    parsed
-        .to_file_path()
-        .map_err(|()| XbergError::UnsupportedFormat(format!("unsupported file URI path: {uri}")))
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        parsed
+            .to_file_path()
+            .map_err(|()| XbergError::UnsupportedFormat(format!("unsupported file URI path: {uri}")))
+    }
+    #[cfg(target_arch = "wasm32")]
+    {
+        let _ = parsed;
+        Err(XbergError::UnsupportedFormat(format!(
+            "file URIs are not supported on this platform: {uri}"
+        )))
+    }
 }
 
 fn annotate_source(result: &mut ExtractedDocument, source_kind: &str, source_uri: &str, final_uri: &str, index: usize) {
