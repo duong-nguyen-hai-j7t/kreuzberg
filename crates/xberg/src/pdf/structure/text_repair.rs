@@ -85,10 +85,9 @@ pub(super) fn repair_contextual_ligatures(text: &str) -> Cow<'_, str> {
                 result.push_str("fi");
                 repaired = true;
             }
-            '!' if prev_is_alpha && next_byte_idx >= bytes.len() => {
-                result.push_str("fi");
-                repaired = true;
-            }
+            // NOTE: deliberately NO letter+'!'+end-of-string repair. A sentence-final
+            // exclamation mark after a letter ("Thank you!") is overwhelmingly more
+            // common than a word-final broken fi ligature at the end of an element.
             '"' if prev_is_alpha && next_is_alpha => {
                 result.push_str("ffi");
                 repaired = true;
@@ -110,25 +109,24 @@ pub(super) fn repair_contextual_ligatures(text: &str) -> Cow<'_, str> {
                 result.push_str("tt");
                 repaired = true;
             }
-            '*' if prev_is_alpha && (next_byte_idx >= bytes.len() || !next_is_alpha) => {
-                result.push_str("tt");
-                repaired = true;
-            }
+            // NOTE: deliberately NO letter+'*'+end/non-alpha repair — that pattern is a
+            // footnote marker ("value*") or emphasis far more often than a broken tt.
             ':' if prev_is_alpha && next_is_lower => {
                 // ':' mid-word: letter immediately before AND lowercase letter immediately after
                 // e.g., "ges:one" → "gestione". Safe because real colons have a space after.
                 result.push_str("ti");
                 repaired = true;
             }
-            // Uppercase M between lowercase letters → "tti" (e.g., "progeM" → "progetti")
+            // Uppercase M between lowercase letters → "tti" (e.g., "progeMvi" fragments).
+            // Mid-word only: word-final 'M' after a lowercase letter is legitimate far
+            // too often ("50 µM", stylised names) to repair.
             'M' if prev_is_alpha && !prev_is_space_or_start => {
-                // Check: previous char must be lowercase, and either at word end or next is lowercase
                 let prev_was_lower = if byte_idx > 0 {
                     bytes.get(byte_idx - 1).is_some_and(|&b| (b as char).is_lowercase())
                 } else {
                     false
                 };
-                if prev_was_lower && (next_is_lower || next_byte_idx >= bytes.len() || !next_is_alpha) {
+                if prev_was_lower && next_is_lower {
                     result.push_str("tti");
                     repaired = true;
                 } else {
@@ -908,5 +906,41 @@ mod tests {
             clean_duplicate_punctuation("[12, 13, 9]. Docling is designed as a simple, , , self-contained"),
             "[12, 13, 9]. Docling is designed as a simple, self-contained"
         );
+    }
+}
+
+#[cfg(test)]
+mod overreach_regression_tests {
+    //! Regression tests: ligature repair must not fire on common punctuation
+    //! patterns (sentence-final '!', footnote '*', word-final 'M').
+    use super::*;
+
+    #[test]
+    fn sentence_final_exclamation_is_preserved() {
+        assert_eq!(repair_contextual_ligatures("Encore du contenu!"), "Encore du contenu!");
+        assert_eq!(repair_contextual_ligatures("Thank you!"), "Thank you!");
+    }
+
+    #[test]
+    fn footnote_star_is_preserved() {
+        assert_eq!(repair_contextual_ligatures("value*"), "value*");
+        assert_eq!(
+            repair_contextual_ligatures("significant* results"),
+            "significant* results"
+        );
+    }
+
+    #[test]
+    fn word_final_uppercase_m_is_preserved() {
+        assert_eq!(repair_contextual_ligatures("50 µM"), "50 µM");
+        assert_eq!(repair_contextual_ligatures("about 3 µM."), "about 3 µM.");
+    }
+
+    #[test]
+    fn mid_word_repairs_still_fire() {
+        // The legitimate mid-word encodings must keep working.
+        assert_eq!(repair_contextual_ligatures("di!erent"), "different");
+        assert_eq!(repair_contextual_ligatures("speci!c"), "specific");
+        assert_eq!(repair_contextual_ligatures("aMb"), "attib");
     }
 }
