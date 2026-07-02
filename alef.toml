@@ -1831,13 +1831,14 @@ command = "cd packages/swift && swift test"
 e2e = "bash scripts/e2e/run-with-mock-server.sh bash -c 'cd e2e/swift_e2e && swift test'"
 
 [crates.test.dart]
-# packages/dart is a Flutter plugin (pubspec declares `flutter:` SDK constraint
-# plus a `flutter: plugin:` ffiPlugin block), so `dart pub` is rejected by the
-# resolver — use `flutter pub` / `flutter test` throughout.
-precondition = "command -v flutter >/dev/null 2>&1"
+# packages/dart is a pure-Dart FFI package (no `flutter:` SDK constraint, no ffiPlugin
+# block) — the FRB runtime works in server-Dart. Drive everything with the Dart SDK:
+# `flutter test` pulls in the Flutter engine + impellerc, unavailable in headless CI.
+# e2e/dart is likewise pure-Dart (package:test).
+precondition = "command -v dart >/dev/null 2>&1"
 before = """
 { command -v flutter_rust_bridge_codegen >/dev/null 2>&1 || cargo install flutter_rust_bridge_codegen --version 2.12.0; } && \
-cd packages/dart && flutter pub get && cd rust && \
+cd packages/dart && dart pub get && cd rust && \
 { \
   INPUT_HASH=$(printf '%s' "$(cat src/lib.rs flutter_rust_bridge.yaml)" | shasum | cut -d' ' -f1); \
   HASH_FILE=.frb_codegen_hash; \
@@ -1850,8 +1851,8 @@ cd packages/dart && flutter pub get && cd rust && \
 } && cd ../../.. && cargo build --release -p xberg-dart && \
 bash scripts/e2e/build-mock-server.sh
 """
-command = "cd packages/dart && DYLD_FALLBACK_LIBRARY_PATH=$PWD/../../target/release LD_LIBRARY_PATH=$PWD/../../target/release FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR=$PWD/../../target/release flutter pub get && DYLD_FALLBACK_LIBRARY_PATH=$PWD/../../target/release LD_LIBRARY_PATH=$PWD/../../target/release FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR=$PWD/../../target/release flutter test"
-e2e = "cd e2e/dart && for dir in docx html json pdf text xlsx images; do test -L $dir || ln -sf ../../test_documents/$dir $dir; done && DYLD_FALLBACK_LIBRARY_PATH=$PWD/../../target/release LD_LIBRARY_PATH=$PWD/../../target/release FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR=$PWD/../../target/release flutter pub get && DYLD_FALLBACK_LIBRARY_PATH=$PWD/../../target/release LD_LIBRARY_PATH=$PWD/../../target/release FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR=$PWD/../../target/release flutter test"
+command = "cd packages/dart && DYLD_FALLBACK_LIBRARY_PATH=$PWD/../../target/release LD_LIBRARY_PATH=$PWD/../../target/release FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR=$PWD/../../target/release dart pub get && DYLD_FALLBACK_LIBRARY_PATH=$PWD/../../target/release LD_LIBRARY_PATH=$PWD/../../target/release FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR=$PWD/../../target/release dart test"
+e2e = "cd e2e/dart && for dir in docx html json pdf text xlsx images; do test -L $dir || ln -sf ../../test_documents/$dir $dir; done && DYLD_FALLBACK_LIBRARY_PATH=$PWD/../../target/release LD_LIBRARY_PATH=$PWD/../../target/release FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR=$PWD/../../target/release dart pub get && DYLD_FALLBACK_LIBRARY_PATH=$PWD/../../target/release LD_LIBRARY_PATH=$PWD/../../target/release FRB_DART_LOAD_EXTERNAL_LIBRARY_NATIVE_LIB_DIR=$PWD/../../target/release dart test --concurrency=1"
 
 [crates.test.zig]
 precondition = "command -v zig >/dev/null 2>&1"
