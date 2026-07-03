@@ -602,7 +602,7 @@ rake = { version = "0.3.6", optional = true }
 rayon = { workspace = true }
 regex = "1.12.4"
 resvg = { workspace = true, optional = true }
-rmcp = { version = "2.0.0", features = [
+rmcp = { version = "2.1.0", features = [
     "server",
     "macros",
     "base64",
