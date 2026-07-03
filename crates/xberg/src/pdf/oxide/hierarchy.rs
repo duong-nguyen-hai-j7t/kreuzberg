@@ -106,31 +106,33 @@ fn extract_segments_from_page_inner(
     Ok(dedupe_redrawn_segments(segments))
 }
 
-/// Positional tolerance (pt) within which two spans with identical text are
-/// treated as the same glyph run drawn twice (faux-bold / shadow technique).
-/// Distinct legible text can never overlap this closely, so the collapse is safe.
-const REDRAWN_SEGMENT_TOLERANCE_PTS: f32 = 2.0;
+/// Minimum positional tolerance (pt) for treating two identical-text spans as
+/// one re-drawn glyph run (covers sub-point faux-bold offsets even on tiny text).
+const REDRAWN_MIN_TOLERANCE_PTS: f32 = 1.0;
 
 /// How many previously kept segments to compare against. Re-drawn duplicates are
 /// emitted adjacently (same show-text operation repeated), so a short window is
 /// sufficient and keeps the pass linear.
 const REDRAWN_LOOKBACK: usize = 8;
 
-/// Collapse re-drawn text spans: identical text at (near-)identical positions.
+/// Collapse re-drawn text spans: identical text at overlapping positions.
 ///
-/// PDFs simulate bold by drawing the same run twice with a sub-point offset, and
-/// some generators re-draw runs with different font attributes overlaid. Keeping
-/// both copies duplicates output text and fuses lines so heading classification
-/// fails (issue-1114 fixture). The kept segment absorbs the bold/italic signal of
-/// its duplicates because a double-draw is precisely a boldness cue.
+/// PDFs simulate bold by drawing the same run twice with a small offset, and some
+/// generators re-draw runs with different font attributes overlaid. Keeping both
+/// copies duplicates output text and fuses lines so heading classification fails
+/// (issue-1114 fixture). The tolerance is relative to the span's own extent —
+/// duplicates must substantially overlap — so identical short strings in adjacent
+/// table cells or rows are never collapsed. The kept segment absorbs the
+/// bold/italic signal of its duplicates because a double-draw is precisely a
+/// boldness cue.
 fn dedupe_redrawn_segments(segments: Vec<SegmentData>) -> Vec<SegmentData> {
     let mut kept: Vec<SegmentData> = Vec::with_capacity(segments.len());
     for seg in segments {
         let window_start = kept.len().saturating_sub(REDRAWN_LOOKBACK);
         if let Some(prev) = kept[window_start..].iter_mut().find(|prev| {
-            prev.text == seg.text
-                && (prev.x - seg.x).abs() <= REDRAWN_SEGMENT_TOLERANCE_PTS
-                && (prev.y - seg.y).abs() <= REDRAWN_SEGMENT_TOLERANCE_PTS
+            let dx_tol = (prev.width.min(seg.width) * 0.5).max(REDRAWN_MIN_TOLERANCE_PTS);
+            let dy_tol = (prev.height.min(seg.height) * 0.5).max(REDRAWN_MIN_TOLERANCE_PTS);
+            prev.text == seg.text && (prev.x - seg.x).abs() <= dx_tol && (prev.y - seg.y).abs() <= dy_tol
         }) {
             prev.is_bold |= seg.is_bold;
             prev.is_italic |= seg.is_italic;
@@ -339,6 +341,32 @@ mod tests {
         assert_eq!(out.len(), 1);
         assert!(out[0].is_bold, "double-draw bold signal must be kept");
         assert_eq!(out[0].font_size, 15.0, "larger draw wins the size signal");
+    }
+
+    #[test]
+    fn should_collapse_issue_1114_shift_variants() {
+        // The pdfplumber issue-1114 fixture re-draws "Horizontal shift" at dx=5.7pt
+        // and "Vertical shift" at dy=3.7pt (18pt font). Both offsets are well inside
+        // the span's own extent, so they must collapse.
+        let out = super::dedupe_redrawn_segments(vec![
+            seg("Horizontal shift", 117.6, 237.0, 18.0, false),
+            seg("Horizontal shift", 123.3, 237.0, 18.0, false),
+            seg("Vertical shift", 117.6, 187.1, 18.0, false),
+            seg("Vertical shift", 117.6, 183.4, 18.0, false),
+        ]);
+        assert_eq!(out.len(), 2);
+    }
+
+    #[test]
+    fn should_keep_identical_digits_in_adjacent_table_cells() {
+        // Same short string 6pt apart is two real table cells, not a re-draw:
+        // the relative tolerance (half the span extent) must not swallow it.
+        let out = super::dedupe_redrawn_segments(vec![
+            seg("1", 100.0, 500.0, 10.0, false),
+            seg("1", 106.0, 500.0, 10.0, false),
+            seg("1", 100.0, 488.0, 10.0, false),
+        ]);
+        assert_eq!(out.len(), 3, "adjacent identical table cells are real text");
     }
 
     #[test]
