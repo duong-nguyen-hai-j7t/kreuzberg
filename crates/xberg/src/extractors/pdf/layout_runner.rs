@@ -78,10 +78,10 @@ pub(super) fn run_layout_for_pdf_pages(
     let mut engine = crate::layout::take_or_create_engine(layout_config)
         .map_err(|e| XbergError::Other(format!("layout runner: engine init failed: {e}")))?;
 
-    // pdf_oxide's renderer applies /Rotate, so a 90°/270° page renders with
-    // swapped axes. Hint conversion and all downstream pt→px math must use the
-    // rotation-applied page dimensions or every coordinate on such pages is
-    // transposed (word/hint clamping at the image edge, phantom overrides).
+    // pdf_oxide's renderer applies /Rotate, but text segments stay in raw
+    // MediaBox space. Rendered pages are rotated back to raw space below so
+    // that detection, hint conversion, and image-crop table recognition all
+    // share the text coordinate space.
     let page_rotations = crate::pdf::render::get_page_rotations(content, page_count);
 
     // --- 3. Chunked render + detect ---
@@ -106,11 +106,6 @@ pub(super) fn run_layout_for_pdf_pages(
                 .get_page_media_box(page_idx)
                 .map(|(llx, lly, urx, ury)| ((urx - llx).abs(), (ury - lly).abs()))
                 .unwrap_or((612.0, 792.0));
-            let (pw, ph) = if page_rotations.get(page_idx).is_some_and(|r| r % 180 == 90) {
-                (ph, pw)
-            } else {
-                (pw, ph)
-            };
             chunk_page_meta.push((pw, ph));
 
             let rgb_opt = match crate::pdf::render::render_page_with_safeguards(&doc, page_idx, 150) {
@@ -135,7 +130,19 @@ pub(super) fn run_layout_for_pdf_pages(
                         );
                         None
                     }
-                    Ok(img) => Some(img.into_rgb8()),
+                    Ok(img) => {
+                        // The render is /Rotate-applied; undo it so the image is in
+                        // raw MediaBox space like the text segments. /Rotate 90 means
+                        // "rotate 90° clockwise for display", so undo with 90° CCW.
+                        let rotation = page_rotations.get(page_idx).copied().unwrap_or(0);
+                        let rgb = img.into_rgb8();
+                        Some(match rotation % 360 {
+                            90 => image::imageops::rotate270(&rgb),
+                            180 => image::imageops::rotate180(&rgb),
+                            270 => image::imageops::rotate90(&rgb),
+                            _ => rgb,
+                        })
+                    }
                 },
             };
             chunk_images.push(rgb_opt);
@@ -189,6 +196,7 @@ pub(super) fn run_layout_for_pdf_pages(
         // Phase C: assemble outputs in page order, one entry per page.
         for k in 0..chunk_size {
             let (pw, ph) = chunk_page_meta[k];
+            let rotation = page_rotations.get(chunk_start + k).copied().unwrap_or(0);
             // Take the image out of the Option (None → 1×1 placeholder for downstream callers).
             let img = chunk_images[k].take().unwrap_or_else(|| image::RgbImage::new(1, 1));
 
@@ -196,7 +204,9 @@ pub(super) fn run_layout_for_pdf_pages(
                 let image_width_px = img.width();
                 let image_height_px = img.height();
 
-                let hints =
+                // Image was un-rotated to raw MediaBox space in Phase A, so
+                // pixel detections convert directly against the raw page dims.
+                let hints: Vec<LayoutHint> =
                     pixel_detection_to_layout_hints_pdf_space(&detection, image_width_px, image_height_px, pw, ph);
 
                 tracing::debug!(
@@ -204,6 +214,7 @@ pub(super) fn run_layout_for_pdf_pages(
                     hints = hints.len(),
                     page_width_pts = pw,
                     page_height_pts = ph,
+                    rotation,
                     image_width_px,
                     image_height_px,
                     "layout runner: page detections"
