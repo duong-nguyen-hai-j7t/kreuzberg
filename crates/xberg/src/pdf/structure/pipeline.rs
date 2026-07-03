@@ -699,10 +699,18 @@ fn finalize_paragraph(
         });
     }
 
+    // A bare page number can satisfy the heading heuristics (heading-sized
+    // font cluster in Pass 1, "1" reads as a section pattern in Pass 3); never
+    // promote it, so the page-furniture check below (gated on
+    // heading_level.is_none()) can claim it instead.
+    let page_number_like = word_count <= 10 && is_page_number_pattern(trimmed);
+
     // Conservative heading detection.
     // Pass 1: font-size-based — significantly larger font than body.
     let mut heading_level = super::classify::find_heading_level(first.font_size, heading_map, gap_info);
-    if heading_level.is_some() && (word_count > 20 || super::layout_classify::is_separator_text(trimmed)) {
+    if heading_level.is_some()
+        && (word_count > 20 || super::layout_classify::is_separator_text(trimmed) || page_number_like)
+    {
         heading_level = None;
     }
 
@@ -758,6 +766,7 @@ fn finalize_paragraph(
             && !super::layout_classify::is_separator_text(trimmed)
             && !super::regions::looks_like_figure_label(trimmed)
             && !looks_like_list_item(trimmed)
+            && !page_number_like
         {
             heading_level = Some(2);
         }
@@ -2732,6 +2741,18 @@ mod tests {
         assert_eq!(compute_paragraph_gap_ys(&segments), Vec::<f32>::new());
     }
 
+    #[test]
+    fn test_finalize_paragraph_page_number_is_furniture_not_heading() {
+        // When k-means clusters the body font size into a heading cluster, a
+        // gap-separated bare page number would inherit H2; the page-number veto
+        // must reroute it to page furniture.
+        let heading_map = vec![(12.0, Some(2)), (9.0, None)];
+        let gap_info = crate::pdf::structure::classify::precompute_gap_info(&heading_map);
+        let seg = seg_at("1", 300.0, 50.0, 12.0, false);
+        let para = finalize_paragraph(&[&seg], &heading_map, &gap_info).expect("paragraph");
+        assert_eq!(para.heading_level, None, "page number must not become a heading");
+        assert!(para.is_page_furniture, "page number must be marked furniture");
+    }
 
     #[test]
     fn test_compute_paragraph_gap_ys_skips_blank_lines_inside_code_blocks() {
