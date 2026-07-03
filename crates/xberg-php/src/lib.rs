@@ -27796,7 +27796,7 @@ pub extern "C" fn get_module() -> *mut ::ext_php_rs::zend::ModuleEntry {
     static __EXT_PHP_RS_MODULE_ENTRY: ::ext_php_rs::zend::StaticModuleEntry =
         ::ext_php_rs::zend::StaticModuleEntry::new();
     __EXT_PHP_RS_MODULE_ENTRY.get_or_init(|| {
-        let builder = ::ext_php_rs::builders::ModuleBuilder::new("xberg", "1.0.0-rc.4")
+        let builder = ::ext_php_rs::builders::ModuleBuilder::new("xberg", "1.0.0-rc.5")
             .startup_function(__ext_php_rs_module_startup);
         let builder = builder
             .class::<CacheStats>()

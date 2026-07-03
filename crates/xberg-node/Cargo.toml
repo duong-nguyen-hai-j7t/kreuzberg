@@ -1,6 +1,6 @@
 [package]
 name = "xberg-node"
-version = "1.0.0-rc.4"
+version = "1.0.0-rc.5"
 edition = "2024"
 license = "MIT"
 description = "High-performance document intelligence library"
@@ -92,7 +92,7 @@ serde_with = "3"
 tokio-util = { version = "0.7", features = ["rt"] }
 
 [target.'cfg(not(any(target_os = "windows", all(target_os = "macos", target_arch = "x86_64"))))'.dependencies]
-xberg = { version = "1.0.0-rc.4", path = "../xberg", features = [
+xberg = { version = "1.0.0-rc.5", path = "../xberg", features = [
     "full",
     "pdf",
     "ocr",
@@ -140,10 +140,10 @@ xberg = { version = "1.0.0-rc.4", path = "../xberg", features = [
 ] }
 
 [target.'cfg(target_os = "windows")'.dependencies]
-xberg = { version = "1.0.0-rc.4", path = "../xberg", features = ["windows-target"] }
+xberg = { version = "1.0.0-rc.5", path = "../xberg", features = ["windows-target"] }
 
 [target.'cfg(all(target_os = "macos", target_arch = "x86_64"))'.dependencies]
-xberg = { version = "1.0.0-rc.4", path = "../xberg", features = ["macos-intel-target"] }
+xberg = { version = "1.0.0-rc.5", path = "../xberg", features = ["macos-intel-target"] }
 
 [build-dependencies]
 napi-build = "2"
