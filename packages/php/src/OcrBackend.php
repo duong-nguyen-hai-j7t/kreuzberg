@@ -12,6 +12,9 @@ namespace Xberg;
  */
 interface OcrBackend
 {
+    // Optional methods the bridge calls when the class defines them (the
+    // trait's Rust default behavior applies otherwise): process_image_file, supported_languages, supports_table_detection, supports_document_processing, emits_structured_markdown, process_document.
+    // The lifecycle hooks initialize()/shutdown() are likewise optional.
     /**
      * Process an image and extract text via OCR.
      *
@@ -21,16 +24,6 @@ interface OcrBackend
      * @return ExtractedDocument Return value from the plugin method
      */
     public function process_image(mixed $image_bytes, OcrConfig $config): ExtractedDocument;
-
-    /**
-     * Process a file and extract text via OCR.
-     *
-     *
-     * @param mixed $path
-     * @param OcrConfig $config
-     * @return ExtractedDocument Return value from the plugin method
-     */
-    public function process_image_file(mixed $path, OcrConfig $config): ExtractedDocument;
 
     /**
      * Check if this backend supports a given language code.
@@ -48,46 +41,4 @@ interface OcrBackend
      * @return mixed Return value from the plugin method
      */
     public function backend_type(): mixed;
-
-    /**
-     * Optional: Get a list of all supported languages.
-     *
-     *
-     * @return mixed Return value from the plugin method
-     */
-    public function supported_languages(): mixed;
-
-    /**
-     * Optional: Check if the backend supports table detection.
-     *
-     *
-     * @return bool Return value from the plugin method
-     */
-    public function supports_table_detection(): bool;
-
-    /**
-     * Check if the backend supports direct document-level processing (e.g. for PDFs).
-     *
-     *
-     * @return bool Return value from the plugin method
-     */
-    public function supports_document_processing(): bool;
-
-    /**
-     * Declare that this backend emits structured markdown directly (tables, headings, lists)
-     *
-     *
-     * @return bool Return value from the plugin method
-     */
-    public function emits_structured_markdown(): bool;
-
-    /**
-     * Process a document file directly via OCR.
-     *
-     *
-     * @param mixed $_path
-     * @param OcrConfig $_config
-     * @return ExtractedDocument Return value from the plugin method
-     */
-    public function process_document(mixed $_path, OcrConfig $_config): ExtractedDocument;
 }

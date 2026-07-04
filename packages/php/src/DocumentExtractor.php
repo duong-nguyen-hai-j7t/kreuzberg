@@ -12,6 +12,9 @@ namespace Xberg;
  */
 interface DocumentExtractor
 {
+    // Optional methods the bridge calls when the class defines them (the
+    // trait's Rust default behavior applies otherwise): priority, can_handle.
+    // The lifecycle hooks initialize()/shutdown() are likewise optional.
     /**
      * Binding-safe extraction entry point for foreign-language plugin bridges.
      *
@@ -29,22 +32,4 @@ interface DocumentExtractor
      * @return mixed Return value from the plugin method
      */
     public function supported_mime_types(): mixed;
-
-    /**
-     * Get the priority of this extractor.
-     *
-     *
-     * @return int Return value from the plugin method
-     */
-    public function priority(): int;
-
-    /**
-     * Optional: Check if this extractor can handle a specific file.
-     *
-     *
-     * @param mixed $_path
-     * @param string $_mime_type
-     * @return bool Return value from the plugin method
-     */
-    public function can_handle(mixed $_path, string $_mime_type): bool;
 }

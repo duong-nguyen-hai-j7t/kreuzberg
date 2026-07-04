@@ -43,8 +43,8 @@ defmodule XbergOcrBackendBridge do
       Xberg.Native.complete_trait_call(reply_id, Jason.encode!(result))
     rescue
       e ->
-        Logger.error("Error calling {impl_module}.{method}: {Exception.message(e)}")
-        Xberg.Native.fail_trait_call(reply_id, Exception.message(e))
+      Logger.error("Error calling {impl_module}.{method}: {Exception.message(e)}")
+      Xberg.Native.fail_trait_call(reply_id, Exception.message(e))
     end
 
     {:noreply, impl_module}
@@ -70,6 +70,15 @@ defmodule XbergOcrBackendBridge do
   def register(impl_module) do
     plugin_name = impl_module.name()
     {:ok, pid} = start_link(impl_module)
-    Xberg.Native.register_ocr_backend(pid, plugin_name)
+
+    # Names of the functions the implementation module exports. Rust-defaulted
+    # trait methods outside this list keep their Rust default behavior instead
+    # of being dispatched to the module.
+    implemented_methods =
+    impl_module.__info__(:functions)
+  |> Enum.map(fn {name, _arity} -> Atom.to_string(name) end)
+    |> Enum.uniq()
+
+    Xberg.Native.register_ocr_backend(pid, plugin_name, implemented_methods)
   end
 end

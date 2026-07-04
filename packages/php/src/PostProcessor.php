@@ -12,6 +12,9 @@ namespace Xberg;
  */
 interface PostProcessor
 {
+    // Optional methods the bridge calls when the class defines them (the
+    // trait's Rust default behavior applies otherwise): should_process, estimated_duration_ms, priority.
+    // The lifecycle hooks initialize()/shutdown() are likewise optional.
     /**
      * Process an extraction result.
      *
@@ -29,31 +32,4 @@ interface PostProcessor
      * @return mixed Return value from the plugin method
      */
     public function processing_stage(): mixed;
-
-    /**
-     * Optional: Check if this processor should run for a given result.
-     *
-     *
-     * @param ExtractedDocument $_result
-     * @param ExtractionConfig $_config
-     * @return bool Return value from the plugin method
-     */
-    public function should_process(ExtractedDocument $_result, ExtractionConfig $_config): bool;
-
-    /**
-     * Optional: Estimate processing time in milliseconds.
-     *
-     *
-     * @param ExtractedDocument $_result
-     * @return int Return value from the plugin method
-     */
-    public function estimated_duration_ms(ExtractedDocument $_result): int;
-
-    /**
-     * Execution priority within the processing stage.
-     *
-     *
-     * @return int Return value from the plugin method
-     */
-    public function priority(): int;
 }

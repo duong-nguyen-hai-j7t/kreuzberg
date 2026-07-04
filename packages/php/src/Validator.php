@@ -12,6 +12,9 @@ namespace Xberg;
  */
 interface Validator
 {
+    // Optional methods the bridge calls when the class defines them (the
+    // trait's Rust default behavior applies otherwise): should_validate, priority.
+    // The lifecycle hooks initialize()/shutdown() are likewise optional.
     /**
      * Validate an extraction result.
      *
@@ -21,22 +24,4 @@ interface Validator
      * @return mixed Return value from the plugin method
      */
     public function validate(ExtractedDocument $result, ExtractionConfig $config): mixed;
-
-    /**
-     * Optional: Check if this validator should run for a given result.
-     *
-     *
-     * @param ExtractedDocument $_result
-     * @param ExtractionConfig $_config
-     * @return bool Return value from the plugin method
-     */
-    public function should_validate(ExtractedDocument $_result, ExtractionConfig $_config): bool;
-
-    /**
-     * Optional: Get the validation priority.
-     *
-     *
-     * @return int Return value from the plugin method
-     */
-    public function priority(): int;
 }
