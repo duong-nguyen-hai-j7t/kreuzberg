@@ -136,7 +136,6 @@ IO.puts("Format: #{inspect(result.metadata.format)}")
 IO.puts("Tables found: #{length(result.tables)}")
 ```
 
-
 ```text
 
 ### Common Use Cases
@@ -164,7 +163,6 @@ IO.puts(content)
 IO.puts("Metadata: #{inspect(result.metadata)}")
 ```
 
-
 ```text
 
 #### Table Extraction
@@ -191,7 +189,6 @@ Enum.each(output.results, fn result ->
   IO.puts(result.content)
 end)
 ```
-
 
 ```text
 
@@ -326,7 +323,6 @@ IO.puts(content)
 IO.puts("Metadata: #{inspect(result.metadata)}")
 ```
 
-
 ```text
 
 ## Async Support
@@ -422,7 +418,6 @@ end
 IO.inspect(processors, label: "Registered Post-Processors")
 ```
 
-
 ```text
 
 ## Embeddings Support
@@ -453,7 +448,6 @@ Enum.each(output.results, fn result ->
   IO.puts(result.content)
 end)
 ```
-
 
 ```text
 

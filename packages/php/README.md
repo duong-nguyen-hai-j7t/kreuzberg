@@ -147,7 +147,6 @@ if (count($result->tables) > 0) {
 }
 ```
 
-
 ```text
 
 ### Common Use Cases
@@ -285,7 +284,6 @@ if ($avgCharsPerPage < 100) {
 }
 ```
 
-
 ```text
 
 #### Table Extraction
@@ -326,7 +324,6 @@ foreach ($output->results as $result) {
     echo "MIME: {$result->mimeType}\n\n";
 }
 ```
-
 
 ```text
 
@@ -564,7 +561,6 @@ if ($avgCharsPerPage < 100) {
 }
 ```
 
-
 ```text
 
 ## Plugin System
@@ -615,7 +611,6 @@ foreach ($output->results as $result) {
     echo "MIME: {$result->mimeType}\n\n";
 }
 ```
-
 
 ```text
 
