@@ -479,7 +479,7 @@ impl ImageEncoderViT {
 
         let neck = Neck::new(vb.pp("neck"), embed_dim, out_chans)?;
         let net_2 = get_conv2d(vb.pp("net_2"), 256, 512, 3, 1, 2, 1, 1, false)?;
-        let net_3_out_c = if version == 2 { 896 } else { 1024 };
+        let net_3_out_c = if version == 2 { 1024 } else { 896 };
         let net_3 = get_conv2d(vb.pp("net_3"), 512, net_3_out_c, 3, 1, 2, 1, 1, false)?;
         Ok(Self {
             patch_embed,
@@ -1658,8 +1658,8 @@ mod tests {
     ///   img_size=64, patch=16 → 4×4 patch grid
     ///   embed_dim=16, depth=1, out_chans=256 (hardcoded for net_2)
     ///   net_2: 256→512, stride 2 → 2×2
-    ///   net_3 (v1): 512→1024, stride 2 → 1×1
-    ///   Expected output: (1, 1024, 1, 1)
+    ///   net_3 (v1): 512→896, stride 2 → 1×1
+    ///   Expected output: (1, 896, 1, 1)
     #[test]
     fn image_encoder_vit_forward_produces_expected_output_shape() {
         let dev = Device::Cpu;
@@ -1681,7 +1681,7 @@ mod tests {
             false,            // use_rel_pos (off avoids rel_pos buffers in tiny test)
             0,                // window_size (0 = global attention for all blocks)
             vec![0usize],     // global_attn_indexes (block 0 is global)
-            1,                // version (net_3 outputs 1024 channels)
+            1,                // version (net_3 outputs 896 channels)
         )
         .expect("ImageEncoderViT must construct from zeros");
 
@@ -1691,18 +1691,18 @@ mod tests {
 
         let output = encoder.forward(&input).expect("forward must succeed");
 
-        // With version=1: net_3 emits 1024 channels; 4-patch → stride-2 × stride-2 = 1×1 spatial.
+        // With version=1: net_3 emits 896 channels; 4-patch → stride-2 × stride-2 = 1×1 spatial.
         let shape = output.dims().to_vec();
         assert_eq!(
             shape,
-            vec![1, 1024, 1, 1],
+            vec![1, 896, 1, 1],
             "ImageEncoderViT output shape mismatch: got {shape:?}"
         );
     }
 
-    /// Version 2 net_3 channel count (896) is selected when version=2.
+    /// Version 2 net_3 channel count (1024) is selected when version=2.
     #[test]
-    fn image_encoder_vit_version2_produces_896_output_channels() {
+    fn image_encoder_vit_version2_produces_1024_output_channels() {
         let dev = Device::Cpu;
         let vb = VarBuilder::zeros(DType::F32, &dev);
 
@@ -1722,7 +1722,7 @@ mod tests {
             false,            // use_rel_pos
             0,                // window_size (global)
             vec![0usize],     // global_attn_indexes
-            2,                // version → net_3 outputs 896
+            2,                // version → net_3 outputs 1024
         )
         .expect("ImageEncoderViT v2 must construct");
 
@@ -1732,8 +1732,8 @@ mod tests {
         let shape = output.dims().to_vec();
         assert_eq!(
             shape,
-            vec![1, 896, 1, 1],
-            "version=2 net_3 must output 896 channels, got {shape:?}"
+            vec![1, 1024, 1, 1],
+            "version=2 net_3 must output 1024 channels, got {shape:?}"
         );
     }
 
