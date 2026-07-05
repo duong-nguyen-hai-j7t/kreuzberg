@@ -52,9 +52,14 @@ pub(crate) fn extract_spans_from_page(
 ) -> Result<Vec<crate::extractors::pdf::reading_order::TextSpan>> {
     use pdf_oxide::document::ReadingOrder;
 
-    let page_text_data = doc
-        .extract_page_text_with_options(page_index, ReadingOrder::ColumnAware)
-        .map_err(|e| PdfError::TextExtractionFailed(format!("Failed to extract page text: {}", e)))?;
+    // Contain pdf_oxide reading-order sort panics (#1198) on the layout path too.
+    let page_text_data = super::guard_oxide_panic(
+        || {
+            doc.extract_page_text_with_options(page_index, ReadingOrder::ColumnAware)
+                .map_err(|e| PdfError::TextExtractionFailed(format!("Failed to extract page text: {}", e)))
+        },
+        |panic| PdfError::TextExtractionFailed(format!("Page text extraction panicked in pdf_oxide: {}", panic)),
+    )?;
 
     let spans = page_text_data
         .spans
@@ -430,11 +435,24 @@ fn extract_page_text_column_aware(doc: &mut pdf_oxide::PdfDocument, page_index: 
     // `&mut self` call to `extract_page_text_with_options` below.
     let widgets = collect_widget_field_values(doc, page_index);
 
-    let page_text_data = doc
-        .extract_page_text_with_options(page_index, ReadingOrder::ColumnAware)
-        .map_err(|e| {
-            PdfError::TextExtractionFailed(format!("Page {} text extraction failed: {}", page_index + 1, e))
-        })?;
+    // pdf_oxide's ColumnAware reading-order sort can panic on total-order violations
+    // for some glyph geometries (#1198); contain it so a bad page fails gracefully
+    // instead of unwinding through the async boundary and aborting the extraction.
+    let page_text_data = super::guard_oxide_panic(
+        || {
+            doc.extract_page_text_with_options(page_index, ReadingOrder::ColumnAware)
+                .map_err(|e| {
+                    PdfError::TextExtractionFailed(format!("Page {} text extraction failed: {}", page_index + 1, e))
+                })
+        },
+        |panic| {
+            PdfError::TextExtractionFailed(format!(
+                "Page {} text extraction panicked in pdf_oxide: {}",
+                page_index + 1,
+                panic
+            ))
+        },
+    )?;
 
     // Issue #962: Word-exported PDFs position each glyph in its own BT…ET block with a
     // sinusoidal y-jitter. pdf_oxide's ColumnAware ordering groups spans by y-level, so
