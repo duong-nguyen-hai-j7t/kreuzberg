@@ -89,6 +89,9 @@ serde_json = "1"
 serde_with = "3"
 tokio-util = { version = "0.7", features = ["rt"] }
 
+[target.'cfg(all(target_os = "macos", target_arch = "x86_64"))'.dependencies]
+xberg = { version = "1.0.0-rc.7", path = "../xberg", features = ["macos-intel-target"] }
+
 [target.'cfg(not(any(target_os = "windows", all(target_os = "macos", target_arch = "x86_64"))))'.dependencies]
 xberg = { version = "1.0.0-rc.7", path = "../xberg", features = [
 	"full",
@@ -139,9 +142,6 @@ xberg = { version = "1.0.0-rc.7", path = "../xberg", features = [
 
 [target.'cfg(target_os = "windows")'.dependencies]
 xberg = { version = "1.0.0-rc.7", path = "../xberg", features = ["windows-target"] }
-
-[target.'cfg(all(target_os = "macos", target_arch = "x86_64"))'.dependencies]
-xberg = { version = "1.0.0-rc.7", path = "../xberg", features = ["macos-intel-target"] }
 
 [build-dependencies]
 napi-build = "2"
