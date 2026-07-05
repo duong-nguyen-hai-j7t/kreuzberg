@@ -1543,6 +1543,18 @@ types = [
     # (alef-extract does not propagate cfg_attr through type-parameter bounds).
     "Pool",
 
+    # split_and_extract config/result types (core-only, like extract_structured).
+    # The `split_and_extract*` functions are already excluded below; these types
+    # are only reachable through them, and `core/split.rs` is not in [crate].sources,
+    # so they are never generated. Listed here to defend against future codegen
+    # passes that might re-emit them as transitive container fields.
+    "SplitConfig",
+    "SplitStrategy",
+    "SplitSegment",
+    "xberg::core::split::SplitConfig",
+    "xberg::core::split::SplitStrategy",
+    "xberg::core::split::SplitSegment",
+
     # Internal docx/hwp parser types — kept hidden from bindings (still
     # alef(skip)-annotated in source); serde derives added in Phase 1 but
     # binding surface is unchanged. Listed here to defend against future
