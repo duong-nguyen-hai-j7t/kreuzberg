@@ -220,14 +220,14 @@ fn resolve_cache_dir(cache_dir: Option<std::path::PathBuf>) -> std::path::PathBu
     cache_dir.unwrap_or_else(|| crate::cache_dir::resolve_cache_dir("embeddings"))
 }
 
-/// Resolve model info (repo, model file, pooling) from an EmbeddingModelType config.
-#[cfg(feature = "embeddings")]
 /// Default tokenizer truncation length when `EmbeddingConfig.max_sequence_length`
 /// is unset. Matches the historical hardcoded value; the effective length is still
 /// capped at the model's own `model_max_length` in [`load_tokenizer`].
 #[cfg(feature = "embeddings")]
 const DEFAULT_EMBEDDING_MAX_SEQUENCE_LENGTH: usize = 512;
 
+/// Resolve model info (repo, model file, pooling) from an EmbeddingModelType config.
+#[cfg(feature = "embeddings")]
 fn resolve_model_info(
     model_type: &crate::core::config::EmbeddingModelType,
 ) -> crate::Result<(String, String, engine::Pooling)> {
