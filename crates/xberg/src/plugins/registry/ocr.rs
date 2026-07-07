@@ -320,6 +320,7 @@ impl OcrBackendRegistry {
     /// happen after [`clear`](Self::clear) followed by registering a *different*
     /// backend: the registry is non-empty, yet default-config OCR has no usable
     /// backend.
+    #[cfg(any(feature = "ocr", feature = "ocr-wasm", feature = "ocr-pipeline"))]
     pub(crate) fn is_missing_default_backend(&self) -> bool {
         #[cfg(any(feature = "ocr", feature = "ocr-wasm"))]
         const DEFAULT: Option<&str> = Some("tesseract");
@@ -335,6 +336,7 @@ impl OcrBackendRegistry {
     /// Keeps any user-registered backends; a no-op when the built-in default is
     /// already present. Used by the self-healing dispatch path so a registry
     /// left without a default (via clear + register-other) heals itself.
+    #[cfg(any(feature = "ocr", feature = "ocr-wasm", feature = "ocr-pipeline"))]
     pub(crate) fn ensure_defaults(&mut self) {
         if self.is_missing_default_backend() {
             self.register_defaults();
