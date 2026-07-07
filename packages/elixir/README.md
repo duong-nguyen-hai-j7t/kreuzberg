@@ -96,7 +96,7 @@ Add to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:xberg, "~> 1.0.0-rc.13"}
+    {:xberg, "~> 1.0.0-rc.14"}
   ]
 end
 ```
@@ -108,7 +108,6 @@ mix deps.get
 ```
 
 ### System Requirements
-
 - **Elixir 1.14+** and **Erlang/OTP 26+** required
 - Pre-compiled NIFs bundled via `rustler_precompiled` for macOS (arm64, x64), Linux (x64, arm64), and Windows (x64)
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.24+ for ORT-dependent inference features
