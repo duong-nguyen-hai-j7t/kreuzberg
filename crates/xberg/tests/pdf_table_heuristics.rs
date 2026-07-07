@@ -58,7 +58,10 @@ fn dense_unruled_ledger_is_detected() {
             (cols[2].0, cols[2].1, format!("ref {n}")),
         ]);
     }
-    assert!(table_count(&text_pdf(&rows)) >= 1, "a 30-row 3-column ledger must be detected as a table");
+    assert!(
+        table_count(&text_pdf(&rows)) >= 1,
+        "a 30-row 3-column ledger must be detected as a table"
+    );
 }
 
 /// An all-text roster (Name | City | Role). Ambiguous against scanned columned
@@ -123,5 +126,9 @@ fn columned_prose_is_not_a_table() {
             ]
         })
         .collect();
-    assert_eq!(table_count(&text_pdf(&rows)), 0, "columned prose must not be detected as a table");
+    assert_eq!(
+        table_count(&text_pdf(&rows)),
+        0,
+        "columned prose must not be detected as a table"
+    );
 }

@@ -8421,6 +8421,7 @@ const _: fn() = || {
         let _: Option<String> = EmbeddingConfig.cache_dir;
         let _: Option<crate::AccelerationConfig> = EmbeddingConfig.acceleration;
         let _: Option<i64> = EmbeddingConfig.max_embed_duration_secs;
+        let _: Option<i64> = EmbeddingConfig.max_sequence_length;
     }
     match None::<crate::EmbeddingModelType>.unwrap() {
         crate::EmbeddingModelType::Preset { name } => {
@@ -12425,6 +12426,7 @@ impl SseDecode for crate::EmbeddingConfig {
         let mut var_cacheDir = <Option<String>>::sse_decode(deserializer);
         let mut var_acceleration = <Option<crate::AccelerationConfig>>::sse_decode(deserializer);
         let mut var_maxEmbedDurationSecs = <Option<i64>>::sse_decode(deserializer);
+        let mut var_maxSequenceLength = <Option<i64>>::sse_decode(deserializer);
         return crate::EmbeddingConfig {
             model: var_model,
             normalize: var_normalize,
@@ -12433,6 +12435,7 @@ impl SseDecode for crate::EmbeddingConfig {
             cache_dir: var_cacheDir,
             acceleration: var_acceleration,
             max_embed_duration_secs: var_maxEmbedDurationSecs,
+            max_sequence_length: var_maxSequenceLength,
         };
     }
 }
@@ -20629,6 +20632,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::EmbeddingConfig> {
             self.0.cache_dir.into_into_dart().into_dart(),
             self.0.acceleration.into_into_dart().into_dart(),
             self.0.max_embed_duration_secs.into_into_dart().into_dart(),
+            self.0.max_sequence_length.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -26167,6 +26171,7 @@ impl SseEncode for crate::EmbeddingConfig {
         <Option<String>>::sse_encode(self.cache_dir, serializer);
         <Option<crate::AccelerationConfig>>::sse_encode(self.acceleration, serializer);
         <Option<i64>>::sse_encode(self.max_embed_duration_secs, serializer);
+        <Option<i64>>::sse_encode(self.max_sequence_length, serializer);
     }
 }
 

@@ -5786,6 +5786,13 @@ XBERGAccelerationConfig *xberg_embedding_config_acceleration(const XBERGEmbeddin
 uint64_t xberg_embedding_config_max_embed_duration_secs(const XBERGEmbeddingConfig *ptr);
 
 /**
+ * Get the `max_sequence_length` field from a `EmbeddingConfig`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t xberg_embedding_config_max_sequence_length(const XBERGEmbeddingConfig *ptr);
+
+/**
  * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
  * freed with the appropriate free function.
  */

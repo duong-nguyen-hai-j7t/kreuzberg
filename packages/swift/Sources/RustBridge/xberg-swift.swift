@@ -5578,8 +5578,8 @@ public class EmbeddingConfig: EmbeddingConfigRefMut {
     }
 }
 extension EmbeddingConfig {
-    public convenience init<GenericIntoRustString: IntoRustString>(_ model: EmbeddingModelType, _ normalize: Bool, _ batch_size: UInt, _ show_download_progress: Bool, _ cache_dir: Optional<GenericIntoRustString>, _ acceleration: Optional<AccelerationConfig>, _ max_embed_duration_secs: Optional<UInt64>) {
-        self.init(ptr: __swift_bridge__$EmbeddingConfig$new({model.isOwned = false; return model.ptr;}(), normalize, batch_size, show_download_progress, { if let rustString = optionalStringIntoRustString(cache_dir) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let val = acceleration { val.isOwned = false; return val.ptr } else { return nil } }(), max_embed_duration_secs.intoFfiRepr()))
+    public convenience init<GenericIntoRustString: IntoRustString>(_ model: EmbeddingModelType, _ normalize: Bool, _ batch_size: UInt, _ show_download_progress: Bool, _ cache_dir: Optional<GenericIntoRustString>, _ acceleration: Optional<AccelerationConfig>, _ max_embed_duration_secs: Optional<UInt64>, _ max_sequence_length: Optional<UInt>) {
+        self.init(ptr: __swift_bridge__$EmbeddingConfig$new({model.isOwned = false; return model.ptr;}(), normalize, batch_size, show_download_progress, { if let rustString = optionalStringIntoRustString(cache_dir) { rustString.isOwned = false; return rustString.ptr } else { return nil } }(), { if let val = acceleration { val.isOwned = false; return val.ptr } else { return nil } }(), max_embed_duration_secs.intoFfiRepr(), max_sequence_length.intoFfiRepr()))
     }
 }
 public class EmbeddingConfigRefMut: EmbeddingConfigRef {
@@ -5621,6 +5621,10 @@ extension EmbeddingConfigRef {
 
     public func maxEmbedDurationSecs() -> Optional<UInt64> {
         __swift_bridge__$EmbeddingConfig$max_embed_duration_secs(ptr).intoSwiftRepr()
+    }
+
+    public func maxSequenceLength() -> Optional<UInt> {
+        __swift_bridge__$EmbeddingConfig$max_sequence_length(ptr).intoSwiftRepr()
     }
 }
 extension EmbeddingConfig: Vectorizable {
