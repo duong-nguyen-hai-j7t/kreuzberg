@@ -109,6 +109,8 @@ extra_paths = [
     "crates/xberg-node/package.json",
     "crates/xberg-node/npm/*/package.json",
     "packages/go/go.mod",
+    "cli-proxy/pypi/pyproject.toml",
+    "cli-proxy/npm/package.json",
     "Cargo.toml",
 ]
 
