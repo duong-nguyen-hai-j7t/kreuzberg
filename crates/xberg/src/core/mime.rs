@@ -120,6 +120,25 @@ static FORMATS: &[FormatEntry] = &[
         mime_type: "text/x-multimarkdown",
         aliases: &[],
     },
+    FormatEntry {
+        extensions: &[],
+        mime_type: "text/x-pandoc",
+        aliases: &[],
+    },
+    // ── Quarto / R Markdown ─────────────────────────────────────────────
+    // Markdown supersets: YAML frontmatter + executable code cells (```{python}, ```{r}).
+    // No saved cell outputs — extraction renders prose and code source; nothing is executed.
+    FormatEntry {
+        extensions: &["qmd"],
+        mime_type: "text/x-quarto",
+        aliases: &["application/x-quarto"],
+    },
+    FormatEntry {
+        // `.Rmd` and `.rmd` both match — extension lookup is case-insensitive.
+        extensions: &["rmd"],
+        mime_type: "text/x-r-markdown",
+        aliases: &[],
+    },
     // ── MDX ─────────────────────────────────────────────────────────────
     FormatEntry {
         extensions: &["mdx"],
@@ -1092,6 +1111,9 @@ mod tests {
         let test_cases = vec![
             ("test.txt", PLAIN_TEXT_MIME_TYPE),
             ("test.md", "text/markdown"),
+            ("test.qmd", "text/x-quarto"),
+            ("test.Rmd", "text/x-r-markdown"),
+            ("test.rmd", "text/x-r-markdown"),
             ("test.html", HTML_MIME_TYPE),
             ("test.htm", HTML_MIME_TYPE),
         ];

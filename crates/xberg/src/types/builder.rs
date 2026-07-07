@@ -576,7 +576,6 @@ pub(crate) fn strikethrough(start: u32, end: u32) -> TextAnnotation {
 }
 
 /// Create a subscript annotation for the given byte range.
-#[cfg(any(feature = "office", feature = "xml"))]
 pub(crate) fn subscript(start: u32, end: u32) -> TextAnnotation {
     TextAnnotation {
         start,
@@ -586,7 +585,6 @@ pub(crate) fn subscript(start: u32, end: u32) -> TextAnnotation {
 }
 
 /// Create a superscript annotation for the given byte range.
-#[cfg(any(feature = "office", feature = "xml"))]
 pub(crate) fn superscript(start: u32, end: u32) -> TextAnnotation {
     TextAnnotation {
         start,

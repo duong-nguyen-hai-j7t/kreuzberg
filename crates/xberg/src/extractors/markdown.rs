@@ -26,8 +26,57 @@ use pulldown_cmark::{Event, Options, Parser, Tag, TagEnd};
 
 /// Annotation tracking entry: (kind_tag, byte_start, optional link data).
 ///
-/// kind_tag: 0=bold, 1=italic, 2=strikethrough, 3=code, 4=link
+/// kind_tag: 0=bold, 1=italic, 2=strikethrough, 3=code, 4=link, 5=superscript, 6=subscript
 type AnnotationEntry = (u8, u32, Option<(String, Option<String>)>);
+
+/// Full pulldown-cmark option set used for every Markdown parse.
+///
+/// Enables the complete parser feature surface (pandoc/GFM/Quarto supersets): tables,
+/// footnotes, strikethrough, task lists, smart punctuation, heading attributes, math,
+/// GFM alerts, definition lists, super/subscript, and wikilinks. The metadata-block
+/// options are intentionally omitted — YAML/`+++` frontmatter is stripped up-front by
+/// [`extract_frontmatter`], so those flags would never fire and would only double-parse.
+/// `ENABLE_OLD_FOOTNOTES` is also omitted (deprecated Hoedown semantics that conflict
+/// with `ENABLE_FOOTNOTES`).
+pub(crate) fn markdown_options() -> Options {
+    Options::ENABLE_TABLES
+        | Options::ENABLE_FOOTNOTES
+        | Options::ENABLE_STRIKETHROUGH
+        | Options::ENABLE_TASKLISTS
+        | Options::ENABLE_SMART_PUNCTUATION
+        | Options::ENABLE_HEADING_ATTRIBUTES
+        | Options::ENABLE_MATH
+        | Options::ENABLE_GFM
+        | Options::ENABLE_DEFINITION_LIST
+        | Options::ENABLE_SUPERSCRIPT
+        | Options::ENABLE_SUBSCRIPT
+        | Options::ENABLE_WIKILINKS
+}
+
+/// Normalize a fenced code-block info string into a bare language token.
+///
+/// Quarto and R Markdown executable cells use a braced info string that also carries
+/// chunk options, e.g. `` ```{python} `` or `` ```{r, echo=FALSE} ``. Strip the braces
+/// and any trailing options so the emitted language is the bare kernel name (`python`,
+/// `r`). Ordinary fences (`rust`, `python`) pass through unchanged. Returns `None` for an
+/// empty or attribute-only info string.
+pub(crate) fn normalize_fence_lang(info: &str) -> Option<String> {
+    let info = info.trim();
+    if info.is_empty() {
+        return None;
+    }
+    let inner = info
+        .strip_prefix('{')
+        .map_or(info, |rest| rest.strip_suffix('}').unwrap_or(rest));
+    // Take the leading language token, dropping chunk options after a comma or space.
+    let lang = inner
+        .split([',', ' ', '\t'])
+        .next()
+        .unwrap_or("")
+        .trim()
+        .trim_start_matches('.'); // Quarto also accepts `.python`-style classes
+    if lang.is_empty() { None } else { Some(lang.to_string()) }
+}
 
 /// Markdown extractor with metadata and table support.
 ///
@@ -98,6 +147,13 @@ impl MarkdownExtractor {
         let mut image_url: Option<String> = None;
         let mut footnote_def_label: Option<String> = None;
         let mut footnote_def_text = String::new();
+        // Definition lists (`Term` line followed by `: definition`): term titles and descriptions.
+        let mut in_def_title = false;
+        let mut in_def_desc = false;
+        let mut def_buf = String::new();
+        // Block-quote nesting: `true` marks a GFM alert (rendered as an admonition, no
+        // quote start/end) so the matching End can be dispatched correctly.
+        let mut blockquote_stack: Vec<bool> = Vec::new();
 
         let mut annotation_starts: Vec<AnnotationEntry> = Vec::new();
 
@@ -139,7 +195,9 @@ impl MarkdownExtractor {
                     heading_text.clear();
                     heading_annotations.clear();
                 }
-                Event::Start(Tag::Paragraph) if !in_heading && !in_list_item && footnote_def_label.is_none() => {
+                Event::Start(Tag::Paragraph)
+                    if !in_heading && !in_list_item && footnote_def_label.is_none() && !in_def_desc =>
+                {
                     paragraph_text.clear();
                     paragraph_annotations.clear();
                     in_paragraph = true;
@@ -250,6 +308,66 @@ impl MarkdownExtractor {
                         }
                     }
                 }
+                Event::Start(Tag::Superscript) => {
+                    if in_paragraph {
+                        annotation_starts.push((5, active_text_offset(&paragraph_text), None));
+                    } else if in_heading {
+                        annotation_starts.push((5, active_text_offset(&heading_text), None));
+                    } else if in_list_item {
+                        annotation_starts.push((5, active_text_offset(&list_item_text), None));
+                    }
+                }
+                Event::End(TagEnd::Superscript) => {
+                    if let Some(i) = annotation_starts.iter().rposition(|(k, _, _)| *k == 5) {
+                        let (_, start, _) = annotation_starts.remove(i);
+                        if in_paragraph {
+                            let end = active_text_offset(&paragraph_text);
+                            if start < end {
+                                paragraph_annotations.push(builder::superscript(start, end));
+                            }
+                        } else if in_heading {
+                            let end = active_text_offset(&heading_text);
+                            if start < end {
+                                heading_annotations.push(builder::superscript(start, end));
+                            }
+                        } else if in_list_item {
+                            let end = active_text_offset(&list_item_text);
+                            if start < end {
+                                list_item_annotations.push(builder::superscript(start, end));
+                            }
+                        }
+                    }
+                }
+                Event::Start(Tag::Subscript) => {
+                    if in_paragraph {
+                        annotation_starts.push((6, active_text_offset(&paragraph_text), None));
+                    } else if in_heading {
+                        annotation_starts.push((6, active_text_offset(&heading_text), None));
+                    } else if in_list_item {
+                        annotation_starts.push((6, active_text_offset(&list_item_text), None));
+                    }
+                }
+                Event::End(TagEnd::Subscript) => {
+                    if let Some(i) = annotation_starts.iter().rposition(|(k, _, _)| *k == 6) {
+                        let (_, start, _) = annotation_starts.remove(i);
+                        if in_paragraph {
+                            let end = active_text_offset(&paragraph_text);
+                            if start < end {
+                                paragraph_annotations.push(builder::subscript(start, end));
+                            }
+                        } else if in_heading {
+                            let end = active_text_offset(&heading_text);
+                            if start < end {
+                                heading_annotations.push(builder::subscript(start, end));
+                            }
+                        } else if in_list_item {
+                            let end = active_text_offset(&list_item_text);
+                            if start < end {
+                                list_item_annotations.push(builder::subscript(start, end));
+                            }
+                        }
+                    }
+                }
                 Event::Start(Tag::Link { dest_url, title, .. }) => {
                     let url = dest_url.to_string();
                     let title_opt = if title.is_empty() {
@@ -312,7 +430,7 @@ impl MarkdownExtractor {
                 }
                 Event::Start(Tag::CodeBlock(pulldown_cmark::CodeBlockKind::Fenced(lang))) => {
                     code_text.clear();
-                    code_lang = if lang.is_empty() { None } else { Some(lang.to_string()) };
+                    code_lang = normalize_fence_lang(lang);
                     in_code_block = true;
                 }
                 Event::Start(Tag::CodeBlock(_)) => {
@@ -329,11 +447,32 @@ impl MarkdownExtractor {
                     code_text.clear();
                     code_lang = None;
                 }
-                Event::Start(Tag::BlockQuote(_)) => {
-                    b.push_quote_start();
+                Event::Start(Tag::BlockQuote(kind)) => {
+                    // GFM alert (`> [!NOTE]`) — pulldown consumes the `[!KIND]` marker into
+                    // the block-quote kind, so render it as an admonition to avoid losing it.
+                    // Plain block quotes keep the existing quote start/end markers.
+                    if let Some(alert) = kind {
+                        let alert_kind = match alert {
+                            pulldown_cmark::BlockQuoteKind::Note => "note",
+                            pulldown_cmark::BlockQuoteKind::Tip => "tip",
+                            pulldown_cmark::BlockQuoteKind::Important => "important",
+                            pulldown_cmark::BlockQuoteKind::Warning => "warning",
+                            pulldown_cmark::BlockQuoteKind::Caution => "caution",
+                        };
+                        b.push_admonition(alert_kind, None, None);
+                        blockquote_stack.push(true);
+                    } else {
+                        b.push_quote_start();
+                        blockquote_stack.push(false);
+                    }
                 }
                 Event::End(TagEnd::BlockQuote(_)) => {
-                    b.push_quote_end();
+                    // Only plain block quotes emit a closing marker; a GFM alert's body
+                    // flows out as ordinary paragraphs after its admonition element.
+                    let was_alert = blockquote_stack.pop().unwrap_or(false);
+                    if !was_alert {
+                        b.push_quote_end();
+                    }
                 }
                 Event::Start(Tag::List(start)) => {
                     let ordered = start.is_some();
@@ -452,6 +591,30 @@ impl MarkdownExtractor {
                     }
                     footnote_def_text.clear();
                 }
+                Event::Start(Tag::DefinitionListTitle) => {
+                    in_def_title = true;
+                    def_buf.clear();
+                }
+                Event::End(TagEnd::DefinitionListTitle) => {
+                    in_def_title = false;
+                    let trimmed = def_buf.trim();
+                    if !trimmed.is_empty() {
+                        b.push_definition_term(trimmed, None);
+                    }
+                    def_buf.clear();
+                }
+                Event::Start(Tag::DefinitionListDefinition) => {
+                    in_def_desc = true;
+                    def_buf.clear();
+                }
+                Event::End(TagEnd::DefinitionListDefinition) => {
+                    in_def_desc = false;
+                    let trimmed = def_buf.trim();
+                    if !trimmed.is_empty() {
+                        b.push_definition_description(trimmed, None);
+                    }
+                    def_buf.clear();
+                }
                 Event::Code(s) => {
                     if in_code_block {
                         code_text.push_str(s);
@@ -475,6 +638,8 @@ impl MarkdownExtractor {
                         }
                     } else if footnote_def_label.is_some() {
                         footnote_def_text.push_str(s);
+                    } else if in_def_title || in_def_desc {
+                        def_buf.push_str(s);
                     } else if in_paragraph {
                         let start = paragraph_text.len() as u32;
                         paragraph_text.push_str(s);
@@ -497,8 +662,45 @@ impl MarkdownExtractor {
                         list_item_text.push_str(s);
                     } else if footnote_def_label.is_some() {
                         footnote_def_text.push_str(s);
+                    } else if in_def_title || in_def_desc {
+                        def_buf.push_str(s);
                     } else if in_paragraph {
                         paragraph_text.push_str(s);
+                    }
+                }
+                // Inline (`$x$`) and display (`$$x$$`) math. Inline math flows into the
+                // active text buffer wrapped in `$`; display math is a standalone formula.
+                Event::InlineMath(s) => {
+                    if in_heading {
+                        heading_text.push('$');
+                        heading_text.push_str(s);
+                        heading_text.push('$');
+                    } else if in_table_cell {
+                        current_cell.push('$');
+                        current_cell.push_str(s);
+                        current_cell.push('$');
+                    } else if in_list_item {
+                        list_item_text.push('$');
+                        list_item_text.push_str(s);
+                        list_item_text.push('$');
+                    } else if footnote_def_label.is_some() {
+                        footnote_def_text.push('$');
+                        footnote_def_text.push_str(s);
+                        footnote_def_text.push('$');
+                    } else if in_def_title || in_def_desc {
+                        def_buf.push('$');
+                        def_buf.push_str(s);
+                        def_buf.push('$');
+                    } else if in_paragraph {
+                        paragraph_text.push('$');
+                        paragraph_text.push_str(s);
+                        paragraph_text.push('$');
+                    }
+                }
+                Event::DisplayMath(s) => {
+                    let trimmed = s.trim();
+                    if !trimmed.is_empty() {
+                        b.push_formula(trimmed, None, None);
                     }
                 }
                 Event::SoftBreak | Event::HardBreak => {
@@ -510,6 +712,8 @@ impl MarkdownExtractor {
                         list_item_text.push(' ');
                     } else if footnote_def_label.is_some() {
                         footnote_def_text.push(' ');
+                    } else if in_def_title || in_def_desc {
+                        def_buf.push(' ');
                     } else if in_paragraph {
                         paragraph_text.push(' ');
                     }
@@ -517,9 +721,19 @@ impl MarkdownExtractor {
                 Event::FootnoteReference(name) => {
                     b.push_footnote_ref(name, name, None);
                 }
-                Event::Html(s) => {
-                    if footnote_def_label.is_some() {
+                // Raw HTML — both block (`Html`) and inline (`InlineHtml`) are preserved
+                // verbatim into whichever text buffer is active.
+                Event::Html(s) | Event::InlineHtml(s) => {
+                    if in_heading {
+                        heading_text.push_str(s);
+                    } else if in_table_cell {
+                        current_cell.push_str(s);
+                    } else if in_list_item {
+                        list_item_text.push_str(s);
+                    } else if footnote_def_label.is_some() {
                         footnote_def_text.push_str(s);
+                    } else if in_def_title || in_def_desc {
+                        def_buf.push_str(s);
                     } else if in_paragraph {
                         paragraph_text.push_str(s);
                     }
@@ -595,9 +809,7 @@ impl InternalDocumentExtractor for MarkdownExtractor {
             metadata.title = Some(title);
         }
 
-        let mut options = Options::ENABLE_TABLES;
-        options |= Options::ENABLE_STRIKETHROUGH | Options::ENABLE_FOOTNOTES;
-        let parser = Parser::new_ext(&remaining_content, options);
+        let parser = Parser::new_ext(&remaining_content, markdown_options());
         let events: Vec<Event> = parser.collect();
 
         let mut extracted_images = Vec::new();
@@ -644,6 +856,9 @@ impl InternalDocumentExtractor for MarkdownExtractor {
             "text/x-commonmark",
             "text/x-markdown-extra",
             "text/x-multimarkdown",
+            "text/x-pandoc",
+            "text/x-quarto",
+            "text/x-r-markdown",
         ]
     }
 
@@ -669,6 +884,9 @@ mod tests {
         assert!(mime_types.contains(&"text/x-commonmark"));
         assert!(mime_types.contains(&"text/x-markdown-extra"));
         assert!(mime_types.contains(&"text/x-multimarkdown"));
+        assert!(mime_types.contains(&"text/x-pandoc"));
+        assert!(mime_types.contains(&"text/x-quarto"));
+        assert!(mime_types.contains(&"text/x-r-markdown"));
     }
 
     #[test]
@@ -1099,5 +1317,174 @@ nested:
 
         assert!(result.content.contains("太字"), "Bold CJK content present");
         assert!(result.content.contains("これは"), "Leading CJK preserved");
+    }
+
+    #[test]
+    fn test_normalize_fence_lang_strips_quarto_braces() {
+        assert_eq!(normalize_fence_lang("python"), Some("python".to_string()));
+        assert_eq!(normalize_fence_lang("{python}"), Some("python".to_string()));
+        assert_eq!(normalize_fence_lang("{r, echo=FALSE}"), Some("r".to_string()));
+        assert_eq!(
+            normalize_fence_lang("{.python .numberLines}"),
+            Some("python".to_string())
+        );
+        assert_eq!(normalize_fence_lang("  rust  "), Some("rust".to_string()));
+        assert_eq!(normalize_fence_lang(""), None);
+        assert_eq!(normalize_fence_lang("{}"), None);
+    }
+
+    #[tokio::test]
+    async fn test_quarto_executable_cells_render_as_clean_code() {
+        use crate::types::internal::ElementKind;
+        let content = b"---\ntitle: Quarto Doc\n---\n\nProse before.\n\n```{python}\nprint(\"hi\")\n```\n\n```{r, echo=FALSE}\nsummary(cars)\n```\n";
+        let extractor = MarkdownExtractor::new();
+        let doc = extractor
+            .extract_content(content, "text/x-quarto", &ExtractionConfig::default())
+            .await
+            .expect("should extract a Quarto document");
+
+        assert_eq!(doc.metadata.title.as_deref(), Some("Quarto Doc"));
+        let code_langs: Vec<Option<String>> = doc
+            .elements
+            .iter()
+            .filter(|e| matches!(e.kind, ElementKind::Code))
+            .map(|e| e.attributes.as_ref().and_then(|a| a.get("language").cloned()))
+            .collect();
+        assert_eq!(
+            code_langs,
+            vec![Some("python".to_string()), Some("r".to_string())],
+            "executable cell braces are stripped to bare kernel languages"
+        );
+        let code_bodies: String = doc
+            .elements
+            .iter()
+            .filter(|e| matches!(e.kind, ElementKind::Code))
+            .map(|e| e.text.clone())
+            .collect::<Vec<_>>()
+            .join("\n");
+        assert!(code_bodies.contains("print(\"hi\")"), "python cell body preserved");
+        assert!(code_bodies.contains("summary(cars)"), "r cell body preserved");
+    }
+
+    #[tokio::test]
+    async fn test_pandoc_full_elements_parsed() {
+        use crate::AnnotationKind;
+        use crate::types::internal::ElementKind;
+        // Note: pulldown-cmark's super/subscript require whitespace-flanked delimiters
+        // (`^x^`, `~x~`); it does not do pandoc's intraword `mc^2^` / `H~2~O`. We enable the
+        // option and follow pulldown's own rules.
+        let content = concat!(
+            "Marker ^sup^ and ~sub~ inline.\n\n",
+            "Inline $a^2 + b^2$ stays inline.\n\n",
+            "$$\\int_0^1 x\\,dx$$\n\n",
+            "Term 1\n: Definition of term 1.\n\n",
+            "- [x] done\n- [ ] todo\n\n",
+            "Here is a note[^1].\n\n[^1]: The footnote body.\n",
+        )
+        .as_bytes();
+        let extractor = MarkdownExtractor::new();
+        let doc = extractor
+            .extract_content(content, "text/x-pandoc", &ExtractionConfig::default())
+            .await
+            .expect("should extract pandoc-flavored markdown");
+
+        assert!(
+            doc.elements
+                .iter()
+                .any(|e| matches!(e.kind, ElementKind::Formula) && e.text.contains("\\int")),
+            "display math becomes a Formula element"
+        );
+        assert!(
+            doc.elements
+                .iter()
+                .any(|e| matches!(e.kind, ElementKind::DefinitionTerm) && e.text.contains("Term 1")),
+            "definition term parsed"
+        );
+        assert!(
+            doc.elements.iter().any(
+                |e| matches!(e.kind, ElementKind::DefinitionDescription) && e.text.contains("Definition of term 1")
+            ),
+            "definition description parsed"
+        );
+        assert!(
+            doc.elements
+                .iter()
+                .any(|e| matches!(e.kind, ElementKind::FootnoteDefinition)),
+            "footnote definition parsed"
+        );
+        let list_text: String = doc
+            .elements
+            .iter()
+            .filter(|e| matches!(e.kind, ElementKind::ListItem { .. }))
+            .map(|e| e.text.clone())
+            .collect::<Vec<_>>()
+            .join("|");
+        assert!(
+            list_text.contains("[x]") && list_text.contains("[ ]"),
+            "task-list markers rendered: {list_text}"
+        );
+        assert!(
+            doc.elements
+                .iter()
+                .any(|e| matches!(e.kind, ElementKind::Paragraph) && e.text.contains("$a^2 + b^2$")),
+            "inline math preserved with $ delimiters"
+        );
+        assert!(
+            doc.elements
+                .iter()
+                .any(|e| e.annotations.iter().any(|a| a.kind == AnnotationKind::Superscript)),
+            "superscript (^sup^) recorded as an annotation"
+        );
+        assert!(
+            doc.elements
+                .iter()
+                .any(|e| e.annotations.iter().any(|a| a.kind == AnnotationKind::Subscript)),
+            "subscript (~sub~) recorded as an annotation"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_gfm_alert_becomes_admonition() {
+        use crate::types::internal::ElementKind;
+        let content = b"> [!WARNING]\n> Be careful here.\n";
+        let extractor = MarkdownExtractor::new();
+        let doc = extractor
+            .extract_content(content, "text/x-gfm", &ExtractionConfig::default())
+            .await
+            .expect("should extract a GFM alert");
+        assert!(
+            doc.elements.iter().any(|e| matches!(e.kind, ElementKind::Admonition)),
+            "GFM alert renders as an admonition rather than losing the [!WARNING] marker"
+        );
+        assert!(
+            doc.elements.iter().any(|e| e.text.contains("Be careful here")),
+            "alert body text retained"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_smart_punctuation_rewrites_quotes() {
+        // Documents the intentional side effect of ENABLE_SMART_PUNCTUATION: straight
+        // quotes and `--` become typographic characters.
+        let content = "He said \"hello\" -- really.".as_bytes();
+        let extractor = MarkdownExtractor::new();
+        let doc = extractor
+            .extract_content(content, "text/markdown", &ExtractionConfig::default())
+            .await
+            .expect("should extract");
+        let text: String = doc
+            .elements
+            .iter()
+            .map(|e| e.text.clone())
+            .collect::<Vec<_>>()
+            .join(" ");
+        assert!(
+            text.contains('\u{201C}') || text.contains('\u{201D}'),
+            "straight quotes become curly: {text}"
+        );
+        assert!(
+            text.contains('\u{2013}') || text.contains('\u{2014}'),
+            "-- becomes en/em dash: {text}"
+        );
     }
 }
