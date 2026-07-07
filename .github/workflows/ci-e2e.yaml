@@ -37,7 +37,11 @@ env:
   CARGO_TERM_COLOR: always
   CARGO_INCREMENTAL: 0
   CARGO_PROFILE_DEV_DEBUG: 0
-  RUST_BACKTRACE: short
+  RUST_BACKTRACE: full
+  # Swift crashes at the FFI boundary print a symbolicated backtrace instead of a
+  # bare SIGABRT, so a failing e2e run yields actionable data (see the swift
+  # Linux-ARM64 Option<handle> decode crash).
+  SWIFT_BACKTRACE: "enable=yes,sanitize=yes,cache=yes"
   RUST_MIN_STACK: 16777216
   ORT_VERSION: "1.24.2"
   MACOSX_DEPLOYMENT_TARGET: "14.0"
@@ -454,3 +458,21 @@ jobs:
           LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}
           DYLD_LIBRARY_PATH: ${{ env.DYLD_LIBRARY_PATH || '' }}
           TESSDATA_PREFIX: "/usr/share/tesseract-ocr/5/tessdata"
+
+      # Diagnostics for a failed e2e run — logs, generated sources, and any crash
+      # reports. Combined with RUST_BACKTRACE=full / SWIFT_BACKTRACE above, a failure
+      # yields actionable data instead of a bare exit code.
+      - name: Upload e2e diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-diagnostics-${{ matrix.lang }}
+          path: |
+            e2e/**/*.log
+            e2e/**/*.trace
+            e2e/**/TestResults/**
+            e2e/**/test-results/**
+            e2e/**/build/reports/**
+            e2e/**/hs_err_pid*.log
+          if-no-files-found: ignore
+          retention-days: 7
