@@ -620,8 +620,12 @@ impl VectorStore for SqliteVectorStore {
             full_text: true,
             hybrid: true,
             filtering: true,
-            // Sparse + late-interaction are brute-force scans over the stored
-            // side vectors (no dedicated index), analogous to the vec0 scan.
+            // Sparse is a brute-force scan over the stored side vectors (no
+            // dedicated index), analogous to the vec0 scan. Late-interaction is
+            // NOT exhaustive here: it seeds candidates via dense KNN over
+            // query_vector (recall bounded by candidate_k) and reranks only
+            // that set with MaxSim — see `RetrieveMode::LateInteraction` for
+            // how this differs from the in-memory backend's exhaustive scan.
             sparse: true,
             late_interaction: true,
             // sqlite-vec vec0 performs exact brute-force scan (Flat).
@@ -1010,7 +1014,9 @@ impl VectorStore for SqliteVectorStore {
                     })?;
                     let qv = query.query_vector.as_deref().ok_or_else(|| {
                         RagError::InvalidQuery(
-                            "SQLite backend cannot embed text; supply query_vector to seed late_interaction candidates"
+                            "sqlite backend requires query_vector to seed late_interaction candidates via dense KNN; \
+                             query_text alone is insufficient for this backend (the in-memory backend does not have \
+                             this requirement)"
                                 .to_string(),
                         )
                     })?;
@@ -1859,6 +1865,25 @@ mod tests {
             "MaxSim favours the aligned token"
         );
         assert!(matches!(out.chunks[0].primary_score, PrimaryScore::LateInteraction(_)));
+    }
+
+    #[tokio::test]
+    async fn late_interaction_without_query_vector_returns_clear_error() {
+        let store = store_with_col(2).await;
+        let q = RetrieveQuery {
+            mode: RetrieveMode::LateInteraction,
+            query_text: Some("hi".to_string()),
+            query_multi_vector: Some(mv(1, 2, &[1.0, 0.0])),
+            ..RetrieveQuery::vector(10)
+        };
+        let err = store.retrieve("docs", &q).await.unwrap_err();
+        let RagError::InvalidQuery(msg) = err else {
+            panic!("expected InvalidQuery, got {err:?}");
+        };
+        assert!(
+            msg.contains("query_vector") && msg.contains("sqlite"),
+            "error should explain that the sqlite backend requires query_vector: {msg}"
+        );
     }
 
     // ── 3-arm hybrid ─────────────────────────────────────────────────────────

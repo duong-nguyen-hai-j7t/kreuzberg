@@ -24,6 +24,18 @@ pub enum RetrieveMode {
     /// Sparse (SPLADE-style) retrieval only.
     Sparse,
     /// Late-interaction (ColBERT-style MaxSim) reranking of a candidate set.
+    ///
+    /// Backends implement this differently despite advertising the same
+    /// [`Capabilities::late_interaction`](crate::Capabilities::late_interaction)
+    /// flag: the in-memory backend runs an exhaustive MaxSim scan over every
+    /// stored `multi_vector` and ignores `query_vector`/`query_text` entirely
+    /// (true global ranking, no `query_vector` required). The sqlite backend
+    /// seeds a candidate set via dense KNN over `query_vector` and reranks only
+    /// those candidates with MaxSim (recall bounded by `candidate_k`), so it
+    /// requires `query_vector` and errors without one even though `query_text`
+    /// alone satisfies [`RetrieveQuery::validate`]. This is an intentional
+    /// two-stage tradeoff (as in ColBERT PLAID), not a bug — check the backend
+    /// docs before assuming exhaustive recall.
     LateInteraction,
 }
 

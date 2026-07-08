@@ -21,6 +21,14 @@ pub struct Capabilities {
     /// Sparse (`RetrieveMode::Sparse`) retrieval is supported.
     pub sparse: bool,
     /// Late-interaction (`RetrieveMode::LateInteraction`) retrieval is supported.
+    ///
+    /// This flag does not imply identical semantics across backends: the
+    /// in-memory store does an exhaustive MaxSim scan over every stored
+    /// multi-vector (no `query_vector` needed, ignored if supplied), while the
+    /// sqlite store seeds candidates via dense KNN over `query_vector` (recall
+    /// bounded by `candidate_k`) and reranks only that set with MaxSim. Same
+    /// capability, different recall/latency profile — see
+    /// [`RetrieveMode::LateInteraction`](crate::RetrieveMode::LateInteraction).
     pub late_interaction: bool,
     /// Index methods the backend actually implements (others fall back to `Flat`).
     pub index_methods: Vec<IndexMethod>,
