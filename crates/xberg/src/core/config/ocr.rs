@@ -908,7 +908,7 @@ mod tests {
 
     // ── effective_pipeline tests ──
 
-    #[cfg(feature = "ocr")]
+    #[cfg(all(feature = "ocr", feature = "pdf"))]
     #[test]
     fn test_effective_pipeline_explicit_pipeline_returned_unchanged() {
         let explicit_pipeline = OcrPipelineConfig {
@@ -934,7 +934,7 @@ mod tests {
         assert_eq!(result.stages[0].language, Some(vec!["fra".to_string()]));
     }
 
-    #[cfg(feature = "ocr")]
+    #[cfg(all(feature = "ocr", feature = "pdf"))]
     #[test]
     fn test_effective_pipeline_explicit_paddleocr_no_autofallback() {
         let config = OcrConfig {
@@ -956,7 +956,7 @@ mod tests {
         assert!(result.unwrap_err().to_string().contains("Invalid OCR backend"));
     }
 
-    #[cfg(feature = "ocr")]
+    #[cfg(all(feature = "ocr", feature = "pdf"))]
     #[test]
     fn test_effective_pipeline_default_tesseract_backend() {
         let config = OcrConfig::default();
@@ -976,7 +976,7 @@ mod tests {
         }
     }
 
-    #[cfg(feature = "ocr")]
+    #[cfg(all(feature = "ocr", feature = "pdf"))]
     #[test]
     fn test_effective_thresholds_custom_vs_default() {
         // With custom thresholds
@@ -1479,7 +1479,7 @@ mod tests {
         );
     }
 
-    #[cfg(all(feature = "ocr", feature = "paddle-ocr"))]
+    #[cfg(all(feature = "ocr", feature = "paddle-ocr", feature = "pdf"))]
     #[test]
     fn test_effective_pipeline_propagates_backend_options_to_primary_stage() {
         let config = OcrConfig {
@@ -1508,7 +1508,7 @@ mod tests {
         );
     }
 
-    #[cfg(feature = "ocr")]
+    #[cfg(all(feature = "ocr", feature = "pdf"))]
     #[test]
     fn test_explicit_pipeline_ignores_top_level_backend_options() {
         // When the caller provides an explicit pipeline, OcrConfig.backend_options
@@ -1539,7 +1539,7 @@ mod tests {
         );
     }
 
-    #[cfg(feature = "ocr")]
+    #[cfg(all(feature = "ocr", feature = "pdf"))]
     #[test]
     fn test_stage_level_backend_options_preserved_in_explicit_pipeline() {
         // Stage-level backend_options in an explicit pipeline are returned unchanged —
