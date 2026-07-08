@@ -151,7 +151,9 @@ jobs:
     if: github.repository == 'xberg-io/xberg' && github.actor != 'dependabot[bot]'
     needs: [build-ffi]
     runs-on: ${{ matrix.runs-on }}
-    timeout-minutes: 60
+    # Swift gets extra headroom so the post-crash capture (core lldb + live lldb
+    # re-run + build bisect) isn't cut off before it uploads the diagnostics.
+    timeout-minutes: ${{ matrix.lang == 'swift' && 90 || 60 }}
     strategy:
       fail-fast: false
       matrix:
@@ -451,6 +453,7 @@ jobs:
         run: bundle install && bundle exec rake compile
 
       - name: Run e2e tests
+        if: matrix.lang != 'swift'
         run: task ${{ matrix.lang }}:e2e
         shell: bash
         env:
@@ -458,6 +461,91 @@ jobs:
           LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}
           DYLD_LIBRARY_PATH: ${{ env.DYLD_LIBRARY_PATH || '' }}
           TESSDATA_PREFIX: "/usr/share/tesseract-ocr/5/tessdata"
+
+      # Swift e2e crashes on Linux-arm64 only, with a bare `fatalError` and no
+      # backtrace in the log — unreproducible on macOS. Run it with full crash
+      # instrumentation so a single CI failure yields actionable data.
+      - name: Run e2e tests (swift, instrumented)
+        if: matrix.lang == 'swift'
+        shell: bash
+        env:
+          PKG_CONFIG_PATH: ${{ env.PKG_CONFIG_PATH }}
+          LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}
+          DYLD_LIBRARY_PATH: ${{ env.DYLD_LIBRARY_PATH || '' }}
+          TESSDATA_PREFIX: "/usr/share/tesseract-ocr/5/tessdata"
+          # interactive=no is critical in CI (the default prompt has no TTY and can
+          # swallow the report); the rest maximizes detail. The backtrace goes to
+          # stderr, which we capture via `tee` below (a bad output-to=path could make
+          # the runtime reject the whole option string, so we don't risk it).
+          SWIFT_BACKTRACE: "enable=yes,sanitize=yes,cache=yes,interactive=no,symbolicate=full,threads=all,registers=all,images=all,demangle=yes"
+        run: |
+          mkdir -p /tmp/swift-crash
+          # Enable core dumps for this shell and the swift test process it spawns.
+          ulimit -c unlimited || true
+          sudo sysctl -w kernel.core_pattern="/tmp/swift-crash/core.%e.%p" >/dev/null 2>&1 \
+            || echo "note: could not set core_pattern (SWIFT_BACKTRACE + live lldb still apply)"
+          echo "ulimit -c => $(ulimit -c)"
+          swift --version || true
+          uname -a || true
+          # Tee the FULL output (alef + swiftc + swift runtime) to a file so it survives
+          # even if the console truncates or the crash report lands only on stderr.
+          set -o pipefail
+          task swift:e2e 2>&1 | tee /tmp/swift-crash/e2e-full.log
+
+      - name: Capture swift crash backtrace
+        if: ${{ matrix.lang == 'swift' && failure() }}
+        shell: bash
+        continue-on-error: true
+        run: |
+          set +e
+          out=/tmp/swift-crash
+          mkdir -p "$out"
+          {
+            echo "=== toolchain ==="
+            swift --version
+            uname -a
+            echo "lldb: $(command -v lldb || echo '<not found>')"
+          } > "$out/env.txt" 2>&1
+          # Locate the built xctest binary (an ELF executable on Linux).
+          bin="$(find e2e/swift_e2e/.build packages/swift/.build -name '*.xctest' -type f 2>/dev/null | head -1)"
+          echo "test binary: ${bin:-<none — crash was likely at compile time>}" | tee -a "$out/env.txt"
+          if [ -n "$bin" ]; then
+            ldd "$bin" >> "$out/env.txt" 2>&1
+            cp "$bin" "$out/" 2>/dev/null || true
+          fi
+          # 1) Post-mortem lldb over any core file that landed.
+          for core in "$out"/core.*; do
+            [ -f "$core" ] || continue
+            echo "=== lldb core $core ===" | tee -a "$out/lldb-core.txt"
+            lldb --batch ${bin:+-f "$bin"} -c "$core" \
+              -o 'thread backtrace all' -o 'image list' -o 'register read' -o quit \
+              >> "$out/lldb-core.txt" 2>&1
+          done
+          # 2) Live re-run under lldb (most reliable when container cores are restricted):
+          #    drive the crash through the mock-server wrapper and dump a full backtrace.
+          if [ -n "$bin" ] && command -v lldb >/dev/null 2>&1; then
+            echo "=== lldb live run ===" > "$out/lldb-live.txt"
+            scripts/e2e/run-with-mock-server.sh lldb --batch \
+              -o 'settings set target.process.stop-on-sharedlibrary-events false' \
+              -o run \
+              -k 'thread backtrace all' -k 'image list' -k 'register read' -k quit \
+              "$bin" >> "$out/lldb-live.txt" 2>&1
+          fi
+          # 3) Bisect compile-vs-run: does building the tests alone reproduce the crash?
+          echo "=== swift build --build-tests -v ===" > "$out/build-tests.log"
+          ( cd e2e/swift_e2e && swift build --build-tests -v ) >> "$out/build-tests.log" 2>&1
+          echo "build-tests exit: $?" >> "$out/build-tests.log"
+          ls -laR "$out" 2>/dev/null | head -80
+
+      - name: Upload swift crash artifacts
+        if: ${{ matrix.lang == 'swift' && failure() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: swift-crash-${{ matrix.target }}
+          path: |
+            /tmp/swift-crash/**
+            e2e/swift_e2e/**/*.log
+          if-no-files-found: warn
 
       # Diagnostics for a failed e2e run — logs, generated sources, and any crash
       # reports. Combined with RUST_BACKTRACE=full / SWIFT_BACKTRACE above, a failure
