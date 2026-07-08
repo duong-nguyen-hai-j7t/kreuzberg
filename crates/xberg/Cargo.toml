@@ -271,6 +271,12 @@ chunking = [
     "dep:strum",
 ]
 chunking-tokenizers = ["chunking", "dep:tokenizers"]
+# onnx-runtime: shared ONNX model-loading helpers (crate::onnx) — HF download,
+# cross-process lock, tokenizer load, ORT session build. Marker feature enabled
+# by every ORT-backed capability that builds on the shared helper (currently
+# sparse-embeddings and late-interaction). The embeddings and reranker modules
+# still vendor their own copies; migrating them onto crate::onnx is a follow-up.
+onnx-runtime = ["dep:hf-hub", "dep:ort", "dep:tokenizers", "ort-bundled"]
 # embedding-presets: static preset metadata (WASM-safe, no ORT)
 embedding-presets = []
 # embeddings: full embedding generation with ONNX Runtime (ORT-dependent, WASM-incompatible)
@@ -298,6 +304,28 @@ reranker = [
     "dep:tokenizers",
     "tokio-runtime",
     "ort-bundled",
+]
+# v5.0.0: SPLADE sparse embeddings for hybrid dense+sparse retrieval.
+# sparse-embedding-presets: static preset metadata (WASM/Android-safe, no ORT).
+sparse-embedding-presets = []
+# sparse-embeddings: SPLADE inference via ONNX Runtime (ORT-dependent,
+# WASM-incompatible). Builds on the shared crate::onnx helper (onnx-runtime).
+sparse-embeddings = [
+    "sparse-embedding-presets",
+    "onnx-runtime",
+    "dep:ndarray",
+    "tokio-runtime",
+]
+# v5.0.0: ColBERT late-interaction (multi-vector) embeddings for MaxSim retrieval.
+# late-interaction-presets: static preset metadata + pure-CPU MaxSim (WASM/Android-safe, no ORT).
+late-interaction-presets = []
+# late-interaction: ColBERT multi-vector inference via ONNX Runtime (ORT-dependent,
+# WASM-incompatible). Builds on the shared crate::onnx helper (onnx-runtime).
+late-interaction = [
+    "late-interaction-presets",
+    "onnx-runtime",
+    "dep:ndarray",
+    "tokio-runtime",
 ]
 stopwords = []
 quality = ["dep:unicode-normalization", "dep:chardetng", "stopwords"]
@@ -417,6 +445,8 @@ no-ort-target = [
     "stopwords",
     "embedding-presets",
     "reranker-presets",
+    "sparse-embedding-presets",
+    "late-interaction-presets",
     "layout-types",
     "auto-rotate-types",
     "paddle-ocr-types",
@@ -590,6 +620,8 @@ full = [
     "layout-detection",
     "embeddings",
     "reranker",
+    "sparse-embeddings",
+    "late-interaction",
     "transcription",
     "chunking-tokenizers",
     "enrichment",
