@@ -151,14 +151,17 @@ jobs:
       - name: Cache HuggingFace fastembed models
         uses: ./.github/actions/cache-hf-fastembed
         with:
-          cache-key-suffix: reranker
+          cache-key-suffix: retrieval-presets
 
-      - name: Run live HF reranker tests
+      - name: Run live HF retrieval preset tests
         run: |
           cargo test --locked \
             -p xberg \
-            --features "reranker,reranker-presets,tokio-runtime" \
+            --features "reranker,reranker-presets,embeddings,sparse-embeddings,late-interaction,tokio-runtime" \
             --test reranker_live \
+            --test embedding_preset_live \
+            --test sparse_embedding_preset_live \
+            --test late_interaction_preset_live \
             -- --nocapture
         shell: bash
         env:
