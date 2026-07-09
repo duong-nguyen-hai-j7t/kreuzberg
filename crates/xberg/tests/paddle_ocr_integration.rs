@@ -11,8 +11,8 @@
 //! layout; the previous version of this suite relied on `pub(crate)` helpers
 //! (`ensure_models_exist`, `ensure_v2_det_model`, `resolve_rec_model`,
 //! `cache_stats`, `are_models_cached`) that the alef-migration cleanup
-//! deliberately narrowed to crate-internal visibility, which is why the file
-//! was fully disabled via `#![cfg(any())]` until now.
+//! deliberately narrowed to crate-internal visibility, which the rewritten
+//! suite below no longer needs.
 
 #![cfg(feature = "paddle-ocr")]
 
