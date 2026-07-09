@@ -18,7 +18,7 @@ use std::path::PathBuf;
 /// Since v5.0.0.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SparseEmbeddingConfig {
-    /// The sparse-embedding model to use (defaults to the "splade" preset).
+    /// The sparse-embedding model to use (defaults to the "opensearch-v3-distill" preset).
     #[serde(default = "default_sparse_model", deserialize_with = "deserialize_null_model")]
     pub model: SparseEmbeddingModelType,
 
@@ -105,7 +105,7 @@ pub enum SparseEmbeddingModelType {
 impl Default for SparseEmbeddingModelType {
     fn default() -> Self {
         Self::Preset {
-            name: "splade".to_string(),
+            name: "opensearch-v3-distill".to_string(),
         }
     }
 }
@@ -141,9 +141,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn default_config_uses_splade_preset() {
+    fn default_config_uses_opensearch_preset() {
         let config = SparseEmbeddingConfig::default();
-        assert!(matches!(config.model, SparseEmbeddingModelType::Preset { name } if name == "splade"));
+        assert!(matches!(config.model, SparseEmbeddingModelType::Preset { name } if name == "opensearch-v3-distill"));
         assert_eq!(config.batch_size, 16);
         assert_eq!(config.max_length, 256);
     }
@@ -152,7 +152,7 @@ mod tests {
     fn null_model_deserializes_to_default() {
         let json = r#"{"model": null}"#;
         let config: SparseEmbeddingConfig = serde_json::from_str(json).unwrap();
-        assert!(matches!(config.model, SparseEmbeddingModelType::Preset { name } if name == "splade"));
+        assert!(matches!(config.model, SparseEmbeddingModelType::Preset { name } if name == "opensearch-v3-distill"));
     }
 
     #[test]

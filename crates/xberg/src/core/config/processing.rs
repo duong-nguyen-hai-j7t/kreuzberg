@@ -333,7 +333,7 @@ impl Default for ChunkingConfig {
 /// Requires the `embeddings` feature to be enabled.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EmbeddingConfig {
-    /// The embedding model to use (defaults to "balanced" preset if not specified)
+    /// The embedding model to use (defaults to "gte-modernbert-base" preset if not specified)
     #[serde(default = "default_model", deserialize_with = "deserialize_null_model")]
     pub model: EmbeddingModelType,
 
@@ -463,16 +463,18 @@ pub enum EmbeddingModelType {
 }
 
 impl Default for EmbeddingModelType {
-    /// Returns the "balanced" preset as the default model.
+    /// Returns the "gte-modernbert-base" preset as the default model.
     ///
-    /// Previously returned `Preset { name: "" }` (empty string) which caused
+    /// The default is a valid, non-empty preset name: an empty string caused
     /// "Unknown embedding preset: " errors in every language binding that calls
     /// `EmbeddingModelType::default()` — including generated bindings that
     /// use struct-level `#[serde(default)]` instead of `default_model()`.
-    /// All defaults across the codebase converge on "balanced".
+    /// All defaults across the codebase converge on "gte-modernbert-base"
+    /// (2026-gen, 768 dims / CLS pooling — a drop-in for the prior "balanced"
+    /// default, which remains available as a named preset).
     fn default() -> Self {
         Self::Preset {
-            name: "balanced".to_string(),
+            name: "gte-modernbert-base".to_string(),
         }
     }
 }
@@ -523,13 +525,13 @@ fn default_batch_size() -> usize {
 
 fn default_model() -> EmbeddingModelType {
     EmbeddingModelType::Preset {
-        name: "balanced".to_string(),
+        name: "gte-modernbert-base".to_string(),
     }
 }
 
 /// `deserialize_with` companion for `EmbeddingModelType` fields that may be
 /// explicitly `null` in polyglot binding payloads. Treats null as the configured
-/// `default_model()` (the "balanced" preset) rather than the trait `Default` impl
+/// `default_model()` (the "gte-modernbert-base" preset) rather than the trait `Default` impl
 /// (which is an empty-name placeholder unsuitable for live use).
 fn deserialize_null_model<'de, D>(deserializer: D) -> Result<EmbeddingModelType, D::Error>
 where
@@ -587,16 +589,19 @@ mod tests {
         assert!(config.cache_dir.is_none());
     }
 
-    /// Tests that `EmbeddingModelType::default()` returns the "balanced" preset.
+    /// Tests that `EmbeddingModelType::default()` returns the "gte-modernbert-base" preset.
     ///
     /// Language bindings that use struct-level `#[serde(default)]` resolve absent
     /// `model` fields via this impl. An empty-string name caused "Unknown embedding
     /// preset: " panics in `get_preset()`; the default must be a valid preset.
     #[test]
-    fn test_embedding_model_type_default_is_balanced() {
+    fn test_embedding_model_type_default_is_gte_modernbert() {
         match EmbeddingModelType::default() {
             EmbeddingModelType::Preset { name } => {
-                assert_eq!(name, "balanced", "Default model should be the balanced preset");
+                assert_eq!(
+                    name, "gte-modernbert-base",
+                    "Default model should be the gte-modernbert-base preset"
+                );
             }
             other => panic!("Expected Preset variant, got {:?}", other),
         }

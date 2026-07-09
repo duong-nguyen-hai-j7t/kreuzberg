@@ -129,7 +129,9 @@ where
                     .with_description("Path to the document to index")
                     .with_required(true),
                 PromptArgument::new("preset")
-                    .with_description("Embedding preset: 'speed', 'balanced' (default), or 'quality'")
+                    .with_description(
+                        "Embedding preset: 'fast', 'balanced', 'quality', 'multilingual', or 'gte-modernbert-base' (default)",
+                    )
                     .with_required(false),
                 PromptArgument::new("chunker_type")
                     .with_description("Chunker strategy: 'text' (default), 'markdown', 'yaml', or 'semantic'")
