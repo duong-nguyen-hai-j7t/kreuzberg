@@ -7,6 +7,12 @@
 //! normal `hf-hub` path, verifying every file against a checked-in sha256 manifest
 //! before use.
 //!
+//! PaddleOCR-VL 1.6 does not have this problem — `PaddlePaddle/PaddleOCR-VL-1.6` stays
+//! up on the Hub — but it re-uses the same staging path so the backend's default
+//! `model_id` auto-downloads without requiring callers to pre-stage a local
+//! `model_path`, and so the same checksum-manifest trust model applies uniformly
+//! across every candle VLM-OCR backend.
+//!
 //! Trust attaches to the manifest, not the host: a changed or tampered file fails
 //! the staging step instead of silently feeding wrong weights into inference. The
 //! shards are byte-identical to the original release, so the checked-in checksums are
@@ -30,9 +36,21 @@ struct HfModel {
 /// to Tencent's original `tencent/HunyuanOCR`, which was pulled from the Hub). The
 /// file list and checksums live in the checked-in `.sha256` manifest, which CI
 /// (`sha256sum --check`) reads too — updating the model means editing one file.
+#[cfg(feature = "candle-hunyuan-ocr")]
 const HUNYUAN_OCR: HfModel = HfModel {
     repo: "xberg-io/hunyuan-ocr",
     manifest: include_str!("hunyuan-ocr.sha256"),
+};
+
+/// PaddleOCR-VL 1.6 — re-hosted at `xberg-io/paddleocr-vl-1.6` (byte-identical mirror
+/// of `PaddlePaddle/PaddleOCR-VL-1.6`, Apache-2.0). The upstream repo is public, but we
+/// mirror it anyway so the backend's default `model_id` resolves to a checksum-pinned
+/// copy under our control rather than trusting whatever the upstream repo currently
+/// contains at fetch time.
+#[cfg(feature = "candle-paddleocr-vl")]
+const PADDLEOCR_VL_16: HfModel = HfModel {
+    repo: "xberg-io/paddleocr-vl-1.6",
+    manifest: include_str!("paddleocr-vl-1.6.sha256"),
 };
 
 /// Parse the model manifest into an ordered `(filename, sha256)` list, requiring at
@@ -53,9 +71,62 @@ fn manifest_files(content: &str) -> Result<Vec<(String, String)>, String> {
 /// staging rather than feeding wrong weights into inference. The returned directory —
 /// the `hf-hub` snapshot dir holding all the fetched files — is ready to hand to
 /// `HunyuanOCREngine::init`.
+#[cfg(feature = "candle-hunyuan-ocr")]
 pub(crate) fn ensure_hunyuan_ocr() -> Result<PathBuf, String> {
     ensure_model(&HUNYUAN_OCR)
 }
+
+/// Ensure PaddleOCR-VL 1.6 weights are present locally and return the model directory.
+///
+/// `repo_id` is normally the backend's default `xberg-io/paddleocr-vl-1.6` — in that
+/// case every manifest file is fetched through `hf-hub` (warm cache hits skip the
+/// network) and verified against the checked-in sha256 manifest before use, so a
+/// tampered or corrupted download fails staging instead of silently feeding wrong
+/// weights into inference.
+///
+/// A caller-supplied `repo_id` (via `backend_options.model_id`) that does not match the
+/// pinned mirror has no corresponding checksum manifest, so it is fetched via plain
+/// `hf-hub` without checksum verification — the same trust level as pointing
+/// `model_path` at arbitrary local weights.
+#[cfg(feature = "candle-paddleocr-vl")]
+pub(crate) fn ensure_paddleocr_vl_16(repo_id: &str) -> Result<PathBuf, String> {
+    if repo_id == PADDLEOCR_VL_16.repo {
+        return ensure_model(&PADDLEOCR_VL_16);
+    }
+
+    tracing::warn!(
+        repo = repo_id,
+        pinned_repo = PADDLEOCR_VL_16.repo,
+        "PaddleOCR-VL model_id does not match the checksum-pinned mirror; downloading without \
+         checksum verification"
+    );
+    ensure_model_unverified(repo_id, PADDLEOCR_VL_16_FILES)
+}
+
+/// Fetch every file in `files` from `repo_id` via `hf-hub` without checksum
+/// verification, returning the shared snapshot directory. Used only for a
+/// non-default `model_id` override where no checked-in manifest exists.
+#[cfg(feature = "candle-paddleocr-vl")]
+fn ensure_model_unverified(repo_id: &str, files: &[&str]) -> Result<PathBuf, String> {
+    let mut dir: Option<PathBuf> = None;
+    for name in files {
+        let path = hf_download(repo_id, name)?;
+        if dir.is_none() {
+            dir = path.parent().map(Path::to_path_buf);
+        }
+    }
+    dir.ok_or_else(|| format!("Fetched no files for {repo_id}"))
+}
+
+/// Filenames the PaddleOCR-VL engine and processor read, used to fetch a
+/// non-default `model_id` that has no checksum manifest of its own.
+#[cfg(feature = "candle-paddleocr-vl")]
+const PADDLEOCR_VL_16_FILES: &[&str] = &[
+    "config.json",
+    "preprocessor_config.json",
+    "tokenizer.json",
+    "model.safetensors",
+];
 
 fn ensure_model(model: &HfModel) -> Result<PathBuf, String> {
     let files = manifest_files(model.manifest)?;
@@ -79,6 +150,7 @@ fn ensure_model(model: &HfModel) -> Result<PathBuf, String> {
 mod tests {
     use super::*;
 
+    #[cfg(feature = "candle-hunyuan-ocr")]
     #[test]
     fn hunyuan_manifest_covers_every_file_the_engine_reads() {
         let files = manifest_files(HUNYUAN_OCR.manifest).expect("bundled manifest must parse");
@@ -104,9 +176,32 @@ mod tests {
         );
     }
 
+    #[cfg(feature = "candle-hunyuan-ocr")]
     #[test]
     fn hunyuan_ocr_is_hosted_on_the_xberg_hf_repo() {
         assert_eq!(HUNYUAN_OCR.repo, "xberg-io/hunyuan-ocr");
+    }
+
+    #[cfg(feature = "candle-paddleocr-vl")]
+    #[test]
+    fn paddleocr_vl_16_manifest_covers_every_file_the_engine_reads() {
+        let files = manifest_files(PADDLEOCR_VL_16.manifest).expect("bundled manifest must parse");
+        let names: Vec<&str> = files.iter().map(|(name, _)| name.as_str()).collect();
+        // The engine reads config + tokenizer; the processor reads preprocessor_config.
+        for required in [
+            "config.json",
+            "preprocessor_config.json",
+            "tokenizer.json",
+            "model.safetensors",
+        ] {
+            assert!(names.contains(&required), "manifest missing {required}");
+        }
+    }
+
+    #[cfg(feature = "candle-paddleocr-vl")]
+    #[test]
+    fn paddleocr_vl_16_is_hosted_on_the_xberg_hf_repo() {
+        assert_eq!(PADDLEOCR_VL_16.repo, "xberg-io/paddleocr-vl-1.6");
     }
 
     #[test]
@@ -123,6 +218,7 @@ mod tests {
     /// End-to-end check of the real hf-hub → verify path against the re-hosted
     /// `xberg-io/hunyuan-ocr` release, using only the small config files (no multi-GB
     /// shards). Ignored by default (network); run with `--ignored`.
+    #[cfg(feature = "candle-hunyuan-ocr")]
     #[test]
     #[ignore = "hits the HuggingFace Hub; run with --ignored"]
     fn stages_hunyuan_config_files_from_hf() {
@@ -144,6 +240,46 @@ mod tests {
 
         let out = ensure_model(&model).expect("staging must succeed");
         for (name, sha256) in small {
+            let path = out.join(name);
+            assert!(path.exists(), "{name} should be staged in the snapshot dir");
+            verify_sha256(&path, sha256, name).expect("staged file must match manifest checksum");
+        }
+
+        // A second call with a warm cache must still succeed (hf-hub serves the cached copy).
+        ensure_model(&model).expect("warm cache must succeed");
+    }
+
+    /// End-to-end check of the real hf-hub → verify path against the re-hosted
+    /// `xberg-io/paddleocr-vl-1.6` mirror, using only the small config/tokenizer files
+    /// (no ~2 GB safetensors shard). Ignored by default (network); run with `--ignored`.
+    #[cfg(feature = "candle-paddleocr-vl")]
+    #[test]
+    #[ignore = "hits the HuggingFace Hub; run with --ignored"]
+    fn stages_paddleocr_vl_16_config_files_from_hf() {
+        let bundled = manifest_files(PADDLEOCR_VL_16.manifest).unwrap();
+        let small: Vec<(String, String)> = bundled
+            .into_iter()
+            .filter(|(name, _)| name != "model.safetensors")
+            .collect();
+        assert!(
+            !small.is_empty(),
+            "manifest should list small config/tokenizer files besides the weights"
+        );
+        let manifest: &'static str = Box::leak(
+            small
+                .iter()
+                .map(|(name, sha256)| format!("{sha256}  {name}"))
+                .collect::<Vec<_>>()
+                .join("\n")
+                .into_boxed_str(),
+        );
+        let model = HfModel {
+            repo: PADDLEOCR_VL_16.repo,
+            manifest,
+        };
+
+        let out = ensure_model(&model).expect("staging must succeed");
+        for (name, sha256) in &small {
             let path = out.join(name);
             assert!(path.exists(), "{name} should be staged in the snapshot dir");
             verify_sha256(&path, sha256, name).expect("staged file must match manifest checksum");
