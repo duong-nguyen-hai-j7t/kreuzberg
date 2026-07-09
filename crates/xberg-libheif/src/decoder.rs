@@ -179,14 +179,14 @@ impl DecodingOptions {
     }
 
     #[cfg(feature = "v1_21")]
-    /// 0 = let libheif decide (TODO, currently ignored)
+    /// ~keep 0 = let libheif decide (TODO, currently ignored)
     pub fn num_library_threads(&self) -> u32 {
         let inner = self.inner_ref();
         inner.num_library_threads.max(0) as _
     }
 
     #[cfg(feature = "v1_21")]
-    /// 0 = let libheif decide (TODO, currently ignored)
+    /// ~keep 0 = let libheif decide (TODO, currently ignored)
     pub fn set_num_library_threads(&mut self, v: u32) {
         let inner = self.inner_mut();
         inner.num_library_threads = v.min(i32::MAX as u32) as _;

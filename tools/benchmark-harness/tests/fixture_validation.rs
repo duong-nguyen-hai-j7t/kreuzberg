@@ -374,23 +374,20 @@ fn core_formats_have_fixture_coverage() {
     let mut format_examples: HashMap<String, Vec<String>> = HashMap::new();
 
     for fixture_path in &fixtures {
-        match Fixture::from_file(fixture_path) {
-            Ok(fixture) => {
-                let file_type_lower = fixture.file_type.to_lowercase();
+        if let Ok(fixture) = Fixture::from_file(fixture_path) {
+            let file_type_lower = fixture.file_type.to_lowercase();
 
-                if required_formats.contains(&file_type_lower.as_str()) {
-                    covered_formats.insert(file_type_lower.clone());
-                }
-
-                format_examples.entry(file_type_lower).or_default().push(
-                    fixture_path
-                        .file_stem()
-                        .unwrap_or_default()
-                        .to_string_lossy()
-                        .to_string(),
-                );
+            if required_formats.contains(&file_type_lower.as_str()) {
+                covered_formats.insert(file_type_lower.clone());
             }
-            Err(_) => {}
+
+            format_examples.entry(file_type_lower).or_default().push(
+                fixture_path
+                    .file_stem()
+                    .unwrap_or_default()
+                    .to_string_lossy()
+                    .to_string(),
+            );
         }
     }
 

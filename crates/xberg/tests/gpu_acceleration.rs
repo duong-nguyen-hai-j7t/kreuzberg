@@ -18,9 +18,6 @@
 //! The `ort-dynamic` feature overrides the bundled CPU-only ORT so a
 //! GPU-enabled ONNX Runtime (via `ORT_DYLIB_PATH`) is loaded at runtime.
 
-// Helpers below are consumed only by the feature-gated test modules
-// (`paddle-ocr`, `layout-detection`, `embeddings`); they are dead in the
-// default-feature build that CI's clippy pass compiles.
 #![allow(dead_code)]
 
 mod helpers;

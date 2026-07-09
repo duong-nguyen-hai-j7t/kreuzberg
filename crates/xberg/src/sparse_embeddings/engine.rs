@@ -169,18 +169,6 @@ fn splade_pool(
         )));
     }
 
-    // Fused relu -> log1p -> mask -> max-pool over the sequence axis, written
-    // directly into the [batch, vocab] accumulator. This avoids materializing
-    // the two full [batch, seq, vocab] intermediates the unfused version built
-    // (`relu_log` then the masked `weighted` array) before folding down to
-    // [batch, vocab] — same result, one pass, no extra allocation of that size.
-    //
-    // Padding MUST be masked to zero BEFORE the max, matching the original
-    // order of operations (activate -> mask -> pool): if a position is padding
-    // its contribution is forced to 0.0 rather than the activated logit, so it
-    // can never win the max over a real (usually positive) activation. Pooling
-    // before masking would let padded logits leak through whenever they exceed
-    // the real-token activations, corrupting the result.
     let mut scores = ndarray::Array2::<f32>::from_elem((batch, vocab), f32::NEG_INFINITY);
     for b in 0..batch {
         let logits_b = logits.index_axis(Axis(0), b);
@@ -287,32 +275,13 @@ mod tests {
     /// dominated by the huge padded logit and diverge from the expected value.
     #[test]
     fn splade_pool_masks_before_max_multirow() {
-        // batch=2, seq=2, vocab=2.
-        // Row 0: position 0 real (vocab0=0.5, vocab1=-1.0), position 1 padding
-        // with huge logits that must be excluded from the max.
-        // Row 1: both positions real, no padding, used as a control.
-        let logits = Array3::from_shape_vec(
-            (2, 2, 2),
-            vec![
-                0.5, -1.0, // row 0, seq 0 (real)
-                100.0, 100.0, // row 0, seq 1 (padding, must be excluded)
-                0.5, -1.0, // row 1, seq 0 (real)
-                0.2, 0.3, // row 1, seq 1 (real)
-            ],
-        )
-        .unwrap();
+        let logits = Array3::from_shape_vec((2, 2, 2), vec![0.5, -1.0, 100.0, 100.0, 0.5, -1.0, 0.2, 0.3]).unwrap();
         let mask = Array2::from_shape_vec((2, 2), vec![1_i64, 0_i64, 1_i64, 1_i64]).unwrap();
         let out = splade_pool(&logits.view(), &mask).unwrap();
 
-        // Row 0: only vocab index 0 is positive (log(1.5) from the real
-        // token); vocab index 1's real contribution is relu(-1.0) = 0, and the
-        // padded position must not contribute at all.
         assert_eq!(out[0].indices, vec![0]);
         assert!((out[0].values[0] - 1.0).abs() < 1e-5);
 
-        // Row 1 (no padding) must match the unfused computation directly:
-        // vocab0 = max(log(1.5), log(1.2)) = log(1.5); vocab1 = max(relu(-1)=0
-        // activated as log(1)=0, log(1.3)) = log(1.3).
         let v0 = (1.5_f32).ln();
         let v1 = (1.3_f32).ln();
         let norm = (v0 * v0 + v1 * v1).sqrt();

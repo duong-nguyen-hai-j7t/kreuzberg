@@ -372,12 +372,11 @@ fn measure_npm_package(package: &str) -> Result<Option<u64>> {
             if let Ok(entries) = fs::read_dir(node_crate) {
                 for entry in entries.flatten() {
                     let path = entry.path();
-                    if let Some(name) = path.file_name().and_then(|n| n.to_str()) {
-                        if name.ends_with(".node")
-                            && let Ok(metadata) = fs::metadata(&path)
-                        {
-                            total += metadata.len();
-                        }
+                    if let Some(name) = path.file_name().and_then(|n| n.to_str())
+                        && name.ends_with(".node")
+                        && let Ok(metadata) = fs::metadata(&path)
+                    {
+                        total += metadata.len();
                     }
                 }
             }

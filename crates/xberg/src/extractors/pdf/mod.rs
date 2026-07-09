@@ -2285,7 +2285,7 @@ mod tests {
     /// Uses an existing test PDF rather than creating one programmatically.
     /// This is a simple smoke test to verify that form field extraction works
     /// and doesn't panic or crash the extraction pipeline.
-    /// TODO: Add a real fillable PDF fixture if one is available.
+    /// ~keep TODO: Add a real fillable PDF fixture if one is available.
     /// Path to the vendored fillable-form fixture (AcroForm with text, button,
     /// and choice fields).
     #[cfg(feature = "pdf")]

@@ -187,7 +187,6 @@ pub fn parse_markdown_blocks(md: &str) -> Vec<MdBlock> {
     let mut in_table = false;
     let mut in_list_item = false;
     let mut table_content = String::new();
-    let mut table_cell_idx = 0;
 
     for event in parser {
         match event {
@@ -245,7 +244,6 @@ pub fn parse_markdown_blocks(md: &str) -> Vec<MdBlock> {
                 flush_text(&mut current_text, &mut blocks, &mut index, MdBlockType::Paragraph);
                 in_table = true;
                 table_content.clear();
-                table_cell_idx = 0;
             }
             Event::End(TagEnd::Table) => {
                 in_table = false;
@@ -266,13 +264,9 @@ pub fn parse_markdown_blocks(md: &str) -> Vec<MdBlock> {
                     table_content.push('\n');
                 }
                 table_content.push('|');
-                table_cell_idx = 0;
             }
             Event::End(TagEnd::TableRow) => {}
-            Event::Start(Tag::TableCell) => {
-                if table_cell_idx > 0 {}
-                table_cell_idx += 1;
-            }
+            Event::Start(Tag::TableCell) => {}
             Event::End(TagEnd::TableCell) => {
                 let cell_text = std::mem::take(&mut current_text);
                 table_content.push(' ');

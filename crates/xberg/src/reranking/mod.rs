@@ -776,13 +776,6 @@ mod tests {
                 );
             }
 
-            // `crate::onnx::fetch_companion` always downloads tokenizer.json and
-            // config.json alongside the model file (from `<model_dir>/<name>` or
-            // the repo root), and opportunistically downloads
-            // special_tokens_map.json / tokenizer_config.json when present. A
-            // preset shipping a companion without a pinned hash would be
-            // downloaded unverified, so every companion the loader actually
-            // fetches must be pinned too.
             let model_dir = std::path::Path::new(&preset.model_file)
                 .parent()
                 .and_then(|p| p.to_str())
@@ -800,13 +793,6 @@ mod tests {
                     path
                 );
             }
-            // special_tokens_map.json / tokenizer_config.json are downloaded via
-            // `unwrap_or_default()` (best-effort -- not every repo ships them),
-            // so they are pinned-if-present rather than required. This test
-            // covers presets that already have them in the manifest; it cannot
-            // detect a genuinely absent-and-unpinned companion since the
-            // manifest itself is the only source of "what exists" available
-            // here.
         }
     }
 

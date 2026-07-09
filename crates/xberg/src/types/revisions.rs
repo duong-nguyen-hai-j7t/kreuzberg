@@ -159,7 +159,7 @@ impl Default for RevisionAnchor {
 ///
 /// For insertions and deletions the `content` field carries the added/removed
 /// lines as `DiffLine::Added` / `DiffLine::Removed` entries. For format
-/// changes, `content` is empty — the property diff is left as a TODO for a
+/// changes, `content` is empty — ~keep TODO: add the property diff in a
 /// later enrichment pass.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]

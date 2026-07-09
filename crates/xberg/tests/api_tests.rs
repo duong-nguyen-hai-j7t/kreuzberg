@@ -1,4 +1,4 @@
-//! TODO: Restored from 245539484 alef-migration cleanup. Currently exercises
+//! ~keep TODO: Restored from 245539484 alef-migration cleanup. Currently exercises
 //! pub(crate) APIs that the migration deliberately narrowed; gated until
 //! either (a) these APIs are re-exposed publicly, or (b) the test is
 //! rewritten against the public extraction surface.

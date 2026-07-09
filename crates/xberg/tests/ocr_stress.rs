@@ -9,7 +9,7 @@
 //!
 //! These tests ensure production workloads with heavy OCR usage work correctly.
 //!
-//! TODO: This test exercises `OcrProcessor::new` and `process_image_files_batch`,
+//! ~keep TODO: This test exercises `OcrProcessor::new` and `process_image_files_batch`,
 //! both of which were narrowed to `pub(crate)` during the alef-migration visibility
 //! tightening. Re-enable by either (a) moving these stress tests inline as
 //! `#[cfg(test)]` modules under `crates/xberg/src/ocr/processor/`, or

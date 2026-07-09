@@ -274,8 +274,8 @@ fn unlock_file(_file: &std::fs::File) {}
 ///    downloads (a killed process never permanently wedges the lock).
 /// 5. Download each file via `hf-hub` into `target_dir` under canonical local names.
 /// 6. When `verify_hash` is `true` emit a warning that the hash table is not yet
-///    populated and the check is a no-op. The check is tracked via a TODO comment
-///    for a follow-up work item (W3+).
+///    populated and the check is a no-op. The check is tracked via the ~keep TODO
+///    comment for a follow-up work item (W3+).
 /// 7. Return populated [`WhisperModelPaths`].
 ///
 /// # Errors
