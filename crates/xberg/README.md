@@ -236,10 +236,10 @@ async fn main() -> xberg::Result<()> {
     let document = &output.results[0];
 
     // Access the structural code chunks from format metadata.
-    if let Some(xberg::types::FormatMetadata::Code { ref chunks }) = document.metadata.format {
-        println!("Code chunks: {}", chunks.len());
+    if let Some(xberg::types::FormatMetadata::Code(ref code)) = document.metadata.format {
+        println!("Code chunks: {}", code.chunks.len());
 
-        for chunk in chunks {
+        for chunk in &code.chunks {
             // `context_path` is the enclosing scope (e.g. ["MyClass", "my_method"]);
             // `node_types` are the tree-sitter kinds at the chunk's top level.
             println!(

@@ -636,7 +636,7 @@ pub fn derive_extraction_result(
         Some(doc.uris)
     };
 
-    // Code intelligence is surfaced through FormatMetadata::Code { chunks } (owned
+    // Code intelligence is surfaced through FormatMetadata::Code(CodeMetadata { chunks }) (owned
     // CodeChunkInfo payloads), not through this derive path — the upstream
     // ProcessResult type lives in an external crate that binding generators cannot
     // resolve to a typed struct across all targets, so no payload is attached here.
