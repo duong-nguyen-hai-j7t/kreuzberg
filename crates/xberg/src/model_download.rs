@@ -14,7 +14,9 @@ use std::time::Duration;
     feature = "layout-detection",
     feature = "auto-rotate",
     feature = "ner-onnx",
-    feature = "candle-paddleocr-vl"
+    feature = "candle-paddleocr-vl",
+    feature = "onnx-runtime",
+    feature = "static-embeddings"
 ))]
 use sha2::{Digest, Sha256};
 #[cfg(any(
@@ -22,7 +24,9 @@ use sha2::{Digest, Sha256};
     feature = "layout-detection",
     feature = "auto-rotate",
     feature = "ner-onnx",
-    feature = "candle-paddleocr-vl"
+    feature = "candle-paddleocr-vl",
+    feature = "onnx-runtime",
+    feature = "static-embeddings"
 ))]
 use std::io::{BufReader, Read};
 #[cfg(any(
@@ -30,7 +34,9 @@ use std::io::{BufReader, Read};
     feature = "layout-detection",
     feature = "auto-rotate",
     feature = "ner-onnx",
-    feature = "candle-paddleocr-vl"
+    feature = "candle-paddleocr-vl",
+    feature = "onnx-runtime",
+    feature = "static-embeddings"
 ))]
 use std::path::Path;
 #[cfg(any(
@@ -188,7 +194,9 @@ pub(crate) fn hf_download(repo_id: &str, remote_filename: &str) -> Result<PathBu
 /// weight staging) so the format and validation live in one place.
 #[cfg(any(
     feature = "ner-onnx",
-    feature = "candle-paddleocr-vl"
+    feature = "candle-paddleocr-vl",
+    feature = "onnx-runtime",
+    feature = "static-embeddings"
 ))]
 pub(crate) fn parse_sha256_manifest(content: &str) -> Result<Vec<(String, String)>, String> {
     let mut entries = Vec::new();
@@ -224,7 +232,9 @@ pub(crate) fn parse_sha256_manifest(content: &str) -> Result<Vec<(String, String
     feature = "layout-detection",
     feature = "auto-rotate",
     feature = "ner-onnx",
-    feature = "candle-paddleocr-vl"
+    feature = "candle-paddleocr-vl",
+    feature = "onnx-runtime",
+    feature = "static-embeddings"
 ))]
 pub(crate) fn verify_sha256(path: &Path, expected: &str, label: &str) -> Result<(), String> {
     if expected.is_empty() {
@@ -335,10 +345,7 @@ mod download_deadline_tests {
 mod tests {
     use super::*;
 
-    #[cfg(any(
-        feature = "ner-onnx",
-        feature = "candle-paddleocr-vl"
-    ))]
+    #[cfg(any(feature = "ner-onnx", feature = "candle-paddleocr-vl"))]
     #[test]
     fn parse_sha256_manifest_reads_entries_and_normalizes() {
         let entries = parse_sha256_manifest(
@@ -354,10 +361,7 @@ mod tests {
         assert!(parse_sha256_manifest("# only comments\n").unwrap().is_empty());
     }
 
-    #[cfg(any(
-        feature = "ner-onnx",
-        feature = "candle-paddleocr-vl"
-    ))]
+    #[cfg(any(feature = "ner-onnx", feature = "candle-paddleocr-vl"))]
     #[test]
     fn parse_sha256_manifest_rejects_malformed_lines() {
         assert!(
