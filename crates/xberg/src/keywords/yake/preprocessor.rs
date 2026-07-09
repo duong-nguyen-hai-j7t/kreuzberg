@@ -205,13 +205,10 @@ pub(crate) fn split_into_words(text: &str) -> Vec<String> {
                 if !before.is_empty() {
                     words.push(before.to_string());
                 }
-                let cont_start = i;
                 i += 1;
                 while i < len && bytes[i].is_ascii_alphabetic() {
                     i += 1;
                 }
-                let contraction = &text[cont_start..i];
-                if contraction.len() > 1 && !contraction.starts_with("'") || contraction.len() > 1 {}
                 continue;
             } else {
                 break;

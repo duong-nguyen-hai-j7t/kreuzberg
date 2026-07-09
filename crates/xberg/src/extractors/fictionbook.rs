@@ -770,14 +770,7 @@ impl FictionBookExtractor {
                             }
                             _ => {}
                         }
-                    } else if tag == "p" && in_body && !is_notes_body {
-                        match Self::extract_paragraph_with_annotations(&mut reader, budget) {
-                            Ok((text, annotations)) if !text.is_empty() => {
-                                builder.push_paragraph(&text, annotations, None, None);
-                            }
-                            _ => {}
-                        }
-                    } else if tag == "v" && in_body && !is_notes_body {
+                    } else if (tag == "p" || tag == "v") && in_body && !is_notes_body {
                         match Self::extract_paragraph_with_annotations(&mut reader, budget) {
                             Ok((text, annotations)) if !text.is_empty() => {
                                 builder.push_paragraph(&text, annotations, None, None);

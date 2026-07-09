@@ -488,14 +488,7 @@ fn convert_extracted_table(table: &pdf_oxide::structure::table_extractor::Table)
         }
         markdown.push('\n');
 
-        if row.is_header && !found_header {
-            found_header = true;
-            markdown.push('|');
-            for _ in &row_cells {
-                markdown.push_str(" --- |");
-            }
-            markdown.push('\n');
-        } else if row_idx == 0 && !found_header {
+        if (row.is_header || row_idx == 0) && !found_header {
             found_header = true;
             markdown.push('|');
             for _ in &row_cells {

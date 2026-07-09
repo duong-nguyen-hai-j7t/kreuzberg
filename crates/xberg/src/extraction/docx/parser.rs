@@ -1599,10 +1599,10 @@ impl<R: Read + Seek> DocxParser<R> {
                             for attr in e.attributes().flatten() {
                                 if attr.key.as_ref() == b"w:id"
                                     && let Ok(id) = std::str::from_utf8(&attr.value)
+                                    && id != "0"
+                                    && id != "1"
                                 {
-                                    if id != "0" && id != "1" {
-                                        run.text.push_str(&format!("[^{}]", id));
-                                    }
+                                    run.text.push_str(&format!("[^{}]", id));
                                 }
                             }
                         }

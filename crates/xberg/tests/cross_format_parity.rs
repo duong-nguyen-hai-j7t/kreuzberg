@@ -177,13 +177,14 @@ fn strip_links(text: &str) -> String {
         if chars[i] == '[' {
             if let Some(close_bracket) = chars[i + 1..].iter().position(|&c| c == ']') {
                 let close_idx = i + 1 + close_bracket;
-                if close_idx + 1 < chars.len() && chars[close_idx + 1] == '(' {
-                    if let Some(close_paren) = chars[close_idx + 2..].iter().position(|&c| c == ')') {
-                        let text_part: String = chars[i + 1..close_idx].iter().collect();
-                        result.push_str(&text_part);
-                        i = close_idx + 2 + close_paren + 1;
-                        continue;
-                    }
+                if close_idx + 1 < chars.len()
+                    && chars[close_idx + 1] == '('
+                    && let Some(close_paren) = chars[close_idx + 2..].iter().position(|&c| c == ')')
+                {
+                    let text_part: String = chars[i + 1..close_idx].iter().collect();
+                    result.push_str(&text_part);
+                    i = close_idx + 2 + close_paren + 1;
+                    continue;
                 }
             }
             result.push(chars[i]);
@@ -349,13 +350,11 @@ fn validate_gfm_basics(markdown: &str) -> Vec<String> {
         let trimmed = line.trim();
         if trimmed.starts_with('|') && trimmed.ends_with('|') && trimmed.len() > 2 && !is_table_separator(trimmed) {
             let is_first_table_row = i == 0 || lines[i - 1].trim().is_empty() || !lines[i - 1].trim().starts_with('|');
-            if is_first_table_row {
-                if i + 1 >= lines.len() || !is_table_separator(lines[i + 1].trim()) {
-                    violations.push(format!(
-                        "line {}: pipe table header row not followed by separator row",
-                        i + 1
-                    ));
-                }
+            if is_first_table_row && (i + 1 >= lines.len() || !is_table_separator(lines[i + 1].trim())) {
+                violations.push(format!(
+                    "line {}: pipe table header row not followed by separator row",
+                    i + 1
+                ));
             }
         }
     }

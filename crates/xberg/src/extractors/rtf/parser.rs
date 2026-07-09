@@ -1439,20 +1439,18 @@ fn handle_control_word(
         }
         "pard" => {
             let in_table_row = table_state.as_ref().is_some_and(|s| s.in_row);
-            if !in_table_row {
-                if !result.is_empty() && !result.ends_with('\n') && !*para_meta_emitted {
-                    para_metas.push(ParagraphMeta {
-                        heading_level: *cur_heading_level,
-                        list_level: *cur_list_level,
-                        list_id: *cur_list_id,
-                        is_table: false,
-                        ordered: *cur_ordered,
-                    });
-                    result.push('\n');
-                    result.push('\n');
-                    if let Some(flag) = group_has_text.last_mut() {
-                        *flag = true;
-                    }
+            if !in_table_row && !result.is_empty() && !result.ends_with('\n') && !*para_meta_emitted {
+                para_metas.push(ParagraphMeta {
+                    heading_level: *cur_heading_level,
+                    list_level: *cur_list_level,
+                    list_id: *cur_list_id,
+                    is_table: false,
+                    ordered: *cur_ordered,
+                });
+                result.push('\n');
+                result.push('\n');
+                if let Some(flag) = group_has_text.last_mut() {
+                    *flag = true;
                 }
             }
             *para_meta_emitted = false;

@@ -63,10 +63,11 @@ pub(crate) fn validate_cors_origin(origin: &str) -> Result<()> {
         return Ok(());
     }
 
-    if origin.starts_with("http://") || origin.starts_with("https://") {
-        if origin.len() > 8 && (origin.starts_with("http://") && origin.len() > 7 || origin.starts_with("https://")) {
-            return Ok(());
-        }
+    if (origin.starts_with("http://") || origin.starts_with("https://"))
+        && origin.len() > 8
+        && (origin.starts_with("http://") && origin.len() > 7 || origin.starts_with("https://"))
+    {
+        return Ok(());
     }
 
     Err(XbergError::Validation {

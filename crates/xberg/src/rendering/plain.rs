@@ -26,14 +26,13 @@ pub(crate) fn render_plain(doc: &InternalDocument) -> String {
             ElementKind::Title | ElementKind::Heading { .. } | ElementKind::Paragraph => {
                 if !elem.text.is_empty() {
                     if matches!(elem.kind, ElementKind::Heading { .. }) {
-                        if let Some(last_depth) = last_heading_depth {
-                            if (last_depth == 0 || last_depth == 1)
-                                && last_depth == elem.depth
-                                && !out.is_empty()
-                                && !out.ends_with("\n\n")
-                            {
-                                out.push('\n');
-                            }
+                        if let Some(last_depth) = last_heading_depth
+                            && (last_depth == 0 || last_depth == 1)
+                            && last_depth == elem.depth
+                            && !out.is_empty()
+                            && !out.ends_with("\n\n")
+                        {
+                            out.push('\n');
                         }
                         last_heading_depth = Some(elem.depth);
                     }

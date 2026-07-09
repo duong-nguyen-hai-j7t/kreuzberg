@@ -157,10 +157,8 @@ fn find_citation_block_start(markdown: &str) -> Option<usize> {
     let lines: Vec<&str> = markdown.lines().collect();
 
     for (i, line) in lines.iter().enumerate() {
-        if CITATION_BLOCK_START.is_match(line) {
-            if i + 1 < lines.len() && CITATION_COMMENT_RE.is_match(lines[i + 1]) {
-                return Some(i);
-            }
+        if CITATION_BLOCK_START.is_match(line) && i + 1 < lines.len() && CITATION_COMMENT_RE.is_match(lines[i + 1]) {
+            return Some(i);
         }
     }
 

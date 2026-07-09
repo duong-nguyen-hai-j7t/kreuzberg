@@ -521,15 +521,15 @@ fn parse_table_look(e: &BytesStart) -> TableLook {
         look.last_column = get_attribute(e, b"lastColumn").as_deref() == Some("1");
         look.no_h_band = get_attribute(e, b"noHBand").as_deref() == Some("1");
         look.no_v_band = get_attribute(e, b"noVBand").as_deref() == Some("1");
-    } else if let Some(val_str) = get_attribute(e, b"val") {
-        if let Ok(mask) = i32::from_str_radix(&val_str, 16) {
-            look.first_row = (mask & 0x0020) != 0;
-            look.last_row = (mask & 0x0040) != 0;
-            look.first_column = (mask & 0x0080) != 0;
-            look.last_column = (mask & 0x0100) != 0;
-            look.no_h_band = (mask & 0x0200) != 0;
-            look.no_v_band = (mask & 0x0400) != 0;
-        }
+    } else if let Some(val_str) = get_attribute(e, b"val")
+        && let Ok(mask) = i32::from_str_radix(&val_str, 16)
+    {
+        look.first_row = (mask & 0x0020) != 0;
+        look.last_row = (mask & 0x0040) != 0;
+        look.first_column = (mask & 0x0080) != 0;
+        look.last_column = (mask & 0x0100) != 0;
+        look.no_h_band = (mask & 0x0200) != 0;
+        look.no_v_band = (mask & 0x0400) != 0;
     }
 
     look

@@ -24,7 +24,7 @@ ort-dynamic = ["ort/load-dynamic"]
 ndarray = "0.17"
 ort = { workspace = true, features = ["ndarray"] }
 parking_lot = { workspace = true }
-regex = "1.12"
+regex = "1.13"
 thiserror = { workspace = true }
 tokenizers = { version = "0.23", default-features = false, features = ["fancy-regex"] }
 

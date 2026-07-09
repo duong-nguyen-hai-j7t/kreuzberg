@@ -346,10 +346,10 @@ pub(crate) fn load_image_for_ocr(image_bytes: &[u8]) -> Result<image::DynamicIma
 /// HEIF-family containers (HEIC/HEIF/AVIF/HEICS/AVCS) are decoded via libheif when
 /// the `heic` feature is enabled; EXIF is read from the original bytes either way.
 pub(crate) fn extract_image_metadata(bytes: &[u8]) -> Result<ExtractedImageMetadata> {
-    if is_jp2(bytes) || (bytes.len() >= 2 && bytes[0] == 0xFF && bytes[1] == 0x4F) {
-        if let Ok(metadata) = decode_jp2_metadata(bytes) {
-            return Ok(metadata);
-        }
+    if (is_jp2(bytes) || (bytes.len() >= 2 && bytes[0] == 0xFF && bytes[1] == 0x4F))
+        && let Ok(metadata) = decode_jp2_metadata(bytes)
+    {
+        return Ok(metadata);
     }
 
     if is_heif_container(bytes) {

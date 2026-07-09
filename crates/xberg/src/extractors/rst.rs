@@ -502,22 +502,21 @@ impl RstExtractor {
             if bytes[i] == b'*'
                 && (i + 1 >= len || bytes[i + 1] != b'*')
                 && let Some(end) = Self::find_closing_marker(raw, i + 1, "*")
+                && (end + 1 >= len || bytes[end + 1] != b'*')
             {
-                if end + 1 >= len || bytes[end + 1] != b'*' {
-                    let inner = &raw[i + 1..end];
-                    let start = out.len() as u32;
-                    out.push_str(inner);
-                    let end_off = out.len() as u32;
-                    if start < end_off {
-                        annotations.push(TextAnnotation {
-                            start,
-                            end: end_off,
-                            kind: AnnotationKind::Italic,
-                        });
-                    }
-                    i = end + 1;
-                    continue;
+                let inner = &raw[i + 1..end];
+                let start = out.len() as u32;
+                out.push_str(inner);
+                let end_off = out.len() as u32;
+                if start < end_off {
+                    annotations.push(TextAnnotation {
+                        start,
+                        end: end_off,
+                        kind: AnnotationKind::Italic,
+                    });
                 }
+                i = end + 1;
+                continue;
             }
             if i + 1 < len
                 && bytes[i] == b'`'
@@ -645,10 +644,11 @@ impl RstExtractor {
             {
                 let label_end = i + 1 + close;
                 let label = &line[i + 1..label_end];
-                if label_end + 1 < bytes.len() && bytes[label_end + 1] == b'_' {
-                    if label.chars().all(|c| c.is_ascii_digit()) || label.starts_with('#') {
-                        refs.push(label.to_string());
-                    }
+                if label_end + 1 < bytes.len()
+                    && bytes[label_end + 1] == b'_'
+                    && (label.chars().all(|c| c.is_ascii_digit()) || label.starts_with('#'))
+                {
+                    refs.push(label.to_string());
                 }
             }
             i += 1;
@@ -830,11 +830,11 @@ impl RstExtractor {
                 i += 1;
                 while i < lines.len() {
                     let l = lines[i].trim();
-                    if l.starts_with(':') && l.ends_with(':') || (l.starts_with(':') && l.contains(": ")) {
-                        if lines[i].starts_with("   ") || lines[i].starts_with("\t") {
-                            i += 1;
-                            continue;
-                        }
+                    if (l.starts_with(':') && l.ends_with(':') || (l.starts_with(':') && l.contains(": ")))
+                        && (lines[i].starts_with("   ") || lines[i].starts_with("\t"))
+                    {
+                        i += 1;
+                        continue;
                     }
                     break;
                 }

@@ -7,9 +7,9 @@
 import 'package:test/test.dart';
 import 'dart:typed_data';
 import 'package:xberg/xberg.dart';
-import 'package:xberg/xberg.dart' show RerankerBackend;
 import 'package:xberg/xberg.dart' show OcrBackend;
 import 'package:xberg/xberg.dart' show PostProcessor;
+import 'package:xberg/xberg.dart' show RerankerBackend;
 import 'package:xberg/xberg.dart' show TokenizerBackend;
 import 'package:xberg/xberg.dart' show Validator;
 import 'package:xberg/xberg.dart' show EmbeddingBackend;

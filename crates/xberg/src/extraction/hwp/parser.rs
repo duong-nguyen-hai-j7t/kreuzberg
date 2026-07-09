@@ -169,10 +169,10 @@ pub(crate) fn parse_body_text(data: Vec<u8>, is_compressed: bool) -> Result<Vec<
                 }
             }
             TAG_PARA_SHAPE => {
-                if let Some(ref mut para) = current_paragraph {
-                    if record.data.len() > 18 {
-                        para.outline_level = record.data[18];
-                    }
+                if let Some(ref mut para) = current_paragraph
+                    && record.data.len() > 18
+                {
+                    para.outline_level = record.data[18];
                 }
             }
             TAG_CHAR_SHAPE => {

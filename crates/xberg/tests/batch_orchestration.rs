@@ -8,10 +8,7 @@
 //! - Resource utilization (CPU cores)
 
 mod helpers;
-use helpers::{
-    BytesInput, UriBatchInput, extract_bytes_documents, extract_uri_document, extract_uri_document_blocking,
-    extract_uri_documents,
-};
+use helpers::{BytesInput, UriBatchInput, extract_bytes_documents, extract_uri_documents};
 
 use std::time::{Duration, Instant};
 use xberg::core::config::ExtractionConfig;

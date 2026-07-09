@@ -26,7 +26,7 @@ use std::time::Duration;
 use tokio::time::timeout;
 
 mod helpers;
-use helpers::{BytesInput, extract_bytes_document, extract_bytes_documents, extract_uri_document_blocking};
+use helpers::{BytesInput, extract_bytes_document, extract_bytes_documents};
 
 fn trim_trailing_newlines(value: &str) -> &str {
     value.trim_end_matches(['\n', '\r'])

@@ -220,10 +220,10 @@ fn extract_bbox(ocr: &serde_json::Value) -> Option<[f64; 4]> {
 fn flatten_cited(value: &serde_json::Value) -> serde_json::Value {
     match value {
         serde_json::Value::Object(obj) => {
-            if is_citation_envelope(value) {
-                if let Some(inner_value) = obj.get("value") {
-                    return flatten_cited(inner_value);
-                }
+            if is_citation_envelope(value)
+                && let Some(inner_value) = obj.get("value")
+            {
+                return flatten_cited(inner_value);
             }
             let mut result = serde_json::Map::new();
             for (k, v) in obj {

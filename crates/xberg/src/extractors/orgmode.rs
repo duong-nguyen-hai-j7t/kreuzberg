@@ -332,8 +332,10 @@ impl OrgModeExtractor {
     fn find_org_markup_close(bytes: &[u8], from: usize, marker: u8) -> Option<usize> {
         let mut j = from;
         while j < bytes.len() {
-            if bytes[j] == marker && j > from && !bytes[j - 1].is_ascii_whitespace() {
-                if j + 1 >= bytes.len()
+            if bytes[j] == marker
+                && j > from
+                && !bytes[j - 1].is_ascii_whitespace()
+                && (j + 1 >= bytes.len()
                     || bytes[j + 1].is_ascii_whitespace()
                     || bytes[j + 1] == b'.'
                     || bytes[j + 1] == b','
@@ -341,10 +343,9 @@ impl OrgModeExtractor {
                     || bytes[j + 1] == b':'
                     || bytes[j + 1] == b')'
                     || bytes[j + 1] == b']'
-                    || bytes[j + 1] == b'"'
-                {
-                    return Some(j);
-                }
+                    || bytes[j + 1] == b'"')
+            {
+                return Some(j);
             }
             j += 1;
         }

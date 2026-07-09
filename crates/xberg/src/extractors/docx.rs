@@ -1187,20 +1187,19 @@ impl InternalDocumentExtractor for DocxExtractor {
             if extract_image_data
                 && let Some(ref rid) = drawing.image_ref
                 && let Some(target) = image_rels.get(rid)
+                && !crate::extractors::security::has_path_traversal(target)
             {
-                if !crate::extractors::security::has_path_traversal(target) {
-                    let zip_path = if let Some(stripped) = target.strip_prefix('/') {
-                        stripped.to_string()
-                    } else {
-                        format!("word/{}", target)
-                    };
-                    if let Ok(mut file) = archive.by_name(&zip_path)
-                        && file.size() <= crate::extraction::docx::MAX_IMAGE_FILE_SIZE
-                    {
-                        let mut data = Vec::with_capacity(file.size() as usize);
-                        if std::io::Read::read_to_end(&mut file, &mut data).is_ok() {
-                            image_data = Some(data);
-                        }
+                let zip_path = if let Some(stripped) = target.strip_prefix('/') {
+                    stripped.to_string()
+                } else {
+                    format!("word/{}", target)
+                };
+                if let Ok(mut file) = archive.by_name(&zip_path)
+                    && file.size() <= crate::extraction::docx::MAX_IMAGE_FILE_SIZE
+                {
+                    let mut data = Vec::with_capacity(file.size() as usize);
+                    if std::io::Read::read_to_end(&mut file, &mut data).is_ok() {
+                        image_data = Some(data);
                     }
                 }
             }

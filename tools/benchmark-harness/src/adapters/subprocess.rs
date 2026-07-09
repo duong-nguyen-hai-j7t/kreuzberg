@@ -48,26 +48,18 @@ fn error_to_error_kind(e: &Error) -> ErrorKind {
         Error::Benchmark(msg) | Error::Config(msg) => {
             let msg_lower = msg.to_lowercase();
 
-            if msg_lower.contains("torch.") && msg_lower.contains("not found") {
-                ErrorKind::ConfigSetupError
-            } else if msg_lower.contains("partition_") && msg_lower.contains("not available") {
-                ErrorKind::ConfigSetupError
-            } else if msg_lower.contains("tessdata")
-                || msg_lower.contains("tesseract") && msg_lower.contains("not found")
-            {
-                ErrorKind::ConfigSetupError
-            } else if msg_lower.contains("module")
-                && (msg_lower.contains("not found") || msg_lower.contains("not installed"))
-            {
-                ErrorKind::ConfigSetupError
-            } else if msg_lower.contains("import error") || msg_lower.contains("importerror") {
-                ErrorKind::ConfigSetupError
-            } else if msg_lower.contains("no such file")
-                && (msg_lower.contains(".so") || msg_lower.contains(".dylib") || msg_lower.contains(".dll"))
-            {
-                ErrorKind::ConfigSetupError
-            } else if msg_lower.contains("failed to find")
-                && (msg_lower.contains("model") || msg_lower.contains("library"))
+            if (msg_lower.contains("torch.") && msg_lower.contains("not found"))
+                || (msg_lower.contains("partition_") && msg_lower.contains("not available"))
+                || msg_lower.contains("tessdata")
+                || (msg_lower.contains("tesseract") && msg_lower.contains("not found"))
+                || (msg_lower.contains("module")
+                    && (msg_lower.contains("not found") || msg_lower.contains("not installed")))
+                || msg_lower.contains("import error")
+                || msg_lower.contains("importerror")
+                || (msg_lower.contains("no such file")
+                    && (msg_lower.contains(".so") || msg_lower.contains(".dylib") || msg_lower.contains(".dll")))
+                || (msg_lower.contains("failed to find")
+                    && (msg_lower.contains("model") || msg_lower.contains("library")))
             {
                 ErrorKind::ConfigSetupError
             } else {

@@ -218,13 +218,11 @@ fn calculate_script_penalty(text: &str, total_chars: f64) -> f64 {
     if memmem::find(bytes, b"function").is_none()
         && memmem::find(bytes, b"<script").is_none()
         && memmem::find(bytes, b"<style").is_none()
+        && memmem::find(bytes, b"FUNCTION").is_none()
+        && memmem::find(bytes, b"<SCRIPT").is_none()
+        && memmem::find(bytes, b"<STYLE").is_none()
     {
-        if memmem::find(bytes, b"FUNCTION").is_none()
-            && memmem::find(bytes, b"<SCRIPT").is_none()
-            && memmem::find(bytes, b"<STYLE").is_none()
-        {
-            return 0.0;
-        }
+        return 0.0;
     }
 
     let truncated = if text.len() > JS_CSS_PATTERN_INPUT_CAP {

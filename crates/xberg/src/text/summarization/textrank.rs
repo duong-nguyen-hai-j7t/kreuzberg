@@ -257,15 +257,14 @@ fn select_top_sentences<'a>(sentences: &'a [&'a str], scores: &[f32], budget_tok
         }
     }
 
-    if chosen_indices.is_empty() {
-        if let Some((idx, _)) = scores
+    if chosen_indices.is_empty()
+        && let Some((idx, _)) = scores
             .iter()
             .copied()
             .enumerate()
             .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal))
-        {
-            chosen_indices.push(idx);
-        }
+    {
+        chosen_indices.push(idx);
     }
 
     chosen_indices.sort_unstable();

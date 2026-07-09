@@ -7,7 +7,6 @@
 //!   cargo test -p xberg --test html_output_quality -- --nocapture
 
 mod helpers;
-use helpers::extract_uri_document_blocking;
 
 use xberg::core::config::OutputFormat;
 use xberg::extraction::derive::derive_extraction_result;

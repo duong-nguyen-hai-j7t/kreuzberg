@@ -104,10 +104,11 @@ fn build_heading_map(
                 sizes.sort_by(|a, b| a.total_cmp(b));
                 let median = if sizes.is_empty() { 0.0 } else { sizes[sizes.len() / 2] };
 
-                if median > 0.0 && first_font >= median * 1.2 {
-                    if let Some(entry) = map.iter_mut().find(|(fs, _)| (*fs - first_font).abs() < 0.5) {
-                        entry.1 = Some(1);
-                    }
+                if median > 0.0
+                    && first_font >= median * 1.2
+                    && let Some(entry) = map.iter_mut().find(|(fs, _)| (*fs - first_font).abs() < 0.5)
+                {
+                    entry.1 = Some(1);
                 }
             }
         }
