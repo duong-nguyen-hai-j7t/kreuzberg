@@ -11,7 +11,6 @@ use helpers::extract_uri_document_blocking;
 use helpers::*;
 use xberg::core::config::{ExtractionConfig, OutputFormat};
 
-#[ignore = "TODO: pdf_oxide upstream — https://github.com/yfedoseev/pdf_oxide/issues/484"]
 #[test]
 fn test_pdf_markdown_extraction_produces_structured_output() {
     if skip_if_missing("pdf/fake_memo.pdf") {

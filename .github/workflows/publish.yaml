@@ -2836,7 +2836,7 @@ jobs:
           # ~keep `{crate-name}-zig-v{version}.tar.gz`. Without this, the asset
           # ~keep uploads as `xberg-v{version}.tar.gz` while test_apps/zig
           # ~keep fetches `xberg-zig-v{version}.tar.gz` → 404 + consumer
-          # ~keep build.zig.zon TODO hash.
+          # ~keep build.zig.zon placeholder hash.
           package-name: xberg-zig
           multi-platform-ffi-dir: ffi-artifacts
           module-name: xberg

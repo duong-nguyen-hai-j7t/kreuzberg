@@ -2,6 +2,7 @@
 
 use crate::Result;
 use crate::error::XbergError;
+#[cfg(any(feature = "ocr", feature = "ocr-pipeline", feature = "layout-detection"))]
 use lopdf::{Document, ObjectId};
 
 /// Reasonable max pixel dimension (on either axis) for a rendered page before we
@@ -46,11 +47,13 @@ fn get_page_dimensions_pt(doc: &pdf_oxide::PdfDocument, page_index: usize) -> (f
 
 /// Maximum /Parent hops when resolving an inherited /Rotate attribute.
 /// Bounds the walk so a malformed PDF with a parent cycle cannot loop forever.
+#[cfg(any(feature = "ocr", feature = "ocr-pipeline", feature = "layout-detection"))]
 const MAX_ROTATE_INHERITANCE_DEPTH: usize = 32;
 
 /// Resolve a page's effective /Rotate value, following /Parent inheritance
 /// per the PDF spec (a page without its own /Rotate inherits from its Pages
 /// ancestors). Returns `None` when no ancestor defines it.
+#[cfg(any(feature = "ocr", feature = "ocr-pipeline", feature = "layout-detection"))]
 fn resolve_inherited_rotation(doc: &Document, page_id: ObjectId) -> Option<i64> {
     let mut dict = doc.get_object(page_id).ok()?.as_dict().ok()?;
     for _ in 0..MAX_ROTATE_INHERITANCE_DEPTH {
@@ -70,6 +73,7 @@ fn resolve_inherited_rotation(doc: &Document, page_id: ObjectId) -> Option<i64> 
 /// yields 0 (no rotation) for the affected pages. lopdf's `get_pages()`
 /// map is keyed by 1-based page number, which is the authoritative page
 /// order (object IDs are not ordered by page).
+#[cfg(any(feature = "ocr", feature = "ocr-pipeline", feature = "layout-detection"))]
 pub(crate) fn get_page_rotations(pdf_bytes: &[u8], page_count: usize) -> Vec<u32> {
     let mut rotations = vec![0u32; page_count];
     let Ok(doc) = Document::load_mem(pdf_bytes) else {
@@ -89,6 +93,7 @@ pub(crate) fn get_page_rotations(pdf_bytes: &[u8], page_count: usize) -> Vec<u32
 
 /// Rotate a decoded page image per the page's normalized /Rotate value.
 /// No-op for 0 or non-quarter-turn values.
+#[cfg(any(feature = "ocr", feature = "ocr-pipeline", feature = "layout-detection"))]
 pub(crate) fn rotate_dynamic_image(img: image::DynamicImage, rotation_degrees: u32) -> image::DynamicImage {
     match rotation_degrees % 360 {
         90 => img.rotate90(),
@@ -104,6 +109,7 @@ pub(crate) fn rotate_dynamic_image(img: image::DynamicImage, rotation_degrees: u
 /// pages pay one decode + re-encode, which only happens for documents that
 /// actually carry /Rotate. Returns the (possibly new) PNG bytes with the
 /// post-rotation width and height.
+#[cfg(any(feature = "ocr", feature = "ocr-pipeline", feature = "layout-detection"))]
 pub(crate) fn rotate_png_page_if_needed(
     png_data: Vec<u8>,
     width: u32,
@@ -372,6 +378,7 @@ mod tests {
         );
     }
 
+    #[cfg(any(feature = "ocr", feature = "ocr-pipeline", feature = "layout-detection"))]
     #[test]
     fn test_rotate_dynamic_image_0_degrees_is_noop() {
         let img = image::DynamicImage::new_rgb8(100, 150);
@@ -379,6 +386,7 @@ mod tests {
         assert_eq!((rotated.width(), rotated.height()), (100, 150));
     }
 
+    #[cfg(any(feature = "ocr", feature = "ocr-pipeline", feature = "layout-detection"))]
     #[test]
     fn test_rotate_dynamic_image_90_degrees_swaps_dimensions() {
         let img = image::DynamicImage::new_rgb8(100, 150);
@@ -386,6 +394,7 @@ mod tests {
         assert_eq!((rotated.width(), rotated.height()), (150, 100));
     }
 
+    #[cfg(any(feature = "ocr", feature = "ocr-pipeline", feature = "layout-detection"))]
     #[test]
     fn test_rotate_dynamic_image_180_degrees_keeps_dimensions() {
         let img = image::DynamicImage::new_rgb8(100, 150);
@@ -393,6 +402,7 @@ mod tests {
         assert_eq!((rotated.width(), rotated.height()), (100, 150));
     }
 
+    #[cfg(any(feature = "ocr", feature = "ocr-pipeline", feature = "layout-detection"))]
     #[test]
     fn test_rotate_dynamic_image_270_degrees_swaps_dimensions() {
         let img = image::DynamicImage::new_rgb8(100, 150);
@@ -400,12 +410,14 @@ mod tests {
         assert_eq!((rotated.width(), rotated.height()), (150, 100));
     }
 
+    #[cfg(any(feature = "ocr", feature = "ocr-pipeline", feature = "layout-detection"))]
     #[test]
     fn test_get_page_rotations_no_rotate_attribute_yields_zeroes() {
         let pdf = build_minimal_pdf_with_mediabox(612.0, 792.0);
         assert_eq!(get_page_rotations(&pdf, 1), vec![0]);
     }
 
+    #[cfg(any(feature = "ocr", feature = "ocr-pipeline", feature = "layout-detection"))]
     #[test]
     fn test_get_page_rotations_unparsable_bytes_yield_zeroes() {
         assert_eq!(get_page_rotations(b"not a pdf", 3), vec![0, 0, 0]);

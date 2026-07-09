@@ -86,7 +86,6 @@ impl LibHeif {
         self._load_plugins(dir_path.as_ref())
     }
 
-    // ~keep TODO: Consider using 'momo' crate in the future
     #[allow(unsafe_code)]
     fn _load_plugins(&self, dir_path: &Path) -> Result<usize> {
         let dir_path = path_to_cstring(dir_path);

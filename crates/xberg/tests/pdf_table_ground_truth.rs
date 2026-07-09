@@ -54,6 +54,7 @@ fn extract_markdown(relative_path: &str) -> Option<xberg::types::ExtractedDocume
     extract_uri_document_blocking(&path, None, &config).ok()
 }
 
+#[cfg(feature = "ocr")]
 fn print_table_summary(result: &xberg::types::ExtractedDocument) {
     println!("  Tables detected: {}", result.tables.len());
     println!("  Content length: {} chars", result.content.len());
@@ -102,7 +103,7 @@ fn assert_no_tables(pdf_name: &str) {
 }
 
 #[cfg(feature = "ocr")]
-#[ignore = "TODO: pdf_oxide upstream — table detector false-positive driven by pdf_oxide span geometry; https://github.com/yfedoseev/pdf_oxide/issues/484"]
+#[ignore = "~keep TODO: pdf_oxide upstream — table detector false-positive driven by pdf_oxide span geometry; https://github.com/yfedoseev/pdf_oxide/issues/484"]
 #[test]
 fn test_false_positive_simple_pdf() {
     assert_no_tables("simple.pdf");
@@ -121,7 +122,7 @@ fn test_false_positive_searchable() {
 }
 
 #[cfg(feature = "ocr")]
-#[ignore = "TODO: pdf_oxide upstream — table detector false-positive driven by pdf_oxide span geometry; https://github.com/yfedoseev/pdf_oxide/issues/484"]
+#[ignore = "~keep TODO: pdf_oxide upstream — table detector false-positive driven by pdf_oxide span geometry; https://github.com/yfedoseev/pdf_oxide/issues/484"]
 #[test]
 fn test_false_positive_google_doc() {
     assert_no_tables("google_doc_document.pdf");

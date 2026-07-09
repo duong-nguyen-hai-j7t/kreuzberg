@@ -14,7 +14,7 @@
 // ~keep `static-embeddings + liter-llm` build without `tokio-runtime` must not
 // ~keep compile this module in, or it goes dead-code (the caller falls back to the
 // ~keep MissingDependency arm instead). wasm32 has no LLM-hosted embedding transport
-// ~keep wired up yet (see the TODO(wasm-llm) notes at each call site).
+// ~keep wired up yet (see the wasm-llm notes at each call site).
 #[cfg(all(feature = "tokio-runtime", not(target_arch = "wasm32")))]
 use liter_llm::{EmbeddingInput, EmbeddingRequest, LlmClient};
 

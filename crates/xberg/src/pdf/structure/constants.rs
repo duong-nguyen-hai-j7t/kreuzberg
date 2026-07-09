@@ -7,14 +7,6 @@
 // ~keep ColumnAware reading order groups spans by y-level, scrambling reading
 // ~keep order for these documents. The constants below parameterise the
 // ~keep detection and reconstruction heuristic in `pdf::oxide::text`.
-// ~keep
-// ~keep TODO: remove this heuristic when xberg upgrades to pdf_oxide ≥ 0.3.51.
-// ~keep Upstream fix shipped in v0.3.51 (2026-05-19, closing issue #518): the Tm
-// ~keep continuation check now uses glyph height as the tolerance floor (≥ 0.5 pt)
-// ~keep so per-glyph sinusoidal jitter merges natively into a single span and the
-// ~keep reading-order scramble no longer occurs. xberg currently pins v0.3.50.
-// ~keep After bumping, verify with test_3_5pt_jitter_coalesced and the other tests
-// ~keep in tests/pdf_glyph_spacing_issue_962.rs before deleting this block.
 
 /// Maximum y-gap (pt) between two spans that can still be considered "same
 /// line" under the glyph-fragmentation detection heuristic.

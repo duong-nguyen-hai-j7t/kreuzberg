@@ -62,8 +62,8 @@ if ! {
   # ~keep `--all-targets` runs --lib --bins --tests --examples --benches but excludes
   # ~keep `--doc`. 22 rustdoc examples in the xberg crate currently reference
   # ~keep private items (extraction::capacity::estimate_content_capacity et al.) and
-  # ~keep fail to compile. Tracking the cleanup separately; doc-test coverage is not
-  # ~keep on the v5.0.0 publish path. TODO: re-enable doc tests once the failing
+  # ~keep fail to compile. Tracking the cleanup separately.
+  # ~keep TODO: re-enable doc tests once the failing
   # ~keep examples are rewritten against the public API.
   echo "=== cargo test -p xberg --features full ==="
   RUST_BACKTRACE=full cargo test --locked -p xberg --features full --all-targets --verbose

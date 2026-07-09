@@ -281,8 +281,7 @@ fn test_all_fixtures_loadable() {
 /// must appear in the output exactly as many times as it did in the input. That is
 /// the meaningful "no glyph dropped, no glyph duplicated" property the rebuild
 /// algorithm actually provides today, and it still catches regressions that lose
-/// or duplicate characters. The stronger ordering property is tracked alongside the
-/// ~keep pdf_oxide upgrade TODO in `crates/xberg/src/pdf/structure/constants.rs`.
+/// or duplicate characters.
 #[test]
 fn test_coalesced_content_is_coherent() {
     let pdf = make_glyph_jitter_pdf(3.5);

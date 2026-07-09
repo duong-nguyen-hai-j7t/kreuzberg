@@ -182,7 +182,7 @@ fn all_fixture_documents_exist_on_disk() {
 // ~keep a submodule sync that updated some HTML/PDF fixtures by a few bytes each).
 // ~keep Tracking separately; not a correctness issue — file_size metadata is purely
 // ~keep informational, the benchmark harness re-reads actual sizes at run time.
-#[ignore = "TODO: regenerate fixture file_size metadata against current test_documents/"]
+#[ignore = "regenerate fixture file_size metadata against current test_documents/"]
 #[test]
 fn all_fixture_file_sizes_match() {
     let fixtures = discover_fixture_files();
