@@ -1,0 +1,18 @@
+# sha256 manifest for the xberg-io/reranker-models preset fleet (self-hosted, weights unmodified).
+# Format: <sha256>  <repo-relative path>. Pins the exact bytes each preset resolves to.
+289adf7ada1eb6b4afa7589a48a032d45a076cf2e46dcdb3b4cabc33be14f708  bge-reranker-base/config.json
+15b9a8c3da82eddf263df571281166e00e9308fe19d077084b642ebfcaf06d2b  bge-reranker-base/model.onnx
+d5469a60db23249c7f8945013d78df30b44b6bf686c6bb4740f4223f77b1b535  bge-reranker-base/special_tokens_map.json
+9eb652ac4e40cc093272bbbe0f55d521cf67570060227109b5cdc20945a4489e  bge-reranker-base/tokenizer.json
+a1d6bc8734a6f635dc158508bef000f8e2e5a759c7d92f984b2c86e5ff53425b  bge-reranker-base/tokenizer_config.json
+835fe05211a0d1535b5cd2accb6d788ad142bdc507f8a8bd7287727915d9d61f  bge-reranker-v2-m3/config.json
+3af844cd2de818a95d2b5de5893a336836312c8ade03f53b286ac6beae080321  bge-reranker-v2-m3/model.onnx
+84b66c787b9b98977a16d5c993a3959210a214c98fc3466da263c949c2068945  bge-reranker-v2-m3/model.onnx.data
+8c785abebea9ae3257b61681b4e6fd8365ceafde980c21970d001e834cf10835  bge-reranker-v2-m3/special_tokens_map.json
+8bf8afbfd11306bd872018c53bfdf2e160a56f8edbcf49933324404791c148d3  bge-reranker-v2-m3/tokenizer.json
+7e4c1cc848840aeccdd763458c18dd525eb0f795c992e00ebe9c28554e7db2d4  bge-reranker-v2-m3/tokenizer_config.json
+e050ff6a15ae9295e84882fa0e98051bd8754856cd5201395ebf00ce9f2d609b  jina-reranker-v1-turbo-en/config.json
+c1296c66c119de645fa9cdee536d8637740efe85224cfa270281e50f213aa565  jina-reranker-v1-turbo-en/model.onnx
+06e405a36dfe4b9604f484f6a1e619af1a7f7d09e34a8555eb0b77b66318067f  jina-reranker-v1-turbo-en/special_tokens_map.json
+0046da43cc8c424b317f56b092b0512aaaa65c4f925d2f16af9d9eeb4d0ef902  jina-reranker-v1-turbo-en/tokenizer.json
+d291c6652d96d56ffdbcf1ea19d9bae5ed79003f7648c627e725a619227ce8fa  jina-reranker-v1-turbo-en/tokenizer_config.json

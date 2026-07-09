@@ -1,0 +1,6 @@
+# sha256 manifest for the xberg-io/sparse-embeddings preset fleet (self-hosted, weights unmodified).
+# Format: <sha256>  <repo-relative path>. Pins the exact bytes each preset resolves to.
+d9bca6f921871bb5f6f1a08b2fab13fb773477043096d390ec2c9f977141e283  splade/config.json
+0934583a27a031a66b2e847cbc260fbbef29689e969f500436460ef5146a43f2  splade/model.onnx
+b6d346be366a7d1d48332dbc9fdf3bf8960b5d879522b7799ddba59e76237ee3  splade/special_tokens_map.json
+2fc687b11de0bc1b3d8348f92e3b49ef1089a621506c7661fbf3248fcd54947e  splade/tokenizer.json
