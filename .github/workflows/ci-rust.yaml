@@ -150,17 +150,39 @@ jobs:
 
       - name: Run live HF retrieval preset tests
         run: |
-          cargo test --locked \
-            -p xberg \
-            --features "reranker,reranker-presets,embeddings,sparse-embeddings,late-interaction,tokio-runtime" \
-            --test reranker_live \
-            --test embedding_preset_live \
-            --test sparse_embedding_preset_live \
-            --test late_interaction_preset_live \
-            -- --nocapture
+          # Live tests download real ONNX models from HuggingFace. HF can be slow or briefly
+          # unreachable, tripping the model-download watchdog. Give the watchdog generous headroom
+          # (well within the 45-min job budget) and retry the whole run so a transient HF hiccup
+          # self-heals -- models already fetched persist in the runner's HF cache across attempts,
+          # so a retry only re-downloads whatever failed and re-runs the (fast) test logic.
+          # Same 3-attempt / exponential-backoff shape as the setup-*-models download actions.
+          for attempt in 1 2 3; do
+            if [ $attempt -gt 1 ]; then
+              backoff=$((15 * 3 ** (attempt - 2)))
+              echo "::warning::live HF preset tests failed; retry attempt $attempt/3 after ${backoff}s backoff..."
+              sleep $backoff
+            fi
+
+            if cargo test --locked \
+              -p xberg \
+              --features "reranker,reranker-presets,embeddings,sparse-embeddings,late-interaction,tokio-runtime" \
+              --test reranker_live \
+              --test embedding_preset_live \
+              --test sparse_embedding_preset_live \
+              --test late_interaction_preset_live \
+              -- --nocapture; then
+              exit 0
+            fi
+          done
+
+          echo "::error::live HF preset tests failed after 3 attempts"
+          exit 1
         shell: bash
         env:
           LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH || '' }}
           DYLD_LIBRARY_PATH: ${{ env.DYLD_LIBRARY_PATH || '' }}
           DYLD_FALLBACK_LIBRARY_PATH: ${{ env.DYLD_FALLBACK_LIBRARY_PATH || '' }}
           RUST_LOG: warn
+          # Cold downloads of large ONNX models on a slow HF day exceed the 300s production default;
+          # raise the watchdog for CI only (still bounded well under the 45-min job timeout).
+          XBERG_MODEL_DOWNLOAD_TIMEOUT_SECS: "900"
