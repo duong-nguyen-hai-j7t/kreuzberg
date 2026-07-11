@@ -2672,11 +2672,7 @@ jobs:
           rewrite-native-deps: "true"
           dry-run: ${{ needs.prepare.outputs.dry_run }}
 
-      # Pinned to the commit that cd's into package-dir before `mix hex.publish`
-      # (rc.22 failed: the pre-built-tarball path ran mix at the repo root →
-      # "Could not find a Mix.Project"). Not yet on the @v1 float; revert to @v1
-      # once v1 is advanced past 3a8364c.
-      - uses: xberg-io/actions/publish-hex@3a8364c79e59ae7bb0d847426f94657a740550f2
+      - uses: xberg-io/actions/publish-hex@v1
         with:
           package-dir: packages/elixir
           tarball-path: ${{ steps.build-hex.outputs.archive-path }}
