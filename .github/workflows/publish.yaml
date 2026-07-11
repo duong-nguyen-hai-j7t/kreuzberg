@@ -2858,7 +2858,7 @@ jobs:
   publish-homebrew-formula:
     name: Update Homebrew formula
     needs: [prepare, upload-cli-release, check-homebrew]
-    if: ${{ needs.prepare.outputs.release_homebrew == 'true' && needs.prepare.outputs.is_tag == 'true' && needs.check-homebrew.outputs.exists != 'true' }}
+    if: ${{ needs.prepare.outputs.release_homebrew == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-homebrew.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/create-github-app-token@v2
