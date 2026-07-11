@@ -1513,65 +1513,6 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  dart-android-natives:
-    name: Build Dart Android natives (${{ matrix.abi }})
-    needs: [prepare, check-pub]
-    if: ${{ needs.prepare.outputs.release_dart == 'true' && (needs.check-pub.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { abi: arm64-v8a }
-          - { abi: x86_64 }
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
-      - uses: xberg-io/actions/setup-rust@v1
-      - name: Install system dependencies
-        uses: ./.github/actions/install-system-deps
-
-      - uses: xberg-io/actions/build-android-natives@v1
-        with:
-          crate-name: xberg-dart
-          abis: ${{ matrix.abi }}
-          features: android-target
-          no-default-features: "true"
-      - uses: actions/upload-artifact@v7
-        with:
-          name: dart-android-${{ matrix.abi }}
-          path: dist/android-natives
-          if-no-files-found: error
-          retention-days: 14
-
-  dart-ios-xcframework:
-    name: Build Dart iOS XCFramework
-    needs: [prepare, check-pub]
-    if: ${{ needs.prepare.outputs.release_dart == 'true' && (needs.check-pub.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: macos-15
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
-      - uses: xberg-io/actions/setup-rust@v1
-      - name: Install system dependencies
-        uses: ./.github/actions/install-system-deps
-
-      - uses: xberg-io/actions/build-ios-xcframework@v1
-        with:
-          crate-name: xberg-dart
-      - uses: actions/upload-artifact@v7
-        with:
-          name: dart-ios-xcframework
-          path: dist/ios-xcframework
-          if-no-files-found: error
-          retention-days: 14
-
   dart-server-natives:
     name: Build Dart server native (${{ matrix.blob }})
     needs: [prepare, check-pub]
@@ -1596,7 +1537,10 @@ jobs:
           - {
               os: macos-15,
               target: aarch64-apple-darwin,
-              blob: macos-arm64,
+              # Asset blob uses the aarch64 spelling to match native_loader.dart's
+              # nativeAssetBlob() (and the linux-aarch64 asset); the cache RID stays
+              # macos-arm64. A macos-arm64 asset name here 404s on Apple Silicon.
+              blob: macos-aarch64,
               lib: libxberg_dart.dylib,
             }
           - {
@@ -1714,35 +1658,6 @@ jobs:
           dry-run: ${{ needs.prepare.outputs.dry_run }}
           token: ${{ steps.app-token.outputs.token }}
           assets: xberg-dart-*.tar.gz
-
-  dart-package:
-    name: Build Dart package
-    needs: [prepare, check-pub]
-    if: ${{ needs.prepare.outputs.release_dart == 'true' && (needs.check-pub.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-
-          submodules: recursive
-      - uses: xberg-io/actions/setup-rust@v1
-
-      - name: Install system dependencies
-        uses: ./.github/actions/install-system-deps
-
-      - uses: xberg-io/actions/build-dart-package@v1
-        with:
-          package-dir: packages/dart/rust
-          crate-name: xberg-dart
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: dart-package
-          path: packages/dart
-          retention-days: 14
-          include-hidden-files: true
 
   swift-artifactbundle:
     name: Build Swift artifact bundle
@@ -2665,91 +2580,9 @@ jobs:
         env:
           HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
 
-  assemble-dart-bundle:
-    name: Assemble Dart package with native artifacts
-    needs:
-      [
-        prepare,
-        dart-package,
-        dart-android-natives,
-        dart-ios-xcframework,
-        check-pub,
-      ]
-    if: ${{ needs.prepare.outputs.release_dart == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-pub.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v8
-        with:
-          name: dart-package
-          path: packages/dart
-
-      - name: Download Android natives
-        uses: actions/download-artifact@v8
-        with:
-          pattern: dart-android-*
-          path: dart-android-artifacts
-          merge-multiple: true
-
-      - name: Download iOS XCFramework
-        uses: actions/download-artifact@v8
-        with:
-          name: dart-ios-xcframework
-          path: dart-ios-xcframework
-
-      - name: Stage native libraries into Dart package
-        shell: bash
-        run: |
-          set -euo pipefail
-          # Android JNI libs
-          for abi in arm64-v8a x86_64; do
-            dest="packages/dart/android/src/main/jniLibs/${abi}"
-            mkdir -p "$dest"
-            src="dart-android-artifacts/${abi}/libxberg_dart.so"
-            [[ -f "$src" ]] && cp -v "$src" "$dest/"
-          done
-          # iOS XCFramework
-          mkdir -p packages/dart/ios/Frameworks
-          for xcf in dart-ios-xcframework/*.xcframework; do
-            [[ -d "$xcf" ]] && cp -r "$xcf" packages/dart/ios/Frameworks/
-          done
-
-      - uses: dart-lang/setup-dart@v1
-
-      - name: Verify assembled package size stays under pub.dev cap
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd packages/dart
-          dart pub publish --dry-run 2>&1 | tee /tmp/pub-dry-run.log
-          size_line="$(grep -Eo 'Total compressed archive size: [0-9.]+ [KMG]B' /tmp/pub-dry-run.log || true)"
-          if [[ -z "$size_line" ]]; then
-            echo "::warning::could not parse package size from dart pub publish --dry-run output"
-            exit 0
-          fi
-          echo "[publish] ${size_line}"
-          size_value="$(echo "$size_line" | grep -Eo '[0-9.]+')"
-          size_unit="$(echo "$size_line" | grep -Eo '[KMG]B')"
-          size_mb="$size_value"
-          case "$size_unit" in
-            KB) size_mb=$(awk -v v="$size_value" 'BEGIN { printf "%.2f", v / 1024 }') ;;
-            GB) size_mb=$(awk -v v="$size_value" 'BEGIN { printf "%.2f", v * 1024 }') ;;
-          esac
-          over_limit="$(awk -v v="$size_mb" 'BEGIN { print (v > 100) ? 1 : 0 }')"
-          if [[ "$over_limit" == "1" ]]; then
-            echo "::error::Dart package size ${size_mb}MB exceeds pub.dev's 100MB cap"
-            exit 1
-          fi
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: dart-package-assembled
-          path: packages/dart
-          retention-days: 7
-          include-hidden-files: true
-
   trigger-pubdev:
     name: Trigger pub.dev publish workflow
-    needs: [prepare, check-pub, assemble-dart-bundle, upload-dart-release]
+    needs: [prepare, check-pub, upload-dart-release]
     if: ${{ needs.prepare.outputs.release_dart == 'true' && needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.dry_run != 'true' && (needs.check-pub.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') && needs.upload-dart-release.result == 'success' }}
     runs-on: ubuntu-latest
     permissions:
@@ -2770,7 +2603,7 @@ jobs:
         run: |
           gh workflow run publish-pubdev.yaml \
             --ref ${{ github.ref_name }} \
-            -f run_id=${{ github.run_id }}
+            -f ref=${{ needs.prepare.outputs.checkout_ref }}
 
   publish-zig:
     name: Publish Zig package metadata

@@ -269,6 +269,11 @@ obj/
 *.nupkg
 pkg/
 
+# Dart's alef-generated install-time downloader must ship in the pub.dev package,
+# so it is exempt from the blanket bin/ ignore above.
+!packages/dart/bin/
+!packages/dart/bin/download_libs.dart
+
 
 # Local dev artifacts
 docs-site/public/demo-dev.html
