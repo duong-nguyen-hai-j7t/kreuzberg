@@ -754,6 +754,14 @@ jobs:
         with:
           crate-dir: crates/xberg-wasm
           pack-tarball: "true"
+          # The wasm-pack nodejs glue carries unresolvable require("env") /
+          # require("wasi_snapshot_preview1") calls (from the WASI-cross-compiled
+          # Tesseract in ocr-wasm) that throw on load. fix-wasi-imports.mjs stubs
+          # them post-build. This override is the durable hook: alef regenerates
+          # crates/xberg-wasm/package.json scripts and drops any hand-added
+          # suffix, so we invoke the patch here (publish.yaml is not generated)
+          # rather than relying on a package.json script surviving regen.
+          build-command: "pnpm run build:all && node scripts/fix-wasi-imports.mjs"
 
       - name: Smoke test — Node can load the wasm glue
         working-directory: crates/xberg-wasm
@@ -762,8 +770,9 @@ jobs:
           set -euo pipefail
           # Guards the exact rc.21 regression: the wasm-pack nodejs glue carried
           # unresolvable require("env") / require("wasi_snapshot_preview1") calls
-          # that threw on load. scripts/fix-wasi-imports.mjs (run by build:all)
-          # must have stubbed them; if not, a plain require() throws here and
+          # that threw on load. scripts/fix-wasi-imports.mjs (run via the
+          # build-command override above) must have stubbed them; if not, a
+          # plain require() throws here and
           # fails the job before a broken package can publish. Load-only (no
           # tessdata needed) so it is fast and network-free.
           node -e '
