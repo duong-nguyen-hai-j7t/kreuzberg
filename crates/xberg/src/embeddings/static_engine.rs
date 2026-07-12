@@ -87,7 +87,7 @@ mod download {
     /// Returns the local cache path plus the repo-relative path that resolved, so
     /// the caller can verify it against the pinned sha256 manifest.
     fn fetch(
-        api: &hf_hub::api::sync::Api,
+        api: &hf_hub::HFClientSync,
         repo_name: &str,
         model_dir: &str,
         file_name: &str,
@@ -104,7 +104,12 @@ mod download {
             let repo = repo_name.to_string();
             let path = candidate.clone();
             match crate::model_download::with_download_deadline(&format!("{repo}/{candidate}"), move || {
-                api.model(repo).get(&path).map_err(|e| e.to_string())
+                let (owner, name) = hf_hub::split_id(&repo);
+                api.model(owner, name)
+                    .download_file()
+                    .filename(path)
+                    .send()
+                    .map_err(|e| e.to_string())
             }) {
                 Ok(resolved) => return Ok((resolved, candidate)),
                 Err(e) => last_err = e,
@@ -125,10 +130,9 @@ mod download {
         model_file: &str,
         cache_directory: &Path,
     ) -> crate::Result<StaticEmbeddingEngine> {
-        let api = hf_hub::api::sync::ApiBuilder::from_env()
-            .with_cache_dir(cache_directory.to_path_buf())
-            .with_progress(true)
-            .build()
+        let api = hf_hub::HFClientBuilder::new()
+            .cache_dir(cache_directory.to_path_buf())
+            .build_sync()
             .map_err(|e| crate::XbergError::embedding(format!("Failed to create HF API client: {e}")))?;
 
         let model_dir = Path::new(model_file)
@@ -233,7 +237,7 @@ mod tests {
             safetensors::tensor::TensorView::new(safetensors::Dtype::F32, vec![ROWS, COLS], &embedding_bytes)
                 .expect("build tensor view"),
         )]);
-        let model_bytes = safetensors::serialize(&tensors, &None).expect("serialize safetensors");
+        let model_bytes = safetensors::serialize(&tensors, None).expect("serialize safetensors");
 
         let config_bytes = br#"{"normalize": false}"#.to_vec();
 

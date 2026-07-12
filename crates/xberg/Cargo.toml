@@ -707,11 +707,11 @@ libc = { workspace = true }
 # lofty: pure-Rust audio tag reader (ID3v1/v2, MP4 atoms, Vorbis comments, FLAC, etc.)
 # MIT license. Used for metadata extraction independent of the inference backend.
 lofty = { version = "0.24", optional = true }
-# liter-llm is declared in the platform-conditional dependencies block below — it must be
-# excluded on Windows because it pulls reqwest/rustls -> aws-lc-rs -> aws-lc-sys, which fails
-# to build on Windows MSVC.
+# liter-llm is declared per-target in the platform-conditional dependencies blocks below (it
+# pulls reqwest/rustls → aws-lc-rs → aws-lc-sys; the MSVC build is handled by the fix shipped in
+# xberg-io/liter-llm). hf-hub 1.0 now rides the same reqwest/aws-lc-rs stack.
 log = { workspace = true }
-lopdf = { version = "0.43.0", optional = true, default-features = false }
+lopdf = { version = "0.44.0", optional = true, default-features = false }
 mail-parser = { version = "0.11.5", optional = true }
 mel_spec = { version = "0.4", optional = true }
 memchr = "2.8.3"
@@ -800,7 +800,7 @@ uuid = { version = "1", features = ["v4"], optional = true }
 v_htmlescape = { version = "0.17", optional = true }
 whatlang = { version = "0.18.0", optional = true }
 xberg-gliner = { workspace = true, optional = true }
-xberg-libheif = { path = "../xberg-libheif", version = "1.0.0-rc.23", optional = true }
+xberg-libheif = { path = "../xberg-libheif", version = "1.0.0-rc.24", optional = true }
 # No `version` on this path-dep: xberg-tesseract carries `links =
 # "xberg_tesseract"`, and a versioned path-dep makes the maturin sdist
 # resolve two copies (path + registry) of a `links` crate, which cargo rejects
@@ -820,28 +820,27 @@ tokenizers = { version = "0.23", default-features = false, features = ["http", "
 # Note: candle-core unconditionally links platform-specific deps (cudarc on Linux, metal-kernels on macOS).
 # To avoid conflicts during feature unification, GPU features (candle-cuda/metal/mkl/accelerate) should
 # only be explicitly enabled with platform awareness. CI uses `--features full` which excludes GPU accel.
-xberg-candle-ocr = { path = "../xberg-candle-ocr", version = "1.0.0-rc.23", optional = true }
+xberg-candle-ocr = { path = "../xberg-candle-ocr", version = "1.0.0-rc.24", optional = true }
 # PaddleOCR via ONNX Runtime - not available on WASM (vendored from paddle-ocr-rs)
-xberg-paddle-ocr = { path = "../xberg-paddle-ocr", version = "1.0.0-rc.23", optional = true }
+xberg-paddle-ocr = { path = "../xberg-paddle-ocr", version = "1.0.0-rc.24", optional = true }
 
-# Desktop / server hosts (Linux + macOS, NOT Android): ureq uses ring-backed rustls plus
-# `platform-verifier`, which trusts the OS certificate store (rustls-native-certs on Linux,
-# Security.framework on macOS) and honors SSL_CERT_FILE/SSL_CERT_DIR — satisfying corporate
-# TLS-MITM proxies (#1146) with ZERO openssl-sys (so gnu cross-compiles cleanly under zigcc).
-# hf-hub rides the same unified ureq provider via its `ureq` feature (no native-tls).
+# Desktop / server hosts (Linux + macOS, NOT Android): xberg's direct `ureq` client uses
+# ring-backed rustls plus `platform-verifier`, which trusts the OS certificate store
+# (rustls-native-certs on Linux, Security.framework on macOS) and honors SSL_CERT_FILE/
+# SSL_CERT_DIR — satisfying corporate TLS-MITM proxies (#1146). hf-hub is declared once in the
+# target-independent `not(wasm32)` block below (1.0 uses its own reqwest/rustls stack).
 [target.'cfg(all(not(target_os = "windows"), not(target_arch = "wasm32"), not(target_os = "android")))'.dependencies]
-hf-hub = { version = "0.5", default-features = false, features = ["ureq"], optional = true }
 ureq = { version = "3.3", default-features = false, features = [
     "rustls",
     "platform-verifier",
     "json",
 ], optional = true }
 
-# Windows: ureq uses ring-backed rustls + `platform-verifier`, which trusts the Windows system
-# certificate store via WinCrypt (#1146) — pure-Rust, no openssl-sys, no aws-lc-sys/MinGW CMake.
+# Windows: xberg's direct `ureq` client uses ring-backed rustls + `platform-verifier`, which
+# trusts the Windows system certificate store via WinCrypt (#1146). hf-hub is declared once in
+# the target-independent `not(wasm32)` block below (1.0 uses reqwest/rustls → aws-lc-sys, which
+# builds on Windows MSVC — same stack liter-llm already relies on here).
 [target.'cfg(all(target_os = "windows", not(target_arch = "wasm32")))'.dependencies]
-hf-hub = { version = "0.5", default-features = false, features = ["ureq"], optional = true }
-# liter-llm: aws-lc-sys MSVC fix shipped in xberg-io/liter-llm; track via git patch.
 liter-llm = { workspace = true, optional = true, features = ["native-http"] }
 # Enable tokenizers `http` feature on Windows so model downloads work via hf-hub.
 tokenizers = { version = "0.23", default-features = false, features = ["http", "fancy-regex"], optional = true }
@@ -852,19 +851,20 @@ ureq = { version = "3.3", default-features = false, features = [
     "json",
 ], optional = true }
 # Candle-based VLM OCR backends - pure-Rust transformer inference, not on WASM yet.
-xberg-candle-ocr = { path = "../xberg-candle-ocr", version = "1.0.0-rc.23", optional = true }
+xberg-candle-ocr = { path = "../xberg-candle-ocr", version = "1.0.0-rc.24", optional = true }
 # PaddleOCR via ONNX Runtime - not available on WASM (vendored from paddle-ocr-rs)
-xberg-paddle-ocr = { path = "../xberg-paddle-ocr", version = "1.0.0-rc.23", optional = true }
+xberg-paddle-ocr = { path = "../xberg-paddle-ocr", version = "1.0.0-rc.24", optional = true }
 
-# hf-hub (native, including Android): `static_engine::download` uses it directly
-# to fetch the `lightweight` preset's model files, independent of the `embeddings`/
-# `onnx-runtime` ORT features. Already declared per-OS below for other ORT-backed
-# features (paddle-ocr, layout-detection, ...); this additional `not(wasm32)`
-# declaration unions cleanly with those since versions/features match.
+# hf-hub 1.0 (every native target, including Android and Windows): the single declaration for
+# all model downloads — ORT-backed features (embeddings, layout-detection, paddle-ocr, ...) plus
+# `static_engine::download`'s direct use for the `lightweight` preset. 1.0 dropped the ureq
+# backend for its own reqwest/rustls (aws-lc-rs) stack, so TLS is target-independent and no
+# per-OS split is needed. `blocking` provides the sync API (`HFClientSync`) over an internal
+# tokio runtime. Excluded on wasm32 (reqwest/tokio are wasm-incompatible).
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies.hf-hub]
-version = "0.5"
+version = "1.0"
 default-features = false
-features = ["ureq"]
+features = ["blocking"]
 optional = true
 
 # model2vec-rs (native, including Android): `fancy-regex` gives its vendored
@@ -909,13 +909,13 @@ xberg-tesseract = { path = "../xberg-tesseract", default-features = false, featu
     "bundle-tessdata-eng",
 ], optional = true }
 
-# Android: native-tls would pull openssl-sys, which has no working NDK cross-compile (no target
-# sysroot). Feature-unification means a single native-tls ureq dep drags OpenSSL onto every ureq
-# consumer (including tree-sitter-language-pack's `download`). Use ring-backed rustls + webpki-roots
-# instead — it cross-compiles cleanly. Corporate-CA trust (#1146) is a desktop/server concern; mobile
-# apps ship their own trust configuration.
+# Android: xberg's direct `ureq` client avoids native-tls (openssl-sys has no working NDK
+# cross-compile — no target sysroot). Feature-unification means a single native-tls ureq dep
+# would drag OpenSSL onto every ureq consumer (including tree-sitter-language-pack's `download`),
+# so ureq uses ring-backed rustls + webpki-roots, which cross-compiles cleanly. Corporate-CA
+# trust (#1146) is a desktop/server concern; mobile apps ship their own trust configuration.
+# hf-hub is declared in the target-independent `not(wasm32)` block above.
 [target.'cfg(target_os = "android")'.dependencies]
-hf-hub = { version = "0.5", default-features = false, features = ["ureq"], optional = true }
 ureq = { version = "3.3", default-features = false, features = ["rustls", "json"], optional = true }
 
 [build-dependencies]
@@ -932,7 +932,7 @@ jsonschema = { version = "0.47", default-features = false }
 qrcode = { version = "0.14", default-features = false, features = ["image"] }
 # Test-only: builds an in-memory model2vec fixture (safetensors bytes) for the
 # static_engine unit tests, without a network fetch.
-safetensors = "0.5"
+safetensors = "0.8"
 serial_test = "3.5.0"
 tar = "^0.4"
 tempfile = { workspace = true }

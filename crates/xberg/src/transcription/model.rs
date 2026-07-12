@@ -332,10 +332,9 @@ pub fn ensure_whisper_model(
         return Ok(build_paths(model, &target_dir));
     }
 
-    let api = hf_hub::api::sync::ApiBuilder::from_env()
-        .with_cache_dir(whisper_cache.clone())
-        .with_progress(false)
-        .build()
+    let api = hf_hub::HFClientBuilder::new()
+        .cache_dir(whisper_cache.clone())
+        .build_sync()
         .map_err(|error| WhisperModelError::Download(format!("Failed to initialise hf-hub API: {error}")))?;
 
     for (remote_path, local_name) in model_files(model) {
@@ -358,7 +357,12 @@ pub fn ensure_whisper_model(
             let remote = remote_path.to_string();
             let repo_id = hf_repo(model).to_string();
             crate::model_download::with_download_deadline(&format!("{}/{remote_path}", hf_repo(model)), move || {
-                api.model(repo_id).get(&remote).map_err(|e| e.to_string())
+                let (owner, name) = hf_hub::split_id(&repo_id);
+                api.model(owner, name)
+                    .download_file()
+                    .filename(remote)
+                    .send()
+                    .map_err(|e| e.to_string())
             })
         }
         .map_err(|error| {

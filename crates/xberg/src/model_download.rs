@@ -150,9 +150,8 @@ pub(crate) fn hf_download(repo_id: &str, remote_filename: &str) -> Result<PathBu
     let file_lock = download_lock(&format!("{repo_id}/{remote_filename}"));
     let _guard = file_lock.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
 
-    let api = hf_hub::api::sync::ApiBuilder::from_env()
-        .with_progress(true)
-        .build()
+    let api = hf_hub::HFClientBuilder::new()
+        .build_sync()
         .map_err(|e| format!("Failed to initialize HuggingFace Hub API: {e}"))?;
 
     let cached_path = {
@@ -160,8 +159,11 @@ pub(crate) fn hf_download(repo_id: &str, remote_filename: &str) -> Result<PathBu
         let filename = remote_filename.to_string();
         let repo_id = repo_id.to_string();
         with_download_deadline(&format!("{repo_id}/{remote_filename}"), move || {
-            api.model(repo_id.clone())
-                .get(&filename)
+            let (owner, name) = hf_hub::split_id(&repo_id);
+            api.model(owner, name)
+                .download_file()
+                .filename(filename.clone())
+                .send()
                 .map_err(|e| format!("Failed to download '{filename}' from {repo_id}: {e}"))
         })?
     };

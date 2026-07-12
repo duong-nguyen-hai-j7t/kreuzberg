@@ -135,23 +135,26 @@ impl TrocrEngine {
     /// - Device initialization fails
     #[cfg(not(target_arch = "wasm32"))]
     pub fn new(variant: TrocrVariant, device: Device) -> Result<Self> {
-        use hf_hub::RepoType;
-        use hf_hub::api::sync::Api;
-
-        let api = Api::new()
+        let api = hf_hub::HFClientSync::new()
             .map_err(|e| CandleOcrError::ModelLoadFailed(format!("Failed to initialize HF Hub API: {}", e)))?;
 
         tracing::info!("Loading TrOCR variant: {}", variant);
 
         let repo_id = variant.repo_id().to_string();
         let branch = variant.branch().to_string();
-        let model_repo = hf_hub::Repo::with_revision(repo_id.clone(), RepoType::Model, branch.clone());
+        let (owner, name) = hf_hub::split_id(&repo_id);
+        let model_repo = api.model(owner, name);
 
         let model_file = {
-            let api = api.clone();
             let model_repo = model_repo.clone();
+            let branch = branch.clone();
             crate::download_guard::with_download_deadline(&format!("{}/model.safetensors", repo_id), move || {
-                api.repo(model_repo).get("model.safetensors").map_err(|e| e.to_string())
+                model_repo
+                    .download_file()
+                    .filename("model.safetensors")
+                    .revision(branch)
+                    .send()
+                    .map_err(|e| e.to_string())
             })
         }
         .map_err(|e| {
@@ -164,10 +167,15 @@ impl TrocrEngine {
         tracing::info!("Downloaded model weights to: {}", model_file.display());
 
         let config_file = {
-            let api = api.clone();
             let model_repo = model_repo.clone();
+            let branch = branch.clone();
             crate::download_guard::with_download_deadline(&format!("{}/config.json", repo_id), move || {
-                api.repo(model_repo).get("config.json").map_err(|e| e.to_string())
+                model_repo
+                    .download_file()
+                    .filename("config.json")
+                    .revision(branch)
+                    .send()
+                    .map_err(|e| e.to_string())
             })
         }
         .map_err(|e| {
@@ -190,10 +198,17 @@ impl TrocrEngine {
         let model = trocr::TrOCRModel::new(&full_config.encoder, &full_config.decoder, vb)
             .map_err(|e| CandleOcrError::ModelLoadFailed(format!("Failed to build TrOCR model: {}", e)))?;
 
-        let tokenizer_repo = api.model("ToluClassics/candle-trocr-tokenizer".to_string());
+        let (tok_owner, tok_name) = hf_hub::split_id("ToluClassics/candle-trocr-tokenizer");
+        let tokenizer_repo = api.model(tok_owner, tok_name);
         let tokenizer_file = crate::download_guard::with_download_deadline(
             "ToluClassics/candle-trocr-tokenizer/tokenizer.json",
-            move || tokenizer_repo.get("tokenizer.json").map_err(|e| e.to_string()),
+            move || {
+                tokenizer_repo
+                    .download_file()
+                    .filename("tokenizer.json")
+                    .send()
+                    .map_err(|e| e.to_string())
+            },
         )
         .map_err(|e| CandleOcrError::ModelLoadFailed(format!("Failed to download tokenizer: {}", e)))?;
 

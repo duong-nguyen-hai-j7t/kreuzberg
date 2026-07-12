@@ -213,20 +213,20 @@ mod engine {
                 ));
             }
 
-            let api = hf_hub::api::sync::Api::new()
+            let api = hf_hub::HFClientSync::new()
                 .map_err(|e| CandleOcrError::ModelLoadFailed(format!("HF API init: {}", e)))?;
 
-            let repo_spec = hf_hub::Repo::with_revision(
-                "zai-org/GLM-OCR".to_string(),
-                hf_hub::RepoType::Model,
-                "main".to_string(),
-            );
+            // The default revision ("main") matches the previous `Repo::with_revision(.., "main")`.
+            let (owner, name) = hf_hub::split_id("zai-org/GLM-OCR");
+            let repo = api.model(owner, name);
 
             let config_file = {
-                let api = api.clone();
-                let repo_spec = repo_spec.clone();
+                let repo = repo.clone();
                 crate::download_guard::with_download_deadline("zai-org/GLM-OCR/config.json", move || {
-                    api.repo(repo_spec).get("config.json").map_err(|e| e.to_string())
+                    repo.download_file()
+                        .filename("config.json")
+                        .send()
+                        .map_err(|e| e.to_string())
                 })
             }
             .map_err(|e| CandleOcrError::ModelLoadFailed(format!("Failed to get config: {}", e)))?;
@@ -236,10 +236,12 @@ mod engine {
                 .map_err(|e| CandleOcrError::ModelLoadFailed(format!("Config parse error: {}", e)))?;
 
             let tokenizer_file = {
-                let api = api.clone();
-                let repo_spec = repo_spec.clone();
+                let repo = repo.clone();
                 crate::download_guard::with_download_deadline("zai-org/GLM-OCR/tokenizer.json", move || {
-                    api.repo(repo_spec).get("tokenizer.json").map_err(|e| e.to_string())
+                    repo.download_file()
+                        .filename("tokenizer.json")
+                        .send()
+                        .map_err(|e| e.to_string())
                 })
             }
             .map_err(|e| CandleOcrError::ModelLoadFailed(format!("Failed to get tokenizer: {}", e)))?;
@@ -247,23 +249,25 @@ mod engine {
                 .map_err(|e| CandleOcrError::Tokenizer(format!("Tokenizer load error: {}", e)))?;
 
             let single_weight = {
-                let api = api.clone();
-                let repo_spec = repo_spec.clone();
+                let repo = repo.clone();
                 crate::download_guard::with_download_deadline("zai-org/GLM-OCR/model.safetensors", move || {
-                    api.repo(repo_spec).get("model.safetensors").map_err(|e| e.to_string())
+                    repo.download_file()
+                        .filename("model.safetensors")
+                        .send()
+                        .map_err(|e| e.to_string())
                 })
             };
             let model_files = match single_weight {
                 Ok(f) => vec![f],
                 Err(_) => {
                     let index_file = {
-                        let api = api.clone();
-                        let repo_spec = repo_spec.clone();
+                        let repo = repo.clone();
                         crate::download_guard::with_download_deadline(
                             "zai-org/GLM-OCR/model.safetensors.index.json",
                             move || {
-                                api.repo(repo_spec)
-                                    .get("model.safetensors.index.json")
+                                repo.download_file()
+                                    .filename("model.safetensors.index.json")
+                                    .send()
                                     .map_err(|e| e.to_string())
                             },
                         )
@@ -292,12 +296,11 @@ mod engine {
                     let mut result = Vec::new();
                     for filename in files {
                         let shard_file = {
-                            let api = api.clone();
-                            let repo_spec = repo_spec.clone();
+                            let repo = repo.clone();
                             let shard = filename.clone();
                             crate::download_guard::with_download_deadline(
                                 &format!("zai-org/GLM-OCR/{filename}"),
-                                move || api.repo(repo_spec).get(&shard).map_err(|e| e.to_string()),
+                                move || repo.download_file().filename(shard).send().map_err(|e| e.to_string()),
                             )
                         }
                         .map_err(|e| {

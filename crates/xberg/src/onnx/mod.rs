@@ -266,7 +266,7 @@ pub(crate) fn download_model_files(
 /// Returns the local cache path plus the repo-relative path that actually
 /// resolved, so the caller can look that path up in the sha256 manifest.
 fn fetch_companion(
-    api: &hf_hub::api::sync::Api,
+    api: &hf_hub::HFClientSync,
     repo_name: &str,
     model_dir: Option<&str>,
     file_name: &str,
@@ -281,7 +281,12 @@ fn fetch_companion(
         let repo = repo_name.to_string();
         let path = candidate.clone();
         match crate::model_download::with_download_deadline(&format!("{repo}/{candidate}"), move || {
-            api.model(repo).get(&path).map_err(|e| e.to_string())
+            let (owner, name) = hf_hub::split_id(&repo);
+            api.model(owner, name)
+                .download_file()
+                .filename(path)
+                .send()
+                .map_err(|e| e.to_string())
         }) {
             Ok(path) => return Ok((path, candidate)),
             Err(e) => last_err = e,
@@ -324,10 +329,9 @@ fn download_model_files_inner(
     let _download_lock = ProcessDownloadLock::acquire(cache_directory, repo_name);
     cleanup_stale_locks(cache_directory, repo_name);
 
-    let api = hf_hub::api::sync::ApiBuilder::from_env()
-        .with_cache_dir(cache_directory.to_path_buf())
-        .with_progress(true)
-        .build()
+    let api = hf_hub::HFClientBuilder::new()
+        .cache_dir(cache_directory.to_path_buf())
+        .build_sync()
         .map_err(|e| err(format!("Failed to create HF API client: {e}")))?;
 
     let model = {
@@ -336,14 +340,19 @@ fn download_model_files_inner(
         let cache_dir = cache_directory.to_path_buf();
         let repo = repo_name.to_string();
         crate::model_download::with_download_deadline(&format!("{repo}/{model_file}"), move || {
-            api.model(repo.clone()).get(&file).map_err(|e| {
-                let hint = if matches!(e, hf_hub::api::sync::ApiError::LockAcquisition(_)) {
-                    lock_acquisition_hint(&cache_dir, &repo)
-                } else {
-                    String::new()
-                };
-                format!("{e}{hint}")
-            })
+            let (owner, name) = hf_hub::split_id(&repo);
+            api.model(owner, name)
+                .download_file()
+                .filename(file)
+                .send()
+                .map_err(|e| {
+                    let hint = if matches!(e, hf_hub::HFError::CacheLockTimeout { .. }) {
+                        lock_acquisition_hint(&cache_dir, &repo)
+                    } else {
+                        String::new()
+                    };
+                    format!("{e}{hint}")
+                })
         })
     }
     .map_err(|e| err(format!("Failed to download {model_file} from {repo_name}: {e}")))?;
@@ -355,7 +364,12 @@ fn download_model_files_inner(
             let repo = repo_name.to_string();
             let sib = sibling.clone();
             crate::model_download::with_download_deadline(&format!("{repo}/{sibling}"), move || {
-                api.model(repo).get(&sib).map_err(|e| e.to_string())
+                let (owner, name) = hf_hub::split_id(&repo);
+                api.model(owner, name)
+                    .download_file()
+                    .filename(sib)
+                    .send()
+                    .map_err(|e| e.to_string())
             })
             .map_err(|e| {
                 err(format!(

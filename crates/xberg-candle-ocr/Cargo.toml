@@ -58,11 +58,10 @@ thiserror = { workspace = true }
 tokenizers = { version = "0.23", default-features = false, features = ["fancy-regex"] }
 tracing = { workspace = true }
 
-[target.'cfg(all(not(target_os = "windows"), not(target_arch = "wasm32")))'.dependencies]
-hf-hub = { version = "0.5", default-features = false, features = ["ureq"] }
-
-[target.'cfg(all(target_os = "windows", not(target_arch = "wasm32")))'.dependencies]
-hf-hub = { version = "0.5", default-features = false, features = ["ureq"] }
+# hf-hub 1.0 uses its own reqwest/rustls stack, so a single non-wasm declaration covers every
+# native target (the `blocking` feature provides the sync API over an internal tokio runtime).
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+hf-hub = { version = "1.0", default-features = false, features = ["blocking"] }
 
 [lints]
 workspace = true
