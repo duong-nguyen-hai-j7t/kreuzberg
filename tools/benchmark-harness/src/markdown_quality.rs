@@ -1758,7 +1758,9 @@ mod tests {
     #[test]
     fn test_prose_with_inline_superscript_is_not_formula() {
         // A full prose sentence that merely contains one inline `x^{2}` is NOT a formula.
-        assert!(!looks_like_formula("The gradient of x^{2} appears in the derivation of the loss term"));
+        assert!(!looks_like_formula(
+            "The gradient of x^{2} appears in the derivation of the loss term"
+        ));
         // A short, math-dominant superscript block still IS a formula.
         assert!(looks_like_formula("x^{2}"));
         // Formatting commands beginning with a backslash are NOT formulas (dropped rule).
@@ -1785,8 +1787,16 @@ mod tests {
     fn test_formula_paragraph_compat_is_nonzero() {
         // Even when one side genuinely classifies as Formula, Formula↔Paragraph degrades
         // gracefully (0.25) instead of scoring 0.
-        let formula = MdBlock { block_type: MdBlockType::Formula, content: "x^{2}".into(), index: 0 };
-        let para = MdBlock { block_type: MdBlockType::Paragraph, content: "x squared".into(), index: 0 };
+        let formula = MdBlock {
+            block_type: MdBlockType::Formula,
+            content: "x^{2}".into(),
+            index: 0,
+        };
+        let para = MdBlock {
+            block_type: MdBlockType::Paragraph,
+            content: "x squared".into(),
+            index: 0,
+        };
         assert_eq!(type_compat(&formula, &para), 0.25);
         assert_eq!(type_compat(&para, &formula), 0.25);
     }
@@ -1809,7 +1819,10 @@ mod tests {
             "split and merge of the same boundary error must score equally: split={split_sf1} merge={merge_sf1}"
         );
         // And both should retain substantial credit (not the old ~0.44 merge penalty).
-        assert!(merge_sf1 >= 0.6, "merge should keep substantial credit, got {merge_sf1}");
+        assert!(
+            merge_sf1 >= 0.6,
+            "merge should keep substantial credit, got {merge_sf1}"
+        );
     }
 
     // --- Bug 3: reading order (LIS) must actually influence SF1 ---
@@ -1822,7 +1835,10 @@ mod tests {
         let scrambled = "## Epsilon\n\n## Delta\n\n## Gamma\n\n## Beta\n\n# Alpha\n";
         let ordered_sf1 = score_structural_quality(gt, gt).structural_f1;
         let scrambled_sf1 = score_structural_quality(scrambled, gt).structural_f1;
-        assert!(ordered_sf1 >= 0.99, "in-order identical doc should be ~1.0: {ordered_sf1}");
+        assert!(
+            ordered_sf1 >= 0.99,
+            "in-order identical doc should be ~1.0: {ordered_sf1}"
+        );
         assert!(
             scrambled_sf1 < ordered_sf1 - 0.1,
             "scrambled reading order must score meaningfully lower: scrambled={scrambled_sf1} ordered={ordered_sf1}"

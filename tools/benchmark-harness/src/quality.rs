@@ -187,7 +187,9 @@ fn is_thousands_grouped(token: &str) -> bool {
     if groups[0].is_empty() || groups[0].len() > 3 || !groups[0].bytes().all(|b| b.is_ascii_digit()) {
         return false;
     }
-    groups[1..].iter().all(|g| g.len() == 3 && g.bytes().all(|b| b.is_ascii_digit()))
+    groups[1..]
+        .iter()
+        .all(|g| g.len() == 3 && g.bytes().all(|b| b.is_ascii_digit()))
 }
 
 /// Check whether either text has any numeric tokens (used to decide scoring formula).

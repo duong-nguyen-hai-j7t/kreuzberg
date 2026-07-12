@@ -849,7 +849,11 @@ fn resolve_shared_corpus_file_types(
             None => attempted,
         });
     }
-    let mut out: Vec<String> = shared_file_types.unwrap_or_default().into_iter().map(String::from).collect();
+    let mut out: Vec<String> = shared_file_types
+        .unwrap_or_default()
+        .into_iter()
+        .map(String::from)
+        .collect();
     out.sort();
     out
 }
