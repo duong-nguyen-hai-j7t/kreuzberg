@@ -11,7 +11,6 @@ members = [
     "crates/xberg-paddle-ocr",
     "crates/xberg-php",
     "crates/xberg-py",
-    "crates/xberg-rag",
     "crates/xberg-tesseract",
     "crates/xberg-wasm",
     "packages/dart/rust",
@@ -120,12 +119,10 @@ web-sys = { version = "0.3", features = [
 ] }
 xberg = { path = "./crates/xberg", version = "1.0.0-rc.25", default-features = false }
 xberg-gliner = { path = "./crates/xberg-gliner", version = "1.0.0-rc.25", default-features = false }
-xberg-rag = { path = "./crates/xberg-rag", version = "1.0.0-rc.25", default-features = false }
 
 [patch.crates-io]
 xberg = { path = "crates/xberg" }
 xberg-gliner = { path = "crates/xberg-gliner" }
-xberg-rag = { path = "crates/xberg-rag" }
 xberg-tesseract = { path = "crates/xberg-tesseract" }
 xberg-paddle-ocr = { path = "crates/xberg-paddle-ocr" }
 xberg-candle-ocr = { path = "crates/xberg-candle-ocr" }
