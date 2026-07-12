@@ -45,6 +45,7 @@ fn make_benchmark_result(
         pdf_metadata: None,
         ocr_status: if ocr { OcrStatus::Used } else { OcrStatus::NotUsed },
         extracted_text: None,
+        system_load: None,
     }
 }
 

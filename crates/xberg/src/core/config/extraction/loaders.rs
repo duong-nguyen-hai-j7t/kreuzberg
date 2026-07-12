@@ -86,10 +86,10 @@ impl ExtractionConfig {
             }
         }
 
-        if let Some(config_dir) = dirs::config_dir() {
-            if let Some(config) = Self::find_config_in_dir(&config_dir.join("xberg"))? {
-                return Ok(Some(config));
-            }
+        if let Some(config_dir) = dirs::config_dir()
+            && let Some(config) = Self::find_config_in_dir(&config_dir.join("xberg"))?
+        {
+            return Ok(Some(config));
         }
 
         Ok(None)
