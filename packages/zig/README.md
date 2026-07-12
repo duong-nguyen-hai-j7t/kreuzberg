@@ -80,7 +80,7 @@
   </a>
 </div>
 
-Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Zig bindings consuming the C FFI surface via @cImport, idiomatic error sets, optional types, and slice-based memory management.
+Extract text, tables, images, metadata, and code intelligence from 97 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. Zig bindings consuming the C FFI surface via @cImport, idiomatic error sets, optional types, and slice-based memory management.
 
 ## What This Package Provides
 
@@ -111,7 +111,6 @@ exe.root_module.addImport("xberg", xberg_dep.module("xberg"));
 ```
 
 ### System Requirements
-
 - **Zig 0.16.0+** required (`minimum_zig_version` declared in `build.zig.zon`)
 - Links the C FFI surface from `xberg-ffi`; the build resolves the library via `linkSystemLibrary` against the consumer-provided search path
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.24+ for ORT-dependent inference features
@@ -231,7 +230,7 @@ pub fn main() !void {
 
 ### Supported File Formats (96)
 
-96 file formats across 8 major categories with intelligent format detection and comprehensive metadata extraction.
+97 file formats across 8 major categories with intelligent format detection and comprehensive metadata extraction.
 
 #### Office Documents
 
@@ -239,7 +238,7 @@ pub fn main() !void {
 |----------|---------|--------------|
 | **Word Processing** | `.docx`, `.docm`, `.doc`, `.dotx`, `.dotm`, `.dot`, `.odt`, `.pages` | Full text, tables, images, metadata, styles |
 | **Spreadsheets** | `.xlsx`, `.xlsm`, `.xlsb`, `.xls`, `.xla`, `.xlam`, `.xltm`, `.xltx`, `.xlt`, `.ods`, `.numbers` | Sheet data, formulas, cell metadata, charts |
-| **Presentations** | `.pptx`, `.pptm`, `.ppt`, `.ppsx`, `.potx`, `.potm`, `.pot`, `.key` | Slides, speaker notes, images, metadata |
+| **Presentations** | `.pptx`, `.pptm`, `.ppt`, `.ppsx`, `.potx`, `.potm`, `.pot`, `.odp`, `.key` | Slides, speaker notes, images, metadata |
 | **PDF** | `.pdf` | Text, tables, images, metadata, OCR support |
 | **eBooks** | `.epub`, `.fb2` | Chapters, metadata, embedded resources |
 | **Database** | `.dbf` | Table data extraction, field type support |

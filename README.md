@@ -116,7 +116,7 @@ Point Xberg at anything — a PDF, a spreadsheet, a scanned image, an audio file
 
 | What it does | How |
 |---|---|
-| **Extract from 96 formats** | PDFs, Office, images, HTML, email, archives, scientific publications, and code — intelligent MIME detection, streaming for large files. |
+| **Extract from 97 formats** | PDFs, Office, images, HTML, email, archives, scientific publications, and code — intelligent MIME detection, streaming for large files. |
 | **6 output formats** | Plain text, Markdown, Djot, HTML, JSON tree structure, or Structured (JSON with OCR metadata and bounding boxes). |
 | **Code intelligence** | Functions, classes, imports, symbols, docstrings from 306 programming languages. Syntax-aware chunking for RAG pipelines. |
 | **Crawl & recurse** | Follow URLs, extract documents from within documents (nested archives, embedded PDFs). Auto/Document/Crawl modes. |
@@ -467,7 +467,7 @@ Common use cases — see [Quick start guide](https://docs.xberg.io/getting-start
 
 ### Supported File Formats (96)
 
-96 file formats across 8 major categories with intelligent format detection and comprehensive metadata extraction.
+97 file formats across 8 major categories with intelligent format detection and comprehensive metadata extraction.
 
 #### Office Documents
 
@@ -475,7 +475,7 @@ Common use cases — see [Quick start guide](https://docs.xberg.io/getting-start
 |----------|---------|--------------|
 | **Word Processing** | `.docx`, `.docm`, `.doc`, `.dotx`, `.dotm`, `.dot`, `.odt`, `.pages` | Full text, tables, images, metadata, styles |
 | **Spreadsheets** | `.xlsx`, `.xlsm`, `.xlsb`, `.xls`, `.xla`, `.xlam`, `.xltm`, `.xltx`, `.xlt`, `.ods`, `.numbers` | Sheet data, formulas, cell metadata, charts |
-| **Presentations** | `.pptx`, `.pptm`, `.ppt`, `.ppsx`, `.potx`, `.potm`, `.pot`, `.key` | Slides, speaker notes, images, metadata |
+| **Presentations** | `.pptx`, `.pptm`, `.ppt`, `.ppsx`, `.potx`, `.potm`, `.pot`, `.odp`, `.key` | Slides, speaker notes, images, metadata |
 | **PDF** | `.pdf` | Text, tables, images, metadata, OCR support |
 | **eBooks** | `.epub`, `.fb2` | Chapters, metadata, embedded resources |
 | **Database** | `.dbf` | Table data extraction, field type support |
@@ -568,17 +568,14 @@ Fallback chains. Extensible via plugin system.
 ### Embeddings
 
 **Local (ONNX Runtime):**
-
 - Preset models: fast, balanced (default), quality, multilingual
 - Dimensions: 384, 768, 1024
 
 **Provider-hosted:**
-
 - OpenAI, Anthropic, Google, Hugging Face, Mistral, Cohere, and 143 providers total
 - Via [liter-llm](https://github.com/xberg-io/liter-llm) integration
 
 **Reranking:**
-
 - Local ONNX rerankers (cross-encoder models)
 - Provider-hosted: Cohere Rerank, others
 
@@ -618,10 +615,10 @@ Schema validation. Temperature, top-p, frequency penalty tuning.
 | `extract` | — | Extract text from a single document (path, URL, or stdin) |
 | `batch` | — | Extract from multiple documents in parallel |
 | `detect` | — | Identify MIME type of a file |
-| `formats` | — | List all 96 supported formats and MIME types |
+| `formats` | — | List all 97 supported formats and MIME types |
 | `version` | — | Show Xberg version |
 | `cache` | `stats`, `clear`, `manifest`, `warm` | Manage extraction cache and models |
-| `serve` | — | Start REST API server (default: <http://127.0.0.1:8000>) |
+| `serve` | — | Start REST API server (default: http://127.0.0.1:8000) |
 | `mcp` | — | Start MCP server (stdio or HTTP transport) |
 | `api` | `schema` | Output OpenAPI 3.1 specification |
 | `embed` | — | Generate embeddings for text (local or provider-hosted) |

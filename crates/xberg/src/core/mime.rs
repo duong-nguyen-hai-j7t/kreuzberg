@@ -183,6 +183,11 @@ static FORMATS: &[FormatEntry] = &[
         aliases: &[],
     },
     FormatEntry {
+        extensions: &["odp"],
+        mime_type: "application/vnd.oasis.opendocument.presentation",
+        aliases: &[],
+    },
+    FormatEntry {
         extensions: &["pptx"],
         mime_type: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
         aliases: &[],

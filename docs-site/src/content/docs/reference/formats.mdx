@@ -4,7 +4,7 @@ title: "Format Support"
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-Xberg supports 96 file formats across major categories through native Rust extractors.
+Xberg supports 97 file formats across major categories through native Rust extractors.
 
 ## Overview
 
@@ -34,6 +34,7 @@ All formats support async/await and batch processing. Image formats and PDFs sup
 | PowerPoint (Legacy)      | `.ppt`                                                                      | `application/vnd.ms-powerpoint`                                             | Native OLE/CFB          | Yes                       | Direct binary parsing                                       |
 | OpenDocument Text        | `.odt`                                                                      | `application/vnd.oasis.opendocument.text`                                   | Native Rust             | No                        | Full OpenDocument support                                   |
 | OpenDocument Spreadsheet | `.ods`                                                                      | `application/vnd.oasis.opendocument.spreadsheet`                            | Native Rust (calamine)  | No                        | Multi-sheet support                                         |
+| OpenDocument Presentation | `.odp`                                                                     | `application/vnd.oasis.opendocument.presentation`                          | Native Rust (roxmltree) | Yes (for embedded images) | Slide extraction, tables, images, metadata                  |
 | dBASE                    | `.dbf`                                                                      | `application/x-dbf`                                                         | Native Rust (dbase)     | No                        | Table data extraction, field type support                   |
 | Hangul Word Processor    | `.hwp`, `.hwpx`                                                             | `application/x-hwp`                                                         | Native Rust (hwpers)    | No                        | Korean document format, text extraction                     |
 | Apple Pages              | `.pages`                                                                    | `application/x-iwork-pages-sffpages`                                        | Native Rust             | No                        | Modern iWork format support                                 |

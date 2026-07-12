@@ -168,6 +168,9 @@ pub mod jupyter;
 pub mod orgmode;
 
 #[cfg(feature = "office")]
+pub mod odp;
+
+#[cfg(feature = "office")]
 pub mod odt;
 
 #[cfg(feature = "office")]
@@ -270,6 +273,8 @@ pub use jupyter::JupyterExtractor;
 #[cfg(feature = "office")]
 pub use orgmode::OrgModeExtractor;
 
+#[cfg(feature = "office")]
+pub use odp::OdpExtractor;
 #[cfg(feature = "office")]
 pub use odt::OdtExtractor;
 
@@ -394,6 +399,7 @@ pub(crate) fn register_default_extractors() -> Result<()> {
         registry.register_internal(Arc::new(PptExtractor::new()))?;
         registry.register_internal(Arc::new(PptxExtractor::new()))?;
         registry.register_internal(Arc::new(OdtExtractor::new()))?;
+        registry.register_internal(Arc::new(OdpExtractor::new()))?;
         registry.register_internal(Arc::new(DbfExtractor::new()))?;
     }
 

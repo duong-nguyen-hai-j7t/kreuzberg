@@ -72,7 +72,7 @@ impl Plugin for OdtExtractor {
 
 /// Resolved formatting properties for a text style.
 #[derive(Default, Clone)]
-struct OdtStyleProps {
+pub(crate) struct OdtStyleProps {
     bold: bool,
     italic: bool,
     underline: bool,
@@ -85,7 +85,7 @@ struct OdtStyleProps {
 ///
 /// Parses `<style:style>` elements from the `office:automatic-styles` section
 /// of content.xml and resolves `style:text-properties` attributes.
-fn build_style_map(root: roxmltree::Node) -> AHashMap<String, OdtStyleProps> {
+pub(crate) fn build_style_map(root: roxmltree::Node) -> AHashMap<String, OdtStyleProps> {
     let mut styles = AHashMap::new();
     for child in root.children() {
         if child.tag_name().name() == "automatic-styles" || child.tag_name().name() == "styles" {
@@ -161,7 +161,7 @@ fn build_style_map(root: roxmltree::Node) -> AHashMap<String, OdtStyleProps> {
 }
 
 /// Parsed metadata for a single `<text:changed-region>` from `<text:tracked-changes>`.
-struct OdtChangeRegion {
+pub(crate) struct OdtChangeRegion {
     author: Option<String>,
     timestamp: Option<String>,
     kind: RevisionKind,
@@ -272,7 +272,9 @@ fn collect_region_text(node: roxmltree::Node) -> String {
 /// Scans the archive for files under `Pictures/` (the standard ODT image directory)
 /// and builds a lookup map so that image references in content.xml can be resolved
 /// to binary data without re-borrowing the archive during XML walking.
-fn pre_extract_images(archive: &mut zip::ZipArchive<Cursor<Vec<u8>>>) -> AHashMap<String, (Vec<u8>, String)> {
+pub(crate) fn pre_extract_images(
+    archive: &mut zip::ZipArchive<Cursor<Vec<u8>>>,
+) -> AHashMap<String, (Vec<u8>, String)> {
     use std::io::Read;
 
     let mut images = AHashMap::new();
@@ -309,7 +311,7 @@ fn pre_extract_images(archive: &mut zip::ZipArchive<Cursor<Vec<u8>>>) -> AHashMa
 ///
 /// ODT stores formulas in subdirectories like `Object 1/content.xml` containing
 /// MathML markup. This function scans for those and converts them to text.
-fn pre_extract_formulas(archive: &mut zip::ZipArchive<Cursor<Vec<u8>>>) -> AHashMap<String, String> {
+pub(crate) fn pre_extract_formulas(archive: &mut zip::ZipArchive<Cursor<Vec<u8>>>) -> AHashMap<String, String> {
     use std::io::Read;
 
     let mut formulas = AHashMap::new();
@@ -542,7 +544,7 @@ fn build_internal_document(
 /// child element consumes one `budget.step()` and emitted text bytes are
 /// charged to `budget.account_text()`.
 #[allow(clippy::too_many_arguments)]
-fn build_internal_elements(
+pub(crate) fn build_internal_elements(
     parent: roxmltree::Node,
     builder: &mut InternalDocumentBuilder,
     style_map: &AHashMap<String, OdtStyleProps>,
@@ -1006,7 +1008,7 @@ fn collect_odt_annotations(
 ///
 /// Handles both direct `table:table-row` children and rows nested inside
 /// `table:table-header-rows` containers, which ODT uses for header rows.
-fn extract_table_cells(table_node: roxmltree::Node) -> Vec<Vec<String>> {
+pub(crate) fn extract_table_cells(table_node: roxmltree::Node) -> Vec<Vec<String>> {
     let mut rows = Vec::new();
     for child in table_node.children() {
         match child.tag_name().name() {

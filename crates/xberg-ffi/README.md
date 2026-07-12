@@ -80,7 +80,7 @@
   </a>
 </div>
 
-Extract text, tables, images, metadata, and code intelligence from 96 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. C/C++ FFI bindings providing a stable ABI for native integration, shared library distribution, and cross-language interop.
+Extract text, tables, images, metadata, and code intelligence from 97 file formats and 306 programming languages including PDF, Office documents, images, and audio/video transcripts where native transcription is available. C/C++ FFI bindings providing a stable ABI for native integration, shared library distribution, and cross-language interop.
 
 ## What This Package Provides
 
@@ -103,7 +103,6 @@ cargo build --release -p xberg-ffi
 The built artifacts are emitted under `target/release/` (`libxberg_ffi.{so,dylib,a}`) along with the C header at `crates/xberg-ffi/include/xberg.h`.
 
 ### System Requirements
-
 - A C/C++ toolchain (clang, gcc, or MSVC) and a Rust toolchain (`rustup`) for building from source
 - A `pkg-config` or CMake-aware build system that can locate `libxberg_ffi` and `xberg.h`
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.24+ for ORT-dependent inference features
@@ -140,7 +139,7 @@ See [Configuration Guide](https://docs.xberg.io/guides/configuration/) for table
 
 ### Supported File Formats (96)
 
-96 file formats across 8 major categories with intelligent format detection and comprehensive metadata extraction.
+97 file formats across 8 major categories with intelligent format detection and comprehensive metadata extraction.
 
 #### Office Documents
 
@@ -148,7 +147,7 @@ See [Configuration Guide](https://docs.xberg.io/guides/configuration/) for table
 |----------|---------|--------------|
 | **Word Processing** | `.docx`, `.docm`, `.doc`, `.dotx`, `.dotm`, `.dot`, `.odt`, `.pages` | Full text, tables, images, metadata, styles |
 | **Spreadsheets** | `.xlsx`, `.xlsm`, `.xlsb`, `.xls`, `.xla`, `.xlam`, `.xltm`, `.xltx`, `.xlt`, `.ods`, `.numbers` | Sheet data, formulas, cell metadata, charts |
-| **Presentations** | `.pptx`, `.pptm`, `.ppt`, `.ppsx`, `.potx`, `.potm`, `.pot`, `.key` | Slides, speaker notes, images, metadata |
+| **Presentations** | `.pptx`, `.pptm`, `.ppt`, `.ppsx`, `.potx`, `.potm`, `.pot`, `.odp`, `.key` | Slides, speaker notes, images, metadata |
 | **PDF** | `.pdf` | Text, tables, images, metadata, OCR support |
 | **eBooks** | `.epub`, `.fb2` | Chapters, metadata, embedded resources |
 | **Database** | `.dbf` | Table data extraction, field type support |
