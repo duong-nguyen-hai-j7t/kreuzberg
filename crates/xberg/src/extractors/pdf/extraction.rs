@@ -193,8 +193,14 @@ pub(crate) fn extract_all_from_oxide_document(
                 source: None,
             })?;
 
+        // Reading-order reorder runs whenever layout hints exist: the ML layout
+        // path implies the caller wants layout-driven structure, and the
+        // predecessor-graph reorder is what turns column-order stream text into
+        // visual reading order. The explicit `reading_order` opt-in still forces
+        // it on for the non-layout span path. `XBERG_LAYOUT_NO_REORDER=1` disables
+        // it for A/B measurement.
         #[cfg(feature = "layout-detection")]
-        if config.pdf_options.as_ref().is_some_and(|opts| opts.reading_order)
+        if (config.pdf_options.as_ref().is_some_and(|opts| opts.reading_order) || layout_hints.is_some())
             && let Some(hints) = layout_hints
         {
             for (page_idx, page_hints) in hints.iter().enumerate() {
