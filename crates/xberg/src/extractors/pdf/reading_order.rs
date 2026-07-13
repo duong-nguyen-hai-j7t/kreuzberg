@@ -145,6 +145,10 @@ pub(crate) fn reorder_segments_by_layout(
         return segments;
     }
 
+    if crate::pdf::structure::layout_debug::layout_debug_flags().no_reorder {
+        return segments;
+    }
+
     let seg_indices: Vec<(usize, f32, f32, f32, f32)> = segments
         .iter()
         .enumerate()

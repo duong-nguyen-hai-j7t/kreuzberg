@@ -33,6 +33,10 @@ pub(in crate::pdf::structure) fn extract_tables_from_layout_hints(
 ) -> Vec<Table> {
     use crate::pdf::table_reconstruct::HocrWord;
 
+    if crate::pdf::structure::layout_debug::layout_debug_flags().no_layout_tables {
+        return Vec::new();
+    }
+
     let table_hints: Vec<&LayoutHint> = hints
         .iter()
         .filter(|h| h.class_name == LayoutHintClass::Table && h.confidence >= min_confidence)

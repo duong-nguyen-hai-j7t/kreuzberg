@@ -60,12 +60,22 @@ if [ "${SKIP_BUILD:-0}" != "1" ]; then
 fi
 HARNESS=./target/release/benchmark-harness
 
-# 3. Add Docling only if it is importable locally.
-if python3 -c "import docling" >/dev/null 2>&1; then
+# 3. Add Docling only if it is importable the same way the harness invokes it.
+#    The harness's find_python_with_framework() prefers `uv run` whenever `uv`
+#    is on PATH (see adapters/external.rs), so the gate must probe through the
+#    same resolver — a bare `python3 -c "import docling"` check would miss an
+#    interpreter that's only importable via `uv run` (e.g. installed with
+#    `uv sync --group bench-docling` into the repo's .venv).
+if command -v uv >/dev/null 2>&1; then
+  DOCLING_CHECK=(uv run python3 -c "import docling")
+else
+  DOCLING_CHECK=(python3 -c "import docling")
+fi
+if "${DOCLING_CHECK[@]}" >/dev/null 2>&1; then
   echo "[bench:local] docling detected — including it."
   FRAMEWORKS="$FRAMEWORKS,docling"
 else
-  echo "[bench:local] docling not installed — skipping (study its output from /tmp/docling)."
+  echo "[bench:local] docling not installed — skipping (install with: uv sync --group bench-docling)."
 fi
 
 SHARD_ARGS=()

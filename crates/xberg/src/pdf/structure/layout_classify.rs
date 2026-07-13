@@ -332,6 +332,9 @@ pub(super) fn apply_hint_to_paragraph(para: &mut PdfParagraph, hint: &LayoutHint
 
     para.layout_class = Some(hint.class_name);
 
+    let debug = super::layout_debug::layout_debug_flags();
+    let old_heading = para.heading_level;
+
     let para_text: String = if !para.text.is_empty() {
         para.text.clone()
     } else {
@@ -347,7 +350,8 @@ pub(super) fn apply_hint_to_paragraph(para: &mut PdfParagraph, hint: &LayoutHint
 
     match hint.class_name {
         LayoutHintClass::Title
-            if !is_sep
+            if !debug.no_promote
+                && !is_sep
                 && !para.is_list_item
                 && (para.heading_level.is_none() || hint.confidence >= 0.7)
                 && word_count <= super::constants::MAX_HEADING_WORD_COUNT =>
@@ -355,7 +359,10 @@ pub(super) fn apply_hint_to_paragraph(para: &mut PdfParagraph, hint: &LayoutHint
             para.heading_level = Some(1);
         }
         LayoutHintClass::SectionHeader
-            if !is_sep && !para.is_list_item && (para.heading_level.is_none() || hint.confidence >= 0.7) =>
+            if !debug.no_promote
+                && !is_sep
+                && !para.is_list_item
+                && (para.heading_level.is_none() || hint.confidence >= 0.7) =>
         {
             let trimmed = para_text.trim();
             let too_long = word_count > super::constants::MAX_HEADING_WORD_COUNT;
@@ -420,7 +427,7 @@ pub(super) fn apply_hint_to_paragraph(para: &mut PdfParagraph, hint: &LayoutHint
             para.is_page_furniture = true;
         }
         LayoutHintClass::Text | LayoutHintClass::Caption | LayoutHintClass::Footnote
-            if para.heading_level.is_some() && hint.confidence >= 0.7 =>
+            if !debug.no_demote && para.heading_level.is_some() && hint.confidence >= 0.7 =>
         {
             tracing::trace!(
                 hint_class = ?hint.class_name,
@@ -431,6 +438,25 @@ pub(super) fn apply_hint_to_paragraph(para: &mut PdfParagraph, hint: &LayoutHint
             para.heading_level = None;
         }
         _ => {}
+    }
+
+    if debug.log_overrides {
+        let trimmed = para_text.trim();
+        let font_above_body = body_font_size.is_some_and(|body| body > 0.0 && para.dominant_font_size > body + 0.5);
+        let has_strong_heading_evidence =
+            font_above_body || para.is_bold || super::classify::is_section_pattern(trimmed);
+        tracing::info!(
+            hint_class = ?hint.class_name,
+            confidence = hint.confidence,
+            old_heading = ?old_heading,
+            new_heading = ?para.heading_level,
+            font_above_body,
+            is_bold = para.is_bold,
+            has_strong_heading_evidence,
+            words = word_count,
+            text = %trimmed.chars().take(60).collect::<String>(),
+            "layout override"
+        );
     }
 }
 
